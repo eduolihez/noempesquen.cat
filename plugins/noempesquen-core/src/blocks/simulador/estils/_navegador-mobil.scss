@@ -55,12 +55,15 @@
 	}
 
 	/* Si no hi cap, es retalla el camí (gris), mai el domini. */
-	.nep-nav-adreca__vista > :first-child {
+	.nep-nav-adreca__vista > :first-child:not(.nep-nav-adreca__resta) {
 		flex-shrink: 0;
 	}
 
+	/* El xip és a ~96 px de la vora (enrere + endavant): la fitxa
+	   s'alinea a 8 px de la vora esquerra de la pantalla. */
 	.nep-nav-adreca__info {
-		max-width: calc(100vw - 32px);
+		left: -88px;
+		max-width: calc(100vw - 16px);
 	}
 }
 
