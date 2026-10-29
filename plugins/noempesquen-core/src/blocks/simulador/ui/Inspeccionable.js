@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../simulador/context';
+import { separaEspais } from './espais';
 
 /**
  * Text que, amb la lupa activa, es pot inspeccionar.
@@ -18,21 +19,27 @@ export function Inspeccionable( { text, senyal, as: Tag = 'span' } ) {
 			<Tag className={ trobat ? 'nep-marcat' : undefined }>{ text }</Tag>
 		);
 	}
+	// Els espais dels extrems queden fora del botó: si no, es perden.
+	const { abans, nucli, despres } = separaEspais( text );
 	return (
-		<button
-			type="button"
-			className={ `nep-inspecciona${ trobat ? ' nep-marcat' : '' }` }
-			onClick={ () =>
-				dispatch( { tipus: 'INSPECCIONA', senyal: senyal ?? null } )
-			}
-			aria-pressed={ trobat }
-			aria-label={ sprintf(
-				/* translators: %s: text inspeccionable */
-				__( 'Inspecciona: %s', 'noempesquen' ),
-				text
-			) }
-		>
-			{ text }
-		</button>
+		<>
+			{ abans }
+			<button
+				type="button"
+				className={ `nep-inspecciona${ trobat ? ' nep-marcat' : '' }` }
+				onClick={ () =>
+					dispatch( { tipus: 'INSPECCIONA', senyal: senyal ?? null } )
+				}
+				aria-pressed={ trobat }
+				aria-label={ sprintf(
+					/* translators: %s: text inspeccionable */
+					__( 'Inspecciona: %s', 'noempesquen' ),
+					nucli
+				) }
+			>
+				{ nucli }
+			</button>
+			{ despres }
+		</>
 	);
 }
