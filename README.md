@@ -28,6 +28,12 @@ npm run env:start      # http://localhost:8888  (admin / password)
 npm run start          # recompila en desar
 ```
 
+Les proves e2e necessiten una pàgina `/simulador/` amb el bloc. Crea-la un cop, amb l'entorn en marxa:
+
+```bash
+npm run env:cli -- wp post create --post_type=page --post_title=Simulador --post_name=simulador --post_status=publish --post_content='<!-- wp:noempesquen/simulador {"align":"wide"} /-->'
+```
+
 Aturar: `npm run env:stop` · Esborrar l'entorn: `npm run env:clean`
 
 ## Producció
