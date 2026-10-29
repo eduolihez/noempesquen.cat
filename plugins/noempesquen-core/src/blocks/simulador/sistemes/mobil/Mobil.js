@@ -24,7 +24,8 @@ const URL_POSTA = 'https://posta.cat/';
 
 /* On porta tocar una notificació, segons l'app que l'envia. */
 const DESTINS = {
-	parla: [ 'parla' ],
+	// Els avisos de Parla venen del guia: s'obre directament la seva conversa.
+	parla: [ 'parla', { xat: 'guia' } ],
 	// T4: les notificacions de Missatges obren l'app (ja present quan existeixi).
 	missatges: [ 'missatges' ],
 	// Mentre no hi hagi app de Posta al mòbil, s'obre la web.
@@ -133,7 +134,8 @@ export default function Mobil() {
 	const obreNotificacio = useCallback(
 		( n ) => {
 			const [ app, dades ] = DESTINS[ n.app ] ?? [ n.app ];
-			obreApp( app, dades );
+			// Còpia nova: cada obertura compta com a dades noves per a l'app.
+			obreApp( app, dades && { ...dades } );
 		},
 		[ obreApp ]
 	);
@@ -205,7 +207,7 @@ export default function Mobil() {
 	const amagaBloqueig = useCallback( () => setAmbBloqueig( false ), [] );
 	const obreGuia = useCallback( () => {
 		dispatch( { tipus: 'DESBLOQUEJA' } );
-		obreApp( 'parla' );
+		obreApp( 'parla', { xat: 'guia' } );
 	}, [ dispatch, obreApp ] );
 
 	const sistema = useMemo(
