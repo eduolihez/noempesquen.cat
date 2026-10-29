@@ -75,8 +75,11 @@ function useGestosMenu( onPremut, actiu ) {
 		},
 		onContextMenu: ( e ) => {
 			e.preventDefault();
+			// En táctil (Android) el navegador llança `contextmenu` a prop de
+			// 500 ms, i el temporitzador propi ja ha obert el full: no dues vegades.
+			const jaGestionat = suprimeix.current;
 			cancella();
-			if ( actiu ) {
+			if ( actiu && ! jaGestionat ) {
 				onPremut( e.target );
 			}
 		},

@@ -53,7 +53,7 @@ async function obreMenuSms( page ) {
 	).toBeVisible();
 }
 
-/** Full de l'enllaç amb la tecla de menú (alternativa a la pulsació llarga). */
+/** Full de l'enllaç amb Maj+F10 (test de teclat; la pulsació llarga té el seu). */
 async function mantenEnllac( page ) {
 	const enllac = page.getByRole( 'link', {
 		name: 'enviat-entrega.top/c/4471',
@@ -190,6 +190,43 @@ test.describe( 'El paquet retingut', () => {
 		await expect(
 			page.getByRole( 'img', { name: '1 de 3 estrelles' } )
 		).toBeVisible();
+	} );
+
+	test( 'pulsació llarga a l’enllaç obre el full una sola vegada i no el segueix', async ( {
+		page,
+		isMobile,
+	} ) => {
+		test.skip( ! isMobile, 'Només al projecte mòbil' );
+		await obreSms( page );
+		const enllac = page.getByRole( 'link', {
+			name: 'enviat-entrega.top/c/4471',
+		} );
+		const caixa = await enllac.boundingBox();
+		await page.mouse.move(
+			caixa.x + caixa.width / 2,
+			caixa.y + caixa.height / 2
+		);
+		await page.mouse.down();
+		// Encara no ha passat el temps: cap full.
+		await page.clock.runFor( 200 );
+		const full = page.getByRole( 'dialog', { name: 'Enllaç' } );
+		await expect( full ).toHaveCount( 0 );
+		await page.clock.runFor( 400 );
+		await expect( full ).toBeVisible();
+		await expect( full ).toContainText( 'https://enviat-entrega.top/c/4471' );
+		// Android hi afegeix el seu `contextmenu`: no ha de duplicar el full.
+		await enllac.dispatchEvent( 'contextmenu' );
+		await page.mouse.up();
+		await expect( full ).toHaveCount( 1 );
+		// El clic posterior no obre la web falsa.
+		await expect(
+			page.getByRole( 'textbox', { name: 'Titular de la targeta' } )
+		).toHaveCount( 0 );
+	} );
+
+	test( 'teclat: Maj+F10 a l’enllaç obre el full', async ( { page } ) => {
+		await obreSms( page );
+		await expect( await mantenEnllac( page ) ).toBeVisible();
 	} );
 
 	test( 'Esc tanca primer el menú i només després obre la pausa', async ( {
