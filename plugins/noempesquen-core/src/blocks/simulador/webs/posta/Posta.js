@@ -38,14 +38,14 @@ const carpetes = () => [
 		id: 'entrada',
 		nom: __( 'Entrada', 'noempesquen' ),
 		Icona: IconaEntrada,
-		buit: __( 'No tens cap missatge a l’Entrada.', 'noempesquen' ),
+		buit: __( "No tens cap missatge a l'Entrada.", 'noempesquen' ),
 	},
 	{
 		id: 'destacats',
 		nom: __( 'Destacats', 'noempesquen' ),
 		Icona: IconaEstrella,
 		buit: __(
-			'Encara no has destacat cap missatge. Fes clic a l’estrella d’un missatge per trobar-lo aquí.',
+			"Encara no has destacat cap missatge. Fes clic a l'estrella d'un missatge per trobar-lo aquí.",
 			'noempesquen'
 		),
 	},
@@ -76,11 +76,11 @@ const carpetes = () => [
 ];
 
 const textosAvis = () => ( {
-	arxiva: __( 'S’ha arxivat el missatge.', 'noempesquen' ),
-	esborra: __( 'S’ha mogut el missatge a la Paperera.', 'noempesquen' ),
-	brossa: __( 'S’ha marcat el missatge com a brossa.', 'noempesquen' ),
+	arxiva: __( "S'ha arxivat el missatge.", 'noempesquen' ),
+	esborra: __( "S'ha mogut el missatge a la Paperera.", 'noempesquen' ),
+	brossa: __( "S'ha marcat el missatge com a brossa.", 'noempesquen' ),
 	phishing: __(
-		'S’ha denunciat el missatge i s’ha mogut a Brossa.',
+		"S'ha denunciat el missatge i s'ha mogut a Brossa.",
 		'noempesquen'
 	),
 } );

@@ -56,7 +56,7 @@ function Compte( { nom, missatge, onSurt } ) {
 					</span>
 					<span className="nep-lc-factura__import">62,15 €</span>
 					<span className="nep-lc-factura__estat">
-						{ __( 'Pagada el 5 d’octubre', 'noempesquen' ) }
+						{ __( "Pagada el 5 d'octubre", 'noempesquen' ) }
 					</span>
 				</div>
 				<dl className="nep-lc-factura__dades">

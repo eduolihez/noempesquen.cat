@@ -57,7 +57,7 @@
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Pare/mare, he arribat a l'institut. Fins després!",
+						"text": "Ja he arribat a l'institut. Fins després!",
 						"hora": "08:05"
 					},
 					{
@@ -108,7 +108,7 @@
 					[ { "t": "Hola, Àlex:" } ],
 					[
 						{
-							"t": "Aquest mes al butlletí et expliquem com estalviar en les despeses de la llar i com activar els avisos de moviments al mòbil."
+							"t": "Aquest mes al butlletí t'expliquem com estalviar en les despeses de la llar i com activar els avisos de moviments al mòbil."
 						}
 					],
 					[

@@ -60,7 +60,7 @@ export function Denuncia( { correu, onDenuncia, onCancella } ) {
 					{ sprintf(
 						/* translators: %s: adreça del remitent */
 						__(
-							'Posta mourà aquest missatge a Brossa i n’enviarà una còpia a l’equip de seguretat perquè pugui frenar els que arribin de %s.',
+							"Posta mourà aquest missatge a Brossa i n'enviarà una còpia a l'equip de seguretat perquè pugui frenar els que arribin de %s.",
 							'noempesquen'
 						),
 						correu.remitent?.adreca ?? ''

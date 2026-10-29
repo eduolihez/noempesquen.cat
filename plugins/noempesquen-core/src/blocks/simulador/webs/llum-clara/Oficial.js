@@ -71,7 +71,7 @@ function Inici( { enllac } ) {
 					<div className="nep-lc-hero__text">
 						<h1>
 							{ __(
-								'Llum a un preu que s’entén.',
+								"Llum a un preu que s'entén.",
 								'noempesquen'
 							) }
 						</h1>
@@ -101,7 +101,7 @@ function Inici( { enllac } ) {
 								className="nep-lc-boto nep-lc-boto--contorn"
 								{ ...enllac( '/area-client' ) }
 							>
-								{ __( 'Entra a l’àrea client', 'noempesquen' ) }
+								{ __( "Entra a l'àrea client", 'noempesquen' ) }
 							</a>
 						</div>
 					</div>
@@ -117,7 +117,7 @@ function Inici( { enllac } ) {
 						IconaFactura,
 						__( 'Factures i consums', 'noempesquen' ),
 						__(
-							'Descarrega les factures i mira el consum de cada mes a l’àrea client.',
+							"Descarrega les factures i mira el consum de cada mes a l'àrea client.",
 							'noempesquen'
 						),
 					],
@@ -125,7 +125,7 @@ function Inici( { enllac } ) {
 						IconaEina,
 						__( 'Avaries', 'noempesquen' ),
 						__(
-							'Si et quedes sense llum, avisa’ns des de l’àrea client a qualsevol hora.',
+							"Si et quedes sense llum, avisa'ns des de l'àrea client a qualsevol hora.",
 							'noempesquen'
 						),
 					],
@@ -133,7 +133,7 @@ function Inici( { enllac } ) {
 						IconaCanvi,
 						__( 'Canvi de tarifa', 'noempesquen' ),
 						__(
-							'Canvia de tarifa o de potència sense cap cost, un cop l’any.',
+							"Canvia de tarifa o de potència sense cap cost, un cop l'any.",
 							'noempesquen'
 						),
 					],
@@ -196,21 +196,21 @@ const preguntes = () => [
 	[
 		__( 'Com sé si un correu és vostre?', 'noempesquen' ),
 		__(
-			'Els nostres correus arriben sempre d’una adreça acabada en @llumclara.cat. No hi posem enllaços per pagar i mai no et demanarem la targeta ni el PIN.',
+			"Els nostres correus arriben sempre d'una adreça acabada en @llumclara.cat. No hi posem enllaços per pagar i mai no et demanarem la targeta ni el PIN.",
 			'noempesquen'
 		),
 	],
 	[
 		__( 'Com pago una factura?', 'noempesquen' ),
 		__(
-			'Les factures es cobren per domiciliació bancària. Si un cobrament falla, t’avisem per carta i a l’àrea client, i tens com a mínim dos mesos per pagar-la.',
+			"Les factures es cobren per domiciliació bancària. Si un cobrament falla, t'avisem per carta i a l'àrea client, i tens com a mínim dos mesos per pagar-la.",
 			'noempesquen'
 		),
 	],
 	[
 		__( 'He rebut un correu sospitós, què faig?', 'noempesquen' ),
 		__(
-			'No facis clic als enllaços. Entra a llumclara.cat escrivint tu l’adreça i mira a l’àrea client si tens res pendent. Després marca el correu com a pesca (phishing).',
+			"No facis clic als enllaços. Entra a llumclara.cat escrivint tu l'adreça i mira a l'àrea client si tens res pendent. Després marca el correu com a pesca (phishing).",
 			'noempesquen'
 		),
 	],
@@ -266,7 +266,7 @@ export function Oficial( { seccio, dades, enllac } ) {
 				<h1>{ legal }</h1>
 				<p>
 					{ __(
-						'Llum Clara Energia, SA tracta les teves dades només per gestionar el contracte de subministrament. Pots exercir els teus drets des de l’àrea client.',
+						"Llum Clara Energia, SA tracta les teves dades només per gestionar el contracte de subministrament. Pots exercir els teus drets des de l'àrea client.",
 						'noempesquen'
 					) }
 				</p>

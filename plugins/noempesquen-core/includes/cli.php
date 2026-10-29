@@ -23,6 +23,11 @@ WP_CLI::add_command(
 		$ordre   = 0;
 
 		foreach ( $fitxers as $fitxer ) {
+			// mon.json és el món compartit (contactes, webs, correus), no una missió.
+			if ( 'mon.json' === basename( $fitxer ) ) {
+				continue;
+			}
+
 			$missio = json_decode( (string) file_get_contents( $fitxer ), true );
 			if ( ! is_array( $missio ) || empty( $missio['id'] ) ) {
 				WP_CLI::warning( 'JSON invàlid: ' . basename( $fitxer ) );

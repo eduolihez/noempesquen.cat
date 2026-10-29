@@ -28,7 +28,7 @@
 					"ocult": true,
 					"carpeta": "entrada",
 					"llegit": false,
-					"data": "09:14",
+					"data": "09:12",
 					"remitent": {
 						"nom": "Llum Clara",
 						"adreca": "avisos@llumclara-pagaments.com",
@@ -233,7 +233,7 @@
 			"Res d'estrany per aquí."
 		],
 		"web_falsa": "Ho has obert. Fixa't bé en aquesta web: s'assembla a la de Llum Clara, però mira l'adreça de dalt. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"pescat": "Ai, ai, ai. Has enviat les dades. Si fos de veritat, ara els estafadors tindrien la teva targeta. Tranquil, això és un simulacre."
+		"pescat": "Ai, ai, ai. Has enviat les dades. Si fos de veritat, ara els estafadors tindrien la teva targeta. Calma, això és un simulacre."
 	},
 	"decisio": {
 		"pregunta": "Què fas amb el correu de Llum Clara?",

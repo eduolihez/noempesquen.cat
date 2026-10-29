@@ -34,7 +34,7 @@ export function Falsa( { dades, url } ) {
 							) }
 						</strong>
 						{ __(
-							'No hem pogut cobrar la teva última factura. Si no la pagues avui, el subministrament es tallarà d’aquí a',
+							"No hem pogut cobrar la teva última factura. Si no la pagues avui, el subministrament es tallarà d'aquí a",
 							'noempesquen'
 						) }{ ' ' }
 						<span className="nep-lc-tall__compte">
