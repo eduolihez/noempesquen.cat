@@ -8,6 +8,7 @@ import {
 } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
+import { recuperaFocus } from '../../simulador/aillament';
 import { APPS } from '../../apps/registre';
 import { SistemaContext } from './context';
 import { ESTAT_FINESTRES, finestresReductor } from './finestres';
@@ -90,6 +91,12 @@ export default function Pc() {
 			dispatch( { tipus: 'NOTIFICACIONS_LLEGIDES', app: 'parla' } );
 		}
 	}, [ parlaActiva, parlaPendent, dispatch ] );
+
+	// En tancar o minimitzar la darrera finestra, el seu botó desapareix:
+	// el focus no ha de caure a la pàgina de darrere.
+	useEffect( () => {
+		recuperaFocus( refInici.current?.closest( '.nep-so' ) );
+	}, [ f.focus ] );
 
 	useEffect( () => {
 		const onKeyDown = ( e ) => {

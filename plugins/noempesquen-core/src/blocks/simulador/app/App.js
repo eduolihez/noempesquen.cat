@@ -4,6 +4,7 @@ import {
 	useReducer,
 	useCallback,
 	useMemo,
+	useRef,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { FASE, estatInicial, reductor, puntuacio } from './motor';
@@ -137,7 +138,8 @@ function Joc( { missio, onTorna, onAcaba, seguent } ) {
 	);
 }
 
-function Selector( { missions, progres, preferit, onTria } ) {
+function Selector( { missions, progres, preferit, onTria, enfoca } ) {
+	const llista = useRef( null );
 	const ordenades = useMemo(
 		() =>
 			[ ...missions ].sort(
@@ -148,12 +150,23 @@ function Selector( { missions, progres, preferit, onTria } ) {
 		[ missions, preferit ]
 	);
 
+	// En tornar d'una partida, el focus va a la targeta que s'ha jugat.
+	useEffect( () => {
+		if ( enfoca ) {
+			llista.current
+				?.querySelector(
+					`[data-missio="${ window.CSS.escape( enfoca ) }"]`
+				)
+				?.focus();
+		}
+	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+
 	return (
 		<section className="nep-selector" aria-labelledby="nep-selector-titol">
 			<h2 id="nep-selector-titol">
 				{ __( 'Tria una missió', 'noempesquen' ) }
 			</h2>
-			<ul className="nep-targetes">
+			<ul ref={ llista } className="nep-targetes">
 				{ ordenades.map( ( m ) => {
 					const { nom, Avatar } =
 						PERSONATGES[ m.personatge ] ?? PERSONATGES.llissa;
@@ -163,6 +176,7 @@ function Selector( { missions, progres, preferit, onTria } ) {
 							<button
 								type="button"
 								className={ `nep-targeta nep-targeta--${ m.personatge }` }
+								data-missio={ m.id }
 								onClick={ () => onTria( m.id ) }
 							>
 								<span className="nep-targeta__avatar">
@@ -233,6 +247,7 @@ export function App( { config } ) {
 		llegeixProgres( emmagatzematge() )
 	);
 	const [ partida, setPartida ] = useState( 0 );
+	const jugada = useRef( null );
 
 	const missio = missions.find( ( m ) => m.id === actual ) ?? null;
 	const index = missio ? missions.indexOf( missio ) : -1;
@@ -247,6 +262,7 @@ export function App( { config } ) {
 	}, [] );
 
 	const tria = ( id ) => {
+		jugada.current = id;
 		setActual( id );
 		setPartida( ( n ) => n + 1 );
 	};
@@ -258,6 +274,7 @@ export function App( { config } ) {
 				progres={ progres }
 				preferit={ preferit }
 				onTria={ tria }
+				enfoca={ jugada.current }
 			/>
 		);
 	}

@@ -12,6 +12,7 @@ import { FASE, estatInicial, reductor, puntuacio } from '../nucli/motor';
 import { PERSONATGES } from '../app/avatars';
 import { JocContext } from './context';
 import { usePantallaCompleta } from './usePantallaCompleta';
+import { useAillament, recuperaFocus } from './aillament';
 import { horaDeJoc } from './hora';
 import { Pausa } from './Pausa';
 import { Consequencia } from './Consequencia';
@@ -77,12 +78,24 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		}
 	} );
 
+	useAillament( arrel );
+
 	// El clic a la targeta és el gest d'usuari: demanem pantalla completa
 	// en muntar. Si el navegador la rebutja, s'activa la capa fixa.
+	// El focus només va a l'arrel si cap fill (el bloqueig) ja l'ha pres.
 	useEffect( () => {
 		entra();
-		arrel.current?.focus();
+		const el = arrel.current;
+		if ( el && ! el.contains( el.ownerDocument.activeElement ) ) {
+			el.focus();
+		}
 	}, [ entra ] );
+
+	// Si l'element amb el focus desapareix (p. ex. en reiniciar), el focus
+	// cauria a la pàgina de darrere: el retornem a l'arrel.
+	useEffect( () => {
+		recuperaFocus( arrel.current );
+	} );
 
 	useEffect( () => {
 		if ( estat.fase !== FASE.JOC || estat.pausa ) {
