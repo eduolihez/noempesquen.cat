@@ -178,17 +178,10 @@ describe( 'validaMissio v2', () => {
 		);
 	} );
 
-	it( 'la missió remei (v1) encara falla per versio', () => {
-		const remei = JSON.parse(
-			readFileSync(
-				new URL(
-					'../../../../../missions/remei-01-paquet.json',
-					import.meta.url
-				),
-				'utf8'
-			)
+	it( 'una missió v1 falla per versio', () => {
+		expect( validaMissio( { versio: 1, id: 'antiga' } ) ).toContain(
+			'versio no suportada'
 		);
-		expect( validaMissio( remei ) ).toContain( 'versio no suportada' );
 	} );
 
 	it( 'no llança amb elements nuls i informa dels errors', () => {
