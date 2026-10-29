@@ -1,0 +1,398 @@
+/* PC simulat: bloqueig, escriptori, finestres i lupa. Tot sota .nep-so. */
+
+@use "pc-vidre" as *;
+
+$cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M19.5 19.5 28 28' stroke='%23fff' stroke-width='7'/%3E%3Cpath d='M19.5 19.5 28 28' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='13' cy='13' r='9' fill='%23fff' fill-opacity='.35' stroke='%23fff' stroke-width='5'/%3E%3Ccircle cx='13' cy='13' r='9' stroke='%231a1a1a' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E");
+
+.nep-so-pc {
+	cursor: default;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	user-select: none;
+	width: 100%;
+
+	&__sessio {
+		height: 100%;
+		position: relative;
+	}
+
+	/* Context d'apilament propi: la z de les finestres no supera la barra. */
+	&__finestres {
+		inset: 0 0 48px;
+		isolation: isolate;
+		pointer-events: none;
+		position: absolute;
+		z-index: 1;
+	}
+
+	&__capa {
+		inset: 0 0 48px;
+		position: absolute;
+		z-index: 2;
+	}
+}
+
+/* Lupa: cursor propi amb el punt calent al centre de la lent. */
+.nep-so .nep-so-pc.is-lupa,
+.nep-so .nep-so-pc.is-lupa * {
+	cursor: $cursor-lupa 13 13, zoom-in;
+}
+
+/* Focus del sistema: anell fosc i filet blanc, visible sobre qualsevol fons. */
+.nep-so .nep-so-pc :focus-visible {
+	box-shadow: 0 0 0 1px #fff;
+	outline: 2px solid #1a1a1a;
+	outline-offset: 1px;
+}
+
+/* Contenidors que reben el focus per programa (tabindex -1): sense anell. */
+.nep-so .nep-so-pc .nep-so-finestra__cos:focus-visible,
+.nep-so .nep-so-pc .nep-so-panell:focus-visible,
+.nep-so .nep-so-pc .nep-so-centre:focus-visible {
+	box-shadow: none;
+	outline: none;
+}
+
+.nep-so-sr {
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+.nep-so-fons {
+	display: block;
+	height: 100%;
+	inset: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.nep-so-avatar {
+	align-items: center;
+	background: linear-gradient(135deg, #4aa3e8, #0a5cb0);
+	border-radius: 50%;
+	color: #fff;
+	display: inline-flex;
+	flex: 0 0 auto;
+	font-size: 14px;
+	font-weight: 600;
+	height: 32px;
+	justify-content: center;
+	width: 32px;
+
+	&--gran {
+		box-shadow: 0 0 0 2px rgb(255 255 255 / 35%);
+		font-size: 40px;
+		height: 96px;
+		width: 96px;
+	}
+}
+
+/* ---------- Bloqueig ---------- */
+.nep-so-bloqueig {
+	color: #fff;
+	cursor: default;
+	display: grid;
+	grid-template-rows: 1fr auto;
+	inset: 0;
+	overflow: hidden;
+	position: absolute;
+	text-shadow: 0 1px 12px rgb(0 0 0 / 25%);
+	z-index: 10;
+
+	&.is-sortint {
+		animation: nep-so-bloqueig-surt 0.45s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+	}
+
+	&__fons {
+		filter: blur(24px) saturate(1.15) brightness(0.82);
+		inset: -48px;
+		position: absolute;
+	}
+
+	&__rellotge {
+		align-self: start;
+		padding-top: 11vh;
+		position: relative;
+		text-align: center;
+	}
+
+	&__hora {
+		font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+		font-size: clamp(72px, 10vw, 136px);
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+
+	&__data {
+		font-size: clamp(18px, 1.7vw, 24px);
+		font-weight: 500;
+		margin-top: 12px;
+	}
+
+	&__usuari {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding-bottom: 12vh;
+		position: relative;
+	}
+
+	&__nom {
+		font-size: 24px;
+		font-weight: 600;
+	}
+
+	.nep-so-bloqueig__entra {
+		background: rgb(255 255 255 / 16%);
+		backdrop-filter: blur(20px);
+		border: 1px solid rgb(255 255 255 / 28%);
+		border-radius: 6px;
+		color: #fff;
+		cursor: default;
+		margin-top: 8px;
+		padding: 7px 18px;
+
+		&:hover {
+			background: rgb(255 255 255 / 24%);
+		}
+	}
+
+	&__estat {
+		bottom: 24px;
+		display: flex;
+		gap: 16px;
+		position: absolute;
+		right: 28px;
+	}
+}
+
+@keyframes nep-so-bloqueig-surt {
+
+	to {
+		transform: translateY(-100%);
+	}
+}
+
+/* ---------- Escriptori ---------- */
+.nep-so-escriptori {
+	inset: 0;
+	position: absolute;
+
+	&__icones {
+		display: grid;
+		gap: 2px;
+		grid-auto-flow: column;
+		grid-template-rows: repeat(auto-fill, 92px);
+		inset: 6px auto 54px 6px;
+		position: absolute;
+	}
+
+	.nep-so-escriptori__icona {
+		align-items: center;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		color: #fff;
+		display: flex;
+		flex-direction: column;
+		font-size: 12px;
+		gap: 4px;
+		line-height: 16px;
+		padding: 8px 4px 6px;
+		text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
+		width: 78px;
+
+		svg {
+			filter: drop-shadow(0 2px 3px rgb(0 0 0 / 30%));
+		}
+
+		&:hover {
+			background: rgb(255 255 255 / 12%);
+		}
+
+		&.is-triada {
+			background: rgb(255 255 255 / 24%);
+			border-color: rgb(255 255 255 / 32%);
+		}
+	}
+}
+
+/* ---------- Finestres ---------- */
+.nep-so-finestra {
+	animation: nep-so-finestra-obre 0.2s $corba-entrada both;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 0 0 1px rgb(0 0 0 / 12%), 0 8px 32px rgb(0 0 0 / 28%);
+	display: flex;
+	flex-direction: column;
+	height: min(760px, calc(100% - 96px));
+	overflow: hidden;
+	pointer-events: auto;
+	position: absolute;
+	transition:
+		opacity 0.16s ease,
+		transform 0.2s $corba-entrada,
+		box-shadow 0.16s ease;
+	width: min(1120px, calc(100% - 120px));
+
+	&--parla {
+		height: min(600px, calc(100% - 120px));
+		width: min(860px, calc(100% - 96px));
+	}
+
+	&.is-inactiva {
+		box-shadow: 0 0 0 1px rgb(0 0 0 / 10%), 0 4px 16px rgb(0 0 0 / 18%);
+	}
+
+	&.is-maximitzada {
+		border-radius: 0;
+		height: 100%;
+		left: 0;
+		top: 0;
+		width: 100%;
+	}
+
+	&.is-minimitzada {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(64px) scale(0.86);
+		transition:
+			opacity 0.16s ease,
+			transform 0.2s ease-in,
+			visibility 0s linear 0.2s;
+		visibility: hidden;
+	}
+
+	&.is-tancant {
+		animation: nep-so-finestra-tanca 0.14s ease-in forwards;
+	}
+
+	&__barra {
+		align-items: center;
+		background: #f3f3f3;
+		display: flex;
+		flex: 0 0 32px;
+		gap: 10px;
+		padding-left: 12px;
+		touch-action: none;
+	}
+
+	&__icona {
+		display: flex;
+	}
+
+	&__titol {
+		flex: 1;
+		font-size: 12px;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&.is-inactiva &__titol,
+	&.is-inactiva &__control {
+		color: #8a8a8a;
+	}
+
+	&__controls {
+		align-self: stretch;
+		display: flex;
+	}
+
+	.nep-so-finestra__control {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		color: #1a1a1a;
+		display: flex;
+		height: 32px;
+		justify-content: center;
+		width: 46px;
+
+		&:hover {
+			background: rgb(0 0 0 / 6%);
+		}
+
+		&:active {
+			background: rgb(0 0 0 / 4%);
+			color: #5c5c5c;
+		}
+
+		&:focus-visible {
+			outline-offset: -2px;
+		}
+	}
+
+	.nep-so-finestra__control--tanca:hover {
+		background: #c42b1c;
+		color: #fff;
+	}
+
+	.nep-so-finestra__control--tanca:active {
+		background: #c83c31;
+		color: rgb(255 255 255 / 80%);
+	}
+
+	&__cos {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-height: 0;
+		overflow: auto;
+		position: relative;
+		user-select: text;
+
+		&:focus {
+			outline: none;
+		}
+	}
+}
+
+@keyframes nep-so-finestra-obre {
+
+	from {
+		opacity: 0;
+		transform: scale(0.94) translateY(12px);
+	}
+}
+
+@keyframes nep-so-finestra-tanca {
+
+	to {
+		opacity: 0;
+		transform: scale(0.96);
+	}
+}
+
+.nep-so-app-provisional {
+	align-items: center;
+	color: #5c5c5c;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 4px;
+	justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so-bloqueig.is-sortint,
+	.nep-so-finestra,
+	.nep-so-finestra.is-tancant {
+		animation: none;
+	}
+
+	.nep-so-finestra,
+	.nep-so-finestra.is-minimitzada {
+		transition: none;
+	}
+}

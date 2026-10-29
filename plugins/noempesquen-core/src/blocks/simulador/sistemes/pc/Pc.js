@@ -1,25 +1,213 @@
-import { __ } from '@wordpress/i18n';
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useReducer,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
+import { APPS } from '../../apps/registre';
+import { SistemaContext } from './context';
+import { ESTAT_FINESTRES, finestresReductor } from './finestres';
+import { Bloqueig } from './Bloqueig';
+import { Escriptori } from './Escriptori';
+import { Finestra } from './Finestra';
+import { BarraTasques } from './BarraTasques';
+import { MenuInici } from './MenuInici';
+import { CentreNotificacions } from './CentreNotificacions';
+import { Toasts } from './Notificacions';
+
+const URL_POSTA = 'https://posta.cat/';
+
+/* On porta el clic en una notificació, segons l'app que l'envia. */
+const DESTINS = {
+	parla: [ 'parla' ],
+	posta: [ 'navegador', { url: URL_POSTA } ],
+};
+
+const esDrecera = ( e ) => e.altKey && e.shiftKey && e.code === 'KeyL';
 
 /**
- * Esquelet provisional de l'escriptori; la tasca 7 el substitueix.
+ * Sistema PC: bloqueig, escriptori, finestres, barra de tasques,
+ * menú d'inici, notificacions i lupa.
  */
 export default function Pc() {
-	const { estat, dispatch, hora } = useJoc();
+	const { estat, dispatch, missio, hora } = useJoc();
+	const [ f, dispatchF ] = useReducer( finestresReductor, ESTAT_FINESTRES );
+	const [ panell, setPanell ] = useState( null );
+	const [ ambBloqueig, setAmbBloqueig ] = useState(
+		estat.fase === FASE.BLOQUEIG
+	);
+	const refInici = useRef( null );
+	const refRellotge = useRef( null );
+	const faseAnterior = useRef( estat.fase );
+	const bloquejat = estat.fase === FASE.BLOQUEIG;
+
+	const obreApp = useCallback( ( app, dades ) => {
+		if ( APPS[ app ] ) {
+			setPanell( null );
+			dispatchF( { tipus: 'OBRE', app, dades } );
+		}
+	}, [] );
+
+	const obreNotificacio = useCallback(
+		( n ) => {
+			const [ app, dades ] = DESTINS[ n.app ] ?? [ n.app ];
+			obreApp( app, dades );
+		},
+		[ obreApp ]
+	);
+
+	// Desbloqueig: navegador i Parla, en aquest ordre (en cascada).
+	// Reinici: torna al bloqueig amb l'escriptori buit.
+	useEffect( () => {
+		const anterior = faseAnterior.current;
+		faseAnterior.current = estat.fase;
+		if ( estat.fase === FASE.BLOQUEIG ) {
+			dispatchF( { tipus: 'REINICIA' } );
+			setPanell( null );
+			setAmbBloqueig( true );
+		} else if ( anterior === FASE.BLOQUEIG ) {
+			const url = missio.apps?.navegador?.inici?.[ 0 ];
+			obreApp( 'navegador', url ? { url } : undefined );
+			obreApp( 'parla' );
+		}
+	}, [ estat.fase, missio, obreApp ] );
+
+	// Parla en primer pla: els seus missatges ja es veuen, queden llegits.
+	const parlaActiva = f.focus === 'parla';
+	const parlaPendent = estat.notificacions.some(
+		( n ) => n.app === 'parla' && ! n.llegida
+	);
+	useEffect( () => {
+		if ( parlaActiva && parlaPendent ) {
+			dispatch( { tipus: 'NOTIFICACIONS_LLEGIDES', app: 'parla' } );
+		}
+	}, [ parlaActiva, parlaPendent, dispatch ] );
+
+	useEffect( () => {
+		const onKeyDown = ( e ) => {
+			if ( esDrecera( e ) ) {
+				e.preventDefault();
+				dispatch( { tipus: 'LUPA' } );
+			}
+		};
+		const doc = refInici.current?.ownerDocument ?? document;
+		doc.addEventListener( 'keydown', onKeyDown );
+		return () => doc.removeEventListener( 'keydown', onKeyDown );
+	}, [ dispatch ] );
+
+	const tancaPanell = useCallback( () => setPanell( null ), [] );
+	const amagaBloqueig = useCallback( () => setAmbBloqueig( false ), [] );
+
+	const alternaPanell = ( nom, obre = false ) => {
+		const nou = panell === nom && ! obre ? null : nom;
+		if ( nou === 'notificacions' ) {
+			dispatch( { tipus: 'NOTIFICACIONS_LLEGIDES' } );
+		}
+		setPanell( nou );
+	};
+
+	const clicApp = ( app ) => {
+		setPanell( null );
+		const finestra = f.finestres.find( ( x ) => x.app === app );
+		if ( ! finestra ) {
+			obreApp( app );
+		} else if ( f.focus === finestra.id ) {
+			dispatchF( { tipus: 'MINIMITZA', id: finestra.id } );
+		} else {
+			dispatchF( { tipus: 'ENFOCA', id: finestra.id } );
+		}
+	};
+
+	const sistema = useMemo(
+		() => ( { obreApp, notificacions: estat.notificacions } ),
+		[ obreApp, estat.notificacions ]
+	);
+
 	return (
-		<div className="nep-so-pc-esquelet">
-			<p>{ __( 'Escriptori', 'noempesquen' ) }</p>
-			{ estat.fase === FASE.BLOQUEIG && (
-				<button
-					type="button"
-					className="nep-so-boto nep-so-boto--accent"
-					onClick={ () => dispatch( { tipus: 'DESBLOQUEJA' } ) }
+		<SistemaContext.Provider value={ sistema }>
+			<div className={ `nep-so-pc${ estat.lupa ? ' is-lupa' : '' }` }>
+				<div
+					className="nep-so-pc__sessio"
+					inert={ bloquejat ? '' : undefined }
 				>
-					{ __( 'Desbloqueja', 'noempesquen' ) }
-				</button>
-			) }
-			<p aria-label={ __( 'Hora', 'noempesquen' ) }>{ hora }</p>
-		</div>
+					<Escriptori onObre={ obreApp } />
+					<div className="nep-so-pc__finestres">
+						{ f.finestres.map( ( finestra, i ) => {
+							const accio = ( tipus ) => () =>
+								dispatchF( { tipus, id: finestra.id } );
+							return (
+								<Finestra
+									key={ finestra.id }
+									finestra={ finestra }
+									ordre={ i }
+									enfocada={ f.focus === finestra.id }
+									onEnfoca={ accio( 'ENFOCA' ) }
+									onMinimitza={ accio( 'MINIMITZA' ) }
+									onMaximitza={ accio( 'MAXIMITZA' ) }
+									onTanca={ accio( 'TANCA' ) }
+								/>
+							);
+						} ) }
+					</div>
+					{ panell && (
+						<div
+							className="nep-so-pc__capa"
+							aria-hidden="true"
+							onPointerDown={ tancaPanell }
+						/>
+					) }
+					{ panell === 'inici' && (
+						<MenuInici
+							onObre={ obreApp }
+							onApaga={ () => {
+								setPanell( null );
+								dispatch( { tipus: 'PAUSA' } );
+							} }
+							onTanca={ tancaPanell }
+							origen={ refInici }
+						/>
+					) }
+					{ panell === 'notificacions' && (
+						<CentreNotificacions
+							onObre={ obreNotificacio }
+							onTanca={ tancaPanell }
+							origen={ refRellotge }
+						/>
+					) }
+					<Toasts
+						onObre={ obreNotificacio }
+						parlaActiva={ parlaActiva }
+						amagats={ panell === 'notificacions' }
+						silenci={ ambBloqueig }
+					/>
+					<BarraTasques
+						finestres={ f.finestres }
+						focus={ f.focus }
+						panell={ panell }
+						onPanell={ alternaPanell }
+						onApp={ clicApp }
+						lupa={ estat.lupa }
+						onLupa={ () => {
+							setPanell( null );
+							dispatch( { tipus: 'LUPA' } );
+						} }
+						hora={ hora }
+						noLlegides={
+							estat.notificacions.filter( ( n ) => ! n.llegida )
+								.length
+						}
+						refInici={ refInici }
+						refRellotge={ refRellotge }
+					/>
+				</div>
+				{ ambBloqueig && (
+					<Bloqueig sortint={ ! bloquejat } onFi={ amagaBloqueig } />
+				) }
+			</div>
+		</SistemaContext.Provider>
 	);
 }

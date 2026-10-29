@@ -1,4 +1,7 @@
 @use "estils/so";
+@use "estils/pc";
+@use "estils/pc-barra";
+@use "estils/pc-notificacions";
 
 .wp-block-noempesquen-simulador {
 	--nep-fons: var(--wp--preset--color--fons, #f7f4ec);

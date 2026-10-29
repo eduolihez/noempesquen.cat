@@ -1,0 +1,243 @@
+/* PC simulat: centre de notificacions, calendari i toasts. */
+
+@use "pc-vidre" as *;
+
+/* ---------- Centre de notificacions ---------- */
+.nep-so-centre {
+	animation: nep-so-panell-llisca 0.24s $corba-entrada both;
+	bottom: 60px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	position: absolute;
+	right: 12px;
+	width: 364px;
+	z-index: 4;
+
+	&:focus {
+		outline: none;
+	}
+
+	&__targeta {
+
+		@include superficie;
+
+		padding: 16px;
+	}
+
+	&__titol {
+		font-size: 14px;
+		font-weight: 600;
+		margin-bottom: 12px;
+
+		&::first-letter {
+			text-transform: uppercase;
+		}
+	}
+
+	&__llista {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		max-height: min(360px, 40vh);
+		overflow-y: auto;
+	}
+
+	&__grup ul {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__app {
+		align-items: center;
+		color: $text-secundari;
+		display: flex;
+		font-size: 12px;
+		gap: 8px;
+		margin-bottom: 8px;
+	}
+
+	&__buit {
+		color: $text-secundari;
+		padding: 20px 0 12px;
+		text-align: center;
+	}
+
+	.nep-so-notif {
+		background: rgb(255 255 255 / 72%);
+		border: 1px solid rgb(0 0 0 / 6%);
+		border-radius: 6px;
+	}
+
+	.nep-so-notif__cos {
+		padding: 12px;
+	}
+}
+
+@keyframes nep-so-panell-llisca {
+
+	from {
+		opacity: 0;
+		transform: translateX(32px);
+	}
+}
+
+.nep-so-calendari {
+
+	&__mes {
+		border-collapse: collapse;
+		font-variant-numeric: tabular-nums;
+		width: 100%;
+
+		caption {
+			font-weight: 600;
+			margin-bottom: 6px;
+			text-align: left;
+		}
+
+		th {
+			color: $text-secundari;
+			font-size: 12px;
+			font-weight: 400;
+			height: 32px;
+		}
+
+		td {
+			font-size: 13px;
+			height: 36px;
+			text-align: center;
+		}
+
+		.is-avui {
+			background: radial-gradient(circle, var(--so-accent) 15px, transparent 16px);
+			color: #fff;
+			font-weight: 600;
+		}
+	}
+}
+
+/* ---------- Notificacions (toast i centre) ---------- */
+.nep-so-toasts {
+	bottom: 60px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	position: absolute;
+	right: 12px;
+	width: 364px;
+	z-index: 3;
+}
+
+.nep-so-toast {
+
+	@include superficie;
+
+	animation: nep-so-toast-entra 0.32s $corba-entrada both;
+}
+
+.nep-so-notif {
+
+	&__cap {
+		align-items: center;
+		color: #3b3b3b;
+		display: flex;
+		font-size: 12px;
+		gap: 8px;
+		height: 36px;
+		padding: 2px 6px 0 14px;
+	}
+
+	.nep-so-notif__descarta {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 4px;
+		color: #3b3b3b;
+		display: flex;
+		height: 28px;
+		justify-content: center;
+		margin-left: auto;
+		opacity: 0;
+		width: 28px;
+
+		&:hover {
+			background: rgb(0 0 0 / 6%);
+		}
+	}
+
+	&:hover &__descarta,
+	&:focus-within &__descarta {
+		opacity: 1;
+	}
+
+	.nep-so-notif__cos {
+		align-items: flex-start;
+		background: transparent;
+		border: 0;
+		border-radius: 6px;
+		color: inherit;
+		display: flex;
+		gap: 12px;
+		padding: 4px 16px 16px 14px;
+		text-align: left;
+		width: 100%;
+
+		&:focus-visible {
+			outline-offset: -2px;
+		}
+	}
+
+	&__imatge {
+		display: flex;
+		flex: 0 0 auto;
+	}
+
+	&__avatar {
+		align-items: center;
+		background: #dcf1f5;
+		border-radius: 50%;
+		display: flex;
+		height: 48px;
+		justify-content: center;
+		overflow: hidden;
+		width: 48px;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	&__titol {
+		font-weight: 600;
+		line-height: 20px;
+	}
+
+	&__missatge {
+		-webkit-box-orient: vertical;
+		color: #3b3b3b;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-height: 20px;
+		overflow: hidden;
+	}
+}
+
+@keyframes nep-so-toast-entra {
+
+	from {
+		opacity: 0;
+		transform: translateX(calc(100% + 24px));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so-centre,
+	.nep-so-toast {
+		animation: none;
+	}
+}
