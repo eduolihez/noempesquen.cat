@@ -6,7 +6,9 @@ import {
 	useMemo,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { FASE, estatInicial, reductor, puntuacio, validaMissio } from './motor';
+import { FASE, estatInicial, reductor, puntuacio } from './motor';
+import { combinaMissions } from '../nucli/missions';
+import { llegeixProgres, desaProgres } from '../nucli/progres';
 import { PERSONATGES } from './avatars';
 import { Escriptori } from './Escriptori';
 import { Mobil } from './Mobil';
@@ -15,21 +17,11 @@ import llissa01 from '../../../../missions/llissa-01-factura.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 
 const INCLOSES = [ llissa01, remei01 ];
-const CLAU = 'noempesquen-progres-v1';
-
-function llegeixProgres() {
+function emmagatzematge() {
 	try {
-		return JSON.parse( window.localStorage.getItem( CLAU ) || '{}' );
+		return window.localStorage;
 	} catch {
-		return {};
-	}
-}
-
-function desaProgres( progres ) {
-	try {
-		window.localStorage.setItem( CLAU, JSON.stringify( progres ) );
-	} catch {
-		// Sense emmagatzematge: el joc funciona igual.
+		return null;
 	}
 }
 
@@ -56,12 +48,12 @@ function useMissions( api ) {
 		fetch( `${ api }missions` )
 			.then( ( r ) => ( r.ok ? r.json() : [] ) )
 			.then( ( remotes ) => {
-				const valides = ( remotes || [] )
-					.map( ( r ) => ( r.guio && r.guio.id ? r.guio : null ) )
-					.filter( ( m ) => m && validaMissio( m ).length === 0 );
-				if ( valides.length ) {
-					setMissions( valides );
-				}
+				setMissions(
+					combinaMissions(
+						INCLOSES,
+						( remotes || [] ).map( ( r ) => r.guio )
+					)
+				);
 			} )
 			.catch( () => {} );
 	}, [ api ] );
@@ -235,7 +227,9 @@ export function App( { config } ) {
 		preferit = config.dispositiu;
 	}
 	const [ actual, setActual ] = useState( null );
-	const [ progres, setProgres ] = useState( llegeixProgres );
+	const [ progres, setProgres ] = useState( () =>
+		llegeixProgres( emmagatzematge() )
+	);
 	const [ partida, setPartida ] = useState( 0 );
 
 	const missio = missions.find( ( m ) => m.id === actual ) ?? null;
@@ -245,7 +239,7 @@ export function App( { config } ) {
 	const onAcaba = useCallback( ( id, estrelles ) => {
 		setProgres( ( p ) => {
 			const nou = { ...p, [ id ]: Math.max( p[ id ] ?? 0, estrelles ) };
-			desaProgres( nou );
+			desaProgres( emmagatzematge(), nou );
 			return nou;
 		} );
 	}, [] );
