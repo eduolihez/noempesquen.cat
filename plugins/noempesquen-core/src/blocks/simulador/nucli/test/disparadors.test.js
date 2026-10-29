@@ -228,3 +228,52 @@ describe( 'disparadors del vocabulari mòbil', () => {
 		expect( bis ).toBe( e );
 	} );
 } );
+
+describe( 'codi.envia i notificacions amb font', () => {
+	const mis = {
+		id: 't',
+		frases: { pescat: 'Pescat' },
+		disparadors: [
+			{
+				id: 'codi',
+				quan: {
+					esdeveniment: 'codi.envia',
+					url: 'banc-solid-verifica.com',
+				},
+				efectes: [ { tipus: 'pescat' } ],
+			},
+			{
+				id: 'sms',
+				quan: { esdeveniment: 'inici' },
+				efectes: [
+					{
+						tipus: 'notifica',
+						app: 'missatges',
+						font: 'mobil',
+						titol: 'Banc Sòlid',
+						text: 'Codi',
+					},
+				],
+			},
+		],
+	};
+	const inici = () => ( { ...estatInicial( m ), fase: FASE.JOC } );
+
+	it( 'codi.envia amb url coincident per hostname porta a pescat', () => {
+		const e = processaEsdeveniment( mis, inici(), 'codi.envia', {
+			url: 'https://banc-solid-verifica.com/codi',
+			formulari: 'codi',
+		} );
+		expect( e.pescat ).toBe( true );
+		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+
+	it( 'notifica amb font mobil copia font a la notificació', () => {
+		const e = processaEsdeveniment( mis, inici(), 'inici', {} );
+		expect( e.notificacions.at( -1 ) ).toMatchObject( {
+			app: 'missatges',
+			font: 'mobil',
+			llegida: false,
+		} );
+	} );
+} );

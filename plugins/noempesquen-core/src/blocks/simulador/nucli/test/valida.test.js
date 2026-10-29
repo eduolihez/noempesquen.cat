@@ -234,4 +234,60 @@ describe( 'validaMissio v2', () => {
 			'app inexistent al dispositiu pc: missatges'
 		);
 	} );
+
+	describe( 'font de notificació i esdeveniments nous', () => {
+		const amb = ( efecte ) => {
+			const m = copia();
+			m.disparadors.push( {
+				id: 'x',
+				quan: { esdeveniment: 'inici' },
+				efectes: [
+					{ tipus: 'notifica', titol: 't', text: 'x', ...efecte },
+				],
+			} );
+			return validaMissio( m );
+		};
+
+		it( 'accepta codi.envia i pagament.fes', () => {
+			expect( ESDEVENIMENTS ).toContain( 'codi.envia' );
+			expect( ESDEVENIMENTS ).toContain( 'pagament.fes' );
+			const m = copia();
+			m.disparadors.push( {
+				id: 'y',
+				quan: { esdeveniment: 'pagament.fes' },
+				efectes: [ { tipus: 'pescat' } ],
+			} );
+			expect( validaMissio( m ) ).toEqual( [] );
+		} );
+
+		it( 'segueix rebutjant esdeveniments desconeguts', () => {
+			const m = copia();
+			m.disparadors[ 0 ].quan.esdeveniment = 'inventat.nou';
+			expect( validaMissio( m ) ).toContain(
+				'esdeveniment desconegut: inventat.nou'
+			);
+		} );
+
+		it( 'accepta font mobil amb app de mòbil en missió pc', () => {
+			expect( amb( { app: 'missatges', font: 'mobil' } ) ).toEqual( [] );
+		} );
+
+		it( 'rebutja font diferent de mobil', () => {
+			expect( amb( { app: 'posta', font: 'pc' } ) ).toContain(
+				'notifica: font invàlida: pc'
+			);
+		} );
+
+		it( 'font mobil exigeix app de mòbil', () => {
+			expect( amb( { app: 'posta', font: 'mobil' } ) ).toContain(
+				'app inexistent al dispositiu mobil: posta'
+			);
+		} );
+
+		it( 'sense font manté la regla del dispositiu', () => {
+			expect( amb( { app: 'missatges' } ) ).toContain(
+				'app inexistent al dispositiu pc: missatges'
+			);
+		} );
+	} );
 } );

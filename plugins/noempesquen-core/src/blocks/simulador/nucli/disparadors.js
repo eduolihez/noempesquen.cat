@@ -85,6 +85,7 @@ function aplicaEfecte( missio, estat, efecte ) {
 						titol: efecte.titol,
 						text: efecte.text,
 						llegida: false,
+						...( efecte.font ? { font: efecte.font } : {} ),
 					},
 				],
 			};

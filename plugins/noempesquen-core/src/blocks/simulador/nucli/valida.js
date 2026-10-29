@@ -28,6 +28,8 @@ export const ESDEVENIMENTS = [
 	'enllac.obre',
 	'web.carrega',
 	'formulari.envia',
+	'codi.envia',
+	'pagament.fes',
 	'correu.marca',
 	'contacte.bloqueja',
 	'missatge.esborra',
@@ -127,8 +129,12 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 	if ( e.tipus === 'mostra' && ! idsApps.has( e.id ) ) {
 		errors.push( `mostra: element inexistent: ${ e.id }` );
 	}
-	if ( e.tipus === 'notifica' && ! FONTS_NOTIFICACIO.includes( e.app ) ) {
-		errors.push( `notifica: font desconeguda: ${ e.app }` );
+	if ( e.tipus === 'notifica' ) {
+		if ( e.font !== undefined && e.font !== 'mobil' ) {
+			errors.push( `notifica: font invàlida: ${ e.font }` );
+		} else if ( ! FONTS_NOTIFICACIO.includes( e.app ) ) {
+			errors.push( `notifica: font desconeguda: ${ e.app }` );
+		}
 	}
 	if ( e.tipus === 'guia-diu' ) {
 		if ( e.frase !== undefined ) {
@@ -211,13 +217,22 @@ export function validaMissio( m ) {
 		}
 	} );
 
+	( m.disparadors ?? [] )
+		.flatMap( ( d ) => d?.efectes ?? [] )
+		.filter( ( e ) => e?.tipus === 'notifica' && e.font === 'mobil' )
+		.forEach( ( e ) => {
+			if ( ! APPS_MISSIO.mobil.includes( e.app ) ) {
+				errors.push( `app inexistent al dispositiu mobil: ${ e.app }` );
+			}
+		} );
+
 	const permeses = APPS_MISSIO[ m.dispositiu ];
 	if ( permeses ) {
 		const usades = [
 			...Object.keys( m.apps ?? {} ),
 			...( m.disparadors ?? [] )
 				.flatMap( ( d ) => d?.efectes ?? [] )
-				.filter( ( e ) => e?.tipus === 'notifica' )
+				.filter( ( e ) => e?.tipus === 'notifica' && ! e.font )
 				.map( ( e ) => e.app ),
 		];
 		new Set( usades ).forEach( ( a ) => {
