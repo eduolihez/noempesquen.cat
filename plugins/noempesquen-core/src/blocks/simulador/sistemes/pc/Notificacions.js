@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
-import { APPS } from '../../apps/registre';
+import { APPS, APPS_MOBIL } from '../../apps/registre';
+import { IconaMobil } from './IconaMobil';
+import { presenta } from './notificacio';
 import {
 	IconaCampana,
 	IconaParla,
@@ -9,14 +11,20 @@ import {
 	IconaTanca,
 } from '../../ui/icones';
 
+const mapaNoms = ( apps ) =>
+	Object.fromEntries(
+		Object.entries( apps ).map( ( [ k, v ] ) => [ k, v.nom ] )
+	);
+
 const MS_TOAST = 6000;
 const MAX_TOASTS = 3;
 
 /**
  * Com es presenta una notificació: app d'origen, títol i imatge.
- * A Parla, el títol és la clau del contacte (el guia).
+ * A Parla, el títol és la clau del contacte (el guia). Les del mòbil
+ * vinculat porten l'origen «Mòbil d'Àlex · app» i la icona de mòbil.
  *
- * @param {Object}   n           Notificació { app, titol, text }.
+ * @param {Object}   n           Notificació { app, titol, text, font? }.
  * @param {Object}   joc         Context del joc.
  * @param {Object}   joc.mon     Món (contactes).
  * @param {string}   joc.nomGuia Nom del guia, si no és un contacte.
@@ -24,12 +32,31 @@ const MAX_TOASTS = 3;
  * @return {{app:string, AppIcona:Function, titol:string, imatge:?Object}} Presentació.
  */
 export function descriu( n, { mon, nomGuia, Avatar } ) {
-	if ( n.app === 'parla' ) {
-		const contacte = mon?.contactes?.find( ( c ) => c.id === n.titol );
+	const p = presenta( n, {
+		mon,
+		nomGuia,
+		nomsAppsPc: mapaNoms( APPS ),
+		nomsAppsMobil: mapaNoms( APPS_MOBIL ),
+	} );
+	if ( p.tipus === 'mobil' ) {
+		const IconaApp = p.iconaApp ? APPS_MOBIL[ p.iconaApp ].Icona : null;
+		return {
+			app: p.app,
+			AppIcona: IconaMobil,
+			titol: p.titol,
+			imatge: (
+				<span className="nep-so-notif__mobil">
+					<IconaMobil mida={ 20 } />
+					{ IconaApp && <IconaApp mida={ 24 } /> }
+				</span>
+			),
+		};
+	}
+	if ( p.tipus === 'parla' ) {
 		return {
 			app: __( 'Parla', 'noempesquen' ),
 			AppIcona: IconaParla,
-			titol: contacte?.nom ?? nomGuia,
+			titol: p.titol,
 			imatge: (
 				<span className="nep-so-notif__avatar">
 					<Avatar mida={ 40 } />
@@ -37,18 +64,18 @@ export function descriu( n, { mon, nomGuia, Avatar } ) {
 			),
 		};
 	}
-	if ( n.app === 'posta' ) {
+	if ( p.tipus === 'posta' ) {
 		return {
 			app: __( 'Posta', 'noempesquen' ),
 			AppIcona: IconaPosta,
-			titol: n.titol,
+			titol: p.titol,
 			imatge: <IconaPosta mida={ 36 } />,
 		};
 	}
 	return {
-		app: APPS[ n.app ]?.nom ?? n.app,
+		app: p.app,
 		AppIcona: APPS[ n.app ]?.Icona ?? IconaCampana,
-		titol: n.titol,
+		titol: p.titol,
 		imatge: null,
 	};
 }

@@ -193,6 +193,13 @@
 		flex: 0 0 auto;
 	}
 
+	&__mobil {
+		align-items: center;
+		color: #1f3a4d;
+		display: flex;
+		gap: 4px;
+	}
+
 	&__avatar {
 		align-items: center;
 		background: #dcf1f5;
