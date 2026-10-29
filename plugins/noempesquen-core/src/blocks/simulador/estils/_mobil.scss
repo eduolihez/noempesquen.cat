@@ -1,0 +1,263 @@
+/* Mòbil simulat: marc, barra d'estat, inici, apps, navegació i lupa. */
+
+@use "mobil-bloqueig";
+@use "mobil-centre";
+
+$cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M19.5 19.5 28 28' stroke='%23fff' stroke-width='7'/%3E%3Cpath d='M19.5 19.5 28 28' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='13' cy='13' r='9' fill='%23fff' fill-opacity='.35' stroke='%23fff' stroke-width='5'/%3E%3Ccircle cx='13' cy='13' r='9' stroke='%231a1a1a' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E");
+
+.nep-so-mobil-fons {
+	align-items: center;
+	background: #000;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+
+.nep-so-mobil {
+	--m-fons: radial-gradient(120% 80% at 20% 0%, #3b4f8f 0%, transparent 60%), radial-gradient(100% 70% at 100% 100%, #1f6b5e 0%, transparent 60%), linear-gradient(160deg, #1b2240, #0f1a24);
+	--m-accent: #0b57d0;
+
+	background: var(--m-fons);
+	color: #fff;
+	cursor: default;
+	font-family: Roboto, "Noto Sans", system-ui, sans-serif;
+	font-size: 15px;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	user-select: none;
+	width: 100%;
+
+	&__sessio {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		position: relative;
+	}
+
+	&__pantalla {
+		flex: 1 1 auto;
+		min-height: 0;
+		position: relative;
+	}
+
+	&__inici {
+		height: 100%;
+
+		&[hidden] {
+			display: none;
+		}
+	}
+}
+
+/* Pantalla gran: marc de telèfon centrat sobre un fons desenfocat. */
+@media (min-width: 600px) and (min-height: 560px) {
+
+	.nep-so-mobil-fons {
+		background: #20242c;
+
+		&::before {
+			background: radial-gradient(60% 60% at 25% 30%, #5868a8 0%, transparent 70%), radial-gradient(50% 60% at 80% 75%, #2f8a78 0%, transparent 70%), linear-gradient(135deg, #2a3150, #1a2a33);
+			content: "";
+			filter: blur(40px);
+			inset: -60px;
+			position: absolute;
+		}
+	}
+
+	.nep-so-mobil {
+		aspect-ratio: 9 / 19.5;
+		border: 10px solid #0d0d0f;
+		border-radius: 44px;
+		box-shadow: 0 0 0 2px #3a3d44, 0 24px 60px rgb(0 0 0 / 55%);
+		height: calc(100% - 32px);
+		max-width: calc(100% - 32px);
+		width: auto;
+	}
+}
+
+/* Barra d'estat: 44 px d'alt (objectiu tàctil per obrir el centre). */
+.nep-so .nep-so-m-estat {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	color: #fff;
+	display: flex;
+	flex: 0 0 auto;
+	font-size: 14px;
+	font-variant-numeric: tabular-nums;
+	font-weight: 500;
+	justify-content: space-between;
+	min-height: 44px;
+	padding: 0 20px;
+	touch-action: none;
+	width: 100%;
+
+	&.is-clar {
+		background: #fff;
+		color: #1a1a1a;
+	}
+
+	&__icones {
+		align-items: center;
+		display: inline-flex;
+		gap: 4px;
+	}
+}
+
+button.nep-so-m-estat {
+	cursor: pointer;
+}
+
+/* Inici: giny de data, quadrícula d'apps i dock. */
+.nep-so-m-inici {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 24px 16px 12px;
+
+	&__giny {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding: 8px 8px 24px;
+		text-shadow: 0 1px 3px rgb(0 0 0 / 50%);
+	}
+
+	&__hora {
+		font-size: 44px;
+		font-variant-numeric: tabular-nums;
+		font-weight: 300;
+		line-height: 1.1;
+	}
+
+	&__data {
+		font-size: 15px;
+	}
+
+	&__quadricula {
+		align-content: start;
+		display: grid;
+		flex: 1 1 auto;
+		gap: 16px 8px;
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	&__dock {
+		background: rgb(255 255 255 / 18%);
+		border-radius: 28px;
+		display: flex;
+		gap: 8px;
+		justify-content: space-around;
+		padding: 8px;
+	}
+}
+
+.nep-so .nep-so-m-app {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	border-radius: 16px;
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	min-height: 44px;
+	min-width: 64px;
+	padding: 4px;
+	width: 100%;
+
+	&__icona {
+		display: block;
+		height: 52px;
+		width: 52px;
+	}
+
+	&__nom {
+		font-size: 12px;
+		line-height: 1.2;
+		text-shadow: 0 1px 3px rgb(0 0 0 / 70%);
+	}
+
+	&:hover {
+		background: rgb(255 255 255 / 12%);
+	}
+}
+
+.nep-so-m-inici__dock .nep-so-m-app__nom {
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Apps a pantalla completa: només la de dalt de la pila es veu. */
+.nep-so-m-app-pantalla {
+	background: #fff;
+	color: #1a1a1a;
+	inset: 0;
+	overflow: auto;
+	position: absolute;
+	user-select: text;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+/* Barra de navegació: botons de 48 × 48. */
+.nep-so-m-nav {
+	align-items: center;
+	background: rgb(0 0 0 / 35%);
+	display: flex;
+	flex: 0 0 auto;
+	gap: 48px;
+	justify-content: center;
+	min-height: 48px;
+
+	&__boto {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 50%;
+		color: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		height: 48px;
+		justify-content: center;
+		width: 48px;
+
+		&:hover {
+			background: rgb(255 255 255 / 14%);
+		}
+
+		&[aria-disabled="true"] {
+			cursor: default;
+			opacity: 0.55;
+		}
+	}
+}
+
+/* Focus del sistema: anell fosc i filet blanc, visible sobre qualsevol fons. */
+.nep-so .nep-so-mobil :focus-visible {
+	box-shadow: 0 0 0 2px #fff;
+	outline: 2px solid #1a1a1a;
+	outline-offset: 2px;
+}
+
+.nep-so .nep-so-mobil .nep-so-m-centre:focus-visible {
+	box-shadow: none;
+	outline: none;
+}
+
+/* Lupa: cursor propi amb el punt calent al centre de la lent. */
+.nep-so .nep-so-mobil.is-lupa,
+.nep-so .nep-so-mobil.is-lupa * {
+	cursor: $cursor-lupa 13 13, zoom-in;
+}

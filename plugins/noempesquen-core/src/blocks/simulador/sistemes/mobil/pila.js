@@ -25,7 +25,7 @@ export function appActiva( estat ) {
 
 /**
  * @param {{apps: Object[], seq: number}} estat Pila actual.
- * @param {Object}                         accio Acció.
+ * @param {Object}                        accio Acció.
  * @return {{apps: Object[], seq: number}} Nova pila.
  */
 export function pilaReductor( estat, accio ) {

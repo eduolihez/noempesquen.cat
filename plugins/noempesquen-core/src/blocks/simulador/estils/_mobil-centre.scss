@@ -1,0 +1,214 @@
+/* Mòbil: notificacions (targeta comuna), banners i centre de control. */
+
+/* Targeta de notificació (bloqueig, banners i centre de control). */
+.nep-so .nep-so-m-notif {
+	background: rgb(255 255 255 / 94%);
+	border: 0;
+	border-radius: 20px;
+	box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+	color: #1a1a1a;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	min-height: 44px;
+	padding: 10px 14px 12px;
+	text-align: start;
+	width: 100%;
+
+	&:hover {
+		background: #fff;
+	}
+
+	&__cap {
+		align-items: center;
+		color: #4a4a4a;
+		display: flex;
+		font-size: 12px;
+		gap: 6px;
+	}
+
+	&__ara {
+		margin-inline-start: auto;
+	}
+
+	&__fila {
+		align-items: center;
+		display: flex;
+		gap: 12px;
+	}
+
+	&__imatge {
+		border-radius: 50%;
+		display: inline-flex;
+		flex: 0 0 auto;
+		overflow: hidden;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__titol {
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	&__missatge {
+		display: -webkit-box;
+		font-size: 14px;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		line-height: 1.35;
+		overflow: hidden;
+	}
+}
+
+/* Banners: a dalt, sota la barra d'estat. */
+.nep-so-m-banners {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	inset: 48px 8px auto;
+	pointer-events: none;
+	position: absolute;
+	z-index: 10;
+}
+
+.nep-so-m-banner {
+	animation: nep-so-m-baixa 0.25s ease-out;
+	pointer-events: auto;
+	touch-action: none;
+}
+
+/* Centre de control: s'obre des de dalt. */
+.nep-so-m-centre__capa {
+	background: rgb(0 0 0 / 40%);
+	inset: 0;
+	position: absolute;
+	z-index: 14;
+}
+
+.nep-so-m-centre {
+	animation: nep-so-m-baixa 0.25s ease-out;
+	background: rgb(28 30 34 / 97%);
+	border-radius: 0 0 28px 28px;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	inset: 0 0 auto;
+	max-height: 88%;
+	overflow: auto;
+	padding: 16px 16px 4px;
+	position: absolute;
+	z-index: 15;
+
+	&__cap {
+		align-items: baseline;
+		display: flex;
+		gap: 12px;
+		padding: 4px 4px 0;
+	}
+
+	&__hora {
+		font-size: 28px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__data {
+		color: #d0d3d9;
+	}
+
+	&__controls {
+		display: grid;
+		gap: 12px;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.nep-so &__control {
+		align-items: center;
+		background: #3a3d44;
+		border: 0;
+		border-radius: 20px;
+		color: #fff;
+		cursor: pointer;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		min-height: 64px;
+		padding: 12px 16px;
+		text-align: start;
+
+		&:hover {
+			background: #474b53;
+		}
+
+		&[aria-pressed="true"] {
+			background: #a8c7fa;
+			color: #062e6f;
+		}
+	}
+
+	&__drecera {
+		flex-basis: 100%;
+		font-family: inherit;
+		font-size: 12px;
+		opacity: 0.85;
+	}
+
+	&__titol {
+		font-size: 14px;
+		font-weight: 600;
+		padding: 0 4px;
+	}
+
+	&__llista {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	&__buit {
+		color: #d0d3d9;
+		padding: 0 4px;
+	}
+
+	.nep-so &__tanca {
+		align-items: center;
+		align-self: center;
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+		display: flex;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 120px;
+	}
+
+	&__ansa {
+		background: #c4c7cf;
+		border-radius: 3px;
+		display: block;
+		height: 5px;
+		width: 48px;
+	}
+}
+
+@keyframes nep-so-m-baixa {
+
+	from {
+		opacity: 0;
+		transform: translateY(-16px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so-m-banner,
+	.nep-so-m-centre {
+		animation: none;
+	}
+}

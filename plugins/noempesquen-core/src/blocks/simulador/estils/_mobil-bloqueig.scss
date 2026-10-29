@@ -1,0 +1,82 @@
+/* Pantalla de bloqueig del mòbil. */
+
+.nep-so-m-bloqueig {
+	background: var(--m-fons);
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	inset: 0;
+	position: absolute;
+	touch-action: none;
+	z-index: 20;
+
+	&.is-sortint {
+		animation: nep-so-m-desbloqueja 0.35s ease-in forwards;
+		pointer-events: none;
+	}
+
+	&__rellotge {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 40px 16px 32px;
+		text-shadow: 0 1px 4px rgb(0 0 0 / 50%);
+	}
+
+	&__hora {
+		font-size: 76px;
+		font-variant-numeric: tabular-nums;
+		font-weight: 300;
+		line-height: 1;
+	}
+
+	&__data {
+		font-size: 17px;
+	}
+
+	&__avis {
+		margin: 0 12px;
+	}
+
+	.nep-so &__entra {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		color: #fff;
+		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		font-size: 14px;
+		gap: 12px;
+		margin-top: auto;
+		min-height: 44px;
+		padding: 16px 24px 28px;
+		text-shadow: 0 1px 3px rgb(0 0 0 / 60%);
+		width: 100%;
+	}
+
+	&__ansa {
+		background: #fff;
+		border-radius: 3px;
+		display: block;
+		height: 5px;
+		width: 120px;
+	}
+}
+
+@keyframes nep-so-m-desbloqueja {
+
+	to {
+		opacity: 0;
+		transform: translateY(-100%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so-m-bloqueig.is-sortint {
+		animation: none;
+	}
+}

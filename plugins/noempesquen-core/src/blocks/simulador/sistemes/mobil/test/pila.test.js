@@ -84,10 +84,7 @@ describe( 'pila del mòbil', () => {
 	} );
 
 	it( 'reinicia torna a l’estat inicial', () => {
-		const p = fes(
-			{ tipus: 'OBRE', app: 'parla' },
-			{ tipus: 'REINICIA' }
-		);
+		const p = fes( { tipus: 'OBRE', app: 'parla' }, { tipus: 'REINICIA' } );
 		expect( p ).toBe( ESTAT_PILA );
 	} );
 
