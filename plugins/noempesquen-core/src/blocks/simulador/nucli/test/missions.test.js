@@ -131,7 +131,9 @@ describe( 'missió «El paquet retingut» (v2)', () => {
 			app: 'missatges',
 			id: 's2',
 		} );
-		const bloqueja = evt( 'contacte.bloqueja', { id: 'numero_desconegut' } );
+		const bloqueja = evt( 'contacte.bloqueja', {
+			id: 'numero_desconegut',
+		} );
 		const primer = aplica( ambTrampa(), esborra );
 		expect( primer.fase ).toBe( FASE.JOC );
 		expect( primer.xat.at( -1 ).text ).toBe( p.frases.esborra_sol );
