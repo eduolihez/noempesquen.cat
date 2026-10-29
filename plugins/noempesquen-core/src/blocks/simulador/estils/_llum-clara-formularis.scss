@@ -1,0 +1,368 @@
+/* Llum Clara: àrea client, camps amb suggeriment i còpia falsa. */
+
+@use "llum-clara-tokens" as *;
+
+.nep-so .nep-lc {
+
+	/* ---------- Àrea client ---------- */
+	.nep-lc-login {
+		border: 1px solid $lc-vora;
+		border-radius: 10px;
+		box-shadow: 0 8px 24px rgb(29 42 68 / 8%);
+		max-width: 440px;
+		padding: 32px;
+
+		h1 {
+			font-size: 30px;
+		}
+
+		.nep-lc-boto {
+			margin-top: 6px;
+			width: 100%;
+		}
+	}
+
+	.nep-lc-login__intro {
+		color: $lc-text-2;
+		margin: 8px 0 24px;
+	}
+
+	.nep-lc-compte__cap {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 24px;
+
+		h1 {
+			font-size: 34px;
+			outline: none;
+		}
+	}
+
+	.nep-lc-estat {
+		align-items: center;
+		background: #e9f6ee;
+		border: 1px solid #b7dfc3;
+		border-radius: 10px;
+		color: #23493a;
+		display: flex;
+		gap: 18px;
+		padding: 20px 24px;
+
+		svg {
+			color: $lc-verd;
+			flex: 0 0 auto;
+		}
+	}
+
+	.nep-lc-estat__titol {
+		color: #14532d;
+		font-family: $lc-titol;
+		font-size: 23px;
+		font-weight: 700;
+	}
+
+	.nep-lc-factura {
+		margin-top: 32px;
+
+		h2 {
+			font-size: 20px;
+			margin-bottom: 8px;
+		}
+	}
+
+	.nep-lc-factura__fila {
+		align-items: center;
+		border-bottom: 1px solid $lc-vora;
+		display: grid;
+		gap: 16px;
+		grid-template-columns: 24px minmax(0, 1fr) auto auto;
+		padding: 16px 0;
+	}
+
+	.nep-lc-factura__import {
+		font-weight: 700;
+	}
+
+	.nep-lc-factura__estat {
+		color: $lc-verd;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.nep-lc-factura__dades {
+		display: grid;
+		gap: 16px;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		margin-top: 18px;
+
+		dt {
+			color: $lc-text-2;
+			font-size: 13px;
+		}
+
+		dd {
+			font-weight: 600;
+			margin: 0;
+		}
+	}
+
+	/* ---------- Camps amb suggeriment ---------- */
+	.nep-lc-camp {
+		margin-bottom: 18px;
+		position: relative;
+	}
+
+	.nep-lc-camp__etiqueta {
+		display: block;
+		font-size: 14px;
+		font-weight: 600;
+		margin-bottom: 6px;
+	}
+
+	.nep-lc-camp__input {
+		background: #fff;
+		border: 1px solid #a9b1bf;
+		border-radius: 6px;
+		color: $lc-blau;
+		font-size: 16px;
+		height: 46px;
+		padding: 0 14px;
+		width: 100%;
+
+		&:focus {
+			border-color: $lc-blau;
+			box-shadow: 0 0 0 3px rgb(245 163 0 / 45%);
+			outline: none;
+		}
+
+		&.is-amagat {
+			-webkit-text-security: disc;
+		}
+
+		&[aria-invalid="true"] {
+			border-color: $lc-vermell;
+		}
+	}
+
+	.nep-lc-camp__error {
+		color: $lc-vermell;
+		font-size: 13px;
+		margin-top: 6px;
+	}
+
+	/* El desplegable és del navegador, no de la web: lletra del sistema. */
+	.nep-lc-suggeriment {
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 2px 6px rgb(0 0 0 / 18%), 0 8px 20px rgb(0 0 0 / 14%);
+		font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+		left: 0;
+		margin-top: 2px;
+		min-width: 280px;
+		padding: 6px 0 0;
+		position: absolute;
+		right: 0;
+		top: 100%;
+		z-index: 5;
+	}
+
+	.nep-lc-suggeriment__opcio {
+		display: flex;
+		flex-direction: column;
+		padding: 8px 16px;
+		text-align: left;
+		width: 100%;
+
+		&:hover,
+		&:focus-visible {
+			background: #f1f3f4;
+		}
+
+		&:focus-visible {
+			outline: 2px solid #005fb8;
+			outline-offset: -2px;
+		}
+	}
+
+	.nep-lc-suggeriment__titol {
+		color: #1f1f1f;
+		font-size: 14px;
+	}
+
+	.nep-lc-suggeriment__detall,
+	.nep-lc-suggeriment__peu {
+		color: #5f6368;
+		font-size: 12px;
+	}
+
+	.nep-lc-suggeriment__peu {
+		border-top: 1px solid #e8eaed;
+		display: block;
+		margin-top: 6px;
+		padding: 8px 16px 10px;
+	}
+
+	/* ---------- Còpia falsa ---------- */
+	&.nep-lc--falsa .nep-lc-cos {
+		background: $lc-fons;
+	}
+
+	.nep-lc-tall {
+		background: $lc-vermell;
+		color: #fff;
+
+		strong {
+			display: block;
+			font-size: 16px;
+		}
+	}
+
+	.nep-lc-tall__dins {
+		align-items: center;
+		display: flex;
+		gap: 16px;
+		padding-bottom: 14px;
+		padding-top: 14px;
+
+		svg {
+			flex: 0 0 auto;
+		}
+	}
+
+	.nep-lc-tall__compte {
+		background: rgb(0 0 0 / 22%);
+		border-radius: 4px;
+		font-variant-numeric: tabular-nums;
+		font-weight: 700;
+		padding: 1px 6px;
+		white-space: nowrap;
+	}
+
+	.nep-lc-pagament {
+		align-items: start;
+		display: grid;
+		gap: 32px;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+		padding-bottom: 64px;
+		padding-top: 40px;
+	}
+
+	.nep-lc-resum,
+	.nep-lc-targeta {
+		background: #fff;
+		border: 1px solid $lc-vora;
+		border-radius: 10px;
+		padding: 24px 28px;
+
+		h2 {
+			font-size: 20px;
+			margin-bottom: 14px;
+		}
+	}
+
+	.nep-lc-targeta {
+		box-shadow: 0 8px 24px rgb(29 42 68 / 8%);
+	}
+
+	.nep-lc-resum dl > div {
+		border-bottom: 1px dashed $lc-vora;
+		display: flex;
+		gap: 12px;
+		justify-content: space-between;
+		padding: 10px 0;
+
+		dt {
+			color: $lc-text-2;
+		}
+
+		dd {
+			font-weight: 600;
+			margin: 0;
+			text-align: right;
+		}
+	}
+
+	.nep-lc-resum__urgent {
+		color: $lc-vermell;
+	}
+
+	.nep-lc-resum__total {
+		align-items: baseline;
+		display: flex;
+		justify-content: space-between;
+		margin-top: 18px;
+
+		strong {
+			font-family: $lc-titol;
+			font-size: 30px;
+		}
+	}
+
+	.nep-lc-form__camps {
+		column-gap: 16px;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+
+		.nep-lc-camp {
+			grid-column: 1 / -1;
+		}
+
+		.nep-lc-camp.is-curt {
+			grid-column: auto;
+		}
+	}
+
+	.nep-lc-form__segell {
+		align-items: center;
+		color: $lc-verd;
+		display: flex;
+		font-size: 13px;
+		gap: 6px;
+		justify-content: center;
+		margin-top: 14px;
+	}
+
+	.nep-lc-processa {
+		padding: 40px 12px;
+		text-align: center;
+
+		p {
+			color: $lc-text-2;
+		}
+	}
+
+	.nep-lc-processa__titol {
+		color: $lc-blau;
+		font-family: $lc-titol;
+		font-size: 20px;
+		font-weight: 600;
+		margin-top: 16px;
+	}
+
+	.nep-lc-processa__roda {
+		animation: nep-lc-gira 0.9s linear infinite;
+
+		circle {
+			fill: none;
+			stroke: $lc-groc;
+			stroke-dasharray: 90 30;
+			stroke-linecap: round;
+			stroke-width: 4;
+		}
+	}
+}
+
+@keyframes nep-lc-gira {
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-lc .nep-lc-processa__roda {
+		animation: none;
+	}
+}

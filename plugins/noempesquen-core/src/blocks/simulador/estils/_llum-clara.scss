@@ -1,0 +1,386 @@
+/* Llum Clara: web oficial i còpia falsa (dins del navegador simulat).
+   Tot sota .nep-so .nep-lc per guanyar al reset del navegador. */
+
+@use "llum-clara-tokens" as *;
+
+.nep-so .nep-lc {
+	background: #fff;
+	color: $lc-blau;
+	container-type: inline-size;
+	display: flex;
+	flex: 1 0 auto;
+	flex-direction: column;
+	font-family: "Segoe UI", system-ui, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+	min-height: 100%;
+
+	button {
+		cursor: pointer;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: $lc-titol;
+		font-weight: 700;
+		line-height: 1.15;
+	}
+
+	a {
+		color: inherit;
+	}
+
+	a:focus-visible,
+	button:focus-visible,
+	summary:focus-visible {
+		outline: 3px solid $lc-groc;
+		outline-offset: 2px;
+	}
+
+	.nep-lc-amplada {
+		margin: 0 auto;
+		max-width: 1080px;
+		padding-left: 32px;
+		padding-right: 32px;
+		width: 100%;
+	}
+
+	.nep-lc-cos {
+		flex: 1;
+	}
+
+	/* ---------- Marca ---------- */
+	.nep-lc-marca {
+		align-items: center;
+		display: inline-flex;
+		gap: 8px;
+	}
+
+	.nep-lc-marca__nom {
+		color: $lc-blau;
+		font-family: $lc-titol;
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	.nep-lc-marca.is-falsa .nep-lc-marca__nom {
+		color: #26395f;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	/* ---------- Capçalera ---------- */
+	.nep-lc-cap {
+		background: #fff;
+		border-bottom: 1px solid $lc-vora;
+	}
+
+	.nep-lc-cap__dins {
+		align-items: center;
+		display: flex;
+		gap: 32px;
+		justify-content: space-between;
+		min-height: 76px;
+	}
+
+	.nep-lc-cap__inici {
+		text-decoration: none;
+	}
+
+	.nep-lc-cap__menu {
+		display: flex;
+		gap: 28px;
+
+		a {
+			border-bottom: 3px solid transparent;
+			display: block;
+			font-weight: 600;
+			padding: 25px 0 22px;
+			text-decoration: none;
+
+			&:hover,
+			&.is-actiu {
+				border-bottom-color: $lc-groc;
+			}
+		}
+	}
+
+	/* ---------- Botons ---------- */
+	.nep-lc-boto {
+		align-items: center;
+		background: $lc-groc;
+		border: 2px solid $lc-groc;
+		border-radius: 6px;
+		color: $lc-blau;
+		display: inline-flex;
+		font-size: 15px;
+		font-weight: 700;
+		justify-content: center;
+		min-height: 46px;
+		padding: 0 22px;
+		text-decoration: none;
+
+		&:hover {
+			background: #ffb71f;
+		}
+
+		&--contorn {
+			background: transparent;
+			border-color: #fff;
+			color: #fff;
+
+			&:hover {
+				background: rgb(255 255 255 / 10%);
+			}
+		}
+
+		&--fluix {
+			background: #fff;
+			border: 1px solid $lc-vora;
+			min-height: 38px;
+
+			&:hover {
+				background: $lc-fons;
+			}
+		}
+
+		&--pagar {
+			font-size: 16px;
+			margin-top: 8px;
+			min-height: 50px;
+			width: 100%;
+		}
+	}
+
+	/* ---------- Inici ---------- */
+	.nep-lc-franja {
+		align-items: center;
+		background: #fff4dc;
+		color: #4d3500;
+		display: flex;
+		font-size: 14px;
+		gap: 10px;
+		justify-content: center;
+		padding: 10px 32px;
+
+		svg {
+			flex: 0 0 auto;
+		}
+	}
+
+	.nep-lc-hero {
+		background: $lc-blau;
+		color: #fff;
+		padding: 56px 0 64px;
+
+		h1 {
+			font-size: 46px;
+			letter-spacing: -0.015em;
+			max-width: 13ch;
+		}
+
+		p {
+			color: #cbd4e4;
+			font-size: 17px;
+			margin-top: 16px;
+			max-width: 44ch;
+		}
+
+		&--pagament {
+			padding: 36px 0 40px;
+
+			h1 {
+				font-size: 34px;
+				max-width: none;
+			}
+		}
+	}
+
+	.nep-lc-hero__dins {
+		align-items: center;
+		display: grid;
+		gap: 48px;
+		grid-template-columns: minmax(0, 1fr) 280px;
+	}
+
+	.nep-lc-hero__dial {
+		height: auto;
+		width: 100%;
+	}
+
+	.nep-lc-preu {
+		align-items: baseline;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 14px;
+		margin-top: 28px;
+	}
+
+	.nep-lc-preu__xifra {
+		color: $lc-groc;
+		font-family: $lc-titol;
+		font-size: 58px;
+		font-weight: 700;
+		line-height: 1;
+	}
+
+	.nep-lc-preu__unitat {
+		font-size: 14px;
+	}
+
+	.nep-lc-hero__botons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 32px;
+	}
+
+	.nep-lc-serveis {
+		display: grid;
+		gap: 40px;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		padding-bottom: 72px;
+		padding-top: 48px;
+	}
+
+	.nep-lc-servei {
+		border-top: 3px solid $lc-groc;
+		padding-top: 20px;
+
+		h3 {
+			font-size: 19px;
+			margin: 12px 0 6px;
+		}
+
+		p {
+			color: $lc-text-2;
+		}
+	}
+
+	/* ---------- Pàgines interiors ---------- */
+	.nep-lc-pagina {
+		padding-bottom: 72px;
+		padding-top: 48px;
+
+		> h1 {
+			font-size: 34px;
+			margin-bottom: 24px;
+		}
+
+		> p {
+			color: $lc-text-2;
+			max-width: 65ch;
+		}
+
+		&--client {
+			max-width: 820px;
+		}
+	}
+
+	.nep-lc-taula {
+		border-collapse: collapse;
+		width: 100%;
+
+		th,
+		td {
+			border-bottom: 1px solid $lc-vora;
+			padding: 14px 16px;
+			text-align: left;
+		}
+
+		thead th {
+			background: $lc-fons;
+			color: $lc-text-2;
+			font-size: 13px;
+			font-weight: 600;
+		}
+	}
+
+	.nep-lc-pregunta {
+		border-bottom: 1px solid $lc-vora;
+		padding: 16px 0;
+
+		summary {
+			cursor: pointer;
+			font-family: $lc-titol;
+			font-size: 18px;
+			font-weight: 600;
+		}
+
+		p {
+			color: $lc-text-2;
+			margin-top: 10px;
+			max-width: 65ch;
+		}
+	}
+
+	.nep-lc-nota {
+		background: $lc-fons;
+		border-left: 3px solid $lc-groc;
+		color: $lc-text-2;
+		font-size: 14px;
+		margin-top: 28px;
+		padding: 12px 16px;
+	}
+
+	/* ---------- Peu ---------- */
+	.nep-lc-peu {
+		background: #eef0f4;
+		border-top: 1px solid $lc-vora;
+		padding: 28px 0;
+	}
+
+	.nep-lc-peu__dins {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px 28px;
+	}
+
+	.nep-lc-peu__legal {
+		display: flex;
+		flex-wrap: wrap;
+		font-size: 13px;
+		gap: 8px 20px;
+
+		a {
+			color: $lc-text-2;
+		}
+	}
+
+	.nep-lc-peu__copy {
+		color: $lc-text-2;
+		font-size: 13px;
+		margin-left: auto;
+	}
+
+	/* ---------- Estret ---------- */
+	@container (max-width: 820px) {
+
+		.nep-lc-amplada {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+
+		.nep-lc-cap__menu {
+			gap: 16px;
+		}
+
+		.nep-lc-hero h1 {
+			font-size: 36px;
+		}
+
+		.nep-lc-hero__dins,
+		.nep-lc-serveis,
+		.nep-lc-pagament,
+		.nep-lc-factura__dades {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.nep-lc-hero__dial {
+			display: none;
+		}
+	}
+}

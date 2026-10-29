@@ -1,0 +1,237 @@
+/* Posta: lectura, menú «Més», diàleg de denúncia i avís efímer. */
+
+@use "posta-tokens" as *;
+
+.nep-so .nep-posta {
+
+	/* ---------- Lectura ---------- */
+	.nep-posta-lectura__eines {
+		align-items: center;
+		display: flex;
+		gap: 2px;
+		min-height: 48px;
+		padding: 0 12px;
+	}
+
+	.nep-posta-lectura__separador {
+		background: $posta-vora;
+		height: 20px;
+		margin: 0 8px;
+		width: 1px;
+	}
+
+	.nep-posta-lectura__full {
+		padding: 12px 32px 48px 24px;
+	}
+
+	.nep-posta-lectura__capcalera {
+		align-items: baseline;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		padding-left: 52px;
+	}
+
+	.nep-posta-lectura__assumpte {
+		font-size: 22px;
+		font-weight: 400;
+		line-height: 1.3;
+		outline: none;
+	}
+
+	.nep-posta-lectura__xip {
+		background: #eceef1;
+		border-radius: 4px;
+		color: $posta-text-2;
+		font-size: 12px;
+		padding: 1px 6px;
+	}
+
+	.nep-posta-lectura__remitent {
+		align-items: center;
+		display: grid;
+		gap: 12px;
+		grid-template-columns: 40px minmax(0, 1fr) auto auto;
+		margin: 20px 0 22px;
+	}
+
+	.nep-posta-lectura__avatar {
+		align-items: center;
+		border-radius: 50%;
+		color: #fff;
+		display: flex;
+		font-size: 18px;
+		font-weight: 600;
+		height: 40px;
+		justify-content: center;
+		width: 40px;
+	}
+
+	.nep-posta-lectura__de {
+		font-size: 14px;
+		overflow-wrap: anywhere;
+
+		strong {
+			font-weight: 700;
+		}
+	}
+
+	.nep-posta-lectura__adreca,
+	.nep-posta-lectura__per,
+	.nep-posta-lectura__hora {
+		color: $posta-text-2;
+		font-size: 12px;
+	}
+
+	.nep-posta-lectura__estrella.is-actiu {
+		color: #c88a00;
+	}
+
+	.nep-posta-lectura__cos {
+		font-size: 14px;
+		line-height: 1.6;
+		max-width: 72ch;
+		padding-left: 52px;
+
+		p {
+			margin: 0 0 12px;
+		}
+
+		.nep-enllac {
+			color: #1a5fb4;
+		}
+	}
+
+	/* ---------- Menú «Més» ---------- */
+	.nep-posta-mes {
+		position: relative;
+	}
+
+	.nep-posta-mes__menu {
+		background: #fff;
+		border-radius: 8px;
+		box-shadow: 0 2px 6px rgb(60 64 67 / 20%), 0 8px 24px rgb(60 64 67 / 18%);
+		left: 0;
+		min-width: 250px;
+		padding: 6px 0;
+		position: absolute;
+		top: calc(100% + 4px);
+		z-index: 5;
+	}
+
+	.nep-posta-mes__item {
+		align-items: center;
+		color: $posta-text;
+		display: flex;
+		gap: 14px;
+		height: 38px;
+		padding: 0 18px;
+		text-align: left;
+		width: 100%;
+
+		svg {
+			color: $posta-text-2;
+		}
+
+		&:hover,
+		&:focus-visible {
+			background: #f1f3f4;
+		}
+	}
+
+	/* ---------- Diàleg ---------- */
+	.nep-posta-dialeg {
+		align-items: center;
+		background: rgb(32 33 36 / 50%);
+		display: flex;
+		inset: 0;
+		justify-content: center;
+		padding: 16px;
+		position: absolute;
+		z-index: 10;
+	}
+
+	.nep-posta-dialeg__caixa {
+		background: #fff;
+		border-radius: 14px;
+		box-shadow: 0 12px 40px rgb(0 0 0 / 30%);
+		max-width: 440px;
+		padding: 24px;
+		width: 100%;
+	}
+
+	.nep-posta-dialeg__titol {
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.nep-posta-dialeg__text {
+		color: $posta-text-2;
+		line-height: 1.5;
+		margin: 12px 0 24px;
+		overflow-wrap: anywhere;
+	}
+
+	.nep-posta-dialeg__botons {
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
+	}
+
+	.nep-posta-boto {
+		border: 1px solid #c4c7cc;
+		border-radius: 18px;
+		color: $posta-accent-fosc;
+		font-weight: 600;
+		height: 36px;
+		padding: 0 20px;
+
+		&:hover {
+			background: #fdf1ed;
+		}
+
+		&--principal {
+			background: $posta-accent;
+			border-color: $posta-accent;
+			color: #fff;
+
+			&:hover {
+				background: #b13a22;
+			}
+		}
+	}
+
+	/* ---------- Avís ---------- */
+	.nep-posta__avis-zona {
+		bottom: 24px;
+		left: 24px;
+		pointer-events: none;
+		position: absolute;
+		z-index: 6;
+	}
+
+	.nep-posta__avis {
+		animation: nep-posta-avis 0.2s ease-out both;
+		background: #2b2d31;
+		border-radius: 6px;
+		box-shadow: 0 4px 12px rgb(0 0 0 / 25%);
+		color: #fff;
+		max-width: 420px;
+		padding: 14px 20px;
+	}
+}
+
+@keyframes nep-posta-avis {
+
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-posta .nep-posta__avis {
+		animation: none;
+	}
+}

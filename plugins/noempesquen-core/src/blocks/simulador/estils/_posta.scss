@@ -1,0 +1,376 @@
+/* Posta: correu web (dins del navegador simulat). Tot sota .nep-so .nep-posta
+   per guanyar al reset de botons del navegador (.nep-so .nep-nav button). */
+
+@use "posta-tokens" as *;
+
+.nep-so .nep-posta {
+	background: $posta-fons;
+	color: $posta-text;
+	container-type: inline-size;
+	display: grid;
+	flex: 1 0 auto;
+	grid-template-columns: auto minmax(0, 1fr);
+	grid-template-rows: 64px minmax(0, 1fr);
+	height: 100%;
+	min-height: 0;
+	position: relative;
+
+	button {
+		cursor: pointer;
+	}
+
+	/* ---------- Capçalera ---------- */
+	.nep-posta__capcalera {
+		align-items: center;
+		display: flex;
+		gap: 16px;
+		grid-column: 1 / -1;
+		padding: 0 20px 0 18px;
+	}
+
+	.nep-posta__marca {
+		align-items: center;
+		display: flex;
+		flex: 0 0 222px;
+		gap: 10px;
+	}
+
+	.nep-posta__nom {
+		color: #3a2420;
+		font-size: 23px;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+	}
+
+	.nep-posta__cerca {
+		align-items: center;
+		background: #e6e8eb;
+		border-radius: 24px;
+		color: $posta-text-2;
+		display: flex;
+		flex: 0 1 720px;
+		gap: 12px;
+		height: 46px;
+		padding: 0 18px;
+		transition: background 0.15s, box-shadow 0.15s;
+
+		&:focus-within {
+			background: #fff;
+			box-shadow: 0 1px 3px rgb(60 64 67 / 30%);
+		}
+
+		input {
+			background: none;
+			border: 0;
+			color: $posta-text;
+			flex: 1;
+			font-size: 15px;
+			height: 100%;
+			min-width: 0;
+			outline: none;
+		}
+	}
+
+	.nep-posta__jo {
+		align-items: center;
+		background: #2f6f6a;
+		border-radius: 50%;
+		color: #fff;
+		display: flex;
+		flex: 0 0 34px;
+		font-size: 15px;
+		font-weight: 600;
+		height: 34px;
+		justify-content: center;
+		margin-left: auto;
+	}
+
+	/* ---------- Carpetes ---------- */
+	.nep-posta__nav {
+		overflow-y: auto;
+		width: 256px;
+		padding: 4px 16px 16px 0;
+	}
+
+	.nep-posta__redacta {
+		align-items: center;
+		background: $posta-tint;
+		border-radius: 16px;
+		color: #4f170b;
+		display: inline-flex;
+		font-size: 14px;
+		font-weight: 600;
+		gap: 12px;
+		height: 54px;
+		margin: 0 0 14px 8px;
+		padding: 0 24px 0 18px;
+		transition: box-shadow 0.15s;
+
+		&:hover {
+			box-shadow: 0 1px 3px rgb(60 64 67 / 30%), 0 4px 8px 3px rgb(60 64 67 / 15%);
+		}
+	}
+
+	.nep-posta__carpeta {
+		align-items: center;
+		border-radius: 0 16px 16px 0;
+		color: $posta-text;
+		display: grid;
+		gap: 16px;
+		grid-template-columns: 20px minmax(0, 1fr) auto;
+		height: 32px;
+		padding: 0 14px 0 26px;
+		text-align: left;
+		width: 100%;
+
+		&:hover {
+			background: $posta-hover;
+		}
+
+		&.amb-compte {
+			font-weight: 700;
+		}
+
+		&.is-actiu {
+			background: $posta-actiu;
+			color: $posta-accent-fosc;
+			font-weight: 700;
+		}
+	}
+
+	.nep-posta__carpeta-nom {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nep-posta__compte {
+		font-size: 12px;
+	}
+
+	/* ---------- Panell principal ---------- */
+	.nep-posta__principal {
+		background: #fff;
+		border-radius: 16px;
+		display: flex;
+		flex-direction: column;
+		margin: 0 16px 16px 0;
+		min-height: 0;
+		overflow: auto;
+	}
+
+	.nep-posta-safata__barra {
+		align-items: center;
+		border-bottom: 1px solid $posta-vora;
+		display: flex;
+		gap: 12px;
+		min-height: 48px;
+		padding: 0 20px;
+	}
+
+	.nep-posta-safata__titol {
+		font-size: 15px;
+		font-weight: 600;
+		outline: none;
+	}
+
+	.nep-posta-safata__recompte {
+		color: $posta-text-2;
+		font-size: 12px;
+		margin-left: auto;
+	}
+
+	.nep-posta-safata__buit {
+		color: $posta-text-2;
+		padding: 48px 24px;
+		text-align: center;
+	}
+
+	/* ---------- Files ---------- */
+	.nep-posta-fila {
+		align-items: center;
+		background: $posta-llegit;
+		border-bottom: 1px solid #eceef1;
+		display: flex;
+		height: 40px;
+		position: relative;
+
+		&.is-nou-llegir {
+			background: #fff;
+
+			.nep-posta-fila__de,
+			.nep-posta-fila__assumpte,
+			.nep-posta-fila__data {
+				color: $posta-text;
+				font-weight: 700;
+			}
+		}
+
+		&:hover,
+		&:focus-within {
+			box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px rgb(60 64 67 / 30%), 0 1px 3px 1px rgb(60 64 67 / 15%);
+			z-index: 1;
+
+			.nep-posta-fila__data {
+				visibility: hidden;
+			}
+
+			.nep-posta-fila__accions {
+				opacity: 1;
+				pointer-events: auto;
+			}
+		}
+
+		&.is-arribat {
+			animation: nep-posta-arriba 0.5s ease-out both;
+		}
+	}
+
+	.nep-posta-fila__estrella {
+		align-items: center;
+		color: #8a9097;
+		display: flex;
+		flex: 0 0 44px;
+		height: 100%;
+		justify-content: center;
+
+		&:hover {
+			color: $posta-text;
+		}
+
+		&.is-actiu {
+			color: #c88a00;
+		}
+	}
+
+	.nep-posta-fila__obre {
+		align-items: center;
+		color: $posta-text-2;
+		display: grid;
+		flex: 1;
+		gap: 16px;
+		grid-template-columns: 184px minmax(0, 1fr) 72px;
+		height: 100%;
+		min-width: 0;
+		padding: 0 16px 0 0;
+		text-align: left;
+	}
+
+	.nep-posta-fila__de {
+		color: $posta-text;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nep-posta-fila__text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nep-posta-fila__assumpte {
+		color: $posta-text;
+	}
+
+	.nep-posta-fila__extracte {
+		color: $posta-text-2;
+	}
+
+	.nep-posta-fila__data {
+		font-size: 12px;
+		text-align: right;
+	}
+
+	.nep-posta-fila__accions {
+		align-items: center;
+		background: inherit;
+		display: flex;
+		inset: 0 8px 0 auto;
+		padding-left: 12px;
+		opacity: 0;
+		pointer-events: none;
+		position: absolute;
+	}
+
+	.nep-posta-fila__accio,
+	.nep-posta-eina {
+		align-items: center;
+		border-radius: 50%;
+		color: $posta-text-2;
+		display: inline-flex;
+		height: 36px;
+		justify-content: center;
+		width: 36px;
+
+		&:hover {
+			background: $posta-hover;
+			color: $posta-text;
+		}
+	}
+
+	/* ---------- Estret: carpetes només amb icona ---------- */
+	@container (max-width: 760px) {
+
+		.nep-posta__nav {
+			width: 76px;
+		}
+
+		.nep-posta__marca {
+			flex-basis: auto;
+		}
+
+		.nep-posta__redacta {
+			margin-left: 8px;
+			padding: 0 16px;
+
+			span {
+				display: none;
+			}
+		}
+
+		.nep-posta__carpeta {
+			grid-template-columns: 20px;
+			padding-left: 26px;
+		}
+
+		.nep-posta__carpeta-nom,
+		.nep-posta__compte {
+			clip-path: inset(50%);
+			height: 1px;
+			overflow: hidden;
+			position: absolute;
+			width: 1px;
+		}
+
+		.nep-posta-fila__obre {
+			grid-template-columns: 120px minmax(0, 1fr) 56px;
+		}
+
+		.nep-posta-lectura__capcalera,
+		.nep-posta-lectura__cos {
+			padding-left: 0;
+		}
+	}
+}
+
+@keyframes nep-posta-arriba {
+
+	from {
+		background: #fde9e2;
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-posta .nep-posta-fila.is-arribat {
+		animation: none;
+	}
+}
