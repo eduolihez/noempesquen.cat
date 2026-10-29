@@ -34,7 +34,7 @@ const esDrecera = ( e ) => e.altKey && e.shiftKey && e.code === 'KeyL';
  * menú d'inici, notificacions i lupa.
  */
 export default function Pc() {
-	const { estat, dispatch, missio, hora } = useJoc();
+	const { estat, dispatch, emet, missio, hora } = useJoc();
 	const [ f, dispatchF ] = useReducer( finestresReductor, ESTAT_FINESTRES );
 	const [ panell, setPanell ] = useState( null );
 	const [ ambBloqueig, setAmbBloqueig ] = useState(
@@ -45,12 +45,16 @@ export default function Pc() {
 	const faseAnterior = useRef( estat.fase );
 	const bloquejat = estat.fase === FASE.BLOQUEIG;
 
-	const obreApp = useCallback( ( app, dades ) => {
-		if ( APPS[ app ] ) {
-			setPanell( null );
-			dispatchF( { tipus: 'OBRE', app, dades } );
-		}
-	}, [] );
+	const obreApp = useCallback(
+		( app, dades ) => {
+			if ( APPS[ app ] ) {
+				setPanell( null );
+				dispatchF( { tipus: 'OBRE', app, dades } );
+				emet( 'app.obre', { app } );
+			}
+		},
+		[ emet ]
+	);
 
 	const obreNotificacio = useCallback(
 		( n ) => {
