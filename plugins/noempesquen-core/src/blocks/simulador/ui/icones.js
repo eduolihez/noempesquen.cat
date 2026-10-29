@@ -15,7 +15,7 @@ const decoratiu = { 'aria-hidden': true, focusable: 'false' };
 export const useIdSvg = ( prefix ) =>
 	`${ prefix }${ useId().replace( /:/g, '' ) }`;
 
-function Glif( { mida = 16, children, ...resta } ) {
+export function Glif( { mida = 16, children, ...resta } ) {
 	return (
 		<svg
 			viewBox="0 0 20 20"

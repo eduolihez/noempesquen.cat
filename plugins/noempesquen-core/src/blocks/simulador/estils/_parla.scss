@@ -1,0 +1,222 @@
+/* Parla d'escriptori: estructura i llista de xats. */
+
+@use "parla-tokens" as *;
+
+/* El contingut de la finestra fa de contenidor per a la consulta de baix. */
+.nep-so .nep-so-finestra--parla .nep-so-finestra__cos {
+	container-type: inline-size;
+}
+
+.nep-so .nep-parla {
+	color: $parla-text;
+	display: grid;
+	flex: 1;
+	grid-template-columns: 320px minmax(0, 1fr);
+	min-height: 0;
+	user-select: none;
+}
+
+/* ---------- Llista de xats ---------- */
+.nep-so .nep-parla-llista {
+	background: #fff;
+	border-right: 1px solid $parla-vora;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+
+	&__cap {
+		align-items: center;
+		display: flex;
+		flex: 0 0 56px;
+		justify-content: space-between;
+		padding: 0 16px;
+	}
+
+	&__titol {
+		font-size: 20px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+
+	&__accions {
+		color: #8a948f;
+		display: flex;
+		gap: 18px;
+	}
+
+	&__xats {
+		flex: 1;
+		overflow-y: auto;
+		padding: 0 8px 8px;
+	}
+
+	&__buit {
+		color: $parla-text-2;
+		padding: 24px 16px;
+		text-align: center;
+	}
+}
+
+.nep-so .nep-parla-cerca {
+	align-items: center;
+	background: #f0f2ef;
+	border-radius: 8px;
+	color: $parla-text-2;
+	display: flex;
+	gap: 10px;
+	margin: 0 12px 8px;
+	min-height: 36px;
+	padding: 0 12px;
+
+	&:focus-within {
+		background: #fff;
+		box-shadow: inset 0 -2px 0 $parla-verd, 0 0 0 1px $parla-vora;
+	}
+
+	&__camp {
+		background: transparent;
+		border: 0;
+		color: $parla-text;
+		flex: 1;
+		min-width: 0;
+		padding: 8px 0;
+
+		&::placeholder {
+			color: #66716b;
+		}
+
+		&:focus,
+		&:focus-visible {
+			box-shadow: none;
+			outline: none;
+		}
+	}
+}
+
+.nep-so .nep-parla-xat {
+	align-items: center;
+	background: transparent;
+	border: 0;
+	border-radius: 8px;
+	color: inherit;
+	column-gap: 12px;
+	cursor: default;
+	display: grid;
+	grid-template-columns: 48px minmax(0, 1fr);
+	grid-template-rows: auto auto;
+	padding: 10px 10px;
+	text-align: left;
+	width: 100%;
+
+	> .nep-parla-avatar {
+		grid-row: 1 / 3;
+	}
+
+	&:hover {
+		background: #f3f5f2;
+	}
+
+	&.is-actiu {
+		background: #e9ede8;
+	}
+
+	&:focus-visible {
+		outline-offset: -2px;
+	}
+
+	&__fila {
+		align-items: center;
+		display: flex;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	&__nom {
+		flex: 1;
+		font-size: 15px;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__hora {
+		color: $parla-text-2;
+		flex: 0 0 auto;
+		font-size: 12px;
+
+		&.is-nou {
+			color: $parla-verd;
+			font-weight: 600;
+		}
+	}
+
+	&__previ {
+		align-items: center;
+		color: $parla-text-2;
+		display: flex;
+		flex: 1;
+		font-size: 13px;
+		gap: 3px;
+		min-width: 0;
+		padding-top: 2px;
+
+		&.is-escriu {
+			color: $parla-verd;
+			font-style: italic;
+		}
+	}
+
+	&__text {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__llegit {
+		color: $parla-llegit;
+		display: inline-flex;
+		flex: 0 0 auto;
+	}
+
+	&__fixat {
+		color: #7d8882;
+		display: inline-flex;
+		transform: rotate(40deg);
+	}
+
+	&__insignia {
+		background: $parla-verd;
+		border-radius: 10px;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 700;
+		line-height: 20px;
+		min-width: 20px;
+		padding: 0 6px;
+		text-align: center;
+	}
+}
+
+.nep-so .nep-parla-avatar {
+	align-items: center;
+	border-radius: 50%;
+	color: #fff;
+	display: inline-flex;
+	flex: 0 0 auto;
+	font-weight: 600;
+	justify-content: center;
+	overflow: hidden;
+
+	&--guia {
+		background: radial-gradient(circle at 35% 30%, #f4fbf8, #cfe8e0);
+	}
+}
+
+/* Finestra estreta: llista més compacta. */
+@container (max-width: 680px) {
+
+	.nep-so .nep-parla {
+		grid-template-columns: 240px minmax(0, 1fr);
+	}
+}
