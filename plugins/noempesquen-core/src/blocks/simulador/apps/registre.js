@@ -32,13 +32,18 @@ const parlaMobil = {
 	Component: lazy( () => import( './parla/ParlaMobil' ) ),
 };
 
+const navegadorMobil = {
+	nom: __( 'Navegador', 'noempesquen' ),
+	Icona: IconaNavegador,
+	Component: lazy( () => import( './navegador/NavegadorMobil' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
 	missatges,
 	parla: parlaMobil,
-	// T6: la closca mòbil del Navegador substituirà el component del PC.
-	navegador,
+	navegador: navegadorMobil,
 };
 
 /* Àlies per al codi del PC que encara importa `APPS`. */
