@@ -122,6 +122,26 @@ export function aplicaEfectes( missio, estat, efectes = [] ) {
 }
 
 /**
+ * Indica si l'esdeveniment obre un missatge marcat com a `objectiu`.
+ *
+ * @param {Object} missio Missió.
+ * @param {string} nom    Nom de l'esdeveniment.
+ * @param {Object} dades  Dades de l'esdeveniment (`app`, `id`).
+ * @return {boolean} Si és l'obertura del missatge objectiu.
+ */
+function obreObjectiu( missio, nom, dades ) {
+	if ( nom !== 'missatge.obre' || ! dades.id ) {
+		return false;
+	}
+	const app = missio.apps?.[ dades.app ] ?? {};
+	return Object.values( app ).some(
+		( llista ) =>
+			Array.isArray( llista ) &&
+			llista.some( ( item ) => item?.id === dades.id && item.objectiu )
+	);
+}
+
+/**
  * Processa un esdeveniment del món: executa o programa els disparadors.
  *
  * @param {Object} missio Missió.
@@ -134,7 +154,9 @@ export function processaEsdeveniment( missio, estat, nom, dades = {} ) {
 	if ( estat.fase !== FASE.JOC || estat.pausa ) {
 		return estat;
 	}
-	let actual = estat;
+	let actual = obreObjectiu( missio, nom, dades )
+		? { ...estat, ultimAvanc: estat.temps }
+		: estat;
 	for ( const d of missio.disparadors ?? [] ) {
 		if ( actual.fase !== FASE.JOC ) {
 			break;

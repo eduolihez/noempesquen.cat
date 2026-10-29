@@ -111,6 +111,19 @@ describe( 'disparadors', () => {
 		expect( ticks( b, 1 ).pistesDonades ).toBe( 1 );
 	} );
 
+	it( 'obrir el correu objectiu compta com a avanç; un altre no', () => {
+		const obre = ( id ) => esdev( 'missatge.obre', { app: 'posta', id } );
+		let a = ticks( jocSenseIntro(), 50 );
+		a = aplica( a, obre( 'm2' ) );
+		expect( a.ultimAvanc ).toBe( 50 );
+		a = ticks( a, 59 );
+		expect( a.pistesDonades ).toBe( 0 );
+		expect( ticks( a, 1 ).pistesDonades ).toBe( 1 );
+
+		const b = aplica( ticks( jocSenseIntro(), 50 ), obre( 'm1' ) );
+		expect( b.ultimAvanc ).toBe( 0 );
+	} );
+
 	it( "no hi ha pistes abans d'acabar la intro", () => {
 		expect( ticks( joc(), 200 ).pistesDonades ).toBe( 0 );
 	} );
