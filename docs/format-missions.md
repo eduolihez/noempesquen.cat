@@ -66,3 +66,38 @@ Cada missió és un fitxer JSON a `plugins/noempesquen-core/missions/`. El simul
 - Decisió: correcta 50, parcial 20, incorrecta 0.
 - Picar l'enllaç resta 20 (mínim 0).
 - Estrelles: 3 a partir del 90 % del màxim, 2 a partir del 60 %, 1 la resta.
+
+# Format v2
+
+El simulador realista només juga missions amb `"versio": 2`. El camp `app` desapareix: la missió descriu les apps que hi surten. El validador és `SIM/nucli/valida.js` (`validaMissio`). Exemple complet: `plugins/noempesquen-core/missions/llissa-01-factura.v2.json`. Les dades compartides (contactes, xats i correus de farciment) són a `plugins/noempesquen-core/missions/mon.json`.
+
+Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajudes), `apps`, `webs` i `disparadors`. Es mantenen `senyals`, `frases`, `decisio` i `tancament`; `frases.esquer` passa a `frases.pescat` i s'hi afegeix `frases.web_falsa`.
+
+- `apps.posta.correus[]`: `id`, `objectiu`, `ocult` (no surt fins que un efecte `mostra` el mostra), `carpeta`, `llegit`, `data`, `remitent { nom, adreca, senyal? }`, `assumpte`, `assumpte_senyal?`, `cos` (segments com a la v1).
+- `apps.navegador.inici`: URLs que s'obren en iniciar.
+- `webs.<domini>`: `plantilla` (`posta` o `llum-clara`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc.
+
+## Esdeveniments
+
+| Esdeveniment | Dades |
+| --- | --- |
+| `inici` | |
+| `app.obre` | `app` |
+| `missatge.obre` | `app`, `id` |
+| `enllac.obre` | `url` |
+| `web.carrega` | `url` |
+| `formulari.envia` | `url`, `formulari` |
+| `correu.marca` | `id`, `com`: `phishing`, `brossa` o `esborra` |
+
+## Efectes
+
+| Efecte | Dades |
+| --- | --- |
+| `guia-diu` | `text` |
+| `notifica` | `app`, `titol`, `text` |
+| `mostra` | `id` |
+| `pescat` | |
+| `decideix` | `opcio` (id d'una opció de `decisio`) |
+
+El validador exigeix: `versio` 2, senyals referenciats existents (a correus, xats i `webs`, incloent camps de formulari i `domini_senyal`), efectes i esdeveniments coneguts, `decideix` cap a opcions existents, plantilles de web registrades, almenys una opció correcta i almenys un efecte `pescat`.

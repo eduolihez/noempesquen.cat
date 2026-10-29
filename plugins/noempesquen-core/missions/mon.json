@@ -1,0 +1,211 @@
+{
+	"jugador": { "nom": "Àlex Puig", "correu": "alex.puig@posta.cat" },
+	"contactes": [
+		{ "id": "llissa", "nom": "Llissa", "rol": "guia" },
+		{ "id": "marta", "nom": "Marta", "rol": "amiga" },
+		{ "id": "pau", "nom": "Pau", "rol": "fill" },
+		{ "id": "mare", "nom": "Mama", "rol": "família" },
+		{ "id": "biblioteca", "nom": "Biblioteca del Barri", "rol": "servei" }
+	],
+	"parla": {
+		"xats": [
+			{
+				"id": "marta",
+				"nom": "Marta",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Ei, Àlex! Dijous a les 11 et va bé per a la reunió?",
+						"hora": "ahir 18:40"
+					},
+					{
+						"de": "jo",
+						"text": "Sí, perfecte. Porto jo els papers.",
+						"hora": "ahir 18:52"
+					},
+					{
+						"de": "ella",
+						"text": "Genial, gràcies!",
+						"hora": "ahir 18:53"
+					}
+				]
+			},
+			{
+				"id": "familia",
+				"nom": "Família",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Diumenge dinem tots a casa, que farem arròs.",
+						"hora": "dl. 20:15"
+					},
+					{
+						"de": "jo",
+						"text": "Hi serem. Portem el postre.",
+						"hora": "dl. 20:31"
+					},
+					{
+						"de": "ella",
+						"text": "Això, que sigui de xocolata!",
+						"hora": "dl. 20:33"
+					}
+				]
+			},
+			{
+				"id": "pau",
+				"nom": "Pau",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Pare/mare, he arribat a l'institut. Fins després!",
+						"hora": "08:05"
+					},
+					{
+						"de": "jo",
+						"text": "Molt bé. Que vagi bé el dia!",
+						"hora": "08:07"
+					}
+				]
+			}
+		]
+	},
+	"posta": {
+		"correus": [
+			{
+				"id": "f1",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "08:32",
+				"remitent": {
+					"nom": "Biblioteca del Barri",
+					"adreca": "avisos@bibliotequesdelbarri.cat"
+				},
+				"assumpte": "Recordatori: retorn del llibre",
+				"cos": [
+					[ { "t": "Hola, Àlex:" } ],
+					[
+						{
+							"t": "Et recordem que el llibre «Mar endins» s'ha de retornar el dia 7. Si el vols allargar, ho pots fer des de la teva àrea de lector o al taulell."
+						}
+					],
+					[ { "t": "Fins aviat," } ],
+					[ { "t": "Equip de la Biblioteca del Barri" } ]
+				]
+			},
+			{
+				"id": "f2",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "ahir",
+				"remitent": {
+					"nom": "Banc Sòlid",
+					"adreca": "novetats@bancsolid.cat"
+				},
+				"assumpte": "El butlletí d'aquest mes",
+				"cos": [
+					[ { "t": "Hola, Àlex:" } ],
+					[
+						{
+							"t": "Aquest mes al butlletí et expliquem com estalviar en les despeses de la llar i com activar els avisos de moviments al mòbil."
+						}
+					],
+					[
+						{
+							"t": "Pots llegir-lo complet a la teva àrea privada, entrant amb l'adreça que ja coneixes."
+						}
+					],
+					[ { "t": "Banc Sòlid" } ]
+				]
+			},
+			{
+				"id": "f3",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "ahir",
+				"remitent": {
+					"nom": "Marta Puig",
+					"adreca": "marta.puig@exemple-feina.cat"
+				},
+				"assumpte": "Reunió de dijous",
+				"cos": [
+					[ { "t": "Ei, Àlex!" } ],
+					[
+						{
+							"t": "Passem la reunió de dijous a les 11, que a les 10 tinc el dentista. Et va bé? Si no, ho mirem demà al matí."
+						}
+					],
+					[ { "t": "Gràcies!" } ],
+					[ { "t": "Marta" } ]
+				]
+			},
+			{
+				"id": "f4",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "dl.",
+				"remitent": {
+					"nom": "Botiga Verda",
+					"adreca": "comandes@botigaverda.cat"
+				},
+				"assumpte": "La teva comanda 20418 ja està en camí",
+				"cos": [
+					[ { "t": "Hola, Àlex:" } ],
+					[
+						{
+							"t": "Hem enviat la teva comanda amb dues plantes d'interior. Arribarà en 2 o 3 dies feiners a l'adreça que vas indicar."
+						}
+					],
+					[ { "t": "Gràcies per comprar amb nosaltres," } ],
+					[ { "t": "Botiga Verda" } ]
+				]
+			},
+			{
+				"id": "f5",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "dl.",
+				"remitent": {
+					"nom": "Ajuntament del Barri",
+					"adreca": "informacio@ajuntamentdelbarri.cat"
+				},
+				"assumpte": "Canvi d'horari de la recollida de vidre",
+				"cos": [
+					[ { "t": "Estimat veí, estimada veïna:" } ],
+					[
+						{
+							"t": "A partir del mes vinent, la recollida de vidre passarà a fer-se els dimarts i els divendres al vespre. Trobaràs tots els horaris a la web de l'Ajuntament."
+						}
+					],
+					[ { "t": "Regidoria de Serveis Urbans" } ]
+				]
+			},
+			{
+				"id": "f6",
+				"objectiu": false,
+				"carpeta": "entrada",
+				"llegit": true,
+				"data": "dg.",
+				"remitent": {
+					"nom": "El Diari del Barri",
+					"adreca": "butlleti@diaridelbarri.cat"
+				},
+				"assumpte": "El resum de la setmana",
+				"cos": [
+					[ { "t": "Bon dia, Àlex:" } ],
+					[
+						{
+							"t": "Aquesta setmana al barri: s'inaugura el mercat de pagès, tornen les festes de la plaça i us expliquem com anirà l'obra del carrer Major."
+						}
+					],
+					[ { "t": "Que tinguis una bona setmana," } ],
+					[ { "t": "La redacció" } ]
+				]
+			}
+		]
+	}
+}
