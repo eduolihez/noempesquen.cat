@@ -1,5 +1,5 @@
 const { test, expect } = require( '@playwright/test' );
-const AxeBuilder = require( '@axe-core/playwright' ).default;
+const { greusAxe } = require( './ajudes' );
 
 const MISSIO = /La factura de la llum/;
 // Valors d'autoompliment de la missió que no han de quedar enlloc.
@@ -379,17 +379,7 @@ test.describe( 'La factura de la llum', () => {
 		await entra( page );
 		await saltaIntroIEsperaCorreu( page );
 		await obreCorreu( page );
-		const resultat = await new AxeBuilder( { page } )
-			.include( '.wp-block-noempesquen-simulador' )
-			.withTags( [ 'wcag2a', 'wcag2aa', 'wcag22aa' ] )
-			.analyze();
-		const greus = resultat.violations
-			.filter( ( v ) => [ 'serious', 'critical' ].includes( v.impact ) )
-			.map( ( v ) => ( {
-				id: v.id,
-				impact: v.impact,
-				targets: v.nodes.map( ( n ) => n.target.join( ' ' ) ),
-			} ) );
+		const greus = await greusAxe( page );
 		expect( greus ).toEqual( [] );
 	} );
 } );

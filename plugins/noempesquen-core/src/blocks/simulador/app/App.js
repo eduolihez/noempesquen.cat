@@ -10,7 +10,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { FASE, estatInicial, reductor, puntuacio } from './motor';
 import { combinaMissions } from '../nucli/missions';
 import { llegeixProgres, desaProgres } from '../nucli/progres';
-import { PERSONATGES } from './avatars';
+import { PERSONATGES } from '../ui/avatars';
 import { Escriptori } from './Escriptori';
 import { Mobil } from './Mobil';
 import { Bombolla, Decisio, Consequencia, Resultat } from './Pantalles';

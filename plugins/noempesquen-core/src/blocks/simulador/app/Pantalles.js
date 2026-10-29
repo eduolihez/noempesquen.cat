@@ -1,6 +1,6 @@
 import { useEffect, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { PERSONATGES } from './avatars';
+import { PERSONATGES } from '../ui/avatars';
 import { FASE, opcioTriada, puntuacio } from './motor';
 
 function useFocusInicial() {
