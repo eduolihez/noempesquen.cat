@@ -57,23 +57,34 @@ function textComplet( url, info, domini, resta ) {
 }
 
 function Seguretat( { tipus } ) {
+	const { registraMenu } = useJoc();
 	const [ obert, setObert ] = useState( false );
 	const arrel = useRef( null );
+	const boto = useRef( null );
 	const id = useId();
 	const s = textosSeguretat()[ tipus ];
 
+	// Obert: Esc el tanca (abans que la pausa) i torna el focus al botó;
+	// un clic a fora també el tanca.
 	useEffect( () => {
 		if ( ! obert ) {
 			return undefined;
 		}
+		const desregistra = registraMenu( () => {
+			setObert( false );
+			boto.current?.focus();
+		} );
 		const fora = ( e ) => {
 			if ( ! arrel.current?.contains( e.target ) ) {
 				setObert( false );
 			}
 		};
 		document.addEventListener( 'pointerdown', fora );
-		return () => document.removeEventListener( 'pointerdown', fora );
-	}, [ obert ] );
+		return () => {
+			desregistra();
+			document.removeEventListener( 'pointerdown', fora );
+		};
+	}, [ obert, registraMenu ] );
 
 	return (
 		<div
@@ -86,6 +97,7 @@ function Seguretat( { tipus } ) {
 			} }
 		>
 			<button
+				ref={ boto }
 				type="button"
 				className={ `nep-nav-adreca__xip nep-nav-adreca__xip--${ tipus }` }
 				aria-expanded={ obert }
