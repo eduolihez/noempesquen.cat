@@ -42,6 +42,12 @@ function useRevelacio( xat ) {
 	const [ mostrats, setMostrats ] = useState( xat.length );
 	const pas = properPas( xat, mostrats, ! menysMoviment() );
 
+	// Reinici amb Parla muntada: el xat s'ha escurçat; es desa el recompte
+	// nou (ajust durant el render, sense efecte) perquè no quedi enrere.
+	if ( mostrats > xat.length ) {
+		setMostrats( pas.mostrats );
+	}
+
 	useEffect( () => {
 		if ( ! pas.escriu ) {
 			return undefined;

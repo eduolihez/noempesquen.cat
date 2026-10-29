@@ -120,8 +120,19 @@ describe( 'properPas', () => {
 		} );
 	} );
 
-	it( 'després d’un reinici, el xat més curt es mostra sencer', () => {
+	it( 'si el xat s’escurça (reinici), torna a revelar des del principi', () => {
 		expect( properPas( [ g ], 5, true ) ).toEqual( {
+			mostrats: 0,
+			escriu: true,
+		} );
+		expect( properPas( [ j, g ], 5, true ) ).toEqual( {
+			mostrats: 1,
+			escriu: true,
+		} );
+	} );
+
+	it( 'si el xat s’escurça sense animació, el mostra sencer', () => {
+		expect( properPas( [ g ], 5, false ) ).toEqual( {
 			mostrats: 1,
 			escriu: false,
 		} );

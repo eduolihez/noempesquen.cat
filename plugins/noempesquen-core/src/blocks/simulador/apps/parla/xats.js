@@ -109,7 +109,9 @@ export function agrupaPerDia( missatges ) {
 /**
  * Següent pas de la revelació del xat del guia: els missatges propis es
  * mostren de cop; davant d'un del guia, s'atura i «escriu» (si hi ha
- * animació).
+ * animació). Si el xat és més curt que `mostrats` (reinici de la
+ * missió), es torna a revelar des del principi: qui crida ha de desar el
+ * `mostrats` retornat.
  *
  * @param {Object[]} xat      Missatges { de }.
  * @param {number}   mostrats Quants se'n mostren ara.
@@ -117,10 +119,8 @@ export function agrupaPerDia( missatges ) {
  * @return {{mostrats:number, escriu:boolean}} Nou recompte i si escriu.
  */
 export function properPas( xat, mostrats, animat ) {
-	if ( mostrats > xat.length ) {
-		return { mostrats: xat.length, escriu: false };
-	}
-	let i = mostrats;
+	// Un xat més curt que el recompte vol dir un reinici: torna a començar.
+	let i = mostrats > xat.length ? 0 : mostrats;
 	while ( i < xat.length && ( ! animat || xat[ i ].de !== 'guia' ) ) {
 		i++;
 	}
