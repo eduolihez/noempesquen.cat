@@ -126,3 +126,19 @@ export function properPas( xat, mostrats, animat ) {
 	}
 	return { mostrats: i, escriu: i < xat.length };
 }
+
+/**
+ * Xat que s'obre en entrar a Parla al mòbil: el del guia si ho demana
+ * l'origen (`dades.xat`) o hi ha missatges seus sense llegir; si no, la llista.
+ *
+ * @param {number}  noLlegits Missatges del guia sense llegir.
+ * @param {?Object} dades     Dades amb què s'ha obert l'app.
+ * @param {string}  idGuia    Id del xat del guia.
+ * @return {?string} Id del xat, o null per a la llista.
+ */
+export function xatInicial( noLlegits, dades, idGuia ) {
+	if ( dades?.xat ) {
+		return dades.xat;
+	}
+	return noLlegits > 0 ? idGuia : null;
+}

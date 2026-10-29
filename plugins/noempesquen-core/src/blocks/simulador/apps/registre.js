@@ -26,12 +26,17 @@ const missatges = {
 	Component: lazy( () => import( './missatges/Missatges' ) ),
 };
 
+const parlaMobil = {
+	nom: __( 'Parla', 'noempesquen' ),
+	Icona: IconaParla,
+	Component: lazy( () => import( './parla/ParlaMobil' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
 	missatges,
-	// T5: la closca mòbil de Parla substituirà el component del PC.
-	parla,
+	parla: parlaMobil,
 	// T6: la closca mòbil del Navegador substituirà el component del PC.
 	navegador,
 };
