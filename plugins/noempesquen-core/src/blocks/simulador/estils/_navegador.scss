@@ -1,0 +1,368 @@
+/* Navegador del PC (estil Chromium, sense marca): pestanyes i eines. */
+
+@use "navegador-tokens" as *;
+
+/* La barra de títol del sistema es fon amb la franja de pestanyes. */
+.nep-so .nep-so-finestra--navegador .nep-so-finestra__barra {
+	background: $nav-franja;
+}
+
+.nep-so .nep-nav {
+	background: #fff;
+	color: $nav-text;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+
+	button {
+		background: none;
+		border: 0;
+		color: inherit;
+		cursor: default;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+/* ---------- Franja de pestanyes ---------- */
+.nep-so .nep-nav-pestanyes {
+	align-items: flex-end;
+	background: $nav-franja;
+	display: flex;
+	flex: 0 0 40px;
+	gap: 4px;
+	padding: 0 8px;
+	user-select: none;
+
+	&__llista {
+		align-items: flex-end;
+		display: flex;
+		min-width: 0;
+	}
+
+	&__nova {
+		align-items: center;
+		align-self: center;
+		border-radius: 50%;
+		color: $nav-icona;
+		display: flex;
+		flex: 0 0 28px;
+		height: 28px;
+		justify-content: center;
+		margin-top: 2px;
+
+		&:hover {
+			background: rgb(60 64 67 / 10%);
+		}
+	}
+}
+
+.nep-so .nep-nav-pestanya {
+	align-items: center;
+	display: flex;
+	flex: 0 1 auto;
+	height: 34px;
+	min-width: 72px;
+	padding: 0 6px 0 12px;
+	position: relative;
+	width: 240px;
+
+	/* Separador entre pestanyes inactives. */
+	&::before {
+		background: #a7acb1;
+		content: "";
+		height: 18px;
+		left: 0;
+		position: absolute;
+		top: 8px;
+		width: 1px;
+	}
+
+	&:first-child::before,
+	&.is-activa::before,
+	&.is-activa + .nep-nav-pestanya::before,
+	&:hover::before,
+	&:hover + .nep-nav-pestanya::before {
+		opacity: 0;
+	}
+
+	/* Forma de la pestanya (fons i «peus» corbats de l'activa). */
+	&::after {
+		border-radius: $nav-radi;
+		content: "";
+		inset: 3px 2px 3px;
+		position: absolute;
+		z-index: 0;
+	}
+
+	&:hover:not(.is-activa)::after {
+		background: rgb(255 255 255 / 45%);
+	}
+
+	&.is-activa {
+		background: #fff;
+		border-radius: $nav-radi $nav-radi 0 0;
+	}
+
+	&.is-activa::after {
+		background:
+			radial-gradient(circle at 0 0, transparent $nav-radi, #fff $nav-radi) left bottom / #{$nav-radi} #{$nav-radi} no-repeat,
+			radial-gradient(circle at 100% 0, transparent $nav-radi, #fff $nav-radi) right bottom / #{$nav-radi} #{$nav-radi} no-repeat;
+		border-radius: 0;
+		inset: auto (-$nav-radi) 0;
+		height: $nav-radi;
+	}
+
+	&__boto {
+		align-items: center;
+		align-self: stretch;
+		display: flex;
+		flex: 1;
+		gap: 8px;
+		min-width: 0;
+		position: relative;
+		text-align: left;
+		z-index: 1;
+
+		&:focus-visible {
+			border-radius: 6px;
+			outline-offset: -2px !important;
+		}
+	}
+
+	&__favicon {
+		display: flex;
+		flex: 0 0 16px;
+		justify-content: center;
+		color: $nav-text-2;
+	}
+
+	&__titol {
+		color: #3c4043;
+		flex: 1;
+		font-size: 12px;
+		mask-image: linear-gradient(90deg, #000 calc(100% - 20px), transparent);
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	&.is-activa .nep-nav-pestanya__titol {
+		color: $nav-text;
+	}
+
+	&__tanca {
+		align-items: center;
+		border-radius: 50%;
+		color: $nav-icona;
+		display: flex;
+		flex: 0 0 20px;
+		height: 20px;
+		justify-content: center;
+		position: relative;
+		z-index: 1;
+
+		&:hover {
+			background: rgb(60 64 67 / 12%);
+		}
+	}
+}
+
+/* ---------- Barra d'eines ---------- */
+.nep-so .nep-nav-eines {
+	align-items: center;
+	background: #fff;
+	border-bottom: 1px solid $nav-vora;
+	display: flex;
+	flex: 0 0 46px;
+	gap: 2px;
+	padding: 0 8px 0 6px;
+	position: relative;
+	z-index: 2;
+
+	&__boto {
+		align-items: center;
+		border-radius: 50%;
+		color: $nav-icona;
+		display: flex;
+		flex: 0 0 34px;
+		height: 34px;
+		justify-content: center;
+
+		&:hover:not(:disabled) {
+			background: rgb(60 64 67 / 8%);
+		}
+
+		&:active:not(:disabled) {
+			background: rgb(60 64 67 / 14%);
+		}
+
+		&:disabled {
+			color: #b4b7ba;
+		}
+	}
+}
+
+/* ---------- Barra d'adreces ---------- */
+.nep-so .nep-nav-adreca {
+	align-items: center;
+	background: $nav-pindola;
+	border-radius: 17px;
+	display: flex;
+	flex: 1;
+	gap: 2px;
+	height: 34px;
+	margin-left: 6px;
+	min-width: 0;
+	padding: 0 14px 0 3px;
+	position: relative;
+
+	&:hover {
+		background: $nav-pindola-hover;
+	}
+
+	&:has(.nep-nav-adreca__input:focus) {
+		background: #fff;
+		box-shadow: 0 0 0 2px var(--so-accent);
+	}
+
+	&__lupa {
+		color: $nav-text-2;
+		display: flex;
+		padding: 0 6px 0 9px;
+	}
+
+	&__seguretat {
+		display: flex;
+		position: relative;
+	}
+
+	&__xip {
+		align-items: center;
+		border-radius: 14px;
+		color: $nav-icona;
+		display: flex;
+		gap: 6px;
+		height: 28px;
+		justify-content: center;
+		min-width: 28px;
+		padding: 0 6px;
+
+		&:hover {
+			background: rgb(60 64 67 / 10%);
+		}
+
+		&--insegur {
+			color: #3c4043;
+			font-size: 13px;
+			padding: 0 10px 0 8px;
+			position: relative;
+
+			/* Separador entre «No segur» i l'adreça. */
+			&::after {
+				background: #9aa0a6;
+				content: "";
+				height: 16px;
+				position: absolute;
+				right: -2px;
+				width: 1px;
+			}
+		}
+	}
+
+	&__info {
+		background: #fff;
+		border-radius: $nav-radi;
+		box-shadow: 0 2px 6px rgb(0 0 0 / 15%), 0 1px 2px rgb(0 0 0 / 30%);
+		color: $nav-text;
+		left: 0;
+		padding: 14px 16px;
+		position: absolute;
+		top: calc(100% + 8px);
+		width: 320px;
+		z-index: 5;
+
+		&[hidden] {
+			display: none;
+		}
+
+		p + p {
+			color: $nav-text-2;
+			font-size: 13px;
+			line-height: 1.45;
+			margin-top: 6px;
+			padding-left: 28px;
+		}
+	}
+
+	&__info-titol {
+		align-items: center;
+		display: flex;
+		font-size: 14px;
+		font-weight: 600;
+		gap: 10px;
+	}
+
+	&__camp {
+		align-items: center;
+		align-self: stretch;
+		display: flex;
+		flex: 1;
+		margin-left: 6px;
+		min-width: 0;
+		position: relative;
+	}
+
+	&__input {
+		background: transparent;
+		border: 0;
+		color: transparent;
+		font-size: 14px;
+		height: 100%;
+		outline: none;
+		padding: 0;
+		width: 100%;
+
+		&.is-editant {
+			color: $nav-text;
+		}
+
+		/* El tema no hi ha de posar el seu contorn: l'anell és de la píndola. */
+		&:focus,
+		&:focus-visible {
+			box-shadow: none;
+			outline: none;
+		}
+
+		&::placeholder {
+			color: $nav-text-2;
+		}
+
+		&::selection {
+			background: #c2dbff;
+		}
+	}
+
+	&__vista {
+		align-items: center;
+		color: $nav-text;
+		display: flex;
+		font-size: 14px;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		position: absolute;
+		white-space: pre;
+
+		&.is-visible {
+			pointer-events: auto;
+			position: static;
+		}
+	}
+
+	&__resta {
+		color: $nav-text-2;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
