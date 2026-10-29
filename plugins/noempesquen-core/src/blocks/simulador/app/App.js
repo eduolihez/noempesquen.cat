@@ -13,7 +13,9 @@ import { PERSONATGES } from './avatars';
 import { Escriptori } from './Escriptori';
 import { Mobil } from './Mobil';
 import { Bombolla, Decisio, Consequencia, Resultat } from './Pantalles';
-import llissa01 from '../../../../missions/llissa-01-factura.json';
+import { Simulador } from '../simulador/Simulador';
+import llissa01 from '../../../../missions/llissa-01-factura.v2.json';
+import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 
 const INCLOSES = [ llissa01, remei01 ];
@@ -256,6 +258,21 @@ export function App( { config } ) {
 				progres={ progres }
 				preferit={ preferit }
 				onTria={ tria }
+			/>
+		);
+	}
+
+	if ( missio.versio === 2 ) {
+		return (
+			<Simulador
+				key={ `${ missio.id }-${ partida }` }
+				missio={ missio }
+				mon={ mon }
+				onSurt={ () => setActual( null ) }
+				onAcaba={ onAcaba }
+				seguent={
+					seguentMissio ? () => tria( seguentMissio.id ) : null
+				}
 			/>
 		);
 	}

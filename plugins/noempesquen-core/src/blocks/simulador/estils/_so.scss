@@ -1,0 +1,187 @@
+/* Carcasa del sistema simulat (escriptori i mòbil). Tot sota .nep-so. */
+
+.nep-so {
+	--so-accent: #005fb8;
+	--so-text: #1a1a1a;
+	--so-vidre: rgb(243 243 243 / 85%);
+
+	background: #000;
+	color: var(--so-text);
+	font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+	font-size: 14px;
+	height: 100vh;
+	height: 100dvh;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+
+	&:focus {
+		outline: none;
+	}
+
+	/* Reset local: no surt de l'arrel. */
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	:where(h1, h2, h3, h4, p, ul, ol, figure, dl, dd) {
+		margin: 0;
+	}
+
+	:where(ul, ol) {
+		list-style: none;
+		padding: 0;
+	}
+
+	:where(button, input, select, textarea) {
+		font: inherit;
+	}
+
+	&--fixa {
+		inset: 0;
+		position: fixed;
+		z-index: 100000;
+	}
+}
+
+html.nep-so-bloqueja-scroll {
+	overflow: hidden;
+}
+
+.nep-so button:focus-visible,
+.nep-so a:focus-visible {
+	outline: 2px solid var(--so-accent);
+	outline-offset: 2px;
+}
+
+/* Botons del sistema (amb .nep-so davant per guanyar al tema) */
+.nep-so .nep-so-boto {
+	background: rgb(255 255 255 / 70%);
+	border: 1px solid rgb(0 0 0 / 14%);
+	border-radius: 4px;
+	color: var(--so-text);
+	cursor: pointer;
+	min-height: 32px;
+	padding: 5px 16px;
+	text-align: center;
+
+	&:hover {
+		background: rgb(255 255 255 / 95%);
+	}
+
+	&:active {
+		background: rgb(255 255 255 / 50%);
+		color: rgb(26 26 26 / 70%);
+	}
+
+	&--accent {
+		background: var(--so-accent);
+		border-color: var(--so-accent);
+		color: #fff;
+
+		&:hover {
+			background: #0b6cc4;
+		}
+
+		&:active {
+			background: #3f84c8;
+			color: rgb(255 255 255 / 85%);
+		}
+	}
+}
+
+/* Esquelet provisional de l'escriptori (tasca 7 el substitueix) */
+.nep-so-pc-esquelet {
+	align-items: center;
+	background: radial-gradient(120% 90% at 20% 10%, #12345a, #070d18 70%);
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+/* Càrrega: pantalla negra amb un anell */
+.nep-so-carrega {
+	align-items: center;
+	background: #000;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+
+	&__anell {
+		animation: nep-so-gira 1.1s linear infinite;
+
+		circle {
+			fill: none;
+			stroke: #fff;
+			stroke-dasharray: 80 40;
+			stroke-linecap: round;
+			stroke-width: 3;
+		}
+	}
+}
+
+@keyframes nep-so-gira {
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Pausa: capa del sistema, no un modal web */
+.nep-so-pausa {
+	align-items: center;
+	backdrop-filter: blur(12px) saturate(0.7);
+	background: rgb(0 0 0 / 45%);
+	display: flex;
+	inset: 0;
+	justify-content: center;
+	padding: 16px;
+	position: absolute;
+	z-index: 1000;
+
+	&__panell {
+		backdrop-filter: blur(30px) saturate(1.4);
+		background: rgb(243 243 243 / 92%);
+		border: 1px solid rgb(255 255 255 / 55%);
+		border-radius: 8px;
+		box-shadow: 0 8px 32px rgb(0 0 0 / 28%);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		max-width: 380px;
+		padding: 24px;
+		width: 100%;
+	}
+
+	&__titol {
+		font-size: 20px;
+		font-weight: 600;
+		line-height: 28px;
+	}
+
+	&__text {
+		color: #444;
+		line-height: 20px;
+	}
+
+	&__botons {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so-carrega__anell {
+		animation-duration: 3s;
+	}
+}
