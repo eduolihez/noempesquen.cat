@@ -470,6 +470,8 @@ $sms-fons-full: #fff;
 		margin: 0;
 	}
 
+	/* L'objectiu clicable és l'<label> sencera (min-height 44 px, tota
+	   l'amplada); la casella de 22 px és només l'indicador. */
 	&__casella {
 		align-items: center;
 		cursor: pointer;

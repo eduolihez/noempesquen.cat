@@ -47,11 +47,9 @@ export function Oficial( { dades } ) {
 					</button>
 				</div>
 			</form>
-			{ consultat && (
-				<p className="nep-ev-seguiment__resultat" role="status">
-					{ missatge }
-				</p>
-			) }
+			<p className="nep-ev-seguiment__resultat" role="status">
+				{ consultat ? missatge : '' }
+			</p>
 		</section>
 	);
 }

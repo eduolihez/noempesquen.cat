@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { IconaTanca } from '../../ui/icones';
 import { CosNotificacio, descriu } from './notificacio';
 
 const MS_BANNER = 6000;
@@ -17,13 +18,22 @@ function Banner( { n, onObre, onDescarta } ) {
 	const pausa = joc.estat.pausa;
 
 	// Sis segons visibles; el comptador s'atura amb el punter o el focus
-	// a sobre i durant la pausa del joc.
+	// a sobre i durant la pausa del joc, i en reprendre continua amb el
+	// temps que quedava (no torna a començar).
+	const resta = useRef( MS_BANNER );
 	useEffect( () => {
 		if ( aturat || pausa ) {
 			return undefined;
 		}
-		const t = setTimeout( () => descarta.current(), MS_BANNER );
-		return () => clearTimeout( t );
+		const arrenca = Date.now();
+		const t = setTimeout( () => descarta.current(), resta.current );
+		return () => {
+			clearTimeout( t );
+			resta.current = Math.max(
+				0,
+				resta.current - ( Date.now() - arrenca )
+			);
+		};
 	}, [ aturat, pausa ] );
 
 	return (
@@ -47,6 +57,15 @@ function Banner( { n, onObre, onDescarta } ) {
 			} }
 		>
 			<CosNotificacio n={ n } d={ descriu( n, joc ) } onObre={ onObre } />
+			<button
+				type="button"
+				className="nep-so-m-banner__descarta"
+				aria-label={ __( 'Descarta la notificació', 'noempesquen' ) }
+				title={ __( 'Descarta la notificació', 'noempesquen' ) }
+				onClick={ onDescarta }
+			>
+				<IconaTanca />
+			</button>
 		</li>
 	);
 }
