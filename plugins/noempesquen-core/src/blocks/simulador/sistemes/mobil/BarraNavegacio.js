@@ -9,11 +9,13 @@ import { IconaEnrere, IconaInici } from './icones';
  * @param {boolean}  props.aInici   Ja es veu la pantalla d'inici.
  * @param {Function} props.onEnrere Enrere (dins l'app o tanca l'app).
  * @param {Function} props.onInici  Torna a la pantalla d'inici.
+ * @param {boolean}  props.inerta   Un diàleg modal la tapa (centre de control).
  */
-export function BarraNavegacio( { aInici, onEnrere, onInici } ) {
+export function BarraNavegacio( { aInici, onEnrere, onInici, inerta } ) {
 	return (
 		<nav
 			className="nep-so-m-nav"
+			inert={ inerta ? '' : undefined }
 			aria-label={ __( 'Navegació del sistema', 'noempesquen' ) }
 		>
 			<button

@@ -1,32 +1,38 @@
 /**
  * Pila d'apps del mòbil (reductor pur, sense JSX).
  *
- * La darrera entrada és l'app en primer pla; amb la pila buida es veu
- * la pantalla d'inici. Cada entrada té una `clau` estable perquè l'app
- * conservi el seu estat mentre és a la pila.
+ * La darrera entrada és l'app en primer pla, tret que `inici` sigui cert:
+ * llavors es veu la pantalla d'inici i les apps continuen a la pila (en
+ * segon pla, amb el seu estat). Cada entrada té una `clau` estable perquè
+ * l'app conservi el seu estat mentre és a la pila.
  *
  * Accions:
  * - { tipus: 'OBRE', app, dades }: obre l'app; si ja hi és, la porta a
  *   dalt sense duplicar-la (i actualitza les dades si se n'hi passen).
- * - { tipus: 'ENRERE' }: treu l'app de dalt (amb la pila buida, res).
- * - { tipus: 'INICI' }: torna a la pantalla d'inici (buida la pila).
+ *   Surt de la pantalla d'inici.
+ * - { tipus: 'ENRERE' }: treu l'app de dalt (a l'inici o amb la pila
+ *   buida, res).
+ * - { tipus: 'INICI' }: mostra la pantalla d'inici sense tancar apps.
  * - { tipus: 'REINICIA' }: estat inicial (en tornar al bloqueig).
  */
 
-export const ESTAT_PILA = { apps: [], seq: 0 };
+export const ESTAT_PILA = { apps: [], seq: 0, inici: false };
 
 /**
- * @param {{apps: Object[], seq: number}} estat Pila actual.
+ * @param {{apps: Object[], seq: number, inici: boolean}} estat Pila actual.
  * @return {?Object} Entrada en primer pla, o null a l'inici.
  */
 export function appActiva( estat ) {
+	if ( estat.inici ) {
+		return null;
+	}
 	return estat.apps[ estat.apps.length - 1 ] ?? null;
 }
 
 /**
- * @param {{apps: Object[], seq: number}} estat Pila actual.
- * @param {Object}                        accio Acció.
- * @return {{apps: Object[], seq: number}} Nova pila.
+ * @param {{apps: Object[], seq: number, inici: boolean}} estat Pila actual.
+ * @param {Object}                                        accio Acció.
+ * @return {{apps: Object[], seq: number, inici: boolean}} Nova pila.
  */
 export function pilaReductor( estat, accio ) {
 	switch ( accio.tipus ) {
@@ -42,6 +48,7 @@ export function pilaReductor( estat, accio ) {
 						: { ...actual, dades: accio.dades };
 				return {
 					...estat,
+					inici: false,
 					apps: [
 						...estat.apps.filter( ( a ) => a !== actual ),
 						entrada,
@@ -49,6 +56,7 @@ export function pilaReductor( estat, accio ) {
 				};
 			}
 			return {
+				inici: false,
 				apps: [
 					...estat.apps,
 					{
@@ -61,15 +69,15 @@ export function pilaReductor( estat, accio ) {
 			};
 		}
 		case 'ENRERE':
-			if ( ! estat.apps.length ) {
+			if ( estat.inici || ! estat.apps.length ) {
 				return estat;
 			}
 			return { ...estat, apps: estat.apps.slice( 0, -1 ) };
 		case 'INICI':
-			if ( ! estat.apps.length ) {
+			if ( estat.inici || ! estat.apps.length ) {
 				return estat;
 			}
-			return { ...estat, apps: [] };
+			return { ...estat, inici: true };
 		case 'REINICIA':
 			return ESTAT_PILA;
 		default:

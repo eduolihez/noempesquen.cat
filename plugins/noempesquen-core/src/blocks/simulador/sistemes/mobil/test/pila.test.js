@@ -71,16 +71,50 @@ describe( 'pila del mòbil', () => {
 		);
 	} );
 
-	it( 'inici buida la pila', () => {
+	it( 'inici mostra la pantalla d’inici sense tancar apps', () => {
 		const p = fes(
 			{ tipus: 'OBRE', app: 'parla' },
 			{ tipus: 'OBRE', app: 'navegador' },
 			{ tipus: 'INICI' }
 		);
-		expect( p.apps ).toEqual( [] );
+		expect( p.inici ).toBe( true );
+		expect( appActiva( p ) ).toBeNull();
+		expect( p.apps.map( ( a ) => a.app ) ).toEqual( [
+			'parla',
+			'navegador',
+		] );
 		expect( pilaReductor( ESTAT_PILA, { tipus: 'INICI' } ) ).toBe(
 			ESTAT_PILA
 		);
+		expect( pilaReductor( p, { tipus: 'INICI' } ) ).toBe( p );
+	} );
+
+	it( 'enrere a l’inici no fa res', () => {
+		const p = fes( { tipus: 'OBRE', app: 'parla' }, { tipus: 'INICI' } );
+		expect( pilaReductor( p, { tipus: 'ENRERE' } ) ).toBe( p );
+	} );
+
+	it( 'obrir des de l’inici recupera l’app amb la mateixa clau', () => {
+		const abans = fes(
+			{ tipus: 'OBRE', app: 'parla' },
+			{ tipus: 'OBRE', app: 'navegador' },
+			{ tipus: 'INICI' }
+		);
+		const clau = abans.apps[ 0 ].clau;
+		const p = pilaReductor( abans, { tipus: 'OBRE', app: 'parla' } );
+		expect( p.inici ).toBe( false );
+		expect( appActiva( p ) ).toMatchObject( { app: 'parla', clau } );
+		expect( p.apps ).toHaveLength( 2 );
+	} );
+
+	it( 'reinicia buida la pila encara que sigui a l’inici', () => {
+		const p = fes(
+			{ tipus: 'OBRE', app: 'parla' },
+			{ tipus: 'INICI' },
+			{ tipus: 'REINICIA' }
+		);
+		expect( p ).toBe( ESTAT_PILA );
+		expect( p.apps ).toEqual( [] );
 	} );
 
 	it( 'reinicia torna a l’estat inicial', () => {

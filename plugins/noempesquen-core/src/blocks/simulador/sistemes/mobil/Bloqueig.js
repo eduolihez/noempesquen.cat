@@ -137,6 +137,10 @@ export function Bloqueig( { sortint, onFi, onObreGuia } ) {
 				ref={ boto }
 				type="button"
 				className="nep-so-m-bloqueig__entra"
+				onClick={ ( e ) => {
+					e.stopPropagation();
+					desbloqueja();
+				} }
 			>
 				<span className="nep-so-m-bloqueig__ansa" aria-hidden="true" />
 				{ __(

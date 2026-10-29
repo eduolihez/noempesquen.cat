@@ -9,7 +9,6 @@ import {
 } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
-import { recuperaFocus } from '../../simulador/aillament';
 import { APPS_MOBIL } from '../../apps/registre';
 import { FinestraContext, SistemaContext } from '../pc/context';
 import { MobilContext } from './context';
@@ -160,10 +159,31 @@ export default function Mobil() {
 		}
 	}, [ appPrimerPla, pendent, dispatch ] );
 
-	// En tancar l'app activa, el focus no ha de caure a la pàgina.
+	// En canviar de pantalla o desbloquejar, el focus no ha de caure a la
+	// pàgina: si s'ha perdut (body, o dins d'una part inert o amagada), va
+	// al primer icona de l'inici o, dins d'una app, a l'arrel del simulador.
 	useEffect( () => {
-		recuperaFocus( arrel.current?.closest( '.nep-so' ) );
-	}, [ activa?.clau ] );
+		const el = arrel.current;
+		if ( ! el || bloquejat ) {
+			return;
+		}
+		const actiu = el.ownerDocument.activeElement;
+		const perdut =
+			! actiu ||
+			actiu === el.ownerDocument.body ||
+			!! actiu.closest?.( '[inert], [hidden]' );
+		if ( ! perdut ) {
+			return;
+		}
+		const icona = activa
+			? null
+			: el.querySelector( '.nep-so-mobil__inici .nep-so-m-app' );
+		if ( icona ) {
+			icona.focus();
+		} else {
+			el.closest( '.nep-so' )?.focus( { preventScroll: true } );
+		}
+	}, [ activa?.clau, bloquejat ] ); // eslint-disable-line react-hooks/exhaustive-deps -- només en canviar de pantalla o de bloqueig.
 
 	useEffect( () => {
 		const onKeyDown = ( e ) => {
@@ -223,8 +243,12 @@ export default function Mobil() {
 								onObre={ obreCentre }
 								refBoto={ refEstat }
 								to={ activa ? 'clar' : null }
+								inerta={ centre }
 							/>
-							<div className="nep-so-mobil__pantalla">
+							<div
+								className="nep-so-mobil__pantalla"
+								inert={ centre ? '' : undefined }
+							>
 								<div
 									className="nep-so-mobil__inici"
 									hidden={ !! activa }
@@ -246,6 +270,7 @@ export default function Mobil() {
 								aInici={ ! activa }
 								onEnrere={ enrere }
 								onInici={ inici }
+								inerta={ centre }
 							/>
 							<Banners
 								onObre={ obreNotificacio }

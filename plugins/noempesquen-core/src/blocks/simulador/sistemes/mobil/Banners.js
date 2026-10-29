@@ -70,7 +70,11 @@ export function Banners( { onObre, activa, amagats, silenci } ) {
 	const [ ids, setIds ] = useState( [] );
 	const [ anunci, setAnunci ] = useState( '' );
 
-	// Només reacciona a l'arribada de notificacions noves.
+	// Només reacciona a l'arribada de notificacions noves. Les dependències
+	// es limiten a `notificacions` a propòsit: si `joc`, `activa` o `silenci`
+	// hi fossin, el canvi d'app o la sortida del bloqueig tornaria a avaluar
+	// les mateixes notificacions; `activa` i `silenci` es llegeixen tal com
+	// són en el moment en què arriba cada notificació.
 	useEffect( () => {
 		if ( ! notificacions.length ) {
 			vistes.current = new Set();

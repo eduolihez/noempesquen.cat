@@ -31,8 +31,17 @@ function Indicadors( { hora } ) {
  * @param {Function} props.onObre     Obre el centre de control.
  * @param {Object}   props.refBoto    Ref del botó (hi torna el focus).
  * @param {?string}  props.to         'clar' (text fosc) o null (text blanc).
+ * @param {boolean}  props.inerta     Un diàleg modal la tapa (centre de control).
  */
-export function BarraEstat( { hora, decorativa, obert, onObre, refBoto, to } ) {
+export function BarraEstat( {
+	hora,
+	decorativa,
+	obert,
+	onObre,
+	refBoto,
+	to,
+	inerta,
+} ) {
 	const inici = useRef( null );
 	const classe = `nep-so-m-estat${ to === 'clar' ? ' is-clar' : '' }`;
 
@@ -49,6 +58,7 @@ export function BarraEstat( { hora, decorativa, obert, onObre, refBoto, to } ) {
 			ref={ refBoto }
 			type="button"
 			className={ classe }
+			inert={ inerta ? '' : undefined }
 			aria-expanded={ obert }
 			aria-label={ `${ hora }. ${ __(
 				'Obre el centre de control',

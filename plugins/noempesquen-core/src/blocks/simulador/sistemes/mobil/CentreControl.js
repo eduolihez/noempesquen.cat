@@ -54,6 +54,7 @@ export function CentreControl( { onTanca, onObre, origen } ) {
 				ref={ panell }
 				className="nep-so-m-centre"
 				role="dialog"
+				aria-modal="true"
 				aria-label={ __( 'Centre de control', 'noempesquen' ) }
 				tabIndex={ -1 }
 				onPointerDown={ ( e ) => {
@@ -80,6 +81,7 @@ export function CentreControl( { onTanca, onObre, origen } ) {
 						type="button"
 						className="nep-so-m-centre__control"
 						aria-pressed={ estat.lupa }
+						aria-keyshortcuts="Alt+Shift+L"
 						data-focus-inicial
 						onClick={ () => {
 							dispatch( { tipus: 'LUPA' } );
