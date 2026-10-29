@@ -3,8 +3,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Inspeccionable } from '../../ui/Inspeccionable';
 import { CampSuggerit } from './CampSuggerit';
-import { IconaCadenat } from '../llum-clara/Marca';
 import { datesEnviades } from './formulari';
+import { IconaCadenat } from './icones';
 
 const CURTS = [ 'caducitat', 'cvv' ];
 const AMAGATS = [ 'cvv', 'pin' ];
