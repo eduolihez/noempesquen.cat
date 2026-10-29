@@ -40,12 +40,12 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 	}
 
 	// Sempre s'intercepta: cap gest (clic, Ctrl+clic, clic del mig, menÃº
-	// contextual) ha de portar el navegador real a una URL del joc.
+	// contextual, arrossegar) ha de portar el navegador real a una URL del joc.
 	const obre = ( e ) => {
 		e.preventDefault();
 		onEnllac?.( url );
 	};
-	// Només el botó del mig obre; la resta de botons auxiliars s'ignoren.
+	// NomÃ©s el botÃ³ del mig obre; la resta de botons auxiliars s'ignoren.
 	const obreAux = ( e ) => {
 		e.preventDefault();
 		if ( e.button === 1 ) {
@@ -59,6 +59,7 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 			onClick={ obre }
 			onAuxClick={ obreAux }
 			onContextMenu={ ( e ) => e.preventDefault() }
+			onDragStart={ ( e ) => e.preventDefault() }
 			{ ...hover }
 		>
 			{ text }

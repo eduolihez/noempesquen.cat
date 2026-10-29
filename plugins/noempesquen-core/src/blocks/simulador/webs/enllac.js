@@ -1,6 +1,7 @@
 /**
  * Propietats d'un <a> dins del navegador simulat: mostra la URL a la barra
- * d'estat en passar-hi o enfocar-lo i mai deixa que el navegador real hi vagi.
+ * d'estat en passar-hi o enfocar-lo i mai deixa que el navegador real hi vagi
+ * (ni amb el menú contextual ni arrossegant-lo a una pestanya real).
  *
  * @param {string}   url        Destí.
  * @param {Function} accio      Crida amb la URL en fer-hi clic (o clic del mig).
@@ -20,6 +21,8 @@ export function propsEnllac( url, accio, onHoverUrl ) {
 				accio( url );
 			}
 		},
+		onContextMenu: ( e ) => e.preventDefault(),
+		onDragStart: ( e ) => e.preventDefault(),
 		onMouseEnter: () => onHoverUrl?.( url ),
 		onMouseLeave: () => onHoverUrl?.( null ),
 		onFocus: () => onHoverUrl?.( url ),
