@@ -69,7 +69,7 @@ Cada missió és un fitxer JSON a `plugins/noempesquen-core/missions/`. El simul
 
 # Format v2
 
-El simulador realista només juga missions amb `"versio": 2`. El camp `app` desapareix: la missió descriu les apps que hi surten. El validador és `SIM/nucli/valida.js` (`validaMissio`). Exemple complet: `plugins/noempesquen-core/missions/llissa-01-factura.v2.json`. Les dades compartides (contactes, xats i correus de farciment) són a `plugins/noempesquen-core/missions/mon.json`.
+El simulador realista només juga missions amb `"versio": 2`. El camp `app` desapareix: la missió descriu les apps que hi surten. El validador és `SIM/nucli/valida.js` (`validaMissio`). Exemple complet: `plugins/noempesquen-core/missions/llissa-01-factura.json`. Les dades compartides (contactes, xats i correus de farciment) són a `plugins/noempesquen-core/missions/mon.json`.
 
 Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajudes), `apps`, `webs` i `disparadors`. Es mantenen `senyals`, `frases`, `decisio` i `tancament`; `frases.esquer` passa a `frases.pescat` i s'hi afegeix `frases.web_falsa`.
 

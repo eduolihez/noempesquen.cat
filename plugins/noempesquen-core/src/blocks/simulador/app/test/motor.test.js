@@ -6,7 +6,6 @@ import {
 	puntuacio,
 	validaMissio,
 } from '../motor';
-import llissa from '../../../../../missions/llissa-01-factura.json';
 import remei from '../../../../../missions/remei-01-paquet.json';
 
 const juga = ( missio, accions ) =>
@@ -15,10 +14,7 @@ const juga = ( missio, accions ) =>
 		estatInicial( missio )
 	);
 
-describe.each( [
-	[ 'llissa', llissa ],
-	[ 'remei', remei ],
-] )( 'missió %s', ( _nom, missio ) => {
+describe.each( [ [ 'remei', remei ] ] )( 'missió %s', ( _nom, missio ) => {
 	test( 'és vàlida', () => {
 		expect( validaMissio( missio ) ).toEqual( [] );
 	} );
@@ -105,7 +101,7 @@ describe.each( [
 } );
 
 test( 'validaMissio detecta senyals inexistents', () => {
-	const trencada = JSON.parse( JSON.stringify( llissa ) );
+	const trencada = JSON.parse( JSON.stringify( remei ) );
 	trencada.missatges[ 1 ].cos[ 0 ][ 0 ].senyal = 'no-existeix';
 	expect( validaMissio( trencada ) ).toContain(
 		'senyal desconegut: no-existeix'

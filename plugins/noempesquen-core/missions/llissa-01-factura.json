@@ -1,147 +1,277 @@
 {
-  "id": "llissa-01-factura",
-  "versio": 1,
-  "titol": "La factura de la llum",
-  "resum": "Un correu diu que et tallaran la llum avui si no pagues. És de veritat?",
-  "dispositiu": "pc",
-  "app": "correu",
-  "personatge": "llissa",
-  "nivell": 1,
-  "durada_minuts": 4,
-  "intro": [
-    "Hola! Sóc la Llissa. Aquesta cicatriu del llavi és d'un ham que vaig picar de jove. Des de llavors no se m'escapa ni un.",
-    "Els estafadors fan com els pescadors: posen un esquer bonic i esperen que hi mosseguis. Al correu, l'esquer és un missatge que sembla de veritat.",
-    "Tens tres correus nous i un és una trampa. Obre'ls, activa la lupa i marca tot el que et sembli sospitós. Quan ho tinguis clar, decideix què en fas."
-  ],
-  "instruccions": "Troba el correu trampa, marca'n els indicis amb la lupa i després decideix.",
-  "missatges": [
-    {
-      "id": "m1",
-      "objectiu": false,
-      "remitent": { "nom": "Biblioteca del Barri", "adreca": "avisos@bibliotequesdelbarri.cat" },
-      "assumpte": "Recordatori: retorn del llibre",
-      "hora": "08:32",
-      "cos": [
-        [ { "t": "Hola, Àlex:" } ],
-        [ { "t": "Et recordem que el llibre «Mar endins» s'ha de retornar el dia 7. Si el vols allargar, ho pots fer des de la teva àrea de lector o al taulell." } ],
-        [ { "t": "Fins aviat," } ],
-        [ { "t": "Equip de la Biblioteca del Barri" } ]
-      ]
-    },
-    {
-      "id": "m2",
-      "objectiu": true,
-      "remitent": { "nom": "Llum Clara", "adreca": "avisos@llumclara-pagaments.com", "senyal": "remitent" },
-      "assumpte": "URGENT: el teu subministrament es tallarà avui",
-      "assumpte_senyal": "urgencia",
-      "hora": "09:14",
-      "cos": [
-        [ { "t": "Benvolgut client,", "senyal": "salutacio" } ],
-        [
-          { "t": "No hem pogut cobrar la teva última factura de 87,40 €. " },
-          { "t": "Si no regularitzes el pagament en les pròximes 24 hores, tallarem el subministrament elèctric del teu domicili.", "senyal": "amenaca" }
-        ],
-        [
-          { "t": "Per evitar el tall, entra a " },
-          { "enllac": { "text": "Paga ara a llumclara.cat", "url": "http://llumclara-pagaments.com/pagament?ref=88213" }, "senyal": "enllac" },
-          { "t": " i introdueix les dades de la teva targeta bancària.", "senyal": "targeta" }
-        ],
-        [ { "t": "Atentament," } ],
-        [ { "t": "Departament de Facturació" } ]
-      ]
-    },
-    {
-      "id": "m3",
-      "objectiu": false,
-      "remitent": { "nom": "Marta Puig", "adreca": "marta.puig@exemple-feina.cat" },
-      "assumpte": "Reunió de dijous",
-      "hora": "10:05",
-      "cos": [
-        [ { "t": "Ei, Àlex!" } ],
-        [ { "t": "Passem la reunió de dijous a les 11, que a les 10 tinc el dentista. Et va bé? Si no, ho mirem demà al matí." } ],
-        [ { "t": "Gràcies!" } ],
-        [ { "t": "Marta" } ]
-      ]
-    }
-  ],
-  "senyals": [
-    {
-      "id": "remitent",
-      "titol": "L'adreça no és de l'empresa",
-      "explicacio": "El nom diu Llum Clara, però el correu ve de llumclara-pagaments.com. El domini oficial seria llumclara.cat. Els estafadors registren dominis que s'hi assemblen perquè no t'hi fixis.",
-      "reaccio": "Mira què hi ha després de l'arrova. Aquest «-pagaments» no hi hauria de ser."
-    },
-    {
-      "id": "urgencia",
-      "titol": "Pressa a l'assumpte",
-      "explicacio": "Majúscules i «avui» al títol. Volen que actuïs abans de pensar-t'ho.",
-      "reaccio": "Quan l'esquer té pressa, l'ham és a prop."
-    },
-    {
-      "id": "salutacio",
-      "titol": "Salutació genèrica",
-      "explicacio": "La teva companyia sap com et dius. Un «Benvolgut client» serveix per enviar el mateix correu a milers de persones alhora.",
-      "reaccio": "A mi també m'arribaven cucs adreçats a «Benvolgut peix». Mai era res de bo."
-    },
-    {
-      "id": "amenaca",
-      "titol": "Amenaça de tall",
-      "explicacio": "Abans de tallar un servei, les companyies avisen amb temps i per diverses vies. Un ultimàtum de 24 hores per correu és una tècnica de pressió.",
-      "reaccio": "24 hores... Clàssic. La por fa picar més que la gana."
-    },
-    {
-      "id": "enllac",
-      "titol": "L'enllaç amaga on porta",
-      "explicacio": "El text diu llumclara.cat, però si hi passes el ratolí, la barra de baix mostra llumclara-pagaments.com. Mira sempre on porta un enllaç abans de fer-hi clic.",
-      "reaccio": "Has vist la barra de baix? El text diu una cosa i l'enllaç te'n porta a una altra."
-    },
-    {
-      "id": "targeta",
-      "titol": "Et demana la targeta",
-      "explicacio": "Una empresa que ja et cobra per domiciliació no et demanarà les dades de la targeta per un enllaç enviat per correu.",
-      "reaccio": "La targeta per correu? Això és un ham amb cuc i tot."
-    }
-  ],
-  "frases": {
-    "normal": [ "Això sembla normal. Continua buscant.", "Aquí no hi veig cap ham.", "Res d'estrany per aquí." ],
-    "esquer": "Ai, ai, ai. Has fet clic a l'enllaç. Si fos de veritat, ara series en una web que copia la de Llum Clara i que et demanaria la targeta. Tranquil, això és un simulacre."
-  },
-  "decisio": {
-    "pregunta": "Què fas amb el correu de Llum Clara?",
-    "opcions": [
-      {
-        "id": "a",
-        "text": "Faig clic a «Paga ara» i pago, que no em tallin la llum.",
-        "valor": "incorrecta",
-        "resposta": "T'han pescat. La web era una còpia i ara els estafadors tenen les dades de la teva targeta. Si et passa de veritat, truca al banc de seguida per bloquejar-la."
-      },
-      {
-        "id": "b",
-        "text": "Responc al correu per preguntar si és de veritat.",
-        "valor": "incorrecta",
-        "resposta": "Et contestarà el mateix estafador, i et dirà que sí. A més, ara sap que la teva adreça és activa i en rebràs més."
-      },
-      {
-        "id": "c",
-        "text": "Entro a l'app o al web de Llum Clara escrivint jo l'adreça, miro si tinc res pendent i marco el correu com a pesca (phishing).",
-        "valor": "correcta",
-        "resposta": "Perfecte. A la teva àrea de client no hi ha cap deute, així que era una estafa. Marcar-lo com a phishing ajuda el teu correu a frenar-lo també per a altres persones."
-      },
-      {
-        "id": "d",
-        "text": "L'esborro i prou.",
-        "valor": "parcial",
-        "resposta": "No has picat, i això ja és molt. Si a més el marques com a phishing, el teu correu aprèn a bloquejar-los i protegeixes altres persones."
-      }
-    ]
-  },
-  "tancament": {
-    "aprenentatges": [
-      "Mira sempre l'adreça completa del remitent, sobretot el que hi ha després de l'arrova.",
-      "Passa el ratolí per sobre d'un enllaç, sense clicar, per veure on porta de veritat.",
-      "La pressa i les amenaces són senyals d'alarma.",
-      "Si dubtes, entra tu al web o a l'app oficial. Mai des de l'enllaç del correu."
-    ],
-    "consell": "Si ja has posat les dades de la targeta en una web sospitosa, truca al teu banc per bloquejar-la. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
-  }
+	"id": "llissa-01-factura",
+	"versio": 2,
+	"titol": "La factura de la llum",
+	"resum": "Un correu diu que et tallaran la llum avui si no pagues. És de veritat?",
+	"dispositiu": "pc",
+	"personatge": "llissa",
+	"nivell": 1,
+	"durada_minuts": 5,
+	"rellotge": "09:12",
+	"intro": [
+		"Hola, Àlex! Sóc la Llissa. Aquesta cicatriu del llavi és d'un ham que vaig picar de jove. Des de llavors no se m'escapa ni un.",
+		"Els estafadors fan com els pescadors: posen un esquer bonic i esperen que hi mosseguis. Al correu, l'esquer és un missatge que sembla de veritat.",
+		"Obre Posta i mira què et va arribant. Si en veus un de sospitós, activa la lupa i marca el que no et quadri. Jo em quedo per aquí, al xat."
+	],
+	"instruccions": "Espera que t'arribi un correu nou a Posta, obre'l, busca'n els indicis amb la lupa i decideix què en fas.",
+	"pistes": [
+		"Obre Posta i fixa't en el correu nou. Qui l'envia?",
+		"Passa el ratolí per sobre de l'enllaç sense clicar-hi: la barra de baix et diu on porta de veritat.",
+		"Si dubtes, no facis servir l'enllaç. Escriu tu l'adreça de Llum Clara al navegador, o marca el correu com a phishing."
+	],
+	"apps": {
+		"posta": {
+			"correus": [
+				{
+					"id": "m2",
+					"objectiu": true,
+					"ocult": true,
+					"carpeta": "entrada",
+					"llegit": false,
+					"data": "09:14",
+					"remitent": {
+						"nom": "Llum Clara",
+						"adreca": "avisos@llumclara-pagaments.com",
+						"senyal": "remitent"
+					},
+					"assumpte": "URGENT: el teu subministrament es tallarà avui",
+					"assumpte_senyal": "urgencia",
+					"cos": [
+						[ { "t": "Benvolgut client,", "senyal": "salutacio" } ],
+						[
+							{
+								"t": "No hem pogut cobrar la teva última factura de 87,40 €. "
+							},
+							{
+								"t": "Si no regularitzes el pagament en les pròximes 24 hores, tallarem el subministrament elèctric del teu domicili.",
+								"senyal": "amenaca"
+							}
+						],
+						[
+							{ "t": "Per evitar el tall, entra a " },
+							{
+								"enllac": {
+									"text": "Paga ara a llumclara.cat",
+									"url": "http://llumclara-pagaments.com/pagament?ref=88213"
+								},
+								"senyal": "enllac"
+							},
+							{
+								"t": " i introdueix les dades de la teva targeta bancària.",
+								"senyal": "targeta"
+							}
+						],
+						[ { "t": "Atentament," } ],
+						[ { "t": "Departament de Facturació" } ]
+					]
+				}
+			]
+		},
+		"navegador": { "inici": [ "https://posta.cat/" ] }
+	},
+	"webs": {
+		"posta.cat": {
+			"plantilla": "posta",
+			"https": true,
+			"titol": "Posta"
+		},
+		"llumclara.cat": {
+			"plantilla": "llum-clara",
+			"variant": "oficial",
+			"https": true,
+			"titol": "Llum Clara · Àrea de client",
+			"missatge": "No tens cap factura pendent"
+		},
+		"llumclara-pagaments.com": {
+			"plantilla": "llum-clara",
+			"variant": "falsa",
+			"https": true,
+			"titol": "Llum Clara · Pagament de factura",
+			"domini_senyal": "domini",
+			"formulari": {
+				"id": "targeta",
+				"boto": "Paga 87,40 €",
+				"camps": [
+					{
+						"id": "titular",
+						"etiqueta": "Titular de la targeta",
+						"autoompli": "Àlex Puig"
+					},
+					{
+						"id": "numero",
+						"etiqueta": "Número de targeta",
+						"autoompli": "4000 1234 5678 9010"
+					},
+					{
+						"id": "caducitat",
+						"etiqueta": "Caducitat",
+						"autoompli": "08/28"
+					},
+					{
+						"id": "cvv",
+						"etiqueta": "CVV",
+						"autoompli": "123",
+						"senyal": "targeta"
+					},
+					{
+						"id": "pin",
+						"etiqueta": "PIN de la targeta",
+						"autoompli": "1234",
+						"senyal": "targeta"
+					}
+				]
+			}
+		}
+	},
+	"disparadors": [
+		{
+			"id": "arriba-trampa",
+			"quan": { "esdeveniment": "inici" },
+			"retard": 8,
+			"efectes": [
+				{ "tipus": "mostra", "id": "m2" },
+				{
+					"tipus": "notifica",
+					"app": "posta",
+					"titol": "Llum Clara",
+					"text": "URGENT: el teu subministrament es tallarà avui"
+				}
+			]
+		},
+		{
+			"id": "web-falsa",
+			"quan": {
+				"esdeveniment": "web.carrega",
+				"url": "llumclara-pagaments.com"
+			},
+			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
+		},
+		{
+			"id": "pagat",
+			"quan": {
+				"esdeveniment": "formulari.envia",
+				"url": "llumclara-pagaments.com"
+			},
+			"efectes": [ { "tipus": "pescat" } ]
+		},
+		{
+			"id": "phishing",
+			"quan": {
+				"esdeveniment": "correu.marca",
+				"id": "m2",
+				"com": "phishing"
+			},
+			"efectes": [ { "tipus": "decideix", "opcio": "c" } ]
+		},
+		{
+			"id": "esborrat",
+			"quan": {
+				"esdeveniment": "correu.marca",
+				"id": "m2",
+				"com": "esborra"
+			},
+			"efectes": [ { "tipus": "decideix", "opcio": "d" } ]
+		},
+		{
+			"id": "brossa",
+			"quan": {
+				"esdeveniment": "correu.marca",
+				"id": "m2",
+				"com": "brossa"
+			},
+			"efectes": [ { "tipus": "decideix", "opcio": "d" } ]
+		}
+	],
+	"senyals": [
+		{
+			"id": "remitent",
+			"titol": "L'adreça no és de l'empresa",
+			"explicacio": "El nom diu Llum Clara, però el correu ve de llumclara-pagaments.com. El domini oficial seria llumclara.cat. Els estafadors registren dominis que s'hi assemblen perquè no t'hi fixis.",
+			"reaccio": "Mira què hi ha després de l'arrova. Aquest «-pagaments» no hi hauria de ser."
+		},
+		{
+			"id": "urgencia",
+			"titol": "Pressa a l'assumpte",
+			"explicacio": "Majúscules i «avui» al títol. Volen que actuïs abans de pensar-t'ho.",
+			"reaccio": "Quan l'esquer té pressa, l'ham és a prop."
+		},
+		{
+			"id": "salutacio",
+			"titol": "Salutació genèrica",
+			"explicacio": "La teva companyia sap com et dius. Un «Benvolgut client» serveix per enviar el mateix correu a milers de persones alhora.",
+			"reaccio": "A mi també m'arribaven cucs adreçats a «Benvolgut peix». Mai era res de bo."
+		},
+		{
+			"id": "amenaca",
+			"titol": "Amenaça de tall",
+			"explicacio": "Abans de tallar un servei, les companyies avisen amb temps i per diverses vies. Un ultimàtum de 24 hores per correu és una tècnica de pressió.",
+			"reaccio": "24 hores... Clàssic. La por fa picar més que la gana."
+		},
+		{
+			"id": "enllac",
+			"titol": "L'enllaç amaga on porta",
+			"explicacio": "El text diu llumclara.cat, però si hi passes el ratolí, la barra de baix mostra llumclara-pagaments.com. Mira sempre on porta un enllaç abans de fer-hi clic.",
+			"reaccio": "Has vist la barra de baix? El text diu una cosa i l'enllaç te'n porta a una altra."
+		},
+		{
+			"id": "targeta",
+			"titol": "Et demana la targeta",
+			"explicacio": "Una empresa que ja et cobra per domiciliació no et demanarà les dades de la targeta per un enllaç enviat per correu. I el PIN no l'ha de demanar mai ningú.",
+			"reaccio": "La targeta per correu? Això és un ham amb cuc i tot."
+		},
+		{
+			"id": "domini",
+			"titol": "L'adreça de la web no és l'oficial",
+			"explicacio": "La barra d'adreces diu llumclara-pagaments.com, no llumclara.cat. Que tingui cadenat no vol dir que sigui fiable: només vol dir que la connexió està xifrada, també amb els estafadors.",
+			"reaccio": "Mira la barra de dalt. Té cadenat, sí, però l'adreça no és la de Llum Clara. El cadenat no t'assegura res."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això sembla normal. Continua buscant.",
+			"Aquí no hi veig cap ham.",
+			"Res d'estrany per aquí."
+		],
+		"web_falsa": "Ho has obert. Fixa't bé en aquesta web: s'assembla a la de Llum Clara, però mira l'adreça de dalt. I tingues present que és un simulacre, no hi posis res de veritat.",
+		"pescat": "Ai, ai, ai. Has enviat les dades. Si fos de veritat, ara els estafadors tindrien la teva targeta. Tranquil, això és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb el correu de Llum Clara?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Faig clic a «Paga ara» i pago, que no em tallin la llum.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. La web era una còpia i ara els estafadors tenen les dades de la teva targeta. Si et passa de veritat, truca al banc de seguida per bloquejar-la."
+			},
+			{
+				"id": "b",
+				"text": "Responc al correu per preguntar si és de veritat.",
+				"valor": "incorrecta",
+				"resposta": "Et contestarà el mateix estafador, i et dirà que sí. A més, ara sap que la teva adreça és activa i en rebràs més."
+			},
+			{
+				"id": "c",
+				"text": "Entro a l'app o al web de Llum Clara escrivint jo l'adreça, miro si tinc res pendent i marco el correu com a pesca (phishing).",
+				"valor": "correcta",
+				"resposta": "Perfecte. A la teva àrea de client no hi ha cap deute, així que era una estafa. Marcar-lo com a phishing ajuda el teu correu a frenar-lo també per a altres persones."
+			},
+			{
+				"id": "d",
+				"text": "L'esborro i prou.",
+				"valor": "parcial",
+				"resposta": "No has picat, i això ja és molt. Si a més el marques com a phishing, el teu correu aprèn a bloquejar-los i protegeixes altres persones."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"Mira sempre l'adreça completa del remitent, sobretot el que hi ha després de l'arrova.",
+			"Passa el ratolí per sobre d'un enllaç, sense clicar, per veure on porta de veritat.",
+			"La pressa i les amenaces són senyals d'alarma.",
+			"El cadenat de la barra d'adreces no garanteix que una web sigui fiable.",
+			"Si dubtes, entra tu al web o a l'app oficial. Mai des de l'enllaç del correu."
+		],
+		"consell": "Si ja has posat les dades de la targeta en una web sospitosa, truca al teu banc per bloquejar-la. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
 }

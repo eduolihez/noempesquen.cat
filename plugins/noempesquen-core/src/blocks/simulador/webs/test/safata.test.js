@@ -21,7 +21,7 @@ const llegeix = ( nom ) =>
 			'utf8'
 		)
 	);
-const m = llegeix( 'llissa-01-factura.v2.json' );
+const m = llegeix( 'llissa-01-factura.json' );
 const mon = llegeix( 'mon.json' );
 const ids = ( llista ) => llista.map( ( c ) => c.id );
 

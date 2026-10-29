@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { validaMissio } from '../valida.js';
 
 const ruta = new URL(
-	'../../../../../missions/llissa-01-factura.v2.json',
+	'../../../../../missions/llissa-01-factura.json',
 	import.meta.url
 );
 const factura = JSON.parse( readFileSync( ruta, 'utf8' ) );

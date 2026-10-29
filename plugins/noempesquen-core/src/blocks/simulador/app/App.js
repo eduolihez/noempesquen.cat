@@ -14,7 +14,7 @@ import { Escriptori } from './Escriptori';
 import { Mobil } from './Mobil';
 import { Bombolla, Decisio, Consequencia, Resultat } from './Pantalles';
 import { Simulador } from '../simulador/Simulador';
-import llissa01 from '../../../../missions/llissa-01-factura.v2.json';
+import llissa01 from '../../../../missions/llissa-01-factura.json';
 import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 

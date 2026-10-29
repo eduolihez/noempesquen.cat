@@ -12,7 +12,7 @@ import {
 } from '../motor.js';
 
 const ruta = new URL(
-	'../../../../../missions/llissa-01-factura.v2.json',
+	'../../../../../missions/llissa-01-factura.json',
 	import.meta.url
 );
 const m = JSON.parse( readFileSync( ruta, 'utf8' ) );
