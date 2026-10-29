@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
-import { CampSuggerit } from './CampSuggerit';
+import { CampSuggerit } from '../comu/CampSuggerit';
 import { IconaCorrecte, IconaFactura } from './Marca';
 
 /* Contrasenya inventada que «recorda» el navegador simulat (es veu amb punts). */
