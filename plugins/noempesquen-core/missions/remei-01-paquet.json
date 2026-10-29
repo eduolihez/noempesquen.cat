@@ -13,7 +13,7 @@
 		"Ara els lladres pesquen pel mòbil. T'envien un SMS que sembla de la missatgeria, del banc o de Trànsit, i esperen que hi toquis sense pensar.",
 		"Obre Missatges i espera que et n'arribi algun. Si en veus un de trampa, activa la lupa i toca el que et faci mala espina. Jo em quedo per aquí, a Parla."
 	],
-	"instruccions": "Espera que t'arribi un SMS nou a Missatges, obre'l, busca'n els indicis amb la lupa i decideix què en fas.",
+	"instruccions": "Espera que t'arribi un SMS nou a Missatges, obre'l, busca'n els indicis amb la lupa i decideix què en fas. La lupa s'activa des del centre de control: llisca cap avall des de dalt de la pantalla i toca «Lupa».",
 	"pistes": [
 		"Obre Missatges i fixa't en el SMS nou. Qui l'envia?",
 		"Mantén premut l'enllaç, sense obrir-lo, per veure l'adreça sencera.",
@@ -198,7 +198,7 @@
 			"Ni olor d'estafa."
 		],
 		"web_falsa": "Ho has obert. Mira bé l'adreça de dalt: no és enviat.cat. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"pescat": "Ai, criatura! Has enviat les dades. Si fos de veritat, ara els lladres tindrien la teva targeta per aquest «només» 1,99 €. Tranquil, que això és un simulacre.",
+		"pescat": "Ai, criatura! Has enviat les dades. Si fos de veritat, ara els lladres tindrien la teva targeta per només 1,99 €. Tranquil, que això és un simulacre.",
 		"esborra_sol": "Esborrar-lo està bé, però el número et pot seguir escrivint. Bloqueja també el número perquè no insisteixin."
 	},
 	"decisio": {
@@ -214,11 +214,11 @@
 				"id": "b",
 				"text": "Responc «STOP» perquè no m'enviïn més missatges.",
 				"valor": "incorrecta",
-				"resposta": "Si respons, confirmes que el número és actiu i que hi ha algú a l'altra banda. En rebràs més."
+				"resposta": "Respondre, sigui el que sigui, confirma que el número és actiu i que hi ha algú a l'altra banda. En rebràs més."
 			},
 			{
 				"id": "c",
-				"text": "No toco res, bloquejo el número i esborro el missatge. Si esperés un paquet, ho miraria a la web oficial.",
+				"text": "No toco res i bloquejo el número. Si esperés un paquet, ho miraria a la web oficial.",
 				"valor": "correcta",
 				"resposta": "Ben fet! Esborrar i bloquejar talla el fil. I si de veritat esperes un paquet, el número de seguiment de la botiga o a enviat.cat et dirà on és."
 			},
@@ -226,7 +226,7 @@
 				"id": "d",
 				"text": "El reenvio a la Família per preguntar si algú ha demanat res.",
 				"valor": "parcial",
-				"resposta": "Bona intenció, però així el missatge arriba a més gent i algú hi pot tocar. Pregunta-ho sense reenviar l'enllaç."
+				"resposta": "Bona intenció: preguntar és prudent. Però el que falla és reenviar l'enllaç, perquè així arriba a més gent i algú hi pot tocar. Pregunta-ho sense reenviar-lo."
 			}
 		]
 	},
