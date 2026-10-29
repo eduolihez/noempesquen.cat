@@ -45,12 +45,19 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 		e.preventDefault();
 		onEnllac?.( url );
 	};
+	// Només el botó del mig obre; la resta de botons auxiliars s'ignoren.
+	const obreAux = ( e ) => {
+		e.preventDefault();
+		if ( e.button === 1 ) {
+			onEnllac?.( url );
+		}
+	};
 	return (
 		<a
 			href={ url }
 			className={ `nep-enllac${ trobat ? ' nep-marcat' : '' }` }
 			onClick={ obre }
-			onAuxClick={ obre }
+			onAuxClick={ obreAux }
 			onContextMenu={ ( e ) => e.preventDefault() }
 			{ ...hover }
 		>
