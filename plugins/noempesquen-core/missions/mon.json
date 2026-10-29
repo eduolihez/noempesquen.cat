@@ -2,11 +2,77 @@
 	"jugador": { "nom": "Àlex Puig", "correu": "alex.puig@posta.cat" },
 	"contactes": [
 		{ "id": "llissa", "nom": "Llissa", "rol": "guia" },
+		{ "id": "remei", "nom": "Remei", "rol": "guia" },
 		{ "id": "marta", "nom": "Marta", "rol": "amiga" },
 		{ "id": "pau", "nom": "Pau", "rol": "fill" },
 		{ "id": "mare", "nom": "Mama", "rol": "família" },
-		{ "id": "biblioteca", "nom": "Biblioteca del Barri", "rol": "servei" }
+		{ "id": "biblioteca", "nom": "Biblioteca del Barri", "rol": "servei" },
+		{ "id": "farmacia", "nom": "Farmàcia del Barri", "rol": "servei" },
+		{ "id": "banc", "nom": "Banc Sòlid", "rol": "servei" },
+		{
+			"id": "numero_desconegut",
+			"nom": "+44 7700 900461",
+			"rol": "desconegut"
+		}
 	],
+	"missatges": {
+		"fils": [
+			{
+				"id": "pau",
+				"nom": "Pau",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Diumenge vinc a dinar. Porto les postres!",
+						"hora": "18:02"
+					},
+					{
+						"de": "jo",
+						"text": "Perfecte. Aquí us esperem.",
+						"hora": "18:10"
+					}
+				]
+			},
+			{
+				"id": "farmacia",
+				"nom": "Farmàcia del Barri",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Bon vespre, Àlex. La teva comanda ja és a punt. Pots passar a recollir-la de 9 a 20 h.",
+						"hora": "20:15"
+					}
+				]
+			},
+			{
+				"id": "banc",
+				"nom": "Banc Sòlid",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Banc Sòlid: has fet una compra de 24,90 € amb la targeta acabada en 9010. Si no la reconeixes, truca al número que hi ha al dors de la targeta.",
+						"hora": "dl. 11:20"
+					}
+				]
+			},
+			{
+				"id": "mare",
+				"nom": "Mama",
+				"missatges": [
+					{
+						"de": "ella",
+						"text": "Àlex, no t'oblidis del pa per diumenge.",
+						"hora": "dl. 21:05"
+					},
+					{
+						"de": "jo",
+						"text": "Tranquil·la, el passo a buscar.",
+						"hora": "dl. 21:12"
+					}
+				]
+			}
+		]
+	},
 	"parla": {
 		"xats": [
 			{
