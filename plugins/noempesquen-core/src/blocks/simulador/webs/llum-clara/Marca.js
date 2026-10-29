@@ -4,6 +4,8 @@
  * peça i el nom amb un altre pes i un blau una mica diferent.
  */
 
+import { Glif24 } from '../comu/icones';
+
 function Bombeta( { falsa } ) {
 	if ( falsa ) {
 		return (
@@ -76,26 +78,6 @@ export function MarcaLlumClara( { falsa = false } ) {
 	);
 }
 
-/* Glifs propis de les webs de Llum Clara (graella de 24, traç d'1,8). */
-function Glif24( { children, mida = 20 } ) {
-	return (
-		<svg
-			viewBox="0 0 24 24"
-			width={ mida }
-			height={ mida }
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="1.8"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			aria-hidden="true"
-			focusable="false"
-		>
-			{ children }
-		</svg>
-	);
-}
-
 export const IconaAvis = ( p ) => (
 	<Glif24 { ...p }>
 		<path d="M12 3.6 2.8 19.4h18.4z" />
@@ -108,13 +90,6 @@ export const IconaCorrecte = ( p ) => (
 	<Glif24 { ...p }>
 		<circle cx="12" cy="12" r="9" />
 		<path d="m7.8 12.3 2.8 2.8 5.6-5.8" />
-	</Glif24>
-);
-
-export const IconaCadenat = ( p ) => (
-	<Glif24 { ...p }>
-		<rect x="5" y="10.5" width="14" height="10" rx="2" />
-		<path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7" />
 	</Glif24>
 );
 

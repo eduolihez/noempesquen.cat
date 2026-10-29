@@ -47,7 +47,7 @@ export function recuperaFocus( arrel ) {
 
 /**
  * Fa `inert` tota la pàgina de fora de l'arrel (germans de cada avantpassat
- * fins a <body>) i, en desmuntar, ho deixa exactament com estava.
+ * fins a <body>, i els que s'hi afegeixin després) i, en desmuntar, ho deixa exactament com estava.
  *
  * @param {HTMLElement} arrel Arrel del simulador.
  * @return {Function} Desfà els canvis.
@@ -55,19 +55,36 @@ export function recuperaFocus( arrel ) {
 function inertitzaFora( arrel ) {
 	const marcats = [];
 	const body = arrel.ownerDocument.body;
+	const marca = ( germa ) => {
+		if (
+			germa.nodeType === 1 &&
+			! germa.contains( arrel ) &&
+			! arrel.contains( germa ) &&
+			! germa.hasAttribute( 'inert' ) &&
+			! SENSE_CONTINGUT.includes( germa.tagName )
+		) {
+			germa.setAttribute( 'inert', '' );
+			marcats.push( germa );
+		}
+	};
 	for ( let el = arrel; el && el !== body; el = el.parentElement ) {
 		for ( const germa of el.parentElement?.children ?? [] ) {
-			if (
-				germa !== el &&
-				! germa.hasAttribute( 'inert' ) &&
-				! SENSE_CONTINGUT.includes( germa.tagName )
-			) {
-				germa.setAttribute( 'inert', '' );
-				marcats.push( germa );
+			if ( germa !== el ) {
+				marca( germa );
 			}
 		}
 	}
-	return () => marcats.forEach( ( el ) => el.removeAttribute( 'inert' ) );
+	// Nodes afegits a <body> després de muntar (extensions, banners...).
+	const observador = new arrel.ownerDocument.defaultView.MutationObserver(
+		( mutacions ) => {
+			mutacions.forEach( ( m ) => m.addedNodes.forEach( marca ) );
+		}
+	);
+	observador.observe( body, { childList: true } );
+	return () => {
+		observador.disconnect();
+		marcats.forEach( ( el ) => el.removeAttribute( 'inert' ) );
+	};
 }
 
 /**

@@ -3,7 +3,7 @@ import { propsEnllac } from '../enllac';
 import { MarcaLlumClara } from './Marca';
 import { Oficial, enllacosLegals } from './Oficial';
 import { Falsa } from './Falsa';
-import { seccioOficial } from './formulari';
+import { seccioOficial } from '../comu/formulari';
 
 function origen( url ) {
 	try {

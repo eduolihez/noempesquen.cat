@@ -9,7 +9,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase / corte     | Contenido                                                                                                                                                                                           | Estado                                                                                                          |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Fase 1 · corte 1 | Núcleo v2, PC simulado, Navegador, Parla, Posta, Llum Clara, misión «La factura de la llum»                                                                                                         | **Hecho** (merge a `master` el 2026-10-29, plan `docs/superpowers/plans/2026-10-29-fase1-corte1-pc-factura.md`) |
-| Fase 1 · corte 2 | Sistema móvil (bloqueo, inicio, centro de control, banners), Missatges, Parla móvil, Navegador móvil, webs de Envia't; reescribir «El paquet retingut» a v2; **eliminar el legado v1** (`SIM/app/`) | **Siguiente**                                                                                                   |
+| Fase 1 · corte 2 | Sistema móvil (bloqueo, inicio, centro de control, banners), Missatges, Parla móvil, Navegador móvil, webs de Envia't; reescribir «El paquet retingut» a v2; **eliminar el legado v1** (`SIM/app/`) | **Implementado en la rama `feat/fase1-corte2-mobil`** (T0-T10; falta revisión final, fase 6 y merge con confirmación) |
 | Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla                                                             | Pendiente                                                                                                       |
 | Fase 1 · corte 4 | Apps de relleno (Galeria, Ajustos, Càmera, Calculadora, Rellotge, Ullada, El Diari del Barri), PC en móvil horizontal, selector rediseñado, sonidos, revisión visual y de accesibilidad             | Pendiente                                                                                                       |
 | Fase 2 y 3       | Misiones 5-10: sorteo falso en Ullada, robo del código de Parla, comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
@@ -26,16 +26,16 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 - En Chrome con ventana visible: `Esc` real durante la misión debe abrir la pausa y mantener el simulador cubriendo la pantalla (los e2e solo simulan `document.exitFullscreen()`). Con «Més» o el candado abiertos, `Esc` los cierra primero.
 
-### Para el corte 2 (o antes)
+### Pendiente tras el corte 2
 
-- Legado v1 (`SIM/app/`): la lupa se come los espacios alrededor del texto inspeccionable y la Remei dice «Tranquil,» (no neutro). Desaparece al reescribir el paquete a v2.
-- Con `prefers-reduced-motion`, un `Esc` en los primeros 450 ms de un tooltip de la barra de tareas abre la pausa en vez de ocultarlo (`SIM/sistemes/pc/usePista.js`).
-- `inert` de aislamiento solo se aplica a lo que existe en `<body>` al montar el simulador; widgets inyectados después siguen visibles para el lector de pantalla (`SIM/simulador/aillament.js`).
-- La barra de tareas desborda a ~400 px (se resuelve con «PC en móvil», corte 4).
+- La barra de tareas del PC desborda a ~400 px (se resuelve con «PC en móvil», corte 4).
+- Sin tests propios para el `Esc` con `prefers-reduced-motion` de `usePista.js` ni para el `MutationObserver` de `aillament.js`.
+- Móvil: tipografía Roboto empaquetada, Ajustos y apps de relleno (corte 4). «Apagar» (pausa) vive en el centro de control hasta entonces.
+- Menores: `IconaCadenat` vive en `llum-clara/Marca` y lo importa `webs/comu`; Envia't reutiliza estilos `nep-lc-*`; el `role="status"` de la web oficial de Envia't debería estar siempre en el DOM; `reset`/`enfocaAdreca` duplicado entre `Navegador` y `NavegadorMobil`; reabrir el mismo xat de Parla no recoloca el foco; el banner de Missatges abre la lista, no la conversación.
 
 ### Antes de abrir la creación de misiones v2 desde el panel (CPT)
 
-- El validador no comprueba que `mostra.id` exista ni que `notifica.app` sea una app conocida; `APPS_PC` no se usa.
+- El validador no comprueba que las apps de una misión existan en su dispositivo (`APPS_PC`/`APPS_MOBIL`).
 - `validaMissio` puede lanzar con entradas `null` o no-array en `senyals`, `disparadors`, `efectes` u `opcions` (el `.catch` de la carga lo absorbe, pero conviene un `try/catch` en la validación de remotas).
 - `llegeixProgres` debería devolver `{}` si lo guardado no es un objeto.
 - Las misiones remotas v1 o inválidas se ignoran sin aviso (no se añadió el aviso en consola por la regla de no dejar `console`).

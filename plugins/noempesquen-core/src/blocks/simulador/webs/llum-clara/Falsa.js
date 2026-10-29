@@ -1,8 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
-import { FormulariFals } from './FormulariFals';
+import { FormulariFals } from '../comu/FormulariFals';
 import { IconaAvis } from './Marca';
-import { compteEnrere, importDe, referencia } from './formulari';
+import { compteEnrere, importDe, referencia } from '../comu/formulari';
 
 /* El «tall» és d'aquí a gairebé 24 hores; el rellotge del joc el fa baixar. */
 const SEGONS_TALL = 23 * 3600 + 47 * 60 + 12;

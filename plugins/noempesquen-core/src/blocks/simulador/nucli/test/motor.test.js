@@ -248,4 +248,18 @@ describe( 'motor v2', () => {
 			estrelles: 1,
 		} );
 	} );
+
+	it( 'cada pista usada resta 5 punts, sense baixar de 0', () => {
+		let e = finalIntro();
+		e = aplica(
+			e,
+			{ tipus: 'INSPECCIONA', senyal: 'urgencia' },
+			{ tipus: 'INSPECCIONA', senyal: 'enllac' }
+		);
+		const base = puntuacio( m, e ).punts;
+		expect( puntuacio( m, { ...e, pistesDonades: 2 } ).punts ).toBe(
+			base - 10
+		);
+		expect( puntuacio( m, { ...e, pistesDonades: 99 } ).punts ).toBe( 0 );
+	} );
 } );

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 
-/* Ha de coincidir amb el `transition-delay` de `.nep-so-pista`. */
+/* Ha de coincidir amb el `transition-delay` de `.nep-so-pista`; amb moviment
+   reduït no hi ha transició i la pista es veu a l'instant. */
 const RETARD_PISTA = 450;
+const REDUIT = '(prefers-reduced-motion: reduce)';
 const AMB_PISTA = ':scope > .nep-so-pista';
 
 /**
@@ -63,9 +65,16 @@ export function usePistaDescartable( ref ) {
 			return undefined;
 		}
 		let desregistra = null;
-		const temps = setTimeout( () => {
-			desregistra = registraMenu( () => setDescartada( origen ) );
-		}, RETARD_PISTA );
+		const cal = () => setDescartada( origen );
+		const reduit = window.matchMedia( REDUIT ).matches;
+		let temps = null;
+		if ( reduit ) {
+			desregistra = registraMenu( cal );
+		} else {
+			temps = setTimeout( () => {
+				desregistra = registraMenu( cal );
+			}, RETARD_PISTA );
+		}
 		return () => {
 			clearTimeout( temps );
 			desregistra?.();

@@ -17,11 +17,11 @@ Simulador de estafas digitales para los Premis Wapps .cat 2026/27. WordPress (te
 | `SIM/nucli/`                         | Motor puro (sin JSX): `motor.js` (reductor), `disparadors.js` (eventos → efectos), `valida.js`, `missions.js`, `progres.js` |
 | `SIM/simulador/`                     | Carcasa: pantalla completa, pausa, contexto `useJoc()`, consecuencia y resultado, aislamiento de foco                       |
 | `SIM/sistemes/pc/`                   | Ordenador simulado: bloqueo, escritorio, barra de tareas, ventanas, notificaciones                                          |
-| `SIM/apps/`                          | Apps del sistema (`navegador`, `parla`) y su registro `registre.js`                                                         |
-| `SIM/webs/`                          | Webs que carga el navegador (`posta`, `llum-clara`) y su registro                                                           |
+| `SIM/sistemes/mobil/`                | Móvil simulado: bloqueo, inicio, centro de control, banners, barra de navegación, pila de apps (`pila.js`)                  |
+| `SIM/apps/`                          | Apps del sistema (`navegador`, `parla`, `missatges`; cada una con versión PC y/o móvil) y su registro `registre.js` (`APPS_PC`, `APPS_MOBIL`) |
+| `SIM/webs/`                          | Webs que carga el navegador (`posta`, `llum-clara`, `enviat`; formularios comunes en `comu/`) y su registro                                                           |
 | `SIM/ui/`                            | Piezas comunes: `Inspeccionable`, `Cos`, iconos SVG                                                                         |
 | `SIM/estils/`                        | Parciales SCSS, importados desde `SIM/style.scss`                                                                           |
-| `SIM/app/`                           | **Legado v1**: solo sirve la misión del paquete (móvil). Se elimina en el corte 2                                           |
 | `plugins/noempesquen-core/missions/` | Misiones JSON (formato v2 en `docs/format-missions.md`) y `mon.json` (mundo compartido)                                     |
 | `tests/e2e/`                         | Playwright (proyectos `escriptori` y `mobil`)                                                                               |
 

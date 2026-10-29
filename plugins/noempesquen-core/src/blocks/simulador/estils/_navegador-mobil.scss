@@ -1,0 +1,205 @@
+/* Navegador al mòbil: una sola barra a dalt i selector de pestanyes. */
+
+@use "navegador-tokens" as *;
+
+.nep-so .nep-nav--mobil {
+	height: 100%;
+	position: relative;
+
+	.nep-nav__marc {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.nep-nav-eines {
+		flex: 0 0 56px;
+		gap: 0;
+		padding: 0 4px;
+
+		&__boto {
+			flex: 0 0 44px;
+			height: 44px;
+
+			&:focus-visible {
+				outline: 2px solid var(--so-accent, #0b57d0);
+				outline-offset: -2px;
+			}
+		}
+	}
+
+	.nep-nav-eines__comptador {
+		align-items: center;
+		border: 2px solid currentcolor;
+		border-radius: 5px;
+		display: flex;
+		font-size: 12px;
+		font-weight: 600;
+		height: 22px;
+		justify-content: center;
+		min-width: 22px;
+		padding: 0 2px;
+	}
+
+	.nep-nav-adreca {
+		border-radius: 22px;
+		height: 44px;
+		margin: 0 2px;
+		padding-right: 6px;
+	}
+
+	/* A 360 px no hi cap més que el domini: el camp s'enganxa a l'xip. */
+	.nep-nav-adreca__camp {
+		margin-left: 0;
+	}
+
+	/* Objectiu tàctil de 44 px (l'alçada de la píndola). */
+	.nep-nav-adreca__xip {
+		height: 44px;
+		min-width: 44px;
+		padding: 0;
+	}
+
+	/* «No segur» queda només com a icona (el text continua per als lectors). */
+	.nep-nav-adreca__xip--insegur {
+		padding: 0;
+
+		&::after {
+			display: none;
+		}
+
+		> span {
+			block-size: 1px;
+			clip-path: inset(50%);
+			inline-size: 1px;
+			overflow: hidden;
+			position: absolute;
+		}
+	}
+
+	/* Si no hi cap, es retalla el camí (gris), mai el domini. */
+	.nep-nav-adreca__vista > :first-child:not(.nep-nav-adreca__resta) {
+		flex-shrink: 0;
+	}
+
+	/* El xip és a ~96 px de la vora (enrere + endavant): la fitxa
+	   s'alinea a 8 px de la vora esquerra de la pantalla. */
+	.nep-nav-adreca__info {
+		left: -88px;
+		max-width: calc(100vw - 16px);
+	}
+}
+
+/* ---------- Selector de pestanyes (pantalla completa) ---------- */
+.nep-so .nep-nav-selector {
+	background: $nav-franja;
+	color: $nav-text;
+	display: flex;
+	flex-direction: column;
+	inset: 0;
+	position: absolute;
+	z-index: 5;
+
+	&__capcalera {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		padding: 6px 8px;
+	}
+
+	&__accio {
+		align-items: center;
+		border-radius: 22px;
+		display: flex;
+		font-size: 15px;
+		font-weight: 600;
+		gap: 6px;
+		min-height: 44px;
+		padding: 0 14px;
+	}
+
+	&__llista {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: 8px;
+		list-style: none;
+		margin: 0;
+		overflow: auto;
+		padding: 4px 12px 16px;
+	}
+
+	&__pestanya {
+		align-items: center;
+		background: #fff;
+		border: 2px solid transparent;
+		border-radius: $nav-radi;
+		display: flex;
+		margin: 0;
+
+		&.is-activa {
+			border-color: var(--so-accent, #0b57d0);
+		}
+	}
+
+	&__tria {
+		align-items: center;
+		display: flex;
+		flex: 1;
+		gap: 12px;
+		min-height: 56px;
+		min-width: 0;
+		padding: 6px 12px;
+		text-align: left;
+	}
+
+	&__favicon {
+		display: flex;
+		flex: 0 0 20px;
+		justify-content: center;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__titol,
+	&__host {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__titol {
+		font-size: 15px;
+	}
+
+	&__host {
+		color: $nav-text-2;
+		font-size: 13px;
+	}
+
+	&__tanca {
+		align-items: center;
+		border-radius: 50%;
+		color: $nav-icona;
+		display: flex;
+		flex: 0 0 44px;
+		height: 44px;
+		justify-content: center;
+		margin-right: 4px;
+	}
+
+	&__accio,
+	&__tria,
+	&__tanca {
+
+		&:focus-visible {
+			outline: 2px solid var(--so-accent, #0b57d0);
+			outline-offset: -2px;
+		}
+	}
+}

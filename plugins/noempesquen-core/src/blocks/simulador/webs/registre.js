@@ -8,4 +8,5 @@ import { lazy } from '@wordpress/element';
 export const WEBS = {
 	posta: lazy( () => import( './posta/Posta' ) ),
 	'llum-clara': lazy( () => import( './llum-clara/LlumClara' ) ),
+	enviat: lazy( () => import( './enviat/Enviat' ) ),
 };

@@ -5,6 +5,7 @@ import {
 	filtraPerNom,
 	agrupaPerDia,
 	properPas,
+	xatInicial,
 } from '../xats.js';
 
 const xat = ( id, ...hores ) => ( {
@@ -136,5 +137,15 @@ describe( 'properPas', () => {
 			mostrats: 1,
 			escriu: false,
 		} );
+	} );
+} );
+
+describe( 'xatInicial', () => {
+	it( 'obre el guia amb no llegits o per dades', () => {
+		expect( xatInicial( 1, null, 'guia' ) ).toBe( 'guia' );
+		expect( xatInicial( 0, { xat: 'x1' }, 'guia' ) ).toBe( 'x1' );
+	} );
+	it( 'sense res, la llista', () => {
+		expect( xatInicial( 0, undefined, 'guia' ) ).toBeNull();
 	} );
 } );

@@ -9,7 +9,7 @@ import {
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { FASE, estatInicial, reductor, puntuacio } from '../nucli/motor';
-import { PERSONATGES } from '../app/avatars';
+import { PERSONATGES } from '../ui/avatars';
 import { JocContext } from './context';
 import { usePantallaCompleta } from './usePantallaCompleta';
 import { useAillament, recuperaFocus } from './aillament';
@@ -25,6 +25,7 @@ const FASES_FINALS = [ FASE.CONSEQUENCIA, FASE.RESULTAT ];
 const FASES_PAUSABLES = [ FASE.BLOQUEIG, FASE.JOC ];
 const SISTEMES = {
 	pc: lazy( () => import( '../sistemes/pc/Pc' ) ),
+	mobil: lazy( () => import( '../sistemes/mobil/Mobil' ) ),
 };
 
 function Carregant() {

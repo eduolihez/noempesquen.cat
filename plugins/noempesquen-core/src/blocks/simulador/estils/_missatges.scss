@@ -1,0 +1,523 @@
+/* Missatges (SMS) del mòbil: llista, conversa, contactes, fitxa i fulls. */
+
+$sms-accent: #1f5fd1;
+$sms-text: #1a1a1a;
+$sms-text-2: #555b63;
+$sms-vora: #e2e5ea;
+$sms-rebut: #eef1f5;
+$sms-perill: #b42318;
+$sms-fons-full: #fff;
+
+.nep-so .nep-missatges {
+	background: #fff;
+	color: $sms-text;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	position: relative;
+
+	&__vista {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	&__cap {
+		align-items: center;
+		background: #fff;
+		border-bottom: 1px solid $sms-vora;
+		display: flex;
+		gap: 8px;
+		min-height: 56px;
+		padding: 6px 8px 6px 12px;
+	}
+
+	&__titol {
+		flex: 1 1 auto;
+		font-size: 20px;
+		font-weight: 600;
+		margin: 0;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__boto {
+		align-items: center;
+		background: none;
+		border: 0;
+		border-radius: 50%;
+		color: $sms-text;
+		cursor: pointer;
+		display: inline-flex;
+		flex: 0 0 auto;
+		height: 44px;
+		justify-content: center;
+		padding: 0;
+		width: 44px;
+
+		&:hover {
+			background: $sms-rebut;
+		}
+	}
+
+	&__avatar {
+		align-items: center;
+		background: #d6e4fb;
+		border-radius: 50%;
+		color: #15438f;
+		display: inline-flex;
+		flex: 0 0 auto;
+		font-size: 17px;
+		font-weight: 600;
+		height: 40px;
+		justify-content: center;
+		width: 40px;
+
+		&.is-gran {
+			font-size: 32px;
+			height: 80px;
+			width: 80px;
+		}
+	}
+
+	&__buit {
+		color: $sms-text-2;
+		padding: 24px 16px;
+		text-align: center;
+	}
+
+	&__avis-zona {
+		bottom: 76px;
+		left: 12px;
+		pointer-events: none;
+		position: absolute;
+		right: 12px;
+	}
+
+	&__avis {
+		background: #2b2f36;
+		border-radius: 8px;
+		color: #fff;
+		font-size: 14px;
+		margin: 0;
+		padding: 10px 14px;
+		text-align: center;
+	}
+}
+
+/* Llista de converses i de contactes. */
+.nep-so .nep-missatges-llista,
+.nep-so .nep-missatges-contactes {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	overflow: auto;
+}
+
+.nep-so .nep-missatges-llista {
+
+	&__fils {
+		list-style: none;
+		margin: 0;
+		padding: 4px 0;
+	}
+
+	&__fila {
+		align-items: center;
+		background: none;
+		border: 0;
+		color: $sms-text;
+		cursor: pointer;
+		display: flex;
+		gap: 12px;
+		min-height: 64px;
+		padding: 8px 16px;
+		text-align: start;
+		width: 100%;
+
+		&:hover {
+			background: #f5f7fa;
+		}
+	}
+
+	&__text {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__nom {
+		font-weight: 600;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__previa {
+		color: $sms-text-2;
+		font-size: 14px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__meta {
+		align-items: flex-end;
+		color: $sms-text-2;
+		display: flex;
+		flex: 0 0 auto;
+		flex-direction: column;
+		font-size: 12px;
+		gap: 4px;
+	}
+
+	&__etiqueta {
+		border: 1px solid $sms-perill;
+		border-radius: 4px;
+		color: $sms-perill;
+		padding: 0 4px;
+	}
+}
+
+/* Conversa. */
+.nep-so .nep-missatges-fil {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+
+	&__llista {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		gap: 8px;
+		list-style: none;
+		margin: 0;
+		overflow: auto;
+		padding: 12px 8px;
+	}
+
+	&__bloquejat {
+		border-top: 1px solid $sms-vora;
+		color: $sms-text-2;
+		font-size: 14px;
+		margin: 0;
+		padding: 14px 16px;
+		text-align: center;
+	}
+
+	&__resposta {
+		align-items: center;
+		border-top: 1px solid $sms-vora;
+		display: flex;
+		gap: 8px;
+		padding: 8px;
+
+		input {
+			background: $sms-rebut;
+			border: 1px solid transparent;
+			border-radius: 22px;
+			color: $sms-text;
+			flex: 1 1 auto;
+			font: inherit;
+			min-height: 44px;
+			min-width: 0;
+			padding: 0 16px;
+
+			&::placeholder {
+				color: $sms-text-2;
+			}
+		}
+	}
+
+	&__envia {
+		align-items: center;
+		background: $sms-accent;
+		border: 0;
+		border-radius: 50%;
+		color: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		flex: 0 0 auto;
+		height: 44px;
+		justify-content: center;
+		padding: 0;
+		width: 44px;
+	}
+}
+
+.nep-so .nep-missatges-msg {
+	align-items: center;
+	display: flex;
+	gap: 2px;
+	max-width: 100%;
+
+	&.is-rebut {
+		align-self: flex-start;
+	}
+
+	&.is-propi {
+		align-self: flex-end;
+		flex-direction: row-reverse;
+	}
+
+	&__bombolla {
+		-webkit-touch-callout: none;
+		background: $sms-rebut;
+		border-radius: 18px 18px 18px 4px;
+		max-width: min(78vw, 300px);
+		padding: 8px 12px 6px;
+		user-select: none;
+
+		p {
+			margin: 0 0 4px;
+			overflow-wrap: anywhere;
+		}
+
+		a {
+			-webkit-touch-callout: none;
+		}
+	}
+
+	&.is-propi .nep-missatges-msg__bombolla {
+		background: $sms-accent;
+		border-radius: 18px 18px 4px;
+		color: #fff;
+	}
+
+	&__hora {
+		display: block;
+		font-size: 12px;
+		opacity: 0.85;
+		text-align: end;
+	}
+
+	&__mes {
+		align-items: center;
+		background: none;
+		border: 0;
+		border-radius: 50%;
+		color: $sms-text-2;
+		cursor: pointer;
+		display: inline-flex;
+		flex: 0 0 auto;
+		height: 44px;
+		justify-content: center;
+		padding: 0;
+		width: 44px;
+
+		&:hover {
+			background: $sms-rebut;
+			color: $sms-text;
+		}
+	}
+}
+
+/* Fitxa del contacte. */
+.nep-so .nep-missatges-fitxa {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	overflow: auto;
+
+	&__cos {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 24px 16px;
+	}
+
+	&__nom {
+		font-size: 22px;
+		font-weight: 600;
+		margin: 0;
+		overflow-wrap: anywhere;
+		text-align: center;
+	}
+
+	&__rol {
+		color: $sms-text-2;
+		margin: 0;
+	}
+
+	&__accions {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 16px;
+		width: 100%;
+	}
+
+	&__estat {
+		align-items: center;
+		color: $sms-perill;
+		display: flex;
+		gap: 8px;
+		justify-content: center;
+		margin: 0;
+		min-height: 44px;
+	}
+}
+
+/* Botons d'acció (fitxa i fulls). */
+.nep-so .nep-missatges-accio {
+	align-items: center;
+	background: #fff;
+	border: 1px solid #8a9099;
+	border-radius: 22px;
+	color: $sms-text;
+	cursor: pointer;
+	display: inline-flex;
+	gap: 8px;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 20px;
+
+	&:hover {
+		background: #f5f7fa;
+	}
+
+	&.is-perill {
+		border-color: $sms-perill;
+		color: $sms-perill;
+	}
+
+	&.is-principal {
+		background: $sms-accent;
+		border-color: $sms-accent;
+		color: #fff;
+	}
+}
+
+/* Full inferior modal. */
+.nep-so .nep-missatges-fulla__capa {
+	background: rgb(0 0 0 / 40%);
+	inset: 0;
+	position: absolute;
+	z-index: 5;
+}
+
+.nep-so .nep-missatges-fulla {
+	animation: nep-missatges-puja 0.18s ease-out;
+	background: $sms-fons-full;
+	border-radius: 20px 20px 0 0;
+	bottom: 0;
+	box-shadow: 0 -4px 20px rgb(0 0 0 / 20%);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	left: 0;
+	max-height: 85%;
+	overflow: auto;
+	padding: 8px 16px 16px;
+	position: absolute;
+	right: 0;
+	z-index: 6;
+
+	&__nansa {
+		align-self: center;
+		background: #b8bec7;
+		border-radius: 2px;
+		height: 4px;
+		width: 36px;
+	}
+
+	&__titol {
+		font-size: 17px;
+		font-weight: 600;
+		margin: 4px 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__opcions {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__opcio {
+		align-items: center;
+		background: none;
+		border: 0;
+		border-radius: 10px;
+		color: $sms-text;
+		cursor: pointer;
+		display: flex;
+		gap: 14px;
+		min-height: 48px;
+		padding: 0 8px;
+		text-align: start;
+		width: 100%;
+
+		&:hover {
+			background: $sms-rebut;
+		}
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	&__text {
+		color: $sms-text-2;
+		margin: 0;
+	}
+
+	/* L'objectiu clicable és l'<label> sencera (min-height 44 px, tota
+	   l'amplada); la casella de 22 px és només l'indicador. */
+	&__casella {
+		align-items: center;
+		cursor: pointer;
+		display: flex;
+		gap: 10px;
+		min-height: 44px;
+
+		input {
+			height: 22px;
+			margin: 0;
+			width: 22px;
+		}
+	}
+
+	&__url {
+		background: $sms-rebut;
+		border-radius: 10px;
+		font-family: "Roboto Mono", ui-monospace, monospace;
+		font-size: 14px;
+		margin: 0;
+		overflow-wrap: anywhere;
+		padding: 12px;
+		user-select: text;
+	}
+
+	&__botons {
+		display: flex;
+		gap: 8px;
+		justify-content: flex-end;
+	}
+}
+
+@keyframes nep-missatges-puja {
+
+	from {
+		transform: translateY(100%);
+	}
+
+	to {
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-missatges-fulla {
+		animation: none;
+	}
+}

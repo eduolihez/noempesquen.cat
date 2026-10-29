@@ -7,7 +7,7 @@ import {
 	importDe,
 	referencia,
 	seccioOficial,
-} from '../llum-clara/formulari.js';
+} from '../comu/formulari.js';
 
 const ruta = new URL(
 	'../../../../../missions/llissa-01-factura.json',

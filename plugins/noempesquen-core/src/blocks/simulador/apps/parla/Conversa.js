@@ -6,6 +6,7 @@ import {
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { IconaCerca, IconaLupa } from '../../ui/icones';
+import { IconaEnrere } from '../missatges/icones';
 import { Respostes } from './Respostes';
 import { parteixHora } from './xats';
 import {
@@ -105,6 +106,7 @@ function Escrivint() {
  * @param {Object[]}          props.respostes     Respostes ràpides.
  * @param {(id:string)=>void} props.onResposta    Rep l'id de la resposta.
  * @param {string}            props.placeholder   Text del camp desactivat.
+ * @param {()=>void}          props.onEnrere      Només al mòbil: botó per tornar a la llista.
  */
 export function Conversa( {
 	nom,
@@ -115,6 +117,7 @@ export function Conversa( {
 	respostes,
 	onResposta,
 	placeholder,
+	onEnrere,
 } ) {
 	const registre = useRef( null );
 	const alFinal = useRef( true );
@@ -160,6 +163,16 @@ export function Conversa( {
 	return (
 		<div className="nep-parla-conversa">
 			<div className="nep-parla-conversa__cap">
+				{ onEnrere && (
+					<button
+						type="button"
+						className="nep-parla-conversa__enrere"
+						aria-label={ __( 'Torna als xats', 'noempesquen' ) }
+						onClick={ onEnrere }
+					>
+						<IconaEnrere mida={ 22 } />
+					</button>
+				) }
 				{ avatar }
 				<div className="nep-parla-conversa__qui">
 					<h3 className="nep-parla-conversa__nom">{ nom }</h3>

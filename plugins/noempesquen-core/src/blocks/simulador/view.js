@@ -1,5 +1,5 @@
 import { createRoot } from '@wordpress/element';
-import { App } from './app/App';
+import { App } from './simulador/App';
 
 document
 	.querySelectorAll( '.wp-block-noempesquen-simulador' )

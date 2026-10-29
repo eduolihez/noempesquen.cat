@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { validaMissio } from '../valida.js';
+import {
+	validaMissio,
+	APPS,
+	APPS_PC,
+	APPS_MOBIL,
+	ESDEVENIMENTS,
+} from '../valida.js';
 
 const ruta = new URL(
 	'../../../../../missions/llissa-01-factura.json',
@@ -103,6 +109,81 @@ describe( 'validaMissio v2', () => {
 		expect( validaMissio( m ) ).toEqual( [] );
 	} );
 
+	it( 'exporta els vocabularis de dispositiu', () => {
+		expect( APPS_PC ).toEqual( [ 'navegador', 'parla' ] );
+		expect( APPS_MOBIL ).toEqual( [ 'missatges', 'parla', 'navegador' ] );
+		expect( [ ...APPS ].sort() ).toEqual( [
+			'missatges',
+			'navegador',
+			'parla',
+		] );
+	} );
+
+	it( 'accepta la plantilla enviat i els esdeveniments mòbils', () => {
+		const nous = [
+			'contacte.bloqueja',
+			'missatge.esborra',
+			'missatge.reenvia',
+			'missatge.respon',
+			'enllac.mantingut',
+		];
+		nous.forEach( ( ev ) => expect( ESDEVENIMENTS ).toContain( ev ) );
+		const m = copia();
+		m.webs[ 'llumclara.cat' ].plantilla = 'enviat';
+		nous.forEach( ( ev, i ) =>
+			m.disparadors.push( {
+				id: `nou${ i }`,
+				quan: { esdeveniment: ev },
+				efectes: [ { tipus: 'guia-diu', text: 'x' } ],
+			} )
+		);
+		expect( validaMissio( m ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja un esdeveniment inexistent', () => {
+		const m = copia();
+		m.disparadors[ 0 ].quan.esdeveniment = 'missatge.vola';
+		expect( validaMissio( m ) ).toContain(
+			'esdeveniment desconegut: missatge.vola'
+		);
+	} );
+
+	it( 'mostra: exigeix un id existent sota apps.*', () => {
+		const m = copia();
+		m.disparadors.push( {
+			id: 'mx',
+			quan: { esdeveniment: 'inici' },
+			efectes: [ { tipus: 'mostra', id: 'no-hi-es' } ],
+		} );
+		expect( validaMissio( m ) ).toContain(
+			'mostra: element inexistent: no-hi-es'
+		);
+	} );
+
+	it( 'notifica: accepta fonts conegudes i rebutja la resta', () => {
+		const amb = ( app ) => {
+			const m = copia();
+			m.disparadors.push( {
+				id: 'nx',
+				quan: { esdeveniment: 'inici' },
+				efectes: [ { tipus: 'notifica', app, titol: 't', text: 'x' } ],
+			} );
+			return validaMissio( m );
+		};
+		[ 'parla', 'navegador', 'posta' ].forEach( ( app ) =>
+			expect( amb( app ) ).toEqual( [] )
+		);
+		expect( amb( 'altra' ) ).toContain(
+			'notifica: font desconeguda: altra'
+		);
+	} );
+
+	it( 'una missió v1 falla per versio', () => {
+		expect( validaMissio( { versio: 1, id: 'antiga' } ) ).toContain(
+			'versio no suportada'
+		);
+	} );
+
 	it( 'no llança amb elements nuls i informa dels errors', () => {
 		const m = copia();
 		m.disparadors.push( null );
@@ -118,6 +199,39 @@ describe( 'validaMissio v2', () => {
 				'web invàlida: nul',
 				'opció invàlida',
 			] )
+		);
+	} );
+
+	it( "rebutja URL d'enllaç amb esquema no permès", () => {
+		const m = copia();
+		const seg = m.apps.posta.correus
+			.flatMap( ( c ) => c.cos.flat() )
+			.find( ( x ) => x.enllac );
+		seg.enllac.url = 'javascript:alert(1)';
+		expect( validaMissio( m ) ).toContain(
+			"url d'enllaç no permesa: javascript:alert(1)"
+		);
+		seg.enllac.url = 'cerca:factura';
+		expect( validaMissio( m ) ).toEqual( [] );
+		delete seg.enllac.url;
+		expect( validaMissio( m ) ).toContain(
+			"url d'enllaç no permesa: undefined"
+		);
+	} );
+
+	it( 'rebutja apps que no existeixen al dispositiu de la missió', () => {
+		const m = copia();
+		m.apps.missatges = { missatges: [] };
+		expect( validaMissio( m ) ).toContain(
+			'app inexistent al dispositiu pc: missatges'
+		);
+		const n = copia();
+		n.disparadors.push( {
+			quan: { esdeveniment: 'inici' },
+			efectes: [ { tipus: 'notifica', app: 'missatges', titol: 'x' } ],
+		} );
+		expect( validaMissio( n ) ).toContain(
+			'app inexistent al dispositiu pc: missatges'
 		);
 	} );
 } );
