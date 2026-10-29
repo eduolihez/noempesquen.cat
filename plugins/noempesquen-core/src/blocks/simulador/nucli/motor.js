@@ -1,7 +1,9 @@
 /**
  * Motor de missions v2: estat i regles pures, sense res d'interfície.
- * Reductor immutable. ESDEVENIMENT i TICK s'afegeixen a la tasca 4.
+ * Reductor immutable.
  */
+
+import { processaEsdeveniment, avancaTemps } from './disparadors.js';
 
 export const FASE = {
 	BLOQUEIG: 'bloqueig',
@@ -192,9 +194,27 @@ export function reductor( missio, estat, accio ) {
 			if ( estat.fase !== FASE.BLOQUEIG ) {
 				return estat;
 			}
-			return afegeixGuia(
-				{ ...estat, fase: FASE.JOC },
-				missio.intro[ 0 ]
+			return processaEsdeveniment(
+				missio,
+				afegeixGuia( { ...estat, fase: FASE.JOC }, missio.intro[ 0 ] ),
+				'inici',
+				{}
+			);
+
+		case 'ESDEVENIMENT':
+			return processaEsdeveniment(
+				missio,
+				estat,
+				accio.nom,
+				accio.dades
+			);
+
+		case 'TICK':
+			return avancaTemps(
+				missio,
+				estat,
+				accio.segons ?? 1,
+				SEGONS_PISTA
 			);
 
 		case 'RESPOSTA':
