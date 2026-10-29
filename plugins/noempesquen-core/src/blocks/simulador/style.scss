@@ -11,6 +11,9 @@
 @use "estils/llum-clara";
 @use "estils/llum-clara-formularis";
 @use "estils/ui";
+@use "estils/resultat-tokens";
+@use "estils/consequencia";
+@use "estils/resultat";
 
 .wp-block-noempesquen-simulador {
 	--nep-fons: var(--wp--preset--color--fons, #f7f4ec);

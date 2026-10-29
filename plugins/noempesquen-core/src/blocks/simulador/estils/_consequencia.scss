@@ -1,0 +1,136 @@
+/* Conseqüència: capa sobre el sistema quan la partida s'acaba. */
+
+.nep-so .nep-cons {
+	align-items: center;
+	backdrop-filter: blur(4px);
+	background: rgb(20 33 61 / 72%);
+	display: flex;
+	inset: 0;
+	justify-content: center;
+	overflow: hidden;
+	padding: 16px;
+	position: absolute;
+	z-index: 900;
+
+	&--correcta,
+	&--parcial {
+		background: rgb(8 74 97 / 66%);
+	}
+
+	&__xarxa {
+		animation: nep-cau 0.7s cubic-bezier(0.5, 0, 0.75, 0) both;
+		border-radius: 0;
+		z-index: 0;
+	}
+
+	&__panell {
+		animation: nep-cons-puja 0.4s ease-out 0.05s both;
+		background: var(--res-fons);
+		border-radius: 20px;
+		box-shadow: 0 24px 64px rgb(0 0 0 / 35%);
+		color: var(--res-tinta);
+		max-height: 100%;
+		max-width: 460px;
+		overflow-y: auto;
+		padding: 28px 32px 32px;
+		position: relative;
+		text-align: center;
+		width: 100%;
+		z-index: 1;
+	}
+
+	&--pescat .nep-cons__panell,
+	&--incorrecta .nep-cons__panell {
+		animation-delay: 0.6s;
+	}
+
+	&__avatar {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 8px;
+	}
+
+	&__titol {
+		color: var(--res-alerta);
+		font-family: var(--res-display);
+		font-size: 2.5rem;
+		font-stretch: 87.5%;
+		font-weight: 700;
+		line-height: 1.05;
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	&--correcta .nep-cons__titol {
+		color: var(--res-segur);
+	}
+
+	&--parcial .nep-cons__titol {
+		color: var(--res-mar);
+	}
+
+	&__text {
+		color: var(--res-tinta-suau);
+		font-family: var(--res-lectura);
+		font-size: 1.0625rem;
+		line-height: 1.6;
+		margin: 12px 0 28px;
+	}
+
+	&__boto {
+		background: var(--res-mar);
+		border: 0;
+		border-radius: 12px;
+		color: #fff;
+		cursor: pointer;
+		font-family: var(--res-display);
+		font-size: 1.125rem;
+		font-weight: 600;
+		min-height: 52px;
+		padding: 0 24px;
+		width: 100%;
+
+		&:hover {
+			background: var(--res-mar-fosc);
+		}
+
+		&:focus-visible {
+			outline: 3px solid var(--res-tinta);
+			outline-offset: 3px;
+		}
+	}
+}
+
+@keyframes nep-cons-puja {
+
+	from {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 640px) {
+
+	.nep-so .nep-cons__panell {
+		padding: 20px 20px 24px;
+	}
+
+	.nep-so .nep-cons__titol {
+		font-size: 2rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-cons__xarxa,
+	.nep-so .nep-cons__panell {
+		animation: none;
+	}
+}

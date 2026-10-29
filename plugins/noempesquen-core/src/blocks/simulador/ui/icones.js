@@ -339,3 +339,62 @@ export function MarcaInici( { mida = 22 } ) {
 		</App>
 	);
 }
+
+/* Informe de la missió: graella de 24, traç gruixut, color actual. */
+function Traca( { mida = 20, children } ) {
+	return (
+		<svg
+			viewBox="0 0 24 24"
+			width={ mida }
+			height={ mida }
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="2.6"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			{ ...decoratiu }
+		>
+			{ children }
+		</svg>
+	);
+}
+
+export const IconaFet = ( p ) => (
+	<Traca { ...p }>
+		<path d="M5 12.5 10 17.5 19 7" />
+	</Traca>
+);
+
+export const IconaFalla = ( p ) => (
+	<Traca { ...p }>
+		<path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5" />
+	</Traca>
+);
+
+export const IconaSalvavides = ( p ) => (
+	<Traca { ...p }>
+		<circle cx="12" cy="12" r="9" />
+		<circle cx="12" cy="12" r="4" />
+		<path d="M5.6 5.6 9.2 9.2M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6" />
+	</Traca>
+);
+
+/* Estrella de cinc puntes amb les puntes arrodonides. */
+export function Estrella( { mida = 56, plena } ) {
+	return (
+		<svg
+			viewBox="0 0 48 48"
+			width={ mida }
+			height={ mida }
+			strokeLinejoin="round"
+			strokeWidth="3"
+			{ ...decoratiu }
+		>
+			<path
+				d="M24 4.5 29.9 16.6 43.2 18.5 33.6 27.8 35.9 41 24 34.8 12.1 41 14.4 27.8 4.8 18.5 18.1 16.6Z"
+				fill={ plena ? 'currentColor' : 'none' }
+				stroke="currentColor"
+			/>
+		</svg>
+	);
+}

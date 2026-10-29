@@ -14,8 +14,12 @@ import { JocContext } from './context';
 import { usePantallaCompleta } from './usePantallaCompleta';
 import { horaDeJoc } from './hora';
 import { Pausa } from './Pausa';
+import { Consequencia } from './Consequencia';
+import { Resultat } from './Resultat';
 
 const MS_TICK = 1000;
+/* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
+const FASES_FINALS = [ FASE.CONSEQUENCIA, FASE.RESULTAT ];
 const SISTEMES = {
 	pc: lazy( () => import( '../sistemes/pc/Pc' ) ),
 };
@@ -113,7 +117,11 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 	// <body> i un keydown a l'arrel no arribaria mai.
 	useEffect( () => {
 		const onKeyDown = ( e ) => {
-			if ( e.key !== 'Escape' || pausa.current ) {
+			if (
+				e.key !== 'Escape' ||
+				pausa.current ||
+				FASES_FINALS.includes( fase.current )
+			) {
 				return;
 			}
 			e.preventDefault();
@@ -172,6 +180,14 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		await surt();
 		onSurt();
 	};
+	const missioSeguent = seguent
+		? async () => {
+				await surt();
+				seguent();
+			}
+		: null;
+
+	const enConsequencia = estat.fase === FASE.CONSEQUENCIA;
 
 	return (
 		<JocContext.Provider value={ ctx }>
@@ -180,14 +196,29 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 				className={ `nep-so${ fixa ? ' nep-so--fixa' : '' }` }
 				tabIndex={ -1 }
 			>
-				<div
-					className="nep-so__sistema"
-					inert={ estat.pausa ? '' : undefined }
-				>
-					<Suspense fallback={ <Carregant /> }>
-						<Sistema />
-					</Suspense>
-				</div>
+				{ estat.fase === FASE.RESULTAT ? (
+					<Resultat
+						onReinicia={ reinicia }
+						onSeguent={ missioSeguent }
+						onSurt={ surtDelJoc }
+					/>
+				) : (
+					<div
+						className="nep-so__sistema"
+						inert={ estat.pausa || enConsequencia ? '' : undefined }
+					>
+						<Suspense fallback={ <Carregant /> }>
+							<Sistema />
+						</Suspense>
+					</div>
+				) }
+				{ enConsequencia && (
+					<Consequencia
+						onResultat={ () =>
+							dispatch( { tipus: 'VEURE_RESULTAT' } )
+						}
+					/>
+				) }
 				{ estat.pausa && (
 					<Pausa
 						onContinua={ continua }
