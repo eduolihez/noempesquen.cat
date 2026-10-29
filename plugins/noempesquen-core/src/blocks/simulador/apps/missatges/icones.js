@@ -98,3 +98,10 @@ export const IconaRespon = ( p ) => (
 		<path d="M4 9h7a5 5 0 0 1 5 5v1.5" />
 	</Glif>
 );
+
+export const IconaAdreca = ( p ) => (
+	<Glif { ...p }>
+		<path d="M2.5 10S5.5 4.5 10 4.5 17.5 10 17.5 10 14.5 15.5 10 15.5 2.5 10 2.5 10z" />
+		<circle cx="10" cy="10" r="2.3" />
+	</Glif>
+);

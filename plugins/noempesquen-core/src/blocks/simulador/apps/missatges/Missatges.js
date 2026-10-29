@@ -21,6 +21,7 @@ import { Fil } from './Fil';
 import { Contactes, Fitxa } from './Contactes';
 import { Fulla } from './Fulla';
 import {
+	IconaAdreca,
 	IconaBloqueja,
 	IconaEsborra,
 	IconaReenvia,
@@ -32,7 +33,14 @@ const APP = 'missatges';
 /* Menú d'un missatge: accions segons si és rebut i si el número és bloquejat. */
 function MenuMissatge( { missatge, bloquejat, onAccio } ) {
 	const rebut = missatge.de !== 'jo';
+	const url = ( missatge.cos ?? [] ).flat().find( ( seg ) => seg.enllac )
+		?.enllac.url;
 	const items = [
+		url && {
+			id: 'adreca',
+			text: __( 'Veure adreça', 'noempesquen' ),
+			Icona: IconaAdreca,
+		},
 		rebut &&
 			! bloquejat && {
 				id: 'respon',
@@ -291,7 +299,15 @@ export default function Missatges() {
 
 	const accioMenu = ( accio ) => {
 		const { missatge, fil } = full;
-		if ( accio === 'respon' ) {
+		if ( accio === 'adreca' ) {
+			const url = ( missatge.cos ?? [] )
+				.flat()
+				.find( ( seg ) => seg.enllac )?.enllac.url;
+			if ( url ) {
+				setFull( { tipus: 'enllac', url, origen: full.origen } );
+				emet( 'enllac.mantingut', { url } );
+			}
+		} else if ( accio === 'respon' ) {
 			respostaA.current = missatge.id;
 			focusDespres.current = refResposta.current;
 			setFull( null );

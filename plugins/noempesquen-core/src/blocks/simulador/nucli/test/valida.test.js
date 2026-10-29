@@ -170,8 +170,8 @@ describe( 'validaMissio v2', () => {
 			} );
 			return validaMissio( m );
 		};
-		[ 'parla', 'navegador', 'posta' ].forEach(
-			( app ) => expect( amb( app ) ).toEqual( [] )
+		[ 'parla', 'navegador', 'posta' ].forEach( ( app ) =>
+			expect( amb( app ) ).toEqual( [] )
 		);
 		expect( amb( 'altra' ) ).toContain(
 			'notifica: font desconeguda: altra'
