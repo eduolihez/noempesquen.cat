@@ -81,6 +81,8 @@ function useGestosMenu( onPremut, actiu ) {
 			}
 		},
 		onKeyDown: ( e ) => {
+			// Un clic de teclat no ve d'una pulsació llarga.
+			suprimeix.current = false;
 			if ( esTeclaMenu( e ) ) {
 				e.preventDefault();
 				if ( actiu ) {
@@ -139,7 +141,12 @@ function Missatge( { m, nom, onMenu, onMantingut, onObreEnllac } ) {
 				aria-haspopup="dialog"
 				aria-label={ __( 'Opcions del missatge', 'noempesquen' ) }
 				title={ __( 'Opcions del missatge', 'noempesquen' ) }
-				onClick={ ( e ) => onMenu( m, e.currentTarget ) }
+				aria-disabled={ estat.lupa || undefined }
+				onClick={ ( e ) => {
+					if ( ! estat.lupa ) {
+						onMenu( m, e.currentTarget );
+					}
+				} }
 			>
 				<IconaMes mida={ 18 } />
 			</button>

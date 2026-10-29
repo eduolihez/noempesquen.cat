@@ -67,10 +67,12 @@ export function Fulla( { titol, onTanca, origen, children } ) {
 
 	return (
 		<>
+			{ /* Amb onClick (no onPointerDown) el toc no travessa cap a sota. */ }
+			{  }
 			<div
 				className="nep-missatges-fulla__capa"
 				aria-hidden="true"
-				onPointerDown={ onTanca }
+				onClick={ onTanca }
 			/>
 			{ /* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Tab no surt del diàleg modal. */ }
 			<div

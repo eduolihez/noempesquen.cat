@@ -199,3 +199,26 @@ describe( 'destiResposta', () => {
 		expect( destiResposta( { missatges: [] }, null ) ).toBeNull();
 	} );
 } );
+
+describe( 'contacte del remitent', () => {
+	it( 'normalitza espais (també NBSP) en comparar el número', () => {
+		expect( contacteDe( mon, ' +44 7700  900461 ' ) ).toBe(
+			'numero_desconegut'
+		);
+	} );
+
+	it( 'remitent.contacte té prioritat sobre el nom', () => {
+		const ambId = {
+			apps: {
+				missatges: {
+					missatges: [
+						{ ...sms, remitent: { nom: 'Altre', contacte: 'pau' } },
+					],
+				},
+			},
+		};
+		const fils = filsVisibles( { visibles: { s2: true } }, mon, ambId );
+		const pau = fils.find( ( f ) => f.id === 'pau' );
+		expect( pau.missatges.map( ( m ) => m.id ) ).toContain( 's2' );
+	} );
+} );

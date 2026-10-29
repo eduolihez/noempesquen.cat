@@ -11,6 +11,12 @@ import { ordenaXats } from '../parla/xats.js';
 /* Xats de Parla als quals es pot reenviar un SMS. */
 export const DESTINS_REENVIA = [ 'familia', 'pau', 'marta' ];
 
+/* Espais (\s inclou els no separables) reduïts a un de sol i sense extrems. */
+const normalitza = ( text ) =>
+	String( text ?? '' )
+		.replace( /\s+/g, ' ' )
+		.trim();
+
 /**
  * Id del contacte del món que té aquest nom (o número), si n'hi ha.
  *
@@ -19,7 +25,11 @@ export const DESTINS_REENVIA = [ 'familia', 'pau', 'marta' ];
  * @return {?string} Id del contacte o null.
  */
 export function contacteDe( mon, nom ) {
-	return ( mon?.contactes ?? [] ).find( ( c ) => c.nom === nom )?.id ?? null;
+	const cercat = normalitza( nom );
+	return (
+		( mon?.contactes ?? [] ).find( ( c ) => normalitza( c.nom ) === cercat )
+			?.id ?? null
+	);
 }
 
 /**
@@ -54,7 +64,10 @@ export function filsVisibles( estat, mon, missio ) {
 		.filter( ( sms ) => visible( estat, sms ) )
 		.forEach( ( sms ) => {
 			const nom = sms.remitent?.nom ?? '';
-			const contacte = contacteDe( mon, nom ) ?? `num:${ nom }`;
+			const contacte =
+				sms.remitent?.contacte ??
+				contacteDe( mon, nom ) ??
+				`num:${ normalitza( nom ) }`;
 			const fil = perId.get( contacte ) ?? {
 				id: contacte,
 				nom,

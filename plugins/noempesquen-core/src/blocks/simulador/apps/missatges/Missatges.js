@@ -97,7 +97,7 @@ function BotoCancella( { onTanca } ) {
 export default function Missatges() {
 	const { missio, mon, estat, emet } = useJoc();
 	const { obreApp } = useSistema();
-	const { registraEnrere } = useMobil();
+	const { registraEnrere, appActiva } = useMobil();
 	const [ vistes, setVistes ] = useState( [ { tipus: 'llista' } ] );
 	const [ esborrats, setEsborrats ] = useState( () => new Set() );
 	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
@@ -109,6 +109,7 @@ export default function Missatges() {
 	const focusDespres = useRef( null );
 	const tornaA = useRef( null );
 	const idCasella = useId();
+	const fullObert = useRef( false );
 
 	const tots = useMemo(
 		() => filsVisibles( estat, mon, missio ),
@@ -200,7 +201,38 @@ export default function Missatges() {
 		[ registraEnrere, tancaFull, torna ]
 	);
 
-	const obreFull = ( f ) => setFull( ( actual ) => actual ?? f );
+	// Idempotent: la pulsació llarga i el `contextmenu` poden arribar tots dos.
+	const obreFull = ( f ) => {
+		if ( fullObert.current ) {
+			return false;
+		}
+		fullObert.current = true;
+		setFull( f );
+		return true;
+	};
+
+	useEffect( () => {
+		fullObert.current = !! full;
+	}, [ full ] );
+
+	// L'app queda muntada i amagada: el full no ha de quedar obert (ni
+	// tancar-se amb Esc des d'una altra app).
+	useEffect( () => {
+		if ( appActiva !== APP ) {
+			setFull( null );
+		}
+	}, [ appActiva ] );
+
+	// Només els SMS de la missió arriben al motor; el farciment no.
+	const idsMissio = useMemo(
+		() =>
+			new Set(
+				tots.flatMap( ( f ) =>
+					f.missatges.filter( ( m ) => m.missio ).map( ( m ) => m.id )
+				)
+			),
+		[ tots ]
+	);
 
 	const obreFil = ( fil ) => {
 		empeny( { tipus: 'fil', id: fil.id } );
@@ -217,16 +249,16 @@ export default function Missatges() {
 	};
 
 	const mantingut = ( url, origen ) => {
-		if ( full ) {
-			return;
+		if ( obreFull( { tipus: 'enllac', url, origen } ) ) {
+			emet( 'enllac.mantingut', { url } );
 		}
-		emet( 'enllac.mantingut', { url } );
-		obreFull( { tipus: 'enllac', url, origen } );
 	};
 
 	const esborra = ( ids ) => {
 		setEsborrats( ( s ) => new Set( [ ...s, ...ids ] ) );
-		ids.forEach( ( id ) => emet( 'missatge.esborra', { app: APP, id } ) );
+		ids.filter( ( id ) => idsMissio.has( id ) ).forEach( ( id ) =>
+			emet( 'missatge.esborra', { app: APP, id } )
+		);
 	};
 
 	const bloqueja = ( contacte, iEsborra ) => {
@@ -450,7 +482,9 @@ export default function Missatges() {
 					onMantingut={ mantingut }
 					onObreEnllac={ obreEnllac }
 					onRespon={ ( id ) => {
-						emet( 'missatge.respon', { app: APP, id } );
+						if ( idsMissio.has( id ) ) {
+							emet( 'missatge.respon', { app: APP, id } );
+						}
 						setAvis( __( 'Missatge enviat.', 'noempesquen' ) );
 					} }
 				/>
