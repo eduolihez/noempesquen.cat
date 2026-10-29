@@ -153,7 +153,6 @@ export default function Navegador( { dades } ) {
 				activa={ estat.activa }
 				infos={ infos }
 				idPestanya={ idPestanya }
-				idPanell={ idPanell }
 				onActiva={ ( id ) => dispatch( { tipus: 'ACTIVA', id } ) }
 				onTanca={ ( id ) =>
 					dispatch( { tipus: 'TANCA_PESTANYA', id } )
@@ -200,7 +199,7 @@ export default function Navegador( { dades } ) {
 						} }
 						id={ idPanell( p.id ) }
 						className="nep-nav__pagina"
-						role="tabpanel"
+						role="region"
 						aria-labelledby={ idPestanya( p.id ) }
 						tabIndex={ 0 }
 						hidden={ p.id !== estat.activa }

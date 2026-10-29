@@ -14,6 +14,12 @@ const barraTasques = ( page ) =>
 
 const parla = ( page ) => page.getByRole( 'region', { name: 'Parla' } );
 
+// La fila de la safata (la notificació emergent també s'anomena així).
+const filaTrampa = ( page ) =>
+	page
+		.getByRole( 'region', { name: 'Entrada' } )
+		.getByRole( 'button', { name: /Llum Clara URGENT/ } );
+
 const lupa = ( page ) =>
 	barraTasques( page ).getByRole( 'button', { name: 'Lupa', exact: true } );
 
@@ -35,9 +41,7 @@ async function saltaIntroIEsperaCorreu( page ) {
 		.getByRole( 'button', { name: 'Salta la presentació' } )
 		.click();
 	await page.clock.runFor( 8000 );
-	await expect(
-		page.getByRole( 'button', { name: /Llum Clara URGENT/ } )
-	).toBeVisible();
+	await expect( filaTrampa( page ) ).toBeVisible();
 }
 
 /** Porta Posta al davant (Parla la tapa) i obre el correu trampa. */
@@ -45,7 +49,7 @@ async function obreCorreu( page ) {
 	await barraTasques( page )
 		.getByRole( 'button', { name: /^Navegador/ } )
 		.click();
-	await page.getByRole( 'button', { name: /Llum Clara URGENT/ } ).click();
+	await filaTrampa( page ).click();
 	await expect(
 		page.getByRole( 'heading', {
 			name: 'URGENT: el teu subministrament es tallarà avui',
@@ -78,7 +82,10 @@ test.describe( 'La factura de la llum', () => {
 		page,
 	} ) => {
 		await entra( page );
-		const posta = page.getByRole( 'tabpanel', { name: 'Posta' } );
+		const posta = page.getByRole( 'region', {
+			name: 'Posta',
+			exact: true,
+		} );
 		await expect(
 			posta.getByRole( 'region', { name: 'Entrada' } )
 		).toBeVisible();
@@ -97,9 +104,13 @@ test.describe( 'La factura de la llum', () => {
 			.getByRole( 'link', { name: 'Paga ara a llumclara.cat' } )
 			.click();
 		await expect(
-			page.getByRole( 'tab', { name: /Pagament de factura/ } )
-		).toHaveAttribute( 'aria-selected', 'true' );
-		await page.getByRole( 'tab', { name: 'Posta' } ).click();
+			page.getByRole( 'button', {
+				name: /^Llum Clara · Pagament de factura$/,
+			} )
+		).toHaveAttribute( 'aria-current', 'page' );
+		await page
+			.getByRole( 'button', { name: 'Posta', exact: true } )
+			.click();
 
 		await lupa( page ).click();
 		await expect( lupa( page ) ).toHaveAttribute( 'aria-pressed', 'true' );
@@ -117,9 +128,15 @@ test.describe( 'La factura de la llum', () => {
 		}
 
 		// Senyal 7: el domini a la barra d'adreces de la web falsa.
-		await page.getByRole( 'tab', { name: /Pagament de factura/ } ).click();
+		await page
+			.getByRole( 'button', {
+				name: /^Llum Clara · Pagament de factura$/,
+			} )
+			.click();
 		await inspecciona( page, 'llumclara-pagaments.com' ).click();
-		await page.getByRole( 'tab', { name: 'Posta' } ).click();
+		await page
+			.getByRole( 'button', { name: 'Posta', exact: true } )
+			.click();
 
 		await page.getByRole( 'button', { name: 'Més', exact: true } ).click();
 		await page.getByRole( 'menuitem', { name: /Denuncia pesca/ } ).click();

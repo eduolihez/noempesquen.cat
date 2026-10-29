@@ -18,7 +18,7 @@ function FaviconPestanya( { info } ) {
 }
 
 /**
- * Franja de pestanyes: llista de pestanyes amb fletxes (activació automàtica),
+ * Franja de pestanyes: llista de pestanyes (botons) amb fletxes (activació automàtica),
  * Supr tanca la pestanya enfocada, i botó de pestanya nova.
  *
  * @param {Object}   props
@@ -26,7 +26,6 @@ function FaviconPestanya( { info } ) {
  * @param {number}   props.activa     Id de la pestanya activa.
  * @param {Object}   props.infos      Info de pàgina per id de pestanya.
  * @param {Function} props.idPestanya Id DOM de la pestanya.
- * @param {Function} props.idPanell   Id DOM del panell.
  * @param {Function} props.onActiva   Activa una pestanya ( id ).
  * @param {Function} props.onTanca    Tanca una pestanya ( id ).
  * @param {Function} props.onNova     Obre una pestanya nova.
@@ -36,7 +35,6 @@ export function Pestanyes( {
 	activa,
 	infos,
 	idPestanya,
-	idPanell,
 	onActiva,
 	onTanca,
 	onNova,
@@ -76,18 +74,16 @@ export function Pestanyes( {
 
 	return (
 		<div className="nep-nav-pestanyes">
-			<div
+			<ul
 				className="nep-nav-pestanyes__llista"
-				role="tablist"
 				aria-label={ __( 'Pestanyes', 'noempesquen' ) }
 			>
 				{ pestanyes.map( ( p ) => {
 					const actiu = p.id === activa;
 					const info = infos[ p.id ];
 					return (
-						<div
+						<li
 							key={ p.id }
-							role="presentation"
 							className={ `nep-nav-pestanya${
 								actiu ? ' is-activa' : ''
 							}` }
@@ -97,11 +93,9 @@ export function Pestanyes( {
 									refs.current[ p.id ] = el;
 								} }
 								type="button"
-								role="tab"
 								id={ idPestanya( p.id ) }
 								className="nep-nav-pestanya__boto"
-								aria-selected={ actiu }
-								aria-controls={ idPanell( p.id ) }
+								aria-current={ actiu ? 'page' : undefined }
 								aria-keyshortcuts="Delete"
 								tabIndex={ actiu ? 0 : -1 }
 								title={ info.titol }
@@ -135,10 +129,10 @@ export function Pestanyes( {
 							>
 								<IconaTancaPetita mida={ 14 } />
 							</button>
-						</div>
+						</li>
 					);
 				} ) }
-			</div>
+			</ul>
 			<button
 				type="button"
 				className="nep-nav-pestanyes__nova"
