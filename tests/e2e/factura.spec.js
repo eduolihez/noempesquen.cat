@@ -4,6 +4,14 @@ const AxeBuilder = require( '@axe-core/playwright' ).default;
 const MISSIO = /La factura de la llum/;
 // Valors d'autoompliment de la missió que no han de quedar enlloc.
 const AUTOOMPLI = [ '4000 1234', '5678 9010', '08/28' ];
+// Camps de la web falsa i el valor que hi posa l'autoompliment.
+const CAMPS_TARGETA = {
+	'Titular de la targeta': 'Àlex Puig',
+	'Número de targeta': '4000 1234 5678 9010',
+	Caducitat: '08/28',
+	CVV: '123',
+	'PIN de la targeta': '1234',
+};
 
 test.beforeEach( ( { isMobile } ) => {
 	test.skip( isMobile, 'PC en mòbil: tall 4' );
@@ -61,6 +69,18 @@ async function mirantElCorreu( page ) {
 	await entra( page );
 	await saltaIntroIEsperaCorreu( page );
 	await obreCorreu( page );
+}
+
+/** El focus és dins del simulador (no a la pàgina de darrere ni a <body>). */
+const focusDins = ( page ) =>
+	page.evaluate( () => !! document.activeElement?.closest( '.nep-so' ) );
+
+/** Espera la pantalla completa real i en surt com ho faria Esc o F11. */
+async function surtDePantallaCompleta( page ) {
+	await expect
+		.poll( () => page.evaluate( () => !! document.fullscreenElement ) )
+		.toBe( true );
+	await page.evaluate( () => document.exitFullscreen() );
 }
 
 async function sensePistes( page ) {
@@ -161,22 +181,27 @@ test.describe( 'La factura de la llum', () => {
 		await page
 			.getByRole( 'link', { name: 'Paga ara a llumclara.cat' } )
 			.click();
-		for ( const camp of [
-			'Titular de la targeta',
-			'Número de targeta',
-			'Caducitat',
-			'CVV',
-			'PIN de la targeta',
-		] ) {
+		for ( const camp of Object.keys( CAMPS_TARGETA ) ) {
 			await page.getByRole( 'textbox', { name: camp } ).focus();
 			await page
 				.getByRole( 'button', { name: /Omple aquest camp/ } )
 				.click();
 		}
+		// Control positiu: abans d'enviar, els valors sí que són als camps
+		// (page.content() no serialitza .value).
+		for ( const [ camp, valor ] of Object.entries( CAMPS_TARGETA ) ) {
+			await expect(
+				page.getByRole( 'textbox', { name: camp } )
+			).toHaveValue( valor );
+		}
 		await page.getByRole( 'button', { name: 'Paga 87,40 €' } ).click();
 
 		const capa = page.getByRole( 'dialog' );
 		await expect( capa ).toContainText( "T'han pescat!" );
+		// Els camps s'han desmuntat (no queden inputs amb els valors).
+		await expect(
+			page.locator( 'input[id^="nep-lc-targeta-"]' )
+		).toHaveCount( 0 );
 
 		// Les dades de la targeta no es queden enlloc.
 		await sensePistes( page );
@@ -223,6 +248,116 @@ test.describe( 'La factura de la llum', () => {
 		await expect(
 			page.getByRole( 'region', { name: 'Tria una missió' } )
 		).toBeVisible();
+		await expect(
+			page.getByRole( 'button', { name: MISSIO } )
+		).toBeFocused();
+	} );
+
+	test( 'sortir de pantalla completa sense demanar-ho manté la capa fixa i pausa', async ( {
+		page,
+	} ) => {
+		await entra( page );
+		await surtDePantallaCompleta( page );
+		await expect( page.locator( '.nep-so' ) ).toHaveClass( /nep-so--fixa/ );
+		await expect(
+			page.getByRole( 'dialog', { name: 'Pausa' } )
+		).toBeVisible();
+	} );
+
+	test( 'sortir de pantalla completa al bloqueig també pausa', async ( {
+		page,
+	} ) => {
+		await page.clock.install();
+		await page.goto( '/simulador/' );
+		await page.getByRole( 'button', { name: MISSIO } ).click();
+		await expect(
+			page.getByRole( 'button', { name: /Clica o prem/ } )
+		).toBeFocused();
+		await surtDePantallaCompleta( page );
+		await expect( page.locator( '.nep-so' ) ).toHaveClass( /nep-so--fixa/ );
+		await expect(
+			page.getByRole( 'dialog', { name: 'Pausa' } )
+		).toBeVisible();
+	} );
+
+	test( 'el focus no surt mai del simulador', async ( { page } ) => {
+		await page.clock.install();
+		await page.goto( '/simulador/' );
+		await page.getByRole( 'button', { name: MISSIO } ).click();
+		// Bloqueig: un sol botó, Tab i Maj+Tab hi tornen.
+		await page.keyboard.press( 'Tab' );
+		expect( await focusDins( page ) ).toBe( true );
+		await page.keyboard.press( 'Shift+Tab' );
+		expect( await focusDins( page ) ).toBe( true );
+
+		await page.getByRole( 'button', { name: /Clica o prem/ } ).click();
+		await expect( parla( page ) ).toBeVisible();
+		// Del darrer element (rellotge) Tab torna al principi, i al revés.
+		await barraTasques( page )
+			.getByRole( 'button', { name: /notificaci/ } )
+			.last()
+			.focus();
+		for ( let i = 0; i < 3; i++ ) {
+			await page.keyboard.press( 'Tab' );
+			expect( await focusDins( page ) ).toBe( true );
+		}
+		for ( let i = 0; i < 6; i++ ) {
+			await page.keyboard.press( 'Shift+Tab' );
+			expect( await focusDins( page ) ).toBe( true );
+		}
+
+		// Tancar la darrera finestra no deixa el focus a <body>.
+		for ( const nom of [ 'Parla', /Posta/ ] ) {
+			await page
+				.getByRole( 'region', { name: nom } )
+				.first()
+				.getByRole( 'button', { name: 'Tanca', exact: true } )
+				.click();
+		}
+		await expect(
+			page.getByRole( 'button', { name: 'Tanca' } )
+		).toHaveCount( 0 );
+		expect( await focusDins( page ) ).toBe( true );
+	} );
+
+	test( '«Torna-ho a provar» deixa el focus dins del simulador', async ( {
+		page,
+	} ) => {
+		await entra( page );
+		await parla( page )
+			.getByRole( 'button', { name: 'Salta la presentació' } )
+			.click();
+		await parla( page )
+			.getByRole( 'button', { name: 'Ja ho tinc clar' } )
+			.click();
+		await parla( page )
+			.getByRole( 'button', {
+				name: /^Entro a l'app o al web de Llum Clara/,
+			} )
+			.click();
+		await page
+			.getByRole( 'dialog' )
+			.getByRole( 'button', { name: 'Veure el resultat' } )
+			.click();
+		await page.getByRole( 'button', { name: 'Torna-ho a provar' } ).click();
+		await expect(
+			page.getByRole( 'button', { name: /Clica o prem/ } )
+		).toBeVisible();
+		expect( await focusDins( page ) ).toBe( true );
+	} );
+
+	test( 'amb la lupa, el text del correu conserva els espais', async ( {
+		page,
+	} ) => {
+		await mirantElCorreu( page );
+		await lupa( page ).click();
+		const correu = page.getByRole( 'article' );
+		await expect( correu ).toContainText( 'entra a Paga ara', {
+			useInnerText: true,
+		} );
+		await expect( correu ).toContainText( '87,40 €. Si no', {
+			useInnerText: true,
+		} );
 	} );
 
 	test( 'sense Fullscreen API el joc funciona amb la capa fixa', async ( {
