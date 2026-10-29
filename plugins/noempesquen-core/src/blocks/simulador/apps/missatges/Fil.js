@@ -4,7 +4,7 @@ import { useJoc } from '../../simulador/context';
 import { Cos } from '../../ui/Cos';
 import { Inspeccionable } from '../../ui/Inspeccionable';
 import { parteixHora } from '../parla/xats.js';
-import { darrerRebut } from './fils.js';
+import { destiResposta } from './fils.js';
 import { IconaContactes, IconaEnrere, IconaEnvia, IconaMes } from './icones';
 
 /* Mil·lisegons de pulsació per considerar-la llarga. */
@@ -176,11 +176,14 @@ export function Fil( {
 	onObreEnllac,
 	onRespon,
 } ) {
-	const final = useRef( null );
+	const llista = useRef( null );
 	const idCamp = useId();
 
 	useEffect( () => {
-		final.current?.scrollIntoView?.( { block: 'end' } );
+		const ol = llista.current;
+		if ( ol ) {
+			ol.scrollTop = ol.scrollHeight;
+		}
 	}, [ fil.missatges.length ] );
 
 	const envia = ( e ) => {
@@ -190,7 +193,7 @@ export function Fil( {
 		if ( ! camp?.value.trim() ) {
 			return;
 		}
-		const id = respostaA.current ?? darrerRebut( fil )?.id;
+		const id = destiResposta( fil, respostaA.current );
 		form.reset();
 		respostaA.current = null;
 		if ( id ) {
@@ -227,6 +230,7 @@ export function Fil( {
 				</button>
 			</header>
 			<ol
+				ref={ llista }
 				className="nep-missatges-fil__llista"
 				aria-label={ __( 'Missatges', 'noempesquen' ) }
 			>
@@ -241,7 +245,6 @@ export function Fil( {
 					/>
 				) ) }
 			</ol>
-			<div ref={ final } />
 			{ bloquejat ? (
 				<p className="nep-missatges-fil__bloquejat">
 					{ __(

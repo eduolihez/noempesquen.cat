@@ -158,6 +158,24 @@ export function destinsReenvia( mon ) {
 }
 
 /**
+ * Missatge al qual va una resposta: el triat al menú si és d'aquest fil;
+ * si no, l'últim rebut.
+ *
+ * @param {Object}  fil     Fil.
+ * @param {?string} triatId Id triat amb «Respon» al menú.
+ * @return {?string} Id del missatge o null.
+ */
+export function destiResposta( fil, triatId ) {
+	if (
+		triatId &&
+		( fil?.missatges ?? [] ).some( ( m ) => m.id === triatId )
+	) {
+		return triatId;
+	}
+	return darrerRebut( fil )?.id ?? null;
+}
+
+/**
  * Últim missatge rebut d'un fil (al qual va la resposta), o null.
  *
  * @param {Object} fil Fil.

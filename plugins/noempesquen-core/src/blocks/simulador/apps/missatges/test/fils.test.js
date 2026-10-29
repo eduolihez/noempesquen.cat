@@ -7,6 +7,7 @@ import {
 	textPla,
 	destinsReenvia,
 	darrerRebut,
+	destiResposta,
 } from '../fils.js';
 
 const mon = {
@@ -177,5 +178,24 @@ describe( 'darrerRebut', () => {
 		const fils = filsVisibles( { visibles: {} }, mon, missio );
 		expect( darrerRebut( fils[ 0 ] ).id ).toBe( 'pau-0' );
 		expect( darrerRebut( { missatges: [] } ) ).toBeNull();
+	} );
+} );
+
+describe( 'destiResposta', () => {
+	const fils = filsVisibles( { visibles: { s2: true } }, mon, missio );
+	const [ sms2, pau ] = fils;
+
+	it( 'respon al missatge triat si és del fil', () => {
+		expect( destiResposta( sms2, 's2' ) ).toBe( 's2' );
+	} );
+
+	it( "ignora un triat d'un altre fil i va a l'últim rebut", () => {
+		expect( destiResposta( pau, 's2' ) ).toBe( 'pau-0' );
+		expect( destiResposta( sms2, 'pau-0' ) ).toBe( 's2' );
+	} );
+
+	it( 'sense triat, l’últim rebut; sense rebuts, null', () => {
+		expect( destiResposta( pau, null ) ).toBe( 'pau-0' );
+		expect( destiResposta( { missatges: [] }, null ) ).toBeNull();
 	} );
 } );

@@ -164,9 +164,19 @@ export default function Missatges() {
 
 	// Després de tancar un full, el focus pot anar a un altre lloc.
 	useEffect( () => {
-		if ( ! full && focusDespres.current ) {
+		if ( full ) {
+			return;
+		}
+		if ( focusDespres.current ) {
 			focusDespres.current.focus();
 			focusDespres.current = null;
+			return;
+		}
+		// L'origen del full ha desaparegut (esborrat, bloquejat): al títol.
+		const el = arrel.current;
+		const actiu = el?.ownerDocument.activeElement;
+		if ( el && ( ! actiu || actiu === el.ownerDocument.body ) ) {
+			el.querySelector( '.nep-missatges__titol' )?.focus();
 		}
 	}, [ full ] );
 
@@ -288,6 +298,7 @@ export default function Missatges() {
 		if ( full.tipus === 'menu' ) {
 			return (
 				<Fulla
+					key={ full.tipus }
 					titol={ __( 'Opcions del missatge', 'noempesquen' ) }
 					onTanca={ tancaFull }
 					origen={ full.origen }
@@ -304,6 +315,7 @@ export default function Missatges() {
 		if ( full.tipus === 'reenvia' ) {
 			return (
 				<Fulla
+					key={ full.tipus }
 					titol={ __( 'Reenvia a…', 'noempesquen' ) }
 					onTanca={ tancaFull }
 					origen={ full.origen }
@@ -336,6 +348,7 @@ export default function Missatges() {
 			const { contacte } = full;
 			return (
 				<Fulla
+					key={ full.tipus }
 					titol={ sprintf(
 						/* translators: %s: nom o número del contacte */
 						__( 'Vols bloquejar %s?', 'noempesquen' ),
@@ -389,6 +402,7 @@ export default function Missatges() {
 		// Full de l'enllaç: l'adreça sencera, sense obrir-la.
 		return (
 			<Fulla
+				key={ full.tipus }
 				titol={ __( 'Enllaç', 'noempesquen' ) }
 				onTanca={ tancaFull }
 				origen={ full.origen }
