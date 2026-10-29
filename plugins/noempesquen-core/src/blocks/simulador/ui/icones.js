@@ -150,52 +150,46 @@ function App( { mida = 24, children } ) {
 	);
 }
 
-/* Navegador: un planeta amb un anell (no és cap logotip real). */
+/* Navegador: una finestra que dona al mar, amb el sol a l'horitzó. */
 export function IconaNavegador( { mida } ) {
 	const g = useIdSvg( 'nav' );
 	return (
 		<App mida={ mida }>
 			<defs>
-				<radialGradient id={ `${ g }p` } cx="35%" cy="30%" r="75%">
-					<stop offset="0" stopColor="#6fd6f0" />
-					<stop offset="0.55" stopColor="#1689d8" />
-					<stop offset="1" stopColor="#0b4fa3" />
-				</radialGradient>
-				<linearGradient id={ `${ g }a` } x1="0" y1="0" x2="1" y2="0">
-					<stop offset="0" stopColor="#ffcf5c" />
-					<stop offset="1" stopColor="#ff8a3d" />
+				<linearGradient id={ `${ g }c` } x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0" stopColor="#3cc3cf" />
+					<stop offset="1" stopColor="#0b5e7a" />
 				</linearGradient>
+				<clipPath id={ `${ g }r` }>
+					<rect x="4" y="5" width="40" height="38" rx="9" />
+				</clipPath>
 			</defs>
-			<g transform="rotate(-24 24 24)">
-				<path
-					d="M2.5 24a21.5 7.5 0 0 1 43 0"
-					fill="none"
-					stroke={ `url(#${ g }a)` }
-					strokeWidth="3"
+			<g clipPath={ `url(#${ g }r)` }>
+				<rect
+					x="4"
+					y="5"
+					width="40"
+					height="38"
+					fill={ `url(#${ g }c)` }
 				/>
-				<circle cx="24" cy="24" r="15" fill={ `url(#${ g }p)` } />
-				<ellipse
-					cx="24"
-					cy="24"
-					rx="6.5"
-					ry="15"
-					fill="none"
-					stroke="#fff"
-					strokeOpacity=".35"
-					strokeWidth="1.2"
+				<rect x="4" y="5" width="40" height="10" fill="#08485e" />
+				<rect
+					x="9"
+					y="8.5"
+					width="30"
+					height="3.5"
+					rx="1.75"
+					fill="#fff"
+					fillOpacity=".55"
+				/>
+				<circle cx="31" cy="28" r="5" fill="#ffb84d" />
+				<path
+					d="M4 30c4.6-3.4 9.4-3.4 14 0s9.4 3.4 14 0 8.6-3.4 12-.8V43H4z"
+					fill="#0a6f8c"
 				/>
 				<path
-					d="M9.6 19h28.8M9.6 29h28.8"
-					stroke="#fff"
-					strokeOpacity=".3"
-					strokeWidth="1.2"
-				/>
-				<path
-					d="M2.5 24a21.5 7.5 0 0 0 43 0"
-					fill="none"
-					stroke={ `url(#${ g }a)` }
-					strokeWidth="3"
-					strokeLinecap="round"
+					d="M4 35c4.6-3.4 9.4-3.4 14 0s9.4 3.4 14 0 8.6-3.4 12-.8V43H4z"
+					fill="#e9fbfb"
 				/>
 			</g>
 		</App>
@@ -310,43 +304,37 @@ export function IconaPaperera( { mida } ) {
 	);
 }
 
-/* Marca del botó d'inici: rombe de quatre peces (no és cap logotip real). */
+/* Marca del botó d'inici: una gota partida per una onada (no és cap logotip real). */
 export function MarcaInici( { mida = 22 } ) {
+	const g = useIdSvg( 'ini' );
+	const onada = 'M2 24c5.5-4.4 11-4.4 16.5 0s11 4.4 16.5 0 9.5-4.4 13-1.6';
 	return (
 		<App mida={ mida }>
-			<g transform="rotate(45 24 24)">
-				<rect
-					x="9"
-					y="9"
-					width="14"
-					height="14"
-					rx="3.5"
-					fill="#62cdf6"
-				/>
-				<rect
-					x="25"
-					y="9"
-					width="14"
-					height="14"
-					rx="3.5"
-					fill="#2b9ce9"
-				/>
-				<rect
-					x="9"
-					y="25"
-					width="14"
-					height="14"
-					rx="3.5"
-					fill="#1c7fd8"
-				/>
-				<rect
-					x="25"
-					y="25"
-					width="14"
-					height="14"
-					rx="3.5"
-					fill="#0a56b5"
-				/>
+			<defs>
+				<linearGradient id={ `${ g }a` } x1="0" y1="0" x2="1" y2="1">
+					<stop offset="0" stopColor="#6fe0cf" />
+					<stop offset="1" stopColor="#1fa3ad" />
+				</linearGradient>
+				<linearGradient id={ `${ g }b` } x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0" stopColor="#1489a2" />
+					<stop offset="1" stopColor="#0b5e7a" />
+				</linearGradient>
+				<clipPath id={ `${ g }c` }>
+					<path d="M24 3c7 8.6 18 16.4 18 26.5a18 18 0 0 1-36 0C6 19.4 17 11.6 24 3z" />
+				</clipPath>
+				<mask id={ `${ g }m` }>
+					<rect width="48" height="48" fill="#fff" />
+					<path
+						d={ onada }
+						fill="none"
+						stroke="#000"
+						strokeWidth="3.4"
+					/>
+				</mask>
+			</defs>
+			<g clipPath={ `url(#${ g }c)` } mask={ `url(#${ g }m)` }>
+				<rect width="48" height="48" fill={ `url(#${ g }b)` } />
+				<path d={ `${ onada }V0H2z` } fill={ `url(#${ g }a)` } />
 			</g>
 		</App>
 	);

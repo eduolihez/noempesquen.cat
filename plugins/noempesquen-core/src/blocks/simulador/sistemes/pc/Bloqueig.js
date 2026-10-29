@@ -5,16 +5,7 @@ import { IconaBateria, IconaWifi } from '../../ui/icones';
 import { DATA_LLARGA } from './calendari';
 import { Fons } from './Fons';
 import { menysMoviment } from './moviment';
-
-/* Tecles que no desbloquegen: Esc és la pausa; Tab només mou el focus. */
-const IGNORADES = new Set( [
-	'Escape',
-	'Tab',
-	'Shift',
-	'Control',
-	'Alt',
-	'Meta',
-] );
+import { teclaDesbloqueig } from './tecles';
 
 /**
  * Pantalla de bloqueig. Qualsevol clic o tecla desbloqueja; mentre
@@ -45,15 +36,13 @@ export function Bloqueig( { sortint, onFi } ) {
 			return undefined;
 		}
 		const onKeyDown = ( e ) => {
-			if (
-				IGNORADES.has( e.key ) ||
-				e.ctrlKey ||
-				e.metaKey ||
-				e.altKey
-			) {
+			const accio = teclaDesbloqueig( e );
+			if ( ! accio ) {
 				return;
 			}
-			e.preventDefault();
+			if ( accio === 'consumeix' ) {
+				e.preventDefault();
+			}
 			dispatch( { tipus: 'DESBLOQUEJA' } );
 		};
 		document.addEventListener( 'keydown', onKeyDown );
