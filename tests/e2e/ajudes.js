@@ -1,3 +1,4 @@
+const { expect } = require( '@playwright/test' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 
 /**
@@ -19,4 +20,25 @@ async function greusAxe( page ) {
 		} ) );
 }
 
-module.exports = { greusAxe };
+/** Botó «Inspecciona» d'un text concret (missatge, web o correu). */
+const inspecciona = ( page, text ) =>
+	page.getByRole( 'button', { name: `Inspecciona: ${ text }`, exact: true } );
+
+/**
+ * Obre el simulador, tria la missió i espera la pantalla de bloqueig.
+ * Els fake clocks s'instal·len abans de carregar la pàgina.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {RegExp}                          titol    Nom del botó de la missió al selector.
+ * @param {RegExp}                          bloqueig Nom del botó de la pantalla de bloqueig que cal esperar.
+ */
+async function iniciaMissio( page, titol, bloqueig ) {
+	await page.clock.install();
+	await page.goto( '/simulador/' );
+	await page.getByRole( 'button', { name: titol } ).click();
+	await expect(
+		page.getByRole( 'button', { name: bloqueig } )
+	).toBeVisible();
+}
+
+module.exports = { greusAxe, inspecciona, iniciaMissio };

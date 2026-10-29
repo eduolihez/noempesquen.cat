@@ -1,7 +1,8 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxe } = require( './ajudes' );
+const { greusAxe, inspecciona, iniciaMissio } = require( './ajudes' );
 
 const MISSIO = /La factura de la llum/;
+const BLOQUEIG = /Clica o prem/;
 // Valors d'autoompliment de la missió que no han de quedar enlloc.
 const AUTOOMPLI = [ '4000 1234', '5678 9010', '08/28' ];
 // Camps de la web falsa i el valor que hi posa l'autoompliment.
@@ -31,15 +32,10 @@ const filaTrampa = ( page ) =>
 const lupa = ( page ) =>
 	barraTasques( page ).getByRole( 'button', { name: 'Lupa', exact: true } );
 
-const inspecciona = ( page, text ) =>
-	page.getByRole( 'button', { name: `Inspecciona: ${ text }`, exact: true } );
-
 /** Obre la missió des del selector i entra a l'escriptori. */
 async function entra( page ) {
-	await page.clock.install();
-	await page.goto( '/simulador/' );
-	await page.getByRole( 'button', { name: MISSIO } ).click();
-	await page.getByRole( 'button', { name: /Clica o prem/ } ).click();
+	await iniciaMissio( page, MISSIO, BLOQUEIG );
+	await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 	await expect( parla( page ) ).toBeVisible();
 }
 
@@ -267,11 +263,9 @@ test.describe( 'La factura de la llum', () => {
 	test( 'sortir de pantalla completa al bloqueig també pausa', async ( {
 		page,
 	} ) => {
-		await page.clock.install();
-		await page.goto( '/simulador/' );
-		await page.getByRole( 'button', { name: MISSIO } ).click();
+		await iniciaMissio( page, MISSIO, BLOQUEIG );
 		await expect(
-			page.getByRole( 'button', { name: /Clica o prem/ } )
+			page.getByRole( 'button', { name: BLOQUEIG } )
 		).toBeFocused();
 		await surtDePantallaCompleta( page );
 		await expect( page.locator( '.nep-so' ) ).toHaveClass( /nep-so--fixa/ );
@@ -281,9 +275,7 @@ test.describe( 'La factura de la llum', () => {
 	} );
 
 	test( 'el focus no surt mai del simulador', async ( { page } ) => {
-		await page.clock.install();
-		await page.goto( '/simulador/' );
-		await page.getByRole( 'button', { name: MISSIO } ).click();
+		await iniciaMissio( page, MISSIO, BLOQUEIG );
 		// Bloqueig: un sol botó, Tab i Maj+Tab hi tornen.
 		await page.keyboard.press( 'Tab' );
 		expect( await focusDins( page ) ).toBe( true );
