@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { validaMissio } from '../valida.js';
+import {
+	validaMissio,
+	APPS,
+	APPS_PC,
+	APPS_MOBIL,
+	ESDEVENIMENTS,
+} from '../valida.js';
 
 const ruta = new URL(
 	'../../../../../missions/llissa-01-factura.json',
@@ -101,6 +107,88 @@ describe( 'validaMissio v2', () => {
 		const m = copia();
 		m.disparadors[ 1 ].efectes[ 0 ] = { tipus: 'guia-diu', text: 'Hola' };
 		expect( validaMissio( m ) ).toEqual( [] );
+	} );
+
+	it( 'exporta els vocabularis de dispositiu', () => {
+		expect( APPS_PC ).toEqual( [ 'navegador', 'parla' ] );
+		expect( APPS_MOBIL ).toEqual( [ 'missatges', 'parla', 'navegador' ] );
+		expect( [ ...APPS ].sort() ).toEqual( [
+			'missatges',
+			'navegador',
+			'parla',
+		] );
+	} );
+
+	it( 'accepta la plantilla enviat i els esdeveniments mòbils', () => {
+		const nous = [
+			'contacte.bloqueja',
+			'missatge.esborra',
+			'missatge.reenvia',
+			'missatge.respon',
+			'enllac.mantingut',
+		];
+		nous.forEach( ( ev ) => expect( ESDEVENIMENTS ).toContain( ev ) );
+		const m = copia();
+		m.webs[ 'llumclara.cat' ].plantilla = 'enviat';
+		nous.forEach( ( ev, i ) =>
+			m.disparadors.push( {
+				id: `nou${ i }`,
+				quan: { esdeveniment: ev },
+				efectes: [ { tipus: 'guia-diu', text: 'x' } ],
+			} )
+		);
+		expect( validaMissio( m ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja un esdeveniment inexistent', () => {
+		const m = copia();
+		m.disparadors[ 0 ].quan.esdeveniment = 'missatge.vola';
+		expect( validaMissio( m ) ).toContain(
+			'esdeveniment desconegut: missatge.vola'
+		);
+	} );
+
+	it( 'mostra: exigeix un id existent sota apps.*', () => {
+		const m = copia();
+		m.disparadors.push( {
+			id: 'mx',
+			quan: { esdeveniment: 'inici' },
+			efectes: [ { tipus: 'mostra', id: 'no-hi-es' } ],
+		} );
+		expect( validaMissio( m ) ).toContain(
+			'mostra: element inexistent: no-hi-es'
+		);
+	} );
+
+	it( 'notifica: accepta fonts conegudes i rebutja la resta', () => {
+		const amb = ( app ) => {
+			const m = copia();
+			m.disparadors.push( {
+				id: 'nx',
+				quan: { esdeveniment: 'inici' },
+				efectes: [ { tipus: 'notifica', app, titol: 't', text: 'x' } ],
+			} );
+			return validaMissio( m );
+		};
+		[ 'missatges', 'parla', 'navegador', 'posta', 'enviat' ].forEach(
+			( app ) => expect( amb( app ) ).toEqual( [] )
+		);
+		expect( amb( 'altra' ) ).toContain(
+			'notifica: font desconeguda: altra'
+		);
+	} );
+
+	it( 'la missió remei (v1) encara falla per versio', () => {
+		const remei = JSON.parse(
+			readFileSync(
+				new URL(
+					'../../../../../missions/remei-01-paquet.json',
+					import.meta.url
+				),
+				'utf8'
+			)
+		);
+		expect( validaMissio( remei ) ).toContain( 'versio no suportada' );
 	} );
 
 	it( 'no llança amb elements nuls i informa dels errors', () => {

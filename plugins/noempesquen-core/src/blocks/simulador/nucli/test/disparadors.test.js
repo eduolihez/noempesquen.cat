@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { FASE, estatInicial, reductor, visible } from '../motor.js';
-import { coincideix } from '../disparadors.js';
+import { coincideix, processaEsdeveniment } from '../disparadors.js';
 
 const ruta = new URL(
 	'../../../../../missions/llissa-01-factura.json',
@@ -169,5 +169,62 @@ describe( 'coincideix', () => {
 				}
 			)
 		).toBe( false );
+	} );
+} );
+
+describe( 'disparadors del vocabulari mòbil', () => {
+	const mobil = {
+		id: 't',
+		frases: { pescat: 'Pescat' },
+		decisio: {
+			opcions: [
+				{ id: 'c', valor: 'correcta', resposta: 'Bloquejat' },
+				{ id: 'd', valor: 'parcial', resposta: 'Reenviat' },
+			],
+		},
+		disparadors: [
+			{
+				id: 'bloqueja',
+				quan: { esdeveniment: 'contacte.bloqueja' },
+				efectes: [ { tipus: 'decideix', opcio: 'c' } ],
+			},
+			{
+				id: 'reenvia',
+				quan: { esdeveniment: 'missatge.reenvia', a: 'familia' },
+				efectes: [ { tipus: 'decideix', opcio: 'd' } ],
+			},
+		],
+	};
+	const inici = () => ( { ...estatInicial( m ), fase: FASE.JOC } );
+
+	it( 'contacte.bloqueja decideix c', () => {
+		const e = processaEsdeveniment( mobil, inici(), 'contacte.bloqueja', {
+			id: 'x',
+		} );
+		expect( e.opcio ).toBe( 'c' );
+		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+
+	it( 'missatge.reenvia a familia decideix d una sola vegada', () => {
+		const altre = processaEsdeveniment(
+			mobil,
+			inici(),
+			'missatge.reenvia',
+			{
+				a: 'pau',
+			}
+		);
+		expect( altre.opcio ).toBeFalsy();
+		const e = processaEsdeveniment( mobil, inici(), 'missatge.reenvia', {
+			a: 'familia',
+		} );
+		expect( e.opcio ).toBe( 'd' );
+		expect( e.executats.filter( ( x ) => x === 'reenvia' ) ).toHaveLength(
+			1
+		);
+		const bis = processaEsdeveniment( mobil, e, 'missatge.reenvia', {
+			a: 'familia',
+		} );
+		expect( bis ).toBe( e );
 	} );
 } );

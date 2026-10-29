@@ -3,7 +3,11 @@
  */
 
 export const APPS_PC = [ 'navegador', 'parla' ];
-export const PLANTILLES_WEB = [ 'posta', 'llum-clara' ];
+export const APPS_MOBIL = [ 'missatges', 'parla', 'navegador' ];
+export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
+// Fonts de notificació: apps del sistema i webs que també avisen.
+export const FONTS_NOTIFICACIO = [ ...APPS, 'posta', 'enviat' ];
+export const PLANTILLES_WEB = [ 'posta', 'llum-clara', 'enviat' ];
 export const TIPUS_EFECTE = [
 	'guia-diu',
 	'notifica',
@@ -19,6 +23,11 @@ export const ESDEVENIMENTS = [
 	'web.carrega',
 	'formulari.envia',
 	'correu.marca',
+	'contacte.bloqueja',
+	'missatge.esborra',
+	'missatge.reenvia',
+	'missatge.respon',
+	'enllac.mantingut',
 ];
 
 const CAMPS_SENYAL = [ 'senyal', 'assumpte_senyal', 'domini_senyal' ];
@@ -45,7 +54,31 @@ function recullSenyals( node, out = [] ) {
 	return out;
 }
 
-function validaEfecte( e, opcions, frases, errors ) {
+/**
+ * Recull els ids dels elements dels arrays sota `apps.*`.
+ *
+ * @param {Object} apps Apps de la missió.
+ * @return {Set<string>} Ids existents.
+ */
+function recullIdsApps( apps ) {
+	const ids = new Set();
+	const objectes = ( v ) =>
+		v && typeof v === 'object' ? Object.values( v ) : [];
+	objectes( apps ).forEach( ( app ) => {
+		objectes( app ).forEach( ( llista ) => {
+			if ( Array.isArray( llista ) ) {
+				llista.forEach( ( item ) => {
+					if ( item?.id !== undefined ) {
+						ids.add( item.id );
+					}
+				} );
+			}
+		} );
+	} );
+	return ids;
+}
+
+function validaEfecte( e, opcions, frases, idsApps, errors ) {
 	if ( ! e || typeof e !== 'object' ) {
 		errors.push( 'efecte invàlid' );
 		return false;
@@ -55,6 +88,12 @@ function validaEfecte( e, opcions, frases, errors ) {
 	}
 	if ( e.tipus === 'decideix' && ! opcions.has( e.opcio ) ) {
 		errors.push( `opció inexistent: ${ e.opcio }` );
+	}
+	if ( e.tipus === 'mostra' && ! idsApps.has( e.id ) ) {
+		errors.push( `mostra: element inexistent: ${ e.id }` );
+	}
+	if ( e.tipus === 'notifica' && ! FONTS_NOTIFICACIO.includes( e.app ) ) {
+		errors.push( `notifica: font desconeguda: ${ e.app }` );
 	}
 	if ( e.tipus === 'guia-diu' ) {
 		if ( e.frase !== undefined ) {
@@ -75,6 +114,7 @@ function validaDisparadors( m, errors ) {
 			.map( ( o ) => o.id )
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
+	const idsApps = recullIdsApps( m.apps );
 	let hiHaPescat = false;
 	( m.disparadors ?? [] ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
@@ -86,7 +126,7 @@ function validaDisparadors( m, errors ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
 		}
 		( d.efectes ?? [] ).forEach( ( e ) => {
-			if ( validaEfecte( e, opcions, frases, errors ) ) {
+			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
 				hiHaPescat = true;
 			}
 		} );
