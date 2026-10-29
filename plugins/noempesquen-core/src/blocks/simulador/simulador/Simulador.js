@@ -20,6 +20,8 @@ import { Resultat } from './Resultat';
 const MS_TICK = 1000;
 /* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
 const FASES_FINALS = [ FASE.CONSEQUENCIA, FASE.RESULTAT ];
+/* Fases en què sortir de pantalla completa sense demanar-ho pausa. */
+const FASES_PAUSABLES = [ FASE.BLOQUEIG, FASE.JOC ];
 const SISTEMES = {
 	pc: lazy( () => import( '../sistemes/pc/Pc' ) ),
 };
@@ -67,8 +69,10 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 	const pausa = useRef( estat.pausa );
 	pausa.current = estat.pausa;
 
+	// Sortir de pantalla completa sense demanar-ho (Esc real, F11...) deixa
+	// la capa fixa; durant la partida, a més, obre la pausa.
 	const { entra, surt, fixa } = usePantallaCompleta( arrel, () => {
-		if ( fase.current === FASE.JOC ) {
+		if ( FASES_PAUSABLES.includes( fase.current ) ) {
 			dispatch( { tipus: 'PAUSA' } );
 		}
 	} );
