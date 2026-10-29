@@ -18,6 +18,7 @@ export const PUNTS = {
 	parcial: 20,
 	incorrecta: 0,
 	picar: -20,
+	pista: -5,
 };
 
 export const SEGONS_PISTA = 60;
@@ -308,6 +309,7 @@ export function puntuacio( missio, estat ) {
 	if ( estat.pescat ) {
 		punts += PUNTS.picar;
 	}
+	punts += estat.pistesDonades * PUNTS.pista;
 	punts = Math.max( 0, punts );
 	const ratio = maxim ? punts / maxim : 0;
 	let estrelles = 1;

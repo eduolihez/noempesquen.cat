@@ -1,6 +1,6 @@
 import { useEffect, useRef } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
-import { puntuacio } from '../nucli/motor';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { PUNTS, puntuacio } from '../nucli/motor';
 import { Estrella, IconaFalla, IconaFet, IconaSalvavides } from '../ui/icones';
 import { useJoc } from './context';
 import { desenllac } from './desenllac';
@@ -157,6 +157,21 @@ export function Resultat( { onReinicia, onSeguent, onSurt } ) {
 								maxim
 							) }
 						</p>
+						{ estat.pistesDonades > 0 && (
+							<p className="nep-res__pistes">
+								{ sprintf(
+									/* translators: 1: nombre de pistes, 2: punts descomptats */
+									_n(
+										'%1$d pista usada (−%2$d punts)',
+										'%1$d pistes usades (−%2$d punts)',
+										estat.pistesDonades,
+										'noempesquen'
+									),
+									estat.pistesDonades,
+									-estat.pistesDonades * PUNTS.pista
+								) }
+							</p>
+						) }
 					</div>
 					<div className="nep-res__guia">
 						<div className="nep-res__avatar">
