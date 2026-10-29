@@ -6,6 +6,7 @@
 import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { IconaNavegador, IconaParla } from '../ui/icones';
+import { IconaMissatges } from './missatges/icones';
 
 const navegador = {
 	nom: __( 'Navegador', 'noempesquen' ),
@@ -19,10 +20,16 @@ const parla = {
 	Component: lazy( () => import( './parla/Parla' ) ),
 };
 
+const missatges = {
+	nom: __( 'Missatges', 'noempesquen' ),
+	Icona: IconaMissatges,
+	Component: lazy( () => import( './missatges/Missatges' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
-	// T4: missatges ( './missatges/Missatges' ).
+	missatges,
 	// T5: la closca mòbil de Parla substituirà el component del PC.
 	parla,
 	// T6: la closca mòbil del Navegador substituirà el component del PC.
