@@ -1,0 +1,59 @@
+/* Text inspeccionable i enllaços del cos dels missatges. */
+
+.nep-so {
+
+	.nep-inspecciona,
+	.nep-enllac {
+		background: none;
+		border: 0;
+		border-radius: 2px;
+		color: inherit;
+		cursor: inherit;
+		display: inline;
+		font: inherit;
+		margin: 0;
+		padding: 0;
+		text-align: inherit;
+	}
+
+	.nep-enllac {
+		color: var(--so-accent);
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+	/* Marca discreta de progrés amb la lupa apagada. */
+	.nep-marcat {
+		text-decoration: underline;
+		text-decoration-color: #1e7b45;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 2px;
+	}
+
+	&.is-lupa {
+
+		.nep-inspecciona {
+			cursor: inherit;
+			text-decoration: underline wavy #b98a00;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 3px;
+
+			&:hover,
+			&:focus-visible {
+				background: #fff3c4;
+				color: #1a1a1a;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--so-accent);
+				outline-offset: 1px;
+			}
+
+			&.nep-marcat {
+				outline: 2px solid #1e7b45;
+				outline-offset: 1px;
+				text-decoration: none;
+			}
+		}
+	}
+}
