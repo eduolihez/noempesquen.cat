@@ -196,6 +196,12 @@
 		opacity: 1;
 		transition-delay: 0.45s;
 	}
+
+	/* Esc l'amaga fins que el ratolí o el focus canvien de botó. */
+	.nep-so-barra.is-pista-amagada & {
+		opacity: 0;
+		transition-delay: 0s;
+	}
 }
 
 /* ---------- Panells ---------- */

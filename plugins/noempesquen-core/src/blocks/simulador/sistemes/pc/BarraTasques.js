@@ -1,3 +1,4 @@
+import { useRef } from '@wordpress/element';
 import { __, sprintf, _n } from '@wordpress/i18n';
 import { APPS } from '../../apps/registre';
 import {
@@ -10,6 +11,7 @@ import {
 	MarcaInici,
 } from '../../ui/icones';
 import { DATA_CURTA, DATA_LLARGA } from './calendari';
+import { usePistaDescartable } from './usePista';
 
 function etiquetaApp( nom, finestra, enfocada ) {
 	if ( ! finestra ) {
@@ -56,6 +58,8 @@ export function BarraTasques( {
 	refInici,
 	refRellotge,
 } ) {
+	const nav = useRef( null );
+	const pistaAmagada = usePistaDescartable( nav );
 	const etiquetaRellotge = noLlegides
 		? sprintf(
 				/* translators: 1: hora, 2: data, 3: nombre de notificacions */
@@ -78,7 +82,10 @@ export function BarraTasques( {
 
 	return (
 		<nav
-			className="nep-so-barra"
+			ref={ nav }
+			className={ `nep-so-barra${
+				pistaAmagada ? ' is-pista-amagada' : ''
+			}` }
 			aria-label={ __( 'Barra de tasques', 'noempesquen' ) }
 		>
 			<div className="nep-so-barra__centre">
