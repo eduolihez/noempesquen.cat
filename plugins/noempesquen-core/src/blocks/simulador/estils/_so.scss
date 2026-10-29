@@ -39,6 +39,11 @@
 		font: inherit;
 	}
 
+	&__sistema {
+		height: 100%;
+		width: 100%;
+	}
+
 	&--fixa {
 		inset: 0;
 		position: fixed;

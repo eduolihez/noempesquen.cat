@@ -47,8 +47,17 @@ export function Pausa( { onContinua, onReinicia, onSurt } ) {
 		}
 	};
 
+	// Un clic a la capa o al text no ha de treure el focus del diàleg.
+	const onMouseDown = ( e ) => {
+		if ( ! e.target.closest( 'button' ) ) {
+			e.preventDefault();
+			continua.current?.focus();
+		}
+	};
+
 	return (
-		<div className="nep-so-pausa">
+		// eslint-disable-next-line jsx-a11y/no-static-element-interactions
+		<div className="nep-so-pausa" onMouseDown={ onMouseDown }>
 			{ /* Captura Tab per atrapar el focus dins del diàleg modal. */ }
 			{ /* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */ }
 			<div

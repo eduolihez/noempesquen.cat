@@ -109,18 +109,24 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		};
 	}, [] );
 
-	const onKeyDown = ( e ) => {
-		if ( e.key !== 'Escape' || pausa.current ) {
-			return;
-		}
-		e.preventDefault();
-		const tanca = menus.current.pop();
-		if ( tanca ) {
-			tanca();
-		} else {
-			dispatch( { tipus: 'PAUSA' } );
-		}
-	};
+	// A document: si el botó que tenia el focus desapareix, el focus cau a
+	// <body> i un keydown a l'arrel no arribaria mai.
+	useEffect( () => {
+		const onKeyDown = ( e ) => {
+			if ( e.key !== 'Escape' || pausa.current ) {
+				return;
+			}
+			e.preventDefault();
+			const tanca = menus.current.pop();
+			if ( tanca ) {
+				tanca();
+			} else {
+				dispatch( { tipus: 'PAUSA' } );
+			}
+		};
+		document.addEventListener( 'keydown', onKeyDown );
+		return () => document.removeEventListener( 'keydown', onKeyDown );
+	}, [] );
 
 	const { nom: nomGuia, Avatar } =
 		PERSONATGES[ missio.personatge ] ?? PERSONATGES.llissa;
@@ -169,16 +175,19 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 
 	return (
 		<JocContext.Provider value={ ctx }>
-			{ /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */ }
 			<div
 				ref={ arrel }
 				className={ `nep-so${ fixa ? ' nep-so--fixa' : '' }` }
 				tabIndex={ -1 }
-				onKeyDown={ onKeyDown }
 			>
-				<Suspense fallback={ <Carregant /> }>
-					<Sistema />
-				</Suspense>
+				<div
+					className="nep-so__sistema"
+					inert={ estat.pausa ? '' : undefined }
+				>
+					<Suspense fallback={ <Carregant /> }>
+						<Sistema />
+					</Suspense>
+				</div>
 				{ estat.pausa && (
 					<Pausa
 						onContinua={ continua }
