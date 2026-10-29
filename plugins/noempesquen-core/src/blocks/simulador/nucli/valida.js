@@ -4,6 +4,12 @@
 
 export const APPS_PC = [ 'navegador', 'parla' ];
 export const APPS_MOBIL = [ 'missatges', 'parla', 'navegador' ];
+// Apps (o webs que avisen com a app) que una missió pot fer servir, per
+// dispositiu: a l'ordinador, Posta és una web amb dades a `apps.posta`.
+export const APPS_MISSIO = {
+	pc: [ 'navegador', 'parla', 'posta' ],
+	mobil: [ 'missatges', 'parla', 'navegador', 'enviat' ],
+};
 export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
 // Fonts de notificació: apps del sistema i webs que també avisen.
 export const FONTS_NOTIFICACIO = [ ...APPS, 'posta', 'enviat' ];
@@ -30,6 +36,8 @@ export const ESDEVENIMENTS = [
 	'enllac.mantingut',
 ];
 
+const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
+
 const CAMPS_SENYAL = [ 'senyal', 'assumpte_senyal', 'domini_senyal' ];
 
 /**
@@ -48,6 +56,33 @@ function recullSenyals( node, out = [] ) {
 				out.push( valor );
 			} else {
 				recullSenyals( valor, out );
+			}
+		} );
+	}
+	return out;
+}
+
+/**
+ * Recull recursivament les URL dels enllaços ({ enllac: { url } }).
+ *
+ * @param {Object|Array|string|number|boolean|null} node Valor JSON.
+ * @param {string[]}                                out  Acumulador.
+ * @return {Array} URL trobades (qualsevol tipus: es valida després).
+ */
+function recullUrlsEnllac( node, out = [] ) {
+	if ( Array.isArray( node ) ) {
+		node.forEach( ( x ) => recullUrlsEnllac( x, out ) );
+	} else if ( node && typeof node === 'object' ) {
+		Object.entries( node ).forEach( ( [ clau, valor ] ) => {
+			if (
+				clau === 'enllac' &&
+				valor &&
+				typeof valor === 'object' &&
+				! Array.isArray( valor )
+			) {
+				out.push( valor.url );
+			} else {
+				recullUrlsEnllac( valor, out );
 			}
 		} );
 	}
@@ -169,6 +204,30 @@ export function validaMissio( m ) {
 			errors.push( `senyal desconegut: ${ s }` );
 		}
 	} );
+
+	recullUrlsEnllac( m.apps ).forEach( ( url ) => {
+		if ( typeof url !== 'string' || ! URL_VALIDA.test( url ) ) {
+			errors.push( `url d'enllaç no permesa: ${ url }` );
+		}
+	} );
+
+	const permeses = APPS_MISSIO[ m.dispositiu ];
+	if ( permeses ) {
+		const usades = [
+			...Object.keys( m.apps ?? {} ),
+			...( m.disparadors ?? [] )
+				.flatMap( ( d ) => d?.efectes ?? [] )
+				.filter( ( e ) => e?.tipus === 'notifica' )
+				.map( ( e ) => e.app ),
+		];
+		new Set( usades ).forEach( ( a ) => {
+			if ( ! permeses.includes( a ) ) {
+				errors.push(
+					`app inexistent al dispositiu ${ m.dispositiu }: ${ a }`
+				);
+			}
+		} );
+	}
 
 	Object.entries( m.webs ?? {} ).forEach( ( [ domini, web ] ) => {
 		if ( ! web || typeof web !== 'object' ) {

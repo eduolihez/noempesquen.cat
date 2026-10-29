@@ -170,7 +170,7 @@ describe( 'validaMissio v2', () => {
 			} );
 			return validaMissio( m );
 		};
-		[ 'missatges', 'parla', 'navegador', 'posta', 'enviat' ].forEach(
+		[ 'parla', 'navegador', 'posta' ].forEach(
 			( app ) => expect( amb( app ) ).toEqual( [] )
 		);
 		expect( amb( 'altra' ) ).toContain(
@@ -199,6 +199,39 @@ describe( 'validaMissio v2', () => {
 				'web invàlida: nul',
 				'opció invàlida',
 			] )
+		);
+	} );
+
+	it( "rebutja URL d'enllaç amb esquema no permès", () => {
+		const m = copia();
+		const seg = m.apps.posta.correus
+			.flatMap( ( c ) => c.cos.flat() )
+			.find( ( x ) => x.enllac );
+		seg.enllac.url = 'javascript:alert(1)';
+		expect( validaMissio( m ) ).toContain(
+			"url d'enllaç no permesa: javascript:alert(1)"
+		);
+		seg.enllac.url = 'cerca:factura';
+		expect( validaMissio( m ) ).toEqual( [] );
+		delete seg.enllac.url;
+		expect( validaMissio( m ) ).toContain(
+			"url d'enllaç no permesa: undefined"
+		);
+	} );
+
+	it( 'rebutja apps que no existeixen al dispositiu de la missió', () => {
+		const m = copia();
+		m.apps.missatges = { missatges: [] };
+		expect( validaMissio( m ) ).toContain(
+			'app inexistent al dispositiu pc: missatges'
+		);
+		const n = copia();
+		n.disparadors.push( {
+			quan: { esdeveniment: 'inici' },
+			efectes: [ { tipus: 'notifica', app: 'missatges', titol: 'x' } ],
+		} );
+		expect( validaMissio( n ) ).toContain(
+			'app inexistent al dispositiu pc: missatges'
 		);
 	} );
 } );
