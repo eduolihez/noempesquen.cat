@@ -144,7 +144,7 @@
 				"esdeveniment": "web.carrega",
 				"url": "llumclara-pagaments.com"
 			},
-			"efectes": [ { "tipus": "guia-diu", "text": "frases.web_falsa" } ]
+			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
 		},
 		{
 			"id": "pagat",

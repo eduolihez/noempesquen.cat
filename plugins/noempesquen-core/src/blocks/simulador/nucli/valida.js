@@ -45,25 +45,49 @@ function recullSenyals( node, out = [] ) {
 	return out;
 }
 
+function validaEfecte( e, opcions, frases, errors ) {
+	if ( ! e || typeof e !== 'object' ) {
+		errors.push( 'efecte invàlid' );
+		return false;
+	}
+	if ( ! TIPUS_EFECTE.includes( e.tipus ) ) {
+		errors.push( `efecte desconegut: ${ e.tipus }` );
+	}
+	if ( e.tipus === 'decideix' && ! opcions.has( e.opcio ) ) {
+		errors.push( `opció inexistent: ${ e.opcio }` );
+	}
+	if ( e.tipus === 'guia-diu' ) {
+		if ( e.frase !== undefined ) {
+			if ( ! Object.hasOwn( frases, e.frase ) ) {
+				errors.push( `frase inexistent: ${ e.frase }` );
+			}
+		} else if ( ! e.text ) {
+			errors.push( 'guia-diu sense text ni frase' );
+		}
+	}
+	return e.tipus === 'pescat';
+}
+
 function validaDisparadors( m, errors ) {
 	const opcions = new Set(
-		( m.decisio?.opcions ?? [] ).map( ( o ) => o.id )
+		( m.decisio?.opcions ?? [] )
+			.filter( ( o ) => o && typeof o === 'object' )
+			.map( ( o ) => o.id )
 	);
+	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	let hiHaPescat = false;
 	( m.disparadors ?? [] ).forEach( ( d ) => {
+		if ( ! d || typeof d !== 'object' ) {
+			errors.push( 'disparador invàlid' );
+			return;
+		}
 		const ev = d.quan?.esdeveniment;
 		if ( ! ESDEVENIMENTS.includes( ev ) ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
 		}
 		( d.efectes ?? [] ).forEach( ( e ) => {
-			if ( ! TIPUS_EFECTE.includes( e.tipus ) ) {
-				errors.push( `efecte desconegut: ${ e.tipus }` );
-			}
-			if ( e.tipus === 'pescat' ) {
+			if ( validaEfecte( e, opcions, frases, errors ) ) {
 				hiHaPescat = true;
-			}
-			if ( e.tipus === 'decideix' && ! opcions.has( e.opcio ) ) {
-				errors.push( `opció inexistent: ${ e.opcio }` );
 			}
 		} );
 	} );
@@ -106,7 +130,11 @@ export function validaMissio( m ) {
 		}
 	} );
 
-	Object.values( m.webs ?? {} ).forEach( ( web ) => {
+	Object.entries( m.webs ?? {} ).forEach( ( [ domini, web ] ) => {
+		if ( ! web || typeof web !== 'object' ) {
+			errors.push( `web invàlida: ${ domini }` );
+			return;
+		}
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
 		}
@@ -114,7 +142,12 @@ export function validaMissio( m ) {
 
 	validaDisparadors( m, errors );
 
-	const valors = ( m.decisio?.opcions ?? [] ).map( ( o ) => o.valor );
+	( m.decisio?.opcions ?? [] ).forEach( ( o ) => {
+		if ( ! o || typeof o !== 'object' ) {
+			errors.push( 'opció invàlida' );
+		}
+	} );
+	const valors = ( m.decisio?.opcions ?? [] ).map( ( o ) => o?.valor );
 	if ( ! valors.includes( 'correcta' ) ) {
 		errors.push( 'cap opció correcta' );
 	}

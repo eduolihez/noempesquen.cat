@@ -82,4 +82,42 @@ describe( 'validaMissio v2', () => {
 	it( 'no valida una cosa que no és un objecte', () => {
 		expect( validaMissio( null ) ).toEqual( [ 'no és un objecte' ] );
 	} );
+	it( 'detecta frase inexistent a guia-diu', () => {
+		const m = copia();
+		m.disparadors[ 1 ].efectes[ 0 ] = {
+			tipus: 'guia-diu',
+			frase: 'no-hi-es',
+		};
+		expect( validaMissio( m ) ).toContain( 'frase inexistent: no-hi-es' );
+	} );
+
+	it( 'exigeix text o frase a guia-diu', () => {
+		const m = copia();
+		m.disparadors[ 1 ].efectes[ 0 ] = { tipus: 'guia-diu' };
+		expect( validaMissio( m ) ).toContain( 'guia-diu sense text ni frase' );
+	} );
+
+	it( 'accepta guia-diu amb text literal', () => {
+		const m = copia();
+		m.disparadors[ 1 ].efectes[ 0 ] = { tipus: 'guia-diu', text: 'Hola' };
+		expect( validaMissio( m ) ).toEqual( [] );
+	} );
+
+	it( 'no llança amb elements nuls i informa dels errors', () => {
+		const m = copia();
+		m.disparadors.push( null );
+		m.disparadors[ 0 ].efectes.push( null );
+		m.webs.nul = null;
+		m.decisio.opcions.push( null );
+		let errors;
+		expect( () => ( errors = validaMissio( m ) ) ).not.toThrow();
+		expect( errors ).toEqual(
+			expect.arrayContaining( [
+				'disparador invàlid',
+				'efecte invàlid',
+				'web invàlida: nul',
+				'opció invàlida',
+			] )
+		);
+	} );
 } );

@@ -94,7 +94,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 
 | Efecte | Dades |
 | --- | --- |
-| `guia-diu` | `text` |
+| `guia-diu` | `text` (literal) o `frase` (clau de `frases`, p. ex. `web_falsa`) |
 | `notifica` | `app`, `titol`, `text` |
 | `mostra` | `id` |
 | `pescat` | |
