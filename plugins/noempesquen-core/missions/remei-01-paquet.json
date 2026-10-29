@@ -135,7 +135,7 @@
 		},
 		{
 			"id": "bloquejat",
-			"quan": { "esdeveniment": "contacte.bloqueja" },
+			"quan": { "esdeveniment": "contacte.bloqueja", "id": "numero_desconegut" },
 			"efectes": [ { "tipus": "decideix", "opcio": "c" } ]
 		},
 		{
@@ -168,7 +168,7 @@
 		{
 			"id": "paquet",
 			"titol": "El número de seguiment no quadra",
-			"explicacio": "Tens una comanda de Botiga Verda en camí, però aquest número de seguiment no és de cap pedit teu. I una empresa de missatgeria no et demana diners per alliberar un paquet per SMS. Si dubtes, comprova el número a la web oficial de la missatgeria o de la botiga.",
+			"explicacio": "Tens una comanda de Botiga Verda en camí, però aquest número de seguiment no correspon a cap comanda teva. I una empresa de missatgeria no et demana diners per alliberar un paquet per SMS. Si dubtes, comprova el número a la web oficial de la missatgeria o de la botiga.",
 			"reaccio": "Paquet? El de les plantes ja el tens de camí, i aquest número no hi correspon. Això fa pudor."
 		},
 		{
@@ -198,7 +198,7 @@
 		],
 		"web_falsa": "Ho has obert. Mira bé l'adreça de dalt: no és enviat.cat. I tingues present que és un simulacre, no hi posis res de veritat.",
 		"pescat": "Ai, criatura! Has enviat les dades. Si fos de veritat, ara els lladres tindrien la teva targeta per aquest «només» 1,99 €. Tranquil, que això és un simulacre.",
-		"esborra_sol": "Esborrar-lo està bé, però el número continua podent escriure't. Bloqueja també el número perquè no insisteixin."
+		"esborra_sol": "Esborrar-lo està bé, però el número et pot seguir escrivint. Bloqueja també el número perquè no insisteixin."
 	},
 	"decisio": {
 		"pregunta": "Què fas amb l'SMS d'Envia't?",
