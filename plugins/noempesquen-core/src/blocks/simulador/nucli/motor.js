@@ -1,0 +1,300 @@
+/**
+ * Motor de missions v2: estat i regles pures, sense res d'interfície.
+ * Reductor immutable. ESDEVENIMENT i TICK s'afegeixen a la tasca 4.
+ */
+
+export const FASE = {
+	BLOQUEIG: 'bloqueig',
+	JOC: 'joc',
+	CONSEQUENCIA: 'consequencia',
+	RESULTAT: 'resultat',
+};
+
+export const PUNTS = {
+	senyal: 10,
+	correcta: 50,
+	parcial: 20,
+	incorrecta: 0,
+	picar: -20,
+};
+
+export const SEGONS_PISTA = 60;
+
+const TEXT_SEGUENT = 'Següent';
+const TEXT_COMENCA = 'Som-hi!';
+const TEXT_SALTA = 'Salta la presentació';
+const TEXT_DECIDIR = 'Ja ho tinc clar';
+const TEXT_TORNAR = 'Encara vull mirar';
+
+export function estatInicial( missio ) {
+	return {
+		missioId: missio?.id ?? null,
+		personatge: missio?.personatge ?? '',
+		fase: FASE.BLOQUEIG,
+		pausa: false,
+		temps: 0,
+		introPas: 0,
+		introAcabada: false,
+		lupa: false,
+		trobats: [],
+		falsos: 0,
+		pescat: false,
+		opcio: null,
+		decisioOberta: false,
+		xat: [],
+		notificacions: [],
+		visibles: {},
+		executats: [],
+		pendents: [],
+		pistesDonades: 0,
+		ultimAvanc: 0,
+		seq: 0,
+	};
+}
+
+/**
+ * Afegeix un missatge del guia al xat i la notificació corresponent.
+ *
+ * @param {Object} estat Estat actual.
+ * @param {string} text  Text del missatge.
+ * @param {string} nota  Nota opcional del missatge.
+ * @return {Object} Nou estat.
+ */
+export function afegeixGuia( estat, text, nota ) {
+	const idMissatge = `m${ estat.seq }`;
+	const idNota = `n${ estat.seq + 1 }`;
+	const missatge = { id: idMissatge, de: 'guia', text };
+	if ( nota ) {
+		missatge.nota = nota;
+	}
+	return {
+		...estat,
+		seq: estat.seq + 2,
+		xat: [ ...estat.xat, missatge ],
+		notificacions: [
+			...estat.notificacions,
+			{
+				id: idNota,
+				app: 'parla',
+				titol: estat.personatge,
+				text,
+				llegida: false,
+			},
+		],
+	};
+}
+
+function afegeixJo( estat, text ) {
+	return {
+		...estat,
+		seq: estat.seq + 1,
+		xat: [ ...estat.xat, { id: `m${ estat.seq }`, de: 'jo', text } ],
+	};
+}
+
+function seguentIntro( missio, estat ) {
+	const jo = afegeixJo(
+		estat,
+		estat.introPas + 1 < missio.intro.length ? TEXT_SEGUENT : TEXT_COMENCA
+	);
+	const pas = estat.introPas + 1;
+	if ( pas < missio.intro.length ) {
+		return afegeixGuia( { ...jo, introPas: pas }, missio.intro[ pas ] );
+	}
+	return afegeixGuia( { ...jo, introAcabada: true }, missio.instruccions );
+}
+
+function saltaIntro( missio, estat ) {
+	return afegeixGuia(
+		{ ...afegeixJo( estat, TEXT_SALTA ), introAcabada: true },
+		missio.instruccions
+	);
+}
+
+function obreDecisio( missio, estat ) {
+	return afegeixGuia(
+		{
+			...afegeixJo( estat, TEXT_DECIDIR ),
+			decisioOberta: true,
+			lupa: false,
+		},
+		missio.decisio.pregunta
+	);
+}
+
+function triaOpcio( missio, estat, opcioId ) {
+	const opcio = missio.decisio.opcions.find( ( o ) => o.id === opcioId );
+	if ( ! opcio ) {
+		return estat;
+	}
+	return afegeixGuia(
+		{
+			...afegeixJo( estat, opcio.text ),
+			opcio: opcio.id,
+			decisioOberta: false,
+			fase: FASE.CONSEQUENCIA,
+		},
+		opcio.resposta
+	);
+}
+
+function resposta( missio, estat, id ) {
+	if ( estat.fase !== FASE.JOC ) {
+		return estat;
+	}
+	if ( ! estat.introAcabada ) {
+		if ( id === 'intro:seguent' ) {
+			return seguentIntro( missio, estat );
+		}
+		return id === 'intro:salta' ? saltaIntro( missio, estat ) : estat;
+	}
+	if ( estat.decisioOberta ) {
+		if ( id === 'decisio:tornar' ) {
+			return {
+				...afegeixJo( estat, TEXT_TORNAR ),
+				decisioOberta: false,
+			};
+		}
+		return id.startsWith( 'decisio:' )
+			? triaOpcio( missio, estat, id.slice( 'decisio:'.length ) )
+			: estat;
+	}
+	return id === 'decidir' ? obreDecisio( missio, estat ) : estat;
+}
+
+function inspecciona( missio, estat, idSenyal ) {
+	if ( estat.fase !== FASE.JOC || estat.pausa ) {
+		return estat;
+	}
+	const senyal = missio.senyals.find( ( s ) => s.id === idSenyal );
+	if ( ! senyal ) {
+		const frases = missio.frases?.normal ?? [];
+		const text = frases.length
+			? frases[ estat.falsos % frases.length ]
+			: '';
+		const e = { ...estat, falsos: estat.falsos + 1 };
+		return text ? afegeixGuia( e, text ) : e;
+	}
+	if ( estat.trobats.includes( senyal.id ) ) {
+		return afegeixGuia( estat, senyal.reaccio );
+	}
+	const trobats = [ ...estat.trobats, senyal.id ];
+	return afegeixGuia(
+		{ ...estat, trobats, ultimAvanc: estat.temps },
+		senyal.reaccio,
+		`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
+	);
+}
+
+export function reductor( missio, estat, accio ) {
+	switch ( accio.tipus ) {
+		case 'DESBLOQUEJA':
+			if ( estat.fase !== FASE.BLOQUEIG ) {
+				return estat;
+			}
+			return afegeixGuia(
+				{ ...estat, fase: FASE.JOC },
+				missio.intro[ 0 ]
+			);
+
+		case 'RESPOSTA':
+			return resposta( missio, estat, accio.id );
+
+		case 'LUPA':
+			return estat.fase === FASE.JOC && ! estat.pausa
+				? { ...estat, lupa: ! estat.lupa }
+				: estat;
+
+		case 'INSPECCIONA':
+			return inspecciona( missio, estat, accio.senyal );
+
+		case 'PAUSA':
+			return { ...estat, pausa: true };
+
+		case 'REPREN':
+			return { ...estat, pausa: false };
+
+		case 'NOTIFICACIONS_LLEGIDES':
+			return {
+				...estat,
+				notificacions: estat.notificacions.map( ( n ) =>
+					! accio.app || n.app === accio.app
+						? { ...n, llegida: true }
+						: n
+				),
+			};
+
+		case 'VEURE_RESULTAT':
+			return estat.fase === FASE.CONSEQUENCIA
+				? { ...estat, fase: FASE.RESULTAT }
+				: estat;
+
+		case 'REINICIA':
+			return estatInicial( missio );
+
+		default:
+			return estat;
+	}
+}
+
+/**
+ * Respostes ràpides derivades de l'estat (mai es desen).
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat actual.
+ * @return {{id: string, text: string}[]} Respostes disponibles.
+ */
+export function respostesRapides( missio, estat ) {
+	if ( estat.fase !== FASE.JOC ) {
+		return [];
+	}
+	if ( ! estat.introAcabada ) {
+		const ultim = estat.introPas + 1 >= missio.intro.length;
+		return [
+			{
+				id: 'intro:seguent',
+				text: ultim ? TEXT_COMENCA : TEXT_SEGUENT,
+			},
+			{ id: 'intro:salta', text: TEXT_SALTA },
+		];
+	}
+	if ( estat.decisioOberta ) {
+		return [
+			...missio.decisio.opcions.map( ( o ) => ( {
+				id: `decisio:${ o.id }`,
+				text: o.text,
+			} ) ),
+			{ id: 'decisio:tornar', text: TEXT_TORNAR },
+		];
+	}
+	return [ { id: 'decidir', text: TEXT_DECIDIR } ];
+}
+
+export function opcioTriada( missio, estat ) {
+	return missio.decisio.opcions.find( ( o ) => o.id === estat.opcio ) ?? null;
+}
+
+export function visible( estat, item ) {
+	return ! item.ocult || !! estat.visibles?.[ item.id ];
+}
+
+export function puntuacio( missio, estat ) {
+	const maxim = missio.senyals.length * PUNTS.senyal + PUNTS.correcta;
+	const opcio = opcioTriada( missio, estat );
+	let punts = estat.trobats.length * PUNTS.senyal;
+	if ( opcio ) {
+		punts += PUNTS[ opcio.valor ] ?? 0;
+	}
+	if ( estat.pescat ) {
+		punts += PUNTS.picar;
+	}
+	punts = Math.max( 0, punts );
+	const ratio = maxim ? punts / maxim : 0;
+	let estrelles = 1;
+	if ( ratio >= 0.9 ) {
+		estrelles = 3;
+	} else if ( ratio >= 0.6 ) {
+		estrelles = 2;
+	}
+	return { punts, maxim, estrelles };
+}
