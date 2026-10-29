@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "layout": { "contentSize": "720px", "wideSize": "1200px" },
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "fons", "name": "Fons", "color": "#F7F4EC" },
+        { "slug": "text", "name": "Text", "color": "#14213D" },
+        { "slug": "mar", "name": "Mar", "color": "#0B5E7A" },
+        { "slug": "escuma", "name": "Escuma", "color": "#DDEFF2" },
+        { "slug": "alerta", "name": "Alerta", "color": "#B42318" },
+        { "slug": "segur", "name": "Segur", "color": "#1E7B45" }
+      ]
+    },
+    "typography": {
+      "fluid": true,
+      "fontSizes": [
+        { "slug": "small", "name": "Petit", "size": "0.95rem" },
+        { "slug": "medium", "name": "Mitjà", "size": "1.125rem" },
+        { "slug": "large", "name": "Gran", "size": "1.5rem", "fluid": { "min": "1.3rem", "max": "1.5rem" } },
+        { "slug": "x-large", "name": "Molt gran", "size": "2.5rem", "fluid": { "min": "1.8rem", "max": "2.5rem" } }
+      ]
+    },
+    "spacing": { "units": [ "px", "rem", "%", "vw" ] }
+  },
+  "styles": {
+    "color": { "background": "var(--wp--preset--color--fons)", "text": "var(--wp--preset--color--text)" },
+    "typography": { "fontSize": "var(--wp--preset--font-size--medium)", "lineHeight": "1.6" },
+    "elements": {
+      "link": {
+        "color": { "text": "var(--wp--preset--color--mar)" },
+        "typography": { "textDecoration": "underline" }
+      },
+      "button": {
+        "color": { "background": "var(--wp--preset--color--mar)", "text": "#FFFFFF" },
+        "border": { "radius": "8px" }
+      }
+    }
+  },
+  "templateParts": [
+    { "name": "header", "title": "Capçalera", "area": "header" },
+    { "name": "footer", "title": "Peu", "area": "footer" }
+  ]
+}

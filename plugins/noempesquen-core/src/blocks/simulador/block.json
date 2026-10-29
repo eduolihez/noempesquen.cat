@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "noempesquen/simulador",
+	"title": "Simulador No em pesquen",
+	"category": "widgets",
+	"icon": "shield",
+	"description": "Escriptori i mòbil simulats amb missions per aprendre a detectar estafes.",
+	"textdomain": "noempesquen",
+	"supports": { "html": false, "align": [ "wide", "full" ] },
+	"attributes": {
+		"dispositiu": {
+			"type": "string",
+			"default": "auto",
+			"enum": [ "auto", "pc", "mobil" ]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

@@ -1,0 +1,28 @@
+{
+  "name": "noempesquen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "No em pesquen: simulador interactiu per aprendre a detectar estafes digitals (Premis Wapps .cat 2026/27).",
+  "author": "Eduardo Olivares Hernández",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "env:start": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env start",
+    "env:stop": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env stop",
+    "env:clean": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env clean all",
+    "env:cli": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run cli",
+    "build": "wp-scripts build --webpack-src-dir=plugins/noempesquen-core/src --output-path=plugins/noempesquen-core/build",
+    "start": "wp-scripts start --webpack-src-dir=plugins/noempesquen-core/src --output-path=plugins/noempesquen-core/build",
+    "lint:js": "wp-scripts lint-js plugins/noempesquen-core/src",
+    "lint:css": "wp-scripts lint-style \"plugins/noempesquen-core/src/**/*.scss\"",
+    "format": "wp-scripts format plugins/noempesquen-core/src",
+    "test:e2e": "playwright test",
+    "test:unit": "wp-scripts test-unit-js plugins"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@wordpress/env": "^12.0.0",
+    "@wordpress/scripts": "^37.0.0",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
