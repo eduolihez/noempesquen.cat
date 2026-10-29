@@ -1,4 +1,4 @@
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { useMobil } from '../../sistemes/mobil/context';
 import { LlistaXats } from './LlistaXats';
 import { Conversa } from './Conversa';
@@ -17,6 +17,10 @@ export default function ParlaMobil( { dades } ) {
 	const { registraEnrere, appActiva } = useMobil();
 	const parla = useParla( null );
 	const { actiu, obre, tanca, noLlegits, marcaLlegits } = parla;
+	const arrel = useRef( null );
+	const ultim = useRef( null );
+	const indexObert = useRef( -1 );
+	const enPrimer = appActiva === 'parla';
 
 	// L'app es munta en obrir-la; si hi ha missatges del guia sense llegir
 	// (o es demana un xat) s'entra directament a la conversa.
@@ -35,6 +39,31 @@ export default function ParlaMobil( { dades } ) {
 		}
 	}, [ actiu, appActiva, noLlegits ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
+	// Foco: en obrir un xat, al títol de la conversa; en tornar, al xat de
+	// la llista que s'havia obert.
+	useEffect( () => {
+		if ( ! enPrimer ) {
+			return;
+		}
+		if ( actiu !== null ) {
+			const titol = arrel.current?.querySelector(
+				'.nep-parla-conversa__nom'
+			);
+			titol?.setAttribute( 'tabindex', '-1' );
+			titol?.focus();
+		} else if ( ultim.current !== null ) {
+			arrel.current
+				?.querySelectorAll( '.nep-parla-xat' )
+				[ indexObert.current ]?.focus();
+		}
+		ultim.current = actiu;
+	}, [ actiu, enPrimer ] );
+
+	const obreXat = ( id ) => {
+		indexObert.current = parla.elements.findIndex( ( x ) => x.id === id );
+		obre( id );
+	};
+
 	useEffect(
 		() =>
 			registraEnrere( () => {
@@ -48,12 +77,12 @@ export default function ParlaMobil( { dades } ) {
 	);
 
 	return (
-		<div className="nep-parla-mobil">
+		<div className="nep-parla-mobil" ref={ arrel }>
 			{ actiu === null ? (
 				<LlistaXats
 					elements={ parla.elements }
 					actiu={ null }
-					onObre={ obre }
+					onObre={ obreXat }
 					cerca={ parla.cerca }
 					onCerca={ parla.setCerca }
 				/>
