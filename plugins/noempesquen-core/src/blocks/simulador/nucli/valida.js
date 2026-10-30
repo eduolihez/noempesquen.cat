@@ -132,9 +132,9 @@ function recullIdsApps( apps ) {
 	const objectes = ( v ) =>
 		v && typeof v === 'object' ? Object.values( v ) : [];
 	objectes( apps ).forEach( ( app ) => {
-		objectes( app ).forEach( ( llista ) => {
-			if ( Array.isArray( llista ) ) {
-				llista.forEach( ( item ) => {
+		objectes( app ).forEach( ( valors ) => {
+			if ( Array.isArray( valors ) ) {
+				valors.forEach( ( item ) => {
 					if ( item?.id !== undefined ) {
 						ids.add( item.id );
 					}
