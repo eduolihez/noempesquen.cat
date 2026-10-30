@@ -17,9 +17,12 @@ define( 'NEP_VERSION', '0.1.0' );
 define( 'NEP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NEP_URL', plugin_dir_url( __FILE__ ) );
 
+require_once NEP_PATH . 'includes/capacitats.php';
 require_once NEP_PATH . 'includes/cpt-missio.php';
 require_once NEP_PATH . 'includes/rest.php';
 require_once NEP_PATH . 'includes/cli.php';
+
+register_activation_hook( __FILE__, 'nep_actualitza' );
 
 /**
  * Registra els blocs compilats a /build.
