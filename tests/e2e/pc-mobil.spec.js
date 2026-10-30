@@ -27,7 +27,7 @@ const SISTEMA_PC = [
 /**
  * Com `petits` (ajudes.js), però només amb les peces del sistema PC.
  * El contingut de les apps (navegador, Posta, Parla) a escala ~0,57 encara
- * no arriba a 44 px: decisió pendent (T5/T7, vegeu D3).
+ * no arriba a 44 px: deute pendent (vegeu D3).
  *
  * @param {import('@playwright/test').Page} page
  * @return {Promise<string[]>} Elements petits.
@@ -137,6 +137,41 @@ test.describe( 'PC en pantalles petites', () => {
 		await expect( page.locator( '.nep-so-centre' ) ).toBeVisible();
 		expect( await petitsPc( page ) ).toEqual( [] );
 		expect( await greusAxePc( page ) ).toEqual( [] );
+	} );
+
+	test( 'el teclat en pantalla (viewport visual més petit) no reescala el PC', async ( {
+		page,
+	}, testInfo ) => {
+		test.skip(
+			! testInfo.project.name.includes( 'horitzontal' ),
+			'Només al projecte mòbil horitzontal'
+		);
+		await page.setViewportSize( HORITZONTAL );
+		await entra( page );
+		const pantalla = page.locator( '.nep-so-pantalla' );
+		const escala = () =>
+			pantalla.evaluate( ( el ) =>
+				el.style.getPropertyValue( '--so-escala' )
+			);
+		const abans = await escala();
+		expect( abans ).not.toBe( '' );
+
+		await page
+			.locator( '.nep-so-pantalla input:not([disabled])' )
+			.first()
+			.focus();
+		// Simula el teclat: el viewport visual s'encongeix, el de disseny no.
+		await page.evaluate( () => {
+			const vv = window.visualViewport;
+			Object.defineProperty( vv, 'height', { get: () => 150 } );
+			Object.defineProperty( vv, 'width', { get: () => 915 } );
+			vv.dispatchEvent( new window.Event( 'resize' ) );
+			window.dispatchEvent( new window.Event( 'resize' ) );
+		} );
+		await page.clock.runFor( 500 );
+		expect( await escala() ).toBe( abans );
+		await expect( pantalla ).toHaveClass( /is-escalat/ );
+		await expect( page.getByRole( 'alertdialog' ) ).toHaveCount( 0 );
 	} );
 
 	test( 'en vertical demana girar, atura el rellotge i després continua', async ( {

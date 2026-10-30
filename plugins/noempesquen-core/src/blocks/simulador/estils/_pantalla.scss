@@ -8,7 +8,7 @@
 
 	/* Objectius tàctils: 44 px reals, en píxels lògics del PC escalat.
 	   +0.5px compensa l'arrodoniment de l'escala (si no, queden 43,99 px). */
-	&.is-tactil {
+	&.is-escalat.is-tactil {
 		--so-tactil: max(1px, calc(44px / var(--so-escala, 1) + 0.5px));
 
 		/* Mínim WCAG 2.5.8 (24 px reals) per al contingut de les apps. */

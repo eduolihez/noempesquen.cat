@@ -243,6 +243,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 							dispositiu={ missio.dispositiu ?? 'pc' }
 							pantalla={ pantalla }
 							pausa={ estat.pausa }
+							consequencia={ enConsequencia }
 							onSurt={ surtDelJoc }
 						>
 							<Suspense fallback={ <Carregant /> }>

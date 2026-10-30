@@ -65,19 +65,21 @@ function IconaGira() {
  *
  * @param {Object}   props
  * @param {boolean}  props.mobil  Dispositiu tàctil (mòbil o tauleta).
- * @param {boolean}  props.pausa  La pausa real és oberta a sobre.
+ * @param {boolean}  props.activa Res a sobre (ni pausa ni consequència): pot
+ *                                prendre el focus.
  * @param {Function} props.onSurt Torna al selector.
  */
-export function PeticioGirar( { mobil, pausa, onSurt } ) {
+export function PeticioGirar( { mobil, activa, onSurt } ) {
 	const boto = useRef( null );
 	const tactil = mobil;
 
-	// Focus al botó en aparèixer i en tancar-se la pausa de sobre.
+	// Focus al botó en aparèixer i en tancar-se la pausa de sobre; mai no
+	// el roba a la pausa ni a la consequència.
 	useEffect( () => {
-		if ( ! pausa ) {
+		if ( activa ) {
 			boto.current?.focus();
 		}
-	}, [ pausa ] );
+	}, [ activa ] );
 
 	// Opcional: només funciona en pantalla completa i en alguns mòbils. No
 	// es desbloqueja en desmuntar (tornaria a vertical): ho fa Pantalla en

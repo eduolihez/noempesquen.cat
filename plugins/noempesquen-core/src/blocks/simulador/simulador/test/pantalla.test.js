@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculaPantalla, MINIM } from '../pantalla.js';
 
-const pc = ( w, h ) =>
-	calculaPantalla( { w, h, tactil: false, dispositiu: 'pc' } );
+const pc = ( w, h ) => calculaPantalla( { w, h, dispositiu: 'pc' } );
 
 describe( 'calculaPantalla', () => {
 	it( 'MINIM és 1280×720', () => {
@@ -43,7 +42,6 @@ describe( 'calculaPantalla', () => {
 			calculaPantalla( {
 				w: 400,
 				h: 800,
-				tactil: true,
 				dispositiu: 'mobil',
 			} ).mode
 		).toBe( 'normal' );

@@ -25,13 +25,21 @@ export const useEscala = () => useContext( PantallaContext ).escala;
  * mateix perquè canviar de mode no desmunti el sistema.
  *
  * @param {Object}   props
- * @param {string}   props.dispositiu 'pc' o 'mobil'.
- * @param {Object}   props.pantalla   Resultat d'usePantalla.
- * @param {boolean}  props.pausa      Pausa real (el diàleg de pausa és obert).
- * @param {Function} props.onSurt     Torna al selector.
- * @param {Object}   props.children   Sistema.
+ * @param {string}   props.dispositiu   'pc' o 'mobil'.
+ * @param {Object}   props.pantalla     Resultat d'usePantalla.
+ * @param {boolean}  props.pausa        Pausa real (el diàleg de pausa és obert).
+ * @param {boolean}  props.consequencia Es mostra la consequència (a sobre).
+ * @param {Function} props.onSurt       Torna al selector.
+ * @param {Object}   props.children     Sistema.
  */
-export function Pantalla( { dispositiu, pantalla, pausa, onSurt, children } ) {
+export function Pantalla( {
+	dispositiu,
+	pantalla,
+	pausa,
+	consequencia,
+	onSurt,
+	children,
+} ) {
 	const contingut = useRef( null );
 	const { mode, escala, ample, alt, desplX, desplY, tactil, mobil } =
 		pantalla;
@@ -101,7 +109,7 @@ export function Pantalla( { dispositiu, pantalla, pausa, onSurt, children } ) {
 			{ girar && (
 				<PeticioGirar
 					mobil={ mobil }
-					pausa={ pausa }
+					activa={ ! pausa && ! consequencia }
 					onSurt={ onSurt }
 				/>
 			) }
