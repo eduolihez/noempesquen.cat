@@ -2,6 +2,11 @@
  * Lògica pura de la Galeria: agrupació per dia i navegació del visor.
  */
 
+import { __ } from '@wordpress/i18n';
+
+/** «Avui» del món simulat (no la data real del jugador). */
+export const DATA_MON = '2026-10-29';
+
 const partsData = ( iso ) => {
 	const [ a, m, d ] = String( iso ).split( '-' ).map( Number );
 	return { a, m, d };
@@ -13,25 +18,27 @@ const diaAbsolut = ( iso ) => {
 };
 
 const isoDeData = ( data ) =>
-	`${ data.getFullYear() }-${ String( data.getMonth() + 1 ).padStart(
-		2,
-		'0'
-	) }-${ String( data.getDate() ).padStart( 2, '0' ) }`;
+	typeof data === 'string'
+		? data
+		: `${ data.getFullYear() }-${ String( data.getMonth() + 1 ).padStart(
+				2,
+				'0'
+			) }-${ String( data.getDate() ).padStart( 2, '0' ) }`;
 
 /**
  * Etiqueta llegible d'una data ISO (AAAA-MM-DD) respecte a `ara`.
  *
- * @param {string} iso Data ISO.
- * @param {Date}   ara Moment actual.
+ * @param {string}      iso Data ISO.
+ * @param {Date|string} ara Avui del món: data o ISO (per defecte `DATA_MON`).
  * @return {string} «Avui», «Ahir» o «12 d'octubre de 2026».
  */
-export function etiquetaData( iso, ara = new Date() ) {
+export function etiquetaData( iso, ara = DATA_MON ) {
 	const dif = diaAbsolut( isoDeData( ara ) ) - diaAbsolut( iso );
 	if ( dif === 0 ) {
-		return 'Avui';
+		return __( 'Avui', 'noempesquen' );
 	}
 	if ( dif === 1 ) {
-		return 'Ahir';
+		return __( 'Ahir', 'noempesquen' );
 	}
 	const { a, m, d } = partsData( iso );
 	// Només el nom del mes ve d'Intl: el locale «ca» diu «del 2026».
@@ -46,11 +53,11 @@ export function etiquetaData( iso, ara = new Date() ) {
 /**
  * Agrupa les fotos per dia, del més recent al més antic.
  *
- * @param {Array} fotos `{ id, titol, data, il }`.
- * @param {Date}  ara   Moment actual (per a Avui/Ahir).
+ * @param {Array}       fotos `{ id, titol, data, il }`.
+ * @param {Date|string} ara   Avui del món (per a Avui/Ahir).
  * @return {Array} `[ { data, etiqueta, fotos } ]`.
  */
-export function agrupaPerData( fotos, ara = new Date() ) {
+export function agrupaPerData( fotos, ara = DATA_MON ) {
 	const perDia = new Map();
 	[ ...( fotos ?? [] ) ]
 		.sort( ( x, y ) => y.data.localeCompare( x.data ) )

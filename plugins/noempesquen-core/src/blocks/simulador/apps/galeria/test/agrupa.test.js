@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agrupaPerData, vei } from '../agrupa.js';
+import { DATA_MON, agrupaPerData, etiquetaData, vei } from '../agrupa.js';
 
 const ara = new Date( 2026, 9, 30, 12 );
 const fotos = [
@@ -61,5 +61,17 @@ describe( 'vei', () => {
 
 	it( 'torna null si la foto no existeix', () => {
 		expect( vei( fotos, 'zz', 1 ) ).toBeNull();
+	} );
+} );
+
+describe( 'data del món', () => {
+	it( 'per defecte «Avui» és la data del món, no la real', () => {
+		expect( etiquetaData( DATA_MON ) ).toBe( 'Avui' );
+		expect( etiquetaData( '2026-10-28' ) ).toBe( 'Ahir' );
+		expect( etiquetaData( '2026-10-27' ) ).toBe( "27 d'octubre de 2026" );
+	} );
+
+	it( 'accepta la data del món com a text ISO', () => {
+		expect( etiquetaData( '2026-10-30', '2026-10-31' ) ).toBe( 'Ahir' );
 	} );
 } );
