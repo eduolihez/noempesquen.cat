@@ -49,30 +49,67 @@ function useEsMobil() {
 	return esMobil;
 }
 
-function useMissions( api ) {
+const llegeix = ( url, opcions ) =>
+	fetch( url, opcions ).then( ( r ) => ( r.ok ? r.json() : null ) );
+
+/**
+ * Missió en previsualització (també esborrany) per a qui la gestiona. Surt al
+ * selector marcada «esborrany»; si falla o no és vàlida, no hi surt.
+ *
+ * @param {Object} config Configuració del bloc.
+ * @return {Promise<?Object>} Guió o null.
+ */
+function previsualitzacio( config ) {
+	if ( ! config.previsualitza || ! config.nonce ) {
+		return Promise.resolve( null );
+	}
+	return llegeix( `${ config.api }previsualitza/${ config.previsualitza }`, {
+		headers: { 'X-WP-Nonce': config.nonce },
+		credentials: 'same-origin',
+	} ).then( ( r ) => {
+		const guio = r?.guio;
+		if ( ! guio || typeof guio !== 'object' || ! guio.titol ) {
+			return null;
+		}
+		return { ...guio, titol: `${ guio.titol } · esborrany` };
+	} );
+}
+
+function useMissions( config ) {
+	const { api } = config;
 	const [ missions, setMissions ] = useState( INCLOSES );
 	useEffect( () => {
 		if ( ! api ) {
 			return;
 		}
-		fetch( `${ api }missions` )
-			.then( ( r ) => ( r.ok ? r.json() : [] ) )
-			.then( ( remotes ) => {
-				setMissions(
-					combinaMissions(
-						INCLOSES,
-						( remotes || [] ).map( ( r ) => r.guio ),
-						mon
-					)
-				);
-			} )
-			.catch( () => {} );
-	}, [ api ] );
+		Promise.allSettled( [
+			llegeix( `${ api }missions` ),
+			previsualitzacio( config ),
+		] ).then( ( [ remotes, previ ] ) => {
+			const guions = Array.isArray( remotes.value )
+				? remotes.value.map( ( r ) => r?.guio )
+				: [];
+			const prova = previ.value ?? null;
+			// La previsualització va al final: guanya si comparteix id.
+			setMissions(
+				combinaMissions(
+					INCLOSES,
+					prova
+						? [
+								...guions.filter( ( g ) => g?.id !== prova.id ),
+								prova,
+							]
+						: guions,
+					mon
+				)
+			);
+		} );
+	}, [ api ] ); // eslint-disable-line react-hooks/exhaustive-deps
 	return missions;
 }
 
 export function App( { config } ) {
-	const missions = useMissions( config.api );
+	const missions = useMissions( config );
 	const esMobil = useEsMobil();
 	let preferit = esMobil ? 'mobil' : 'pc';
 	if ( config.dispositiu === 'pc' || config.dispositiu === 'mobil' ) {
