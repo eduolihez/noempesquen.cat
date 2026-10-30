@@ -1,7 +1,13 @@
 const { test, expect } = require( '@playwright/test' );
 const { greusAxe, petits } = require( './ajudes' );
 
-const PC = [ 'llissa-01-factura', 'llissa-02-banc', 'llissa-03-inversio' ];
+const PC = [
+	'llissa-01-factura',
+	'llissa-02-banc',
+	'llissa-03-inversio',
+	'llissa-04-suport',
+	'llissa-05-actualitzacio',
+];
 const MOBIL = [
 	'remei-01-paquet',
 	'remei-02-canviat',
@@ -12,6 +18,8 @@ const MOBIL = [
 const TITOLS = {
 	'llissa-01-factura': 'La factura de la llum',
 	'llissa-03-inversio': "El truc d'inversió",
+	'llissa-04-suport': 'Virus detectat!',
+	'llissa-05-actualitzacio': 'Actualitza el navegador',
 	'remei-01-paquet': 'El paquet retingut',
 	'remei-02-canviat': 'Hola, he canviat de mòbil',
 	'remei-03-sorteig': 'Has guanyat un sorteig!',

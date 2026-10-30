@@ -57,6 +57,8 @@ describe( 'sense marques reals', () => {
 		'remei-04-codi',
 		'remei-05-comprador',
 		'llissa-03-inversio',
+		'llissa-04-suport',
+		'llissa-05-actualitzacio',
 		'mon',
 	].forEach( ( nom ) => {
 		it( `${ nom }.json no menciona cap marca real`, () => {
