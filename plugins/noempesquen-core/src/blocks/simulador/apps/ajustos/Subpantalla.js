@@ -151,19 +151,20 @@ function Aplicacions() {
 }
 
 function Sobre() {
+	const { mon } = useJoc();
 	return (
 		<>
 			<Dada
 				etiqueta={ __( 'Nom del dispositiu', 'noempesquen' ) }
-				valor="Àlex Puig"
+				valor={ mon?.jugador?.nom ?? '' }
 			/>
 			<Dada
 				etiqueta={ __( 'Model', 'noempesquen' ) }
-				valor="Mòbil Nova 5"
+				valor={ __( 'Mòbil Nova 5', 'noempesquen' ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Versió del sistema', 'noempesquen' ) }
-				valor="Nova OS 3.2"
+				valor={ __( 'Nova OS 3.2', 'noempesquen' ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Emmagatzematge', 'noempesquen' ) }
