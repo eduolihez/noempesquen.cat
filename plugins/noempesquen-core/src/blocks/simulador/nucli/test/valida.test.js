@@ -291,3 +291,57 @@ describe( 'validaMissio v2', () => {
 		} );
 	} );
 } );
+
+describe( 'validaMissio: webs banc-solid i formularis', () => {
+	const base = () => ( {
+		versio: 2,
+		id: 'x',
+		titol: 'x',
+		dispositiu: 'pc',
+		personatge: 'llissa',
+		intro: [ 'hola' ],
+		senyals: [],
+		webs: {
+			'bancsolid.cat': { plantilla: 'banc-solid', variant: 'oficial' },
+		},
+		disparadors: [
+			{
+				quan: { esdeveniment: 'inici' },
+				efectes: [ { tipus: 'pescat' } ],
+			},
+		],
+		decisio: { opcions: [ { id: 'a', valor: 'correcta' } ] },
+	} );
+	const amb = ( formulari ) => {
+		const m = base();
+		m.webs[ 'bancsolid.cat' ].formulari = formulari;
+		return validaMissio( m );
+	};
+
+	it( 'accepta la plantilla banc-solid', () => {
+		expect( validaMissio( base() ) ).toEqual( [] );
+	} );
+
+	it( 'accepta esdeveniments de formulari coneguts', () => {
+		[ 'formulari.envia', 'codi.envia', 'pagament.fes' ].forEach( ( esd ) =>
+			expect( amb( { esdeveniment: esd } ) ).toEqual( [] )
+		);
+	} );
+
+	it( 'rebutja un esdeveniment de formulari desconegut', () => {
+		expect( amb( { esdeveniment: 'inici' } ) ).toContain(
+			'formulari: esdeveniment invàlid a bancsolid.cat: inici'
+		);
+	} );
+
+	it( 'exigeix que processant i nota siguin text', () => {
+		const errors = amb( { processant: 3, nota: {} } );
+		expect( errors ).toContain(
+			'formulari: processant ha de ser text a bancsolid.cat'
+		);
+		expect( errors ).toContain(
+			'formulari: nota ha de ser text a bancsolid.cat'
+		);
+		expect( amb( { processant: 'Espera', nota: 'Segur' } ) ).toEqual( [] );
+	} );
+} );

@@ -13,7 +13,12 @@ export const APPS_MISSIO = {
 export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
 // Fonts de notificació: apps del sistema i webs que també avisen.
 export const FONTS_NOTIFICACIO = [ ...APPS, 'posta', 'enviat' ];
-export const PLANTILLES_WEB = [ 'posta', 'llum-clara', 'enviat' ];
+export const PLANTILLES_WEB = [ 'posta', 'llum-clara', 'enviat', 'banc-solid' ];
+export const ESDEVENIMENTS_FORMULARI = [
+	'formulari.envia',
+	'codi.envia',
+	'pagament.fes',
+];
 export const TIPUS_EFECTE = [
 	'guia-diu',
 	'notifica',
@@ -177,6 +182,27 @@ function validaDisparadors( m, errors ) {
 	}
 }
 
+function validaFormularis( domini, web, errors ) {
+	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
+		if ( ! f || typeof f !== 'object' ) {
+			return;
+		}
+		if (
+			f.esdeveniment !== undefined &&
+			! ESDEVENIMENTS_FORMULARI.includes( f.esdeveniment )
+		) {
+			errors.push(
+				`formulari: esdeveniment invàlid a ${ domini }: ${ f.esdeveniment }`
+			);
+		}
+		[ 'processant', 'nota' ].forEach( ( c ) => {
+			if ( f[ c ] !== undefined && typeof f[ c ] !== 'string' ) {
+				errors.push( `formulari: ${ c } ha de ser text a ${ domini }` );
+			}
+		} );
+	} );
+}
+
 /**
  * Valida una missió v2.
  *
@@ -252,6 +278,7 @@ export function validaMissio( m ) {
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
 		}
+		validaFormularis( domini, web, errors );
 	} );
 
 	validaDisparadors( m, errors );
