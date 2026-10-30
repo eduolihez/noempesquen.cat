@@ -100,8 +100,22 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `missatge.respon` | `app`, `id` |
 | `missatge.envia` | `contacte` (id del contacte; mai el text escrit) |
 | `enllac.mantingut` | `url` (pulsació llarga o Maj+F10 sobre un enllaç) |
+| `publicacio.denuncia` | `id` (publicació d'Ullada denunciada) |
+| `codi.comparteix` | `contacte` (id del contacte a qui es dona el codi; mai el text escrit) |
+
+`codi.comparteix` s'emet sense text: només quan el que ha tecleat el jugador coincideix amb un codi d'un SMS visible de `apps.missatges.missatges`.
 
 Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloqueja` i després `missatge.esborra`.
+
+## Publicacions d'Ullada
+
+`apps.ullada.publicacions[]`: `{ id, autor, text, il, likes, cos? }`.
+
+- `autor`: id d'un perfil de `mon.ullada.perfils` (es valida quan es passa el món al validador).
+- `il`: il·lustració existent; `likes`: número.
+- `cos` (opcional): llista de paràgrafs, com als correus; cada segment és `{ "t": "...", "senyal"? }` o `{ "enllac": { "text", "url" } }` (url `http(s)://` o `cerca:`). Els senyals i les URL es validen igual que a la resta d'`apps`.
+
+La plantilla web `sorteig` (només falsa) es registrarà amb T3 (veure T3).
 
 ## Efectes
 

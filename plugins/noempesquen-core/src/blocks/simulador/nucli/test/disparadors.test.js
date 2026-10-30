@@ -315,3 +315,34 @@ describe( 'quan.visible', () => {
 		expect( e2.fase ).toBe( FASE.CONSEQUENCIA );
 	} );
 } );
+
+describe( 'coincideix: esdeveniments de Ullada i codi', () => {
+	it( 'codi.comparteix i publicacio.denuncia coincideixen per clau', () => {
+		expect(
+			coincideix(
+				{
+					esdeveniment: 'codi.comparteix',
+					contacte: 'marta',
+					visible: 'x',
+				},
+				'codi.comparteix',
+				{ contacte: 'marta' },
+				{ visibles: { x: true } }
+			)
+		).toBe( true );
+		expect(
+			coincideix(
+				{ esdeveniment: 'publicacio.denuncia', id: 'pub1' },
+				'publicacio.denuncia',
+				{ id: 'pub1' }
+			)
+		).toBe( true );
+		expect(
+			coincideix(
+				{ esdeveniment: 'publicacio.denuncia', id: 'pub1' },
+				'publicacio.denuncia',
+				{ id: 'pub2' }
+			)
+		).toBe( false );
+	} );
+} );
