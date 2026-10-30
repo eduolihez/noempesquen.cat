@@ -68,9 +68,9 @@ test.describe( 'Selector de missions', () => {
 		expect( await idsDe( seccio( page, 'Continua per aquí' ) ) ).toEqual( [
 			propi[ 0 ],
 		] );
-		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual( [
-			propi[ 1 ],
-		] );
+		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual(
+			propi.slice( 1 )
+		);
 		expect( await idsDe( seccio( page, 'Altres dispositius' ) ) ).toEqual(
 			altre
 		);

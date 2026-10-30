@@ -154,15 +154,8 @@
 			"id": "demana_codi",
 			"requereix": "codi-2",
 			"titol": "Et demana un codi que has rebut tu",
-			"explicacio": "Un codi per SMS és la clau del teu compte, i només el pots saber tu. Qui te'l demana no és un amic: vol entrar-hi.",
+			"explicacio": "Un codi per SMS és la clau del teu compte, i només el pots saber tu. I si a sobre te'l demanen amb pressa («urgent», «ara»), és perquè no vulguis pensar-hi. Qui te'l demana no és un amic: vol entrar-hi.",
 			"reaccio": "Un codi que t'ha arribat a tu, i ella el vol? Aquest codi és la clau de casa teva."
-		},
-		{
-			"id": "urgencia",
-			"requereix": "codi-2",
-			"titol": "Pressa",
-			"explicacio": "«Urgent», «ara». La pressa fa que passis el codi sense pensar.",
-			"reaccio": "Tot és urgent i res no és comprovable. Tothom té pressa menys qui diu la veritat."
 		},
 		{
 			"id": "dispositiu_nou",
