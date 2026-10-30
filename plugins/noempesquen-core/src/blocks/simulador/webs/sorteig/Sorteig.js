@@ -18,7 +18,7 @@ export default function Sorteig( { dades, url } ) {
 	const premi = dades?.premi ?? __( 'Un telèfon mòbil nou', 'noempesquen' );
 	const compte =
 		dades?.compte_enrere ?? __( 'Només et queden 09:41', 'noempesquen' );
-	const total = importDe( formulari.boto ) || '2,95 €';
+	const total = importDe( formulari.boto ) || __( '2,95 €', 'noempesquen' );
 
 	return (
 		<div className="nep-sb nep-sb--falsa">
@@ -34,7 +34,7 @@ export default function Sorteig( { dades, url } ) {
 							senyal={ dades?.premi_senyal }
 						/>
 					</p>
-					<p className="nep-sb-premi__compte" role="status">
+					<p className="nep-sb-premi__compte">
 						{ compte }
 					</p>
 				</section>
