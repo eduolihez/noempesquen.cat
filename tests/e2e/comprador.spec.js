@@ -197,9 +197,10 @@ test.describe( 'Compro la teva bici', () => {
 		await sensePistes( page, vist, tot );
 	} );
 
-	// Bloquejar el comprador decideix l'opció «a» i obre la consequència:
-	// no es pot sortir del xat i tornar-hi per veure si el bloqueig es manté.
-	// A més, `bloquejats` és estat local de Revenda (es perdria en desmuntar).
+	// Inabastable a remei-05: bloquejar el comprador decideix l'opció «a» i
+	// el diàleg de consequència deixa la resta inert (el clic a «Inici» espera
+	// fins al timeout). Cal una missió on bloquejar no tanqui el joc per
+	// comprovar-ho; `bloquejats` és estat local de Revenda.
 	test.fixme( 'el bloqueig es manté en sortir i tornar al xat', async ( {
 		page,
 	} ) => {
