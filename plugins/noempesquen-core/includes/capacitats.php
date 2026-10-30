@@ -46,12 +46,27 @@ function nep_assigna_capacitats(): void {
 
 /**
  * Rutina d'activació i d'actualització: capacitats i taules pròpies (dbDelta).
+ * Si la taula no es pot crear, no es desa la versió (es tornarà a provar).
  */
 function nep_actualitza(): void {
 	nep_assigna_capacitats();
-	nep_crea_taula_resultats();
+	if ( ! nep_crea_taula_resultats() ) {
+		return;
+	}
+	delete_transient( 'nep_avis_taula' );
 	update_option( 'nep_db_version', NEP_DB_VERSION );
 }
+
+// Avís a l'administrador si la taula d'estadístiques no s'ha pogut crear.
+add_action(
+	'admin_notices',
+	static function () {
+		if ( ! current_user_can( 'manage_options' ) || ! get_transient( 'nep_avis_taula' ) ) {
+			return;
+		}
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'No s\'ha pogut crear la taula d\'estadístiques de noempesquen. Revisa els permisos de la base de dades.', 'noempesquen' ) . '</p></div>';
+	}
+);
 
 // Executa l'actualització si la versió guardada no coincideix (també després d'un desplegament per FTP/zip).
 add_action(

@@ -116,6 +116,59 @@ $nep_r = $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 3 ) );
 $nep_comprova( NEP_RESULTATS_LIMIT === $nep_ok && 429 === $nep_r->get_status(), "resultat: $nep_ok enviaments acceptats i el següent → 429 (rebut {$nep_r->get_status()})" );
 $nep_comprova( ! str_contains( (string) get_option( 'nep_sal_dia' ), '127.0.0.1' ) && str_starts_with( (string) get_option( 'nep_sal_dia' ), gmdate( 'Y-m-d' ) . '|' ), 'resultat: sal del dia amb la data d\'avui' );
 
+// Errors de base de dades (es reescriuen consultes amb el filtre `query`).
+$nep_reescriu = static function ( callable $canvi, callable $fes ) use ( $wpdb ) {
+	$errors_abans = $wpdb->suppress_errors( true );
+	add_filter( 'query', $canvi );
+	try {
+		return $fes();
+	} finally {
+		remove_filter( 'query', $canvi );
+		$wpdb->suppress_errors( $errors_abans );
+		$wpdb->last_error = '';
+	}
+};
+
+// La taula no es pot crear: no es desa la versió i hi ha avís.
+$nep_versio_db = get_option( 'nep_db_version' );
+delete_option( 'nep_db_version' );
+delete_transient( 'nep_avis_taula' );
+$nep_reescriu(
+	static fn( $q ) => str_starts_with( ltrim( $q ), 'SHOW TABLES LIKE' ) ? 'SELECT NULL FROM DUAL WHERE 0' : $q,
+	static fn() => nep_actualitza()
+);
+$nep_comprova( false === get_option( 'nep_db_version' ) && get_transient( 'nep_avis_taula' ), 'taula: si no es pot crear, no es desa nep_db_version i hi ha avís' );
+wp_set_current_user( 1 );
+ob_start();
+do_action( 'admin_notices' );
+$nep_html = (string) ob_get_clean();
+wp_set_current_user( 0 );
+// esc_html converteix l'apòstrof: es busca un tros sense.
+$nep_comprova( str_contains( $nep_html, 'pogut crear la taula' ), 'taula: avís d\'administració' );
+nep_actualitza();
+$nep_comprova( $nep_versio_db === get_option( 'nep_db_version' ) && false === get_transient( 'nep_avis_taula' ), 'taula: en tornar a provar es desa la versió i s\'esborra l\'avís' );
+
+// L'INSERT falla → 500.
+delete_transient( $nep_clau );
+$nep_r = $nep_reescriu(
+	static fn( $q ) => str_starts_with( ltrim( $q ), "INSERT INTO {$nep_taula} " ) ? str_replace( "INSERT INTO {$nep_taula} ", "INSERT INTO {$nep_taula}_no_existeix ", $q ) : $q,
+	static fn() => $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 3 ) )
+);
+$nep_comprova( 500 === $nep_r->get_status(), 'resultat: error de BD → 500 (rebut ' . $nep_r->get_status() . ')' );
+
+// La lectura del panell falla → avís d'error, no «Dades insuficients».
+wp_set_current_user( 1 );
+$nep_html = $nep_reescriu(
+	static fn( $q ) => str_contains( $q, "FROM {$nep_taula} WHERE dia" ) ? str_replace( "FROM {$nep_taula} ", "FROM {$nep_taula}_no_existeix ", $q ) : $q,
+	static function () {
+		ob_start();
+		nep_pinta_estadistiques();
+		return (string) ob_get_clean();
+	}
+);
+$nep_comprova( str_contains( $nep_html, 'notice-error' ) && str_contains( $nep_html, 'pogut llegir la taula' ) && ! str_contains( $nep_html, 'Dades insuficients' ), 'panell: error de lectura → avís, no «Dades insuficients»' );
+wp_set_current_user( 0 );
+
 // Neteja.
 $wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ); // phpcs:ignore WordPress.DB
 delete_transient( $nep_clau );

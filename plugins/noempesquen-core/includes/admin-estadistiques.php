@@ -29,11 +29,12 @@ add_action(
  * Files agregades del període (missió × estrelles × decisió).
  *
  * @param int $dies Dies del període (inclou avui).
- * @return array[]
+ * @return array[]|null Files, o null si la consulta falla.
  */
-function nep_files_periode( int $dies ): array {
+function nep_files_periode( int $dies ): ?array {
 	global $wpdb;
-	$taula = nep_taula_resultats();
+	$taula  = nep_taula_resultats();
+	$wpdb->last_error = '';
 	$des_de = gmdate( 'Y-m-d', time() - ( $dies - 1 ) * DAY_IN_SECONDS );
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Lectura agregada de la taula pròpia.
 	$files = $wpdb->get_results(
@@ -44,7 +45,10 @@ function nep_files_periode( int $dies ): array {
 		),
 		ARRAY_A
 	);
-	return is_array( $files ) ? $files : array();
+	if ( '' !== $wpdb->last_error || ! is_array( $files ) ) {
+		return null;
+	}
+	return $files;
 }
 
 /**
@@ -61,13 +65,20 @@ function nep_pinta_estadistiques(): void {
 		$dies = 30;
 	}
 
-	$missions  = nep_missions_jugables();
-	$agregats  = nep_agrega_resultats( nep_files_periode( $dies ), NEP_RESULTATS_K );
-	$ids       = array_unique( array_merge( array_keys( $missions ), array_keys( $agregats ) ) );
-	$insuf     = __( 'Dades insuficients (menys de 10 partides)', 'noempesquen' );
+	$missions = nep_missions_jugables();
+	$files    = nep_files_periode( $dies );
+	$error_bd = null === $files;
+	$agregats = nep_agrega_resultats( $files ?? array(), NEP_RESULTATS_K );
+	$ids      = array_unique( array_merge( array_keys( $missions ), array_keys( $agregats ) ) );
+	$insuf    = $error_bd
+		? __( 'No s\'ha pogut llegir la taula d\'estadístiques', 'noempesquen' )
+		: __( 'Dades insuficients (menys de 10 partides)', 'noempesquen' );
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Estadístiques', 'noempesquen' ); ?></h1>
+		<?php if ( $error_bd ) : ?>
+			<div class="notice notice-error inline"><p><?php esc_html_e( 'No s\'ha pogut llegir la taula d\'estadístiques.', 'noempesquen' ); ?></p></div>
+		<?php endif; ?>
 		<p><strong><?php esc_html_e( 'Dades indicatives.', 'noempesquen' ); ?></strong>
 			<?php esc_html_e( 'Recompte anònim de partides acabades: no es desa cap dada de qui juga. Les missions amb menys de 10 partides en el període no mostren xifres.', 'noempesquen' ); ?></p>
 

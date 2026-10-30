@@ -178,11 +178,23 @@ function nep_taula_resultats(): string {
 
 /**
  * Crea o actualitza la taula (des de `nep_actualitza()`).
+ *
+ * dbDelta no diu si ha fallat: es comprova després que la taula existeixi.
+ *
+ * @return bool Cert si la taula existeix.
  */
-function nep_crea_taula_resultats(): void {
+function nep_crea_taula_resultats(): bool {
 	global $wpdb;
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	dbDelta( nep_sql_taula_resultats( nep_taula_resultats(), $wpdb->get_charset_collate() ) );
+	$taula = nep_taula_resultats();
+	dbDelta( nep_sql_taula_resultats( $taula, $wpdb->get_charset_collate() ) );
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Comprovació de l'esquema just després de dbDelta.
+	if ( $taula === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $taula ) ) ) ) {
+		return true;
+	}
+	error_log( 'noempesquen: no s\'ha pogut crear la taula d\'estadístiques: ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error d'esquema per a l'administrador.
+	set_transient( 'nep_avis_taula', 1, DAY_IN_SECONDS );
+	return false;
 }
 
 /**
@@ -303,7 +315,7 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 	global $wpdb;
 	$taula = nep_taula_resultats();
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Comptador agregat (UPSERT); no hi ha API ni cau aplicable.
-	$wpdb->query(
+	$desat = $wpdb->query(
 		$wpdb->prepare(
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
 			"INSERT INTO {$taula} (missio, versio_hash, dia, estrelles, decisio, n) VALUES (%s, %s, %s, %d, %s, 1) ON DUPLICATE KEY UPDATE n = n + 1",
@@ -314,6 +326,11 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 			$decisio
 		)
 	);
+	if ( false === $desat ) {
+		// Sense cap dada de la petició (l'error de MySQL pot repetir els valors).
+		error_log( 'noempesquen: no s\'ha pogut desar un resultat a ' . $taula ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error de BD per a l'administrador.
+		return new WP_Error( 'nep_error_desant', __( 'No s\'ha pogut desar el resultat.', 'noempesquen' ), array( 'status' => 500 ) );
+	}
 	return new WP_REST_Response( null, 204 );
 }
 
