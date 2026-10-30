@@ -87,6 +87,13 @@ const ajustos = {
 	Component: lazy( () => import( './ajustos/Ajustos' ) ),
 };
 
+// Icona provisional (la substituirà `revenda/icones.js` a T1b).
+const revenda = {
+	nom: __( 'Revenda', 'noempesquen' ),
+	Icona: IconaUllada,
+	Component: lazy( () => import( './revenda/Revenda' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
@@ -100,6 +107,7 @@ export const APPS_MOBIL = {
 	calculadora,
 	rellotge,
 	ajustos,
+	revenda,
 };
 
 /* Àlies per al codi del PC que encara importa `APPS`. */

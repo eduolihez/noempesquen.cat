@@ -140,6 +140,7 @@ describe( 'validaMissio v2', () => {
 			'calculadora',
 			'rellotge',
 			'ajustos',
+			'revenda',
 		] );
 		expect( [ ...APPS ].sort() ).toEqual(
 			[ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ].sort()
