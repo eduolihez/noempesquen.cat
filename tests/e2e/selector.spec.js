@@ -31,6 +31,10 @@ const petitsSelector = ( page ) =>
 			.map( ( el ) => el.dataset.missio )
 	);
 
+// El selector decideix pel mateix punt de tall que `useEsMobil` (767 px),
+// no pel tipus de dispositiu: un mòbil en horitzontal hi compta com a PC.
+const estret = ( page ) => page.viewportSize().width < 768;
+
 const desborda = ( page ) =>
 	page.evaluate(
 		() =>
@@ -39,10 +43,8 @@ const desborda = ( page ) =>
 	);
 
 test.describe( 'Selector de missions', () => {
-	test( 'seccions i ordre segons el dispositiu', async ( {
-		page,
-		isMobile,
-	} ) => {
+	test( 'seccions i ordre segons el dispositiu', async ( { page } ) => {
+		const isMobile = estret( page );
 		await page.goto( '/simulador/' );
 		await expect( selector( page ) ).toBeVisible();
 
@@ -80,10 +82,8 @@ test.describe( 'Selector de missions', () => {
 		await expect( horitzontal ).toHaveCount( isMobile ? 2 : 0 );
 	} );
 
-	test( 'la recomanada apareix una sola vegada', async ( {
-		page,
-		isMobile,
-	} ) => {
+	test( 'la recomanada apareix una sola vegada', async ( { page } ) => {
+		const isMobile = estret( page );
 		await page.goto( '/simulador/' );
 		const id = isMobile ? 'remei-01-paquet' : 'llissa-01-factura';
 		await expect( page.locator( `[data-missio="${ id }"]` ) ).toHaveCount(
@@ -99,8 +99,8 @@ test.describe( 'Selector de missions', () => {
 
 	test( 'amb progrés recomana la següent i mostra el resum', async ( {
 		page,
-		isMobile,
 	} ) => {
+		const isMobile = estret( page );
 		await page.addInitScript( () => {
 			window.localStorage.setItem(
 				'noempesquen-progres-v2',
@@ -128,11 +128,12 @@ test.describe( 'Selector de missions', () => {
 	test( 'el focus torna a la targeta jugada', async ( { page } ) => {
 		await page.clock.install();
 		await page.goto( '/simulador/' );
-		// Una de la secció «Altres dispositius» i, després, la recomanada.
-		for ( const titol of [
-			TITOLS[ 'remei-02-canviat' ],
-			TITOLS[ 'llissa-01-factura' ],
-		] ) {
+		// Una de les no destacades i, després, la recomanada. Al mòbil, totes
+		// dues de mòbil (una de PC en vertical demana girar).
+		const parella = estret( page )
+			? [ 'remei-02-canviat', 'remei-01-paquet' ]
+			: [ 'remei-02-canviat', 'llissa-01-factura' ];
+		for ( const titol of parella.map( ( id ) => TITOLS[ id ] ) ) {
 			await page
 				.getByRole( 'button', { name: titol, exact: true } )
 				.click();
