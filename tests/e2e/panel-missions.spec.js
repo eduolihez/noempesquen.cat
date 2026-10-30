@@ -95,12 +95,17 @@ test( 'mostra els errors en viu i no publica un guió invàlid', async ( { page 
 	).violations.filter( ( v ) => [ 'serious', 'critical' ].includes( v.impact ) );
 	expect( greus ).toEqual( [] );
 
-	await desa( page, '#publish' );
+	const post = await desa( page, '#publish' );
 	// «Esborrany actualitzat» (10), no «publicada» (6).
 	await expect( page.locator( '#message' ) ).toContainText( 'esborrany' );
 	await expect( page.locator( '.notice-error' ) ).toContainText( 'esborrany' );
 	await expect( page.locator( '#message' ) ).not.toContainText( /publicad|publicat/i );
 	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
+
+	// Provar-la avisa el gestor sense trencar el selector.
+	await page.goto( `/simulador/?previsualitza=${ post }` );
+	await expect( page.getByRole( 'status' ).filter( { hasText: "No s'ha pogut carregar el guió de prova" } ) ).toBeVisible();
+	await expect( page.locator( '[data-missio="llissa-01-factura"]' ) ).toBeVisible();
 } );
 
 test( 'publica un guió vàlid i surt al simulador', async ( { page } ) => {
@@ -133,7 +138,8 @@ test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona'
 
 	await page.getByRole( 'link', { name: 'Prova-la al simulador' } ).click();
 	await expect( page ).toHaveURL( /previsualitza=\d+/ );
-	const targeta = page.locator( `[data-missio="${ id }"]` );
+	// La de prova porta id propi (`<id>--prova`): no substitueix cap missió real.
+	const targeta = page.locator( `[data-missio="${ id }--prova"]` );
 	await expect( targeta ).toBeVisible();
 	await expect( targeta ).toContainText( 'esborrany' );
 	await targeta.click();
@@ -143,6 +149,7 @@ test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona'
 	const anonim = await browser.newPage();
 	await anonim.goto( page.url() );
 	await expect( anonim.locator( '[data-missio="llissa-01-factura"]' ) ).toBeVisible();
+	await expect( anonim.locator( `[data-missio="${ id }--prova"]` ) ).toHaveCount( 0 );
 	await expect( anonim.locator( `[data-missio="${ id }"]` ) ).toHaveCount( 0 );
 	await anonim.close();
 } );
