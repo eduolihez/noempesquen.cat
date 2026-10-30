@@ -378,3 +378,27 @@ describe( 'coincideix: esdeveniments de Ullada i codi', () => {
 		).toBe( false );
 	} );
 } );
+
+describe( 'rastre de bloquejos i denúncies', () => {
+	it( 'anota només ids, sense duplicats, i es reinicia', () => {
+		let e = joc();
+		e = aplica(
+			e,
+			esdev( 'contacte.bloqueja', { id: 'x' } ),
+			esdev( 'contacte.bloqueja', { id: 'x' } ),
+			esdev( 'publicacio.denuncia', { id: 'a' } )
+		);
+		expect( e.bloquejats ).toEqual( [ 'x' ] );
+		expect( e.denunciats ).toEqual( [ 'a' ] );
+		expect( aplica( e, { tipus: 'REINICIA' } ).bloquejats ).toEqual( [] );
+	} );
+
+	it( 'no anota res amb el joc en pausa', () => {
+		const e = aplica(
+			joc(),
+			{ tipus: 'PAUSA' },
+			esdev( 'contacte.bloqueja', { id: 'x' } )
+		);
+		expect( e.bloquejats ).toEqual( [] );
+	} );
+} );

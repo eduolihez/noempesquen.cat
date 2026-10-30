@@ -1,4 +1,3 @@
-import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Ilustracio } from '../../ui/ilustracions';
@@ -25,10 +24,12 @@ import {
  * @param {(url:string)=>void} props.onHoverUrl Barra d'estat.
  */
 export default function Diari( { dades, url, navega, onHoverUrl } ) {
-	const { mon, emet } = useJoc();
-	// Aquí i no a la portada: tornar d'un article no permet denunciar dos cops.
-	const [ denunciat, setDenunciat ] = useState( false );
+	const { mon, estat, emet } = useJoc();
 	const anunci = dades?.anunci ?? null;
+	// Al motor (només l'id): canviar de web i tornar no permet denunciar dos cops.
+	const denunciat = Boolean(
+		anunci && ( estat.denunciats ?? [] ).includes( anunci.id )
+	);
 	const diari = Array.isArray( mon?.diari ) ? mon.diari : [];
 	const ruta = rutaDeUrl( url );
 	const enllac = ( desti ) => propsEnllac( desti, navega, onHoverUrl );
@@ -70,7 +71,6 @@ export default function Diari( { dades, url, navega, onHoverUrl } ) {
 										if ( denunciat ) {
 											return;
 										}
-										setDenunciat( true );
 										emet( 'publicacio.denuncia', {
 											id: anunci.id,
 										} );

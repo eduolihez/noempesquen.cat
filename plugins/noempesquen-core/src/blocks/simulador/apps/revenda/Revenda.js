@@ -8,6 +8,7 @@
 import {
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -327,8 +328,11 @@ export default function Revenda( { dades } ) {
 	const { registraEnrere, appActiva } = useMobil();
 	const [ pestanya, setPestanya ] = useState( 'anuncis' );
 	const [ actiu, setActiu ] = useState( null );
-	// Contactes bloquejats: estat local de la UI; el motor només rep l'esdeveniment.
-	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
+	// Contactes bloquejats: només ids, al motor (sobreviuen en tancar l'app).
+	const bloquejats = useMemo(
+		() => new Set( estat.bloquejats ?? [] ),
+		[ estat.bloquejats ]
+	);
 	const [ avis, setAvis ] = useState( '' );
 	const refsPestanya = useRef( {} );
 	const arrel = useRef( null );
@@ -440,7 +444,6 @@ export default function Revenda( { dades } ) {
 		if ( ! contacte ) {
 			return;
 		}
-		setBloquejats( ( s ) => new Set( [ ...s, contacte.id ] ) );
 		emet( 'contacte.bloqueja', { id: contacte.id } );
 		setAvis(
 			sprintf(

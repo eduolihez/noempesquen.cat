@@ -7,6 +7,7 @@ const {
 	escoltaFuites,
 	sensePistes,
 } = require( './ajudes' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/remei-05-comprador.json' );
 
 const MISSIO = /Compro la teva bici/;
 const BLOQUEIG = /Llisca cap amunt/;
@@ -35,8 +36,6 @@ const banners = ( page ) =>
 	page.getByRole( 'list', { name: 'Notificacions noves' } );
 const titolXat = ( page ) =>
 	page.getByRole( 'heading', { level: 2, name: COMPRADOR, exact: true } );
-const inici = ( page ) =>
-	page.getByRole( 'button', { name: 'Inici', exact: true } );
 
 async function entra( page ) {
 	await iniciaMissio( page, MISSIO, BLOQUEIG );
@@ -197,18 +196,32 @@ test.describe( 'Compro la teva bici', () => {
 		await sensePistes( page, vist, tot );
 	} );
 
-	// Inabastable a remei-05: bloquejar el comprador decideix l'opció «a» i
-	// el diàleg de consequència deixa la resta inert (el clic a «Inici» espera
-	// fins al timeout). Cal una missió on bloquejar no tanqui el joc per
-	// comprovar-ho; `bloquejats` és estat local de Revenda.
-	test.fixme( 'el bloqueig es manté en sortir i tornar al xat', async ( {
+	// Bloquejar a remei-05 decideix i tanca el joc: es prova amb una variant
+	// sense aquesta decisió perquè el joc continuï.
+	test( 'el bloqueig es manté en sortir i tornar al xat', async ( {
 		page,
 	} ) => {
+		const m = JSON.parse( JSON.stringify( MISSIO_JSON ) );
+		m.disparadors = m.disparadors.filter( ( d ) => d.id !== 'bloquejat' );
+		await page.route(
+			( url ) => url.href.includes( 'noempesquen/v1/missions' ),
+			( route ) => route.fulfill( { json: [ { guio: m } ] } )
+		);
 		await alXat( page );
 		await page
 			.getByRole( 'button', { name: 'Bloqueja', exact: true } )
 			.click();
-		await inici( page ).click();
+		await expect( page.getByRole( 'dialog' ) ).toHaveCount( 0 );
+		// «Enrere» dues vegades: torna a la llista i tanca l'app (es desmunta).
+		const enrere = page.getByRole( 'button', {
+			name: 'Enrere',
+			exact: true,
+		} );
+		await enrere.click();
+		await enrere.click();
+		await expect(
+			page.getByRole( 'region', { name: 'Revenda' } )
+		).toHaveCount( 0 );
 		await obreRevenda( page );
 		await obreXat( page );
 		await expect(
@@ -216,6 +229,9 @@ test.describe( 'Compro la teva bici', () => {
 				'Has bloquejat aquest usuari. Ja no et pot escriure.'
 			)
 		).toBeVisible();
+		await expect(
+			page.getByRole( 'button', { name: 'Bloqueja', exact: true } )
+		).toHaveCount( 0 );
 	} );
 
 	test( 'objectius tàctils de 44 px a 360 px: inici, anuncis, xat i web', async ( {

@@ -193,6 +193,25 @@ test.describe( "El truc d'inversió", () => {
 		await expect( page.getByText( SEGONA ) ).toHaveCount( 0 );
 	} );
 
+	test( 'la denúncia es manté en canviar de web i tornar', async ( {
+		page,
+	} ) => {
+		await injectaVariant( page );
+		await alDiari( page );
+		await informa( page ).click();
+		await expect( page.getByText( PRIMERA ).first() ).toBeAttached();
+		await obreLaWeb( page );
+		await vesA( page, 'diaridelbarri.cat' );
+		await expect( anunci( page ) ).toBeVisible();
+		await expect( informa( page ) ).toHaveAttribute(
+			'aria-disabled',
+			'true'
+		);
+		await informa( page ).click( { force: true } );
+		await page.clock.runFor( 1000 );
+		await expect( page.getByText( SEGONA ) ).toHaveCount( 0 );
+	} );
+
 	test( 'l’enllaç de l’anunci emet enllac.obre i no navega de debò', async ( {
 		page,
 	} ) => {
