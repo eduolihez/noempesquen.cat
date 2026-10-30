@@ -51,6 +51,15 @@
 	}
 }
 
+/* El tema no posa marge lateral: sense això, en pantalles estretes el
+   selector toca les vores (la capçalera deixa 16 px). */
+@media (max-width: 1180px) {
+
+	.nep-selector {
+		padding-inline: 1rem;
+	}
+}
+
 /* Seccions */
 .nep-sel-seccio {
 	display: flex;
