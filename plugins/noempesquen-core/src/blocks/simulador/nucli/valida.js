@@ -81,6 +81,7 @@ const CAMPS_SENYAL = [
 	'premi_senyal',
 	'compte_senyal',
 	'promesa_senyal',
+	'etiqueta_senyal',
 ];
 
 /**
@@ -212,13 +213,14 @@ function validaDisparadors( m, mon, errors ) {
 					.filter( ( id ) => typeof id === 'string' )
 			)
 		: null;
-	// Publicacions denunciables: Ullada (món i missió) i anuncis de webs.
-	// TODO(T3): validar l'esquema de `webs.*.anunci`; ara només se'n llegeix l'id.
+	// Publicacions denunciables: Ullada (món i missió) i anuncis del Diari.
 	const idsDenunciables = new Set(
 		[
 			...llista( mon?.ullada?.publicacions ).map( ( p ) => p?.id ),
 			...llista( m.apps?.ullada?.publicacions ).map( ( p ) => p?.id ),
-			...Object.values( m.webs ?? {} ).map( ( w ) => w?.anunci?.id ),
+			...Object.values( m.webs ?? {} )
+				.filter( ( w ) => w?.plantilla === 'diari' )
+				.map( ( w ) => w?.anunci?.id ),
 		].filter( ( id ) => typeof id === 'string' )
 	);
 	let hiHaPescat = false;
@@ -527,6 +529,60 @@ function validaRevenda( m, mon, errors ) {
 	} );
 }
 
+/**
+ * Valida els anuncis patrocinats (`webs.<host>.anunci`): només a la plantilla
+ * `diari`, amb id únic (també respecte de les publicacions d'Ullada). Les
+ * senyals i les URL dels enllaços ja les revisen les regles generals.
+ *
+ * @param {Object}   m      Missió.
+ * @param {?Object}  mon    Món compartit.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaAnuncisDiari( m, mon, errors ) {
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	const ids = new Set(
+		[
+			...llista( mon?.ullada?.publicacions ),
+			...llista( m.apps?.ullada?.publicacions ),
+		].map( ( p ) => p?.id )
+	);
+	Object.entries( m.webs ?? {} ).forEach( ( [ domini, web ] ) => {
+		const a = web?.anunci;
+		if ( a === undefined ) {
+			return;
+		}
+		const ref = `${ domini }.anunci`;
+		if ( web.plantilla !== 'diari' ) {
+			errors.push( `${ ref }: només admès a la plantilla diari` );
+			return;
+		}
+		if ( ! a || typeof a !== 'object' || Array.isArray( a ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'etiqueta', 'titol' ].forEach( ( c ) => {
+			if ( ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if ( text( a.id ) ) {
+			if ( ids.has( a.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ a.id }»` );
+			}
+			ids.add( a.id );
+		}
+		if ( ! text( a.avatar?.nom ) || ! text( a.avatar?.inicials ) ) {
+			errors.push( `${ ref }: «avatar» ha de tenir nom i inicials` );
+		}
+		[ 'etiqueta_senyal', 'boto_denuncia' ].forEach( ( c ) => {
+			if ( a[ c ] !== undefined && ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: «${ c }» ha de ser text` );
+			}
+		} );
+		validaCosPublicacio( a.cos, ref, errors );
+	} );
+}
+
 function validaFormularis( domini, web, errors ) {
 	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
 		if ( ! f || typeof f !== 'object' ) {
@@ -661,6 +717,7 @@ export function validaMissio( m, mon ) {
 	validaXatsParla( m, mon, errors );
 	validaPublicacionsUllada( m, mon, errors );
 	validaRevenda( m, mon, errors );
+	validaAnuncisDiari( m, mon, errors );
 	validaDisparadors( m, mon, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {

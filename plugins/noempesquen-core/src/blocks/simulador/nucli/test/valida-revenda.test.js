@@ -206,9 +206,11 @@ describe( 'validaMissio: plantilles, senyals de web i cruces', () => {
 		expect( errors( m ) ).toContain(
 			'denuncia: publicació inexistent: no-hi-es'
 		);
-		// Preparat per als anuncis de web (T3): el seu id també val.
+		// Un anunci fora de la plantilla diari no és denunciable.
 		m.webs[ 'sorteig-calroig.top' ].anunci = { id: 'no-hi-es' };
-		expect( errors( m ) ).toEqual( [] );
+		expect( errors( m ) ).toContain(
+			'denuncia: publicació inexistent: no-hi-es'
+		);
 	} );
 } );
 
