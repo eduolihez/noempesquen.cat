@@ -1,7 +1,9 @@
+import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Ilustracio } from '../../ui/ilustracions';
 import { propsEnllac } from '../enllac';
+import { Anunci } from './Anunci';
 import { MarcaDiari } from './Marca';
 import {
 	URL_PORTADA,
@@ -13,15 +15,20 @@ import {
 
 /**
  * Web d'El Diari del Barri: portada i article. Les notícies surten de
- * `mon.diari`; cap enllaç és real.
+ * `mon.diari`; cap enllaç és real. Amb `dades.anunci`, la portada pinta un
+ * anunci patrocinat que es pot denunciar (`publicacio.denuncia`).
  *
  * @param {Object}             props
+ * @param {?Object}            props.dades      Web de la missió (opcional `anunci`).
  * @param {string}             props.url        URL de la pàgina.
  * @param {(url:string)=>void} props.navega     Navega a una URL dins la pestanya.
  * @param {(url:string)=>void} props.onHoverUrl Barra d'estat.
  */
-export default function Diari( { url, navega, onHoverUrl } ) {
-	const { mon } = useJoc();
+export default function Diari( { dades, url, navega, onHoverUrl } ) {
+	const { mon, emet } = useJoc();
+	// Aquí i no a la portada: tornar d'un article no permet denunciar dos cops.
+	const [ denunciat, setDenunciat ] = useState( false );
+	const anunci = dades?.anunci ?? null;
 	const diari = Array.isArray( mon?.diari ) ? mon.diari : [];
 	const ruta = rutaDeUrl( url );
 	const enllac = ( desti ) => propsEnllac( desti, navega, onHoverUrl );
@@ -51,7 +58,32 @@ export default function Diari( { url, navega, onHoverUrl } ) {
 			</header>
 			<main className="nep-dv-cos">
 				{ ruta.tipus === 'portada' && (
-					<Portada diari={ diari } enllac={ enllac } />
+					<Portada
+						diari={ diari }
+						enllac={ enllac }
+						anunci={
+							anunci && (
+								<Anunci
+									anunci={ anunci }
+									denunciat={ denunciat }
+									onDenuncia={ () => {
+										if ( denunciat ) {
+											return;
+										}
+										setDenunciat( true );
+										emet( 'publicacio.denuncia', {
+											id: anunci.id,
+										} );
+									} }
+									onEnllac={ ( u ) => {
+										emet( 'enllac.obre', { url: u } );
+										navega( u );
+									} }
+									onHoverUrl={ onHoverUrl }
+								/>
+							)
+						}
+					/>
 				) }
 				{ ruta.tipus === 'noticia' && noticia && (
 					<Article noticia={ noticia } />
@@ -84,7 +116,7 @@ export default function Diari( { url, navega, onHoverUrl } ) {
 	);
 }
 
-function Portada( { diari, enllac } ) {
+function Portada( { diari, enllac, anunci } ) {
 	const [ destacada, ...resta ] = diari;
 	return (
 		<>
@@ -114,6 +146,7 @@ function Portada( { diari, enllac } ) {
 					</div>
 				</article>
 			) }
+			{ anunci }
 			<ul className="nep-dv-llista">
 				{ resta.map( ( n ) => (
 					<li key={ n.id } className="nep-dv-item">
