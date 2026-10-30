@@ -14,8 +14,9 @@ import llissa01 from '../../../../missions/llissa-01-factura.json';
 import llissa02 from '../../../../missions/llissa-02-banc.json';
 import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
+import remei02 from '../../../../missions/remei-02-canviat.json';
 
-const INCLOSES = [ llissa01, llissa02, remei01 ];
+const INCLOSES = [ llissa01, llissa02, remei01, remei02 ];
 function emmagatzematge() {
 	try {
 		return window.localStorage;
