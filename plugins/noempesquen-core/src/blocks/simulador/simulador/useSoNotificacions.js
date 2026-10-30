@@ -2,7 +2,7 @@ import { useEffect, useRef } from '@wordpress/element';
 import { FASE } from '../nucli/motor';
 import { creaMotorSo } from './tones';
 import { deuSonar, idsNous } from './so-notificacio';
-import { llegeixSons } from './preferencies';
+import { emmagatzem, llegeixSons } from './preferencies';
 
 /**
  * So de les notificacions noves (una nota per tanda). No substitueix l'avís
@@ -55,12 +55,7 @@ export function useSoNotificacions( arrel, estat ) {
 		if ( ! veniaDeJoc ) {
 			return;
 		}
-		let actiu = true;
-		try {
-			actiu = llegeixSons( window.localStorage );
-		} catch {
-			actiu = true;
-		}
+		const actiu = llegeixSons( emmagatzem() );
 		if (
 			deuSonar( {
 				actiu,

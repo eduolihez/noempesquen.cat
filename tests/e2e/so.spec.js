@@ -153,6 +153,16 @@ test.describe( 'So de les notificacions', () => {
 		).toBe( 'false' );
 		await pausa.getByRole( 'button', { name: /Continua/ } ).click();
 		await expect( pausa ).toBeHidden();
+		await page.keyboard.press( 'Escape' );
+		await expect( pausa ).toBeVisible();
+		await expect( so ).toHaveAttribute( 'aria-checked', 'false' );
+		await so.focus();
+		await page.keyboard.press( 'Space' );
+		await expect( so ).toHaveAttribute( 'aria-checked', 'true' );
+		await page.keyboard.press( 'Space' );
+		await expect( so ).toHaveAttribute( 'aria-checked', 'false' );
+		await pausa.getByRole( 'button', { name: /Continua/ } ).click();
+		await expect( pausa ).toBeHidden();
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toContainText(
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]

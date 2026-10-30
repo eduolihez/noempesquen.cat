@@ -5,6 +5,7 @@ import { Subpantalla } from './Subpantalla';
 import {
 	desaSons,
 	llegeixSons,
+	emmagatzem,
 	EVENT_SONS,
 } from '../../simulador/preferencies.js';
 import {
@@ -16,14 +17,6 @@ import {
 	IconaTelefon,
 	IconaWifi,
 } from './icones';
-
-function emmagatzem() {
-	try {
-		return window.localStorage;
-	} catch {
-		return undefined;
-	}
-}
 
 const ENTRADES = [
 	{ id: 'wifi', Icona: IconaWifi, text: () => __( 'Wi-Fi', 'noempesquen' ) },
@@ -55,6 +48,11 @@ export default function Ajustos() {
 	const [ vista, setVista ] = useState( null );
 	const [ sons, setSons ] = useState( () => llegeixSons( emmagatzem() ) );
 	const arrel = useRef( null );
+	const titol = useRef( null );
+	const vistaRef = useRef( null );
+	vistaRef.current = vista;
+	const movFoc = useRef( false );
+	const origen = useRef( null );
 
 	// La pausa pot canviar el so mentre Ajustos és obert.
 	useEffect( () => {
@@ -62,11 +60,6 @@ export default function Ajustos() {
 		window.addEventListener( EVENT_SONS, relegeix );
 		return () => window.removeEventListener( EVENT_SONS, relegeix );
 	}, [] );
-	const titol = useRef( null );
-	const vistaRef = useRef( null );
-	vistaRef.current = vista;
-	const movFoc = useRef( false );
-	const origen = useRef( null );
 	const focDins = useCallback(
 		() =>
 			!! arrel.current?.contains(
@@ -106,6 +99,7 @@ export default function Ajustos() {
 		}
 	}, [ vista ] );
 
+	// No emet EVENT_SONS: la pausa llegeix l'emmagatzematge en muntar-se.
 	const canviaSons = ( valor ) => {
 		setSons( valor );
 		desaSons( emmagatzem(), valor );

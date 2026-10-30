@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { desaSons, llegeixSons, EVENT_SONS } from './preferencies.js';
+import {
+	desaSons,
+	emmagatzem,
+	llegeixSons,
+	EVENT_SONS,
+} from './preferencies.js';
 
 const FOCALITZABLES = 'button:not([disabled])';
 
@@ -16,15 +21,14 @@ export function Pausa( { onContinua, onReinicia, onSurt } ) {
 	const dialeg = useRef( null );
 	const continua = useRef( null );
 	// Es llegeix en obrir la pausa; no es desa res del jugador.
-	const [ sons, setSons ] = useState( () =>
-		llegeixSons( window.localStorage )
-	);
+	const [ sons, setSons ] = useState( () => llegeixSons( emmagatzem() ) );
 
 	const canviaSons = () => {
 		const valor = ! sons;
-		setSons( valor );
-		desaSons( window.localStorage, valor );
-		window.dispatchEvent( new Event( EVENT_SONS ) );
+		if ( desaSons( emmagatzem(), valor ) ) {
+			setSons( valor );
+			window.dispatchEvent( new Event( EVENT_SONS ) );
+		}
 	};
 
 	useEffect( () => {
