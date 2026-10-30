@@ -221,4 +221,36 @@ final class EstadistiquesTest extends TestCase {
 		$claus = array_map( static fn( $f ) => $f['missio'] . $f['dia'] . $f['estrelles'] . $f['decisio'], $f1 );
 		$this->assertSame( count( $claus ), count( array_unique( $claus ) ) );
 	}
+
+	public function test_distribucions(): void {
+		$r = nep_distribucions(
+			array(
+				self::fila( 'm', 3, 'c', 6 ),
+				self::fila( 'm', 1, 'a', 3 ),
+				self::fila( 'm', 1, 'fora', 1 ),
+				self::fila( 'poca', 2, 'a', 9 ),
+			),
+			10,
+			array(
+				'm'    => array( 'a', 'b', 'c' ),
+				'poca' => array( 'a' ),
+			)
+		);
+		$this->assertSame( array( 'm' ), array_keys( $r ) );
+		$this->assertSame( array( 'n' => 4, 'percentatge' => 40 ), $r['m']['estrelles'][1] );
+		$this->assertSame( array( 'n' => 0, 'percentatge' => 0 ), $r['m']['estrelles'][2] );
+		$this->assertSame( array( 'n' => 6, 'percentatge' => 60 ), $r['m']['estrelles'][3] );
+		// Totes les opcions vàlides (també les no triades); la decisió aliena no hi surt.
+		$this->assertSame( array( 'a', 'b', 'c' ), array_keys( $r['m']['decisions'] ) );
+		$this->assertSame( 0, $r['m']['decisions']['b']['n'] );
+		$this->assertSame( 60, $r['m']['decisions']['c']['percentatge'] );
+	}
+
+	public function test_amplada_franja(): void {
+		$this->assertSame( 5, nep_amplada_franja( 0 ) );
+		$this->assertSame( 5, nep_amplada_franja( 9 ) );
+		$this->assertSame( 45, nep_amplada_franja( 43 ) );
+		$this->assertSame( 95, nep_amplada_franja( 90 ) );
+		$this->assertSame( 95, nep_amplada_franja( 100 ) );
+	}
 }

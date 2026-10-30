@@ -395,6 +395,17 @@ function nep_franja_percentatge( int $p ): string {
 }
 
 /**
+ * Amplada (%) de la barra d'un percentatge: el centre de la seva franja de 10
+ * punts, perquè l'HTML no reveli més precisió que el text.
+ *
+ * @param int $p Percentatge (0-100).
+ * @return int
+ */
+function nep_amplada_franja( int $p ): int {
+	return min( 90, intdiv( max( 0, min( 100, $p ) ), 10 ) * 10 ) + 5;
+}
+
+/**
  * Nom complet de la taula.
  *
  * @return string

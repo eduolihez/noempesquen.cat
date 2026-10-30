@@ -268,13 +268,15 @@ nep_pinta_estadistiques();
 $nep_html = (string) ob_get_clean();
 wp_set_current_user( 0 );
 $nep_comprova( str_contains( $nep_html, 'role="status"' ) && str_contains( $nep_html, 'Dades de demostració incloses' ) && str_contains( $nep_html, '<code>wp nep demo-estadistiques esborra</code>' ), 'demo: el panell avisa de les dades de demostració' );
+$nep_comprova( str_contains( $nep_html, 'class="nep-distribucions"' ) && str_contains( $nep_html, 'Decisions: ' . esc_html( $nep_est['titol'] ) ) && str_contains( $nep_html, 'aria-hidden="true"' ), 'barres: repartiment de les estrelles i les decisions amb demo' );
+$nep_comprova( 1 !== preg_match( '/style="width: (?!(5|15|25|35|45|55|65|75|85|95)%)/', $nep_html ), 'barres: amplada que surt de la franja (no del percentatge exacte)' );
 $nep_comprova( false !== nep_esborra_demo() && ! nep_hi_ha_demo() && $nep_abans + 1 === $nep_reals(), 'demo: esborra només les files demo' );
 wp_set_current_user( 1 );
 ob_start();
 nep_pinta_estadistiques();
 $nep_html = (string) ob_get_clean();
 wp_set_current_user( 0 );
-$nep_comprova( ! str_contains( $nep_html, 'Dades de demostració incloses' ), 'demo: sense files demo no hi ha avís' );
+$nep_comprova( ! str_contains( $nep_html, 'Dades de demostració incloses' ) && ! str_contains( $nep_html, 'Decisions: ' . esc_html( $nep_est['titol'] ) ), 'demo: sense files demo no hi ha avís ni barres de la missió' );
 // phpcs:enable
 
 // Neteja.

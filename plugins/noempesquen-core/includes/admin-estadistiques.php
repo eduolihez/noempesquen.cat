@@ -185,6 +185,101 @@ function nep_pinta_estadistiques(): void {
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+
+		<?php nep_pinta_distribucions( nep_distribucions( $separades['actuals'], NEP_RESULTATS_K, $opcions ), $missions, $textos ); ?>
+	</div>
+	<?php
+}
+
+/**
+ * Pinta, per a cada missió amb prou partides, el repartiment d'estrelles i de
+ * decisions en barres. El valor és text (franja de 10 punts); la barra és
+ * decorativa i la seva amplada surt de la franja. Un valor amb menys de
+ * `NEP_RESULTATS_K` partides no es mostra.
+ *
+ * @param array                $distribucions Sortida de `nep_distribucions()`.
+ * @param array<string, array> $missions      Guions per id.
+ * @param array                $textos        Text de cada opció per missió.
+ */
+function nep_pinta_distribucions( array $distribucions, array $missions, array $textos ): void {
+	if ( ! $distribucions ) {
+		return;
+	}
+	?>
+	<style>
+		.nep-distribucions details { margin: 1em 0; max-width: 48rem; }
+		.nep-distribucions summary { cursor: pointer; padding: 4px 0; min-height: 24px; font-weight: 600; }
+		.nep-distribucions summary:focus-visible { outline: 2px solid #1d2327; outline-offset: 2px; }
+		.nep-distribucions table { margin: 0.5em 0 1em; }
+		.nep-distribucions td.nep-valor { white-space: nowrap; }
+		.nep-barra { display: block; width: 100%; min-width: 8rem; height: 1em; border: 1px solid #1d2327; background: #fff; box-sizing: border-box; }
+		.nep-barra > span { display: block; height: 100%; background: #1d2327; }
+		@media (prefers-reduced-motion: reduce) { .nep-barra > span { transition: none; animation: none; } }
+		@media (forced-colors: active) { .nep-barra { border-color: CanvasText; } .nep-barra > span { background: CanvasText; forced-color-adjust: none; } }
+	</style>
+	<div class="nep-distribucions">
+		<h2><?php esc_html_e( 'Repartiment per missió', 'noempesquen' ); ?></h2>
+		<?php foreach ( $distribucions as $id => $d ) : ?>
+			<?php
+			$guio  = $missions[ $id ] ?? null;
+			$titol = is_array( $guio ) && is_string( $guio['titol'] ?? null ) ? $guio['titol'] : (string) $id;
+			$grups = array(
+				array(
+					/* translators: %s: títol de la missió. */
+					'caption' => sprintf( __( 'Estrelles: %s', 'noempesquen' ), $titol ),
+					'capcal'  => __( 'Estrelles', 'noempesquen' ),
+					'valors'  => $d['estrelles'],
+					'nom'     => static fn( $e ) => sprintf(
+						/* translators: %d: nombre d'estrelles. */
+						_n( '%d estrella', '%d estrelles', (int) $e, 'noempesquen' ),
+						(int) $e
+					),
+				),
+			);
+			if ( $d['decisions'] ) {
+				$grups[] = array(
+					/* translators: %s: títol de la missió. */
+					'caption' => sprintf( __( 'Decisions: %s', 'noempesquen' ), $titol ),
+					'capcal'  => __( 'Decisió', 'noempesquen' ),
+					'valors'  => $d['decisions'],
+					'nom'     => static fn( $o ) => sprintf( '«%s» %s', $o, $textos[ $id ][ $o ] ?? '' ),
+				);
+			}
+			?>
+			<details>
+				<summary>
+					<?php
+					/* translators: %s: títol de la missió. */
+					echo esc_html( sprintf( __( 'Repartiment: %s', 'noempesquen' ), $titol ) );
+					?>
+				</summary>
+				<?php foreach ( $grups as $grup ) : ?>
+					<table class="widefat striped">
+						<caption><?php echo esc_html( $grup['caption'] ); ?></caption>
+						<thead>
+							<tr>
+								<th scope="col"><?php echo esc_html( $grup['capcal'] ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Percentatge de partides', 'noempesquen' ); ?></th>
+								<th scope="col"><span class="screen-reader-text"><?php esc_html_e( 'Barra', 'noempesquen' ); ?></span></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $grup['valors'] as $clau => $v ) : ?>
+								<tr>
+									<th scope="row"><?php echo esc_html( ( $grup['nom'] )( $clau ) ); ?></th>
+									<?php if ( $v['n'] < NEP_RESULTATS_K ) : ?>
+										<td class="nep-valor" colspan="2"><?php esc_html_e( 'Menys de 10 partides', 'noempesquen' ); ?></td>
+									<?php else : ?>
+										<td class="nep-valor"><?php echo esc_html( nep_franja_percentatge( $v['percentatge'] ) ); ?></td>
+										<td><span class="nep-barra" aria-hidden="true"><span style="width: <?php echo esc_attr( (string) nep_amplada_franja( $v['percentatge'] ) ); ?>%"></span></span></td>
+									<?php endif; ?>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endforeach; ?>
+			</details>
+		<?php endforeach; ?>
 	</div>
 	<?php
 }
