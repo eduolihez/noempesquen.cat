@@ -5,8 +5,7 @@
 		"personatge": "llissa",
 		"ids_existents": []
 	},
-	"_nomes_servidor": true,
-	"_motiu": "validaMissio comprova que hi hagi personatge però no el valor; la llista tancada és del servidor.",
+	"_esperat_js": "personatge invàlid",
 	"id": "llissa-05-actualitzacio",
 	"versio": 2,
 	"titol": "Actualitza el navegador",

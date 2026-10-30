@@ -79,6 +79,8 @@ const esObjecte = ( v ) =>
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
 const URL_HTTP = /^https?:\/\/\S+/i;
+// Id estable de la missió (sense `m`: «$» no accepta un salt de línia final).
+const ID_MISSIO = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 const CAMPS_SENYAL = [
 	'senyal',
@@ -1033,8 +1035,18 @@ export function validaMissio( m, mon ) {
 			errors.push( `falta ${ c }` );
 		}
 	} );
+	// Mateixes regles que `nep_valida_guio` (PHP): fixtures a missions/test-fixtures/.
+	if ( m.id && ( typeof m.id !== 'string' || ! ID_MISSIO.test( m.id ) ) ) {
+		errors.push( 'id invàlid' );
+	}
+	if ( m.titol && ( typeof m.titol !== 'string' || ! m.titol.trim() ) ) {
+		errors.push( 'titol invàlid' );
+	}
 	if ( m.dispositiu && ! [ 'pc', 'mobil' ].includes( m.dispositiu ) ) {
 		errors.push( 'dispositiu invàlid' );
+	}
+	if ( m.personatge && ! [ 'llissa', 'remei' ].includes( m.personatge ) ) {
+		errors.push( 'personatge invàlid' );
 	}
 	if ( ! Array.isArray( m.intro ) || ! m.intro.length ) {
 		errors.push( 'falta intro' );

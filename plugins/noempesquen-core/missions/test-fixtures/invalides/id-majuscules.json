@@ -5,8 +5,7 @@
 		"personatge": "llissa",
 		"ids_existents": []
 	},
-	"_nomes_servidor": true,
-	"_motiu": "validaMissio només comprova que hi hagi id; el patró de l'id és una regla del servidor (slug estable).",
+	"_esperat_js": "id invàlid",
 	"id": "Llissa-05-Actualitzacio",
 	"versio": 2,
 	"titol": "Actualitza el navegador",

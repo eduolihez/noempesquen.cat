@@ -1,0 +1,194 @@
+{
+	"_meta": {
+		"dispositiu": "pc",
+		"personatge": "llissa",
+		"ids_existents": []
+	},
+	"id": "llissa-05-actualitzacio",
+	"versio": 2.0,
+	"titol": "Actualitza el navegador",
+	"resum": "Vols mirar quin temps farà i una barra et diu que el navegador està desactualitzat. T'hi descarregaries l'actualització?",
+	"dispositiu": "pc",
+	"personatge": "llissa",
+	"nivell": 3,
+	"durada_minuts": 4,
+	"rellotge": "08:20",
+	"intro": [
+		"Bon dia, Àlex! Sóc la Llissa. Avui l'esquer es disfressa d'una cosa que sembla útil: una actualització.",
+		"Algunes webs et mostren una barra que imita el navegador i et diu que l'has d'actualitzar ara mateix. El que et descarregues no és cap actualització.",
+		"Tens el navegador obert amb la previsió de Temps Avui. Mira-la i, si et surt res estrany, revisa-ho amb la lupa. El menú del navegador és el botó de dalt a la dreta."
+	],
+	"instruccions": "Mira la previsió de Temps Avui. Si et surt cap barra d'actualització, revisa-la amb la lupa, comprova la versió a «Quant a Brúixola» des del menú del navegador i decideix què en fas des del menú de la Llissa.",
+	"pistes": [
+		"Fixa't en la barra de color de dalt de la pàgina: on és exactament? Dins de la pàgina o a les eines del navegador?",
+		"Una web pot actualitzar el teu navegador? Mira d'on ve el fitxer que et vol fer descarregar.",
+		"Si dubtes, no descarreguis res. Obre el menú del navegador (el botó de dalt a la dreta) i mira «Quant a Brúixola»: allà et diu si està al dia."
+	],
+	"apps": {
+		"navegador": {
+			"inici": [
+				"https://tempsavui.cat/"
+			]
+		}
+	},
+	"webs": {
+		"tempsavui.cat": {
+			"plantilla": "article",
+			"https": true,
+			"titol": "El temps al barri per a avui",
+			"nom_lloc": "Temps Avui",
+			"entradeta": [
+				[
+					{
+						"t": "Matí fresc i assolellat, amb núvols a la tarda. Poca probabilitat de pluja."
+					}
+				]
+			],
+			"seccions": [
+				{
+					"titol": "Previsió per hores",
+					"llista": [
+						{
+							"t": "Matí: sol, 14 °C"
+						},
+						{
+							"t": "Migdia: sol i alguns núvols, 19 °C"
+						},
+						{
+							"t": "Tarda: núvols, 17 °C"
+						},
+						{
+							"t": "Nit: serè, 11 °C"
+						}
+					]
+				},
+				{
+					"titol": "Vent i mar",
+					"cos": [
+						[
+							{
+								"t": "Bufarà una mica de garbí a la tarda. El mar estarà arrissat a prop de la costa."
+							}
+						]
+					]
+				},
+				{
+					"titol": "Demà",
+					"cos": [
+						[
+							{
+								"t": "Les temperatures pujaran un parell de graus i el cel quedarà més tapat a partir del vespre."
+							}
+						]
+					]
+				}
+			],
+			"barra": {
+				"text": [
+					{
+						"t": "El teu navegador està desactualitzat.",
+						"senyal": "web_no_actualitza"
+					},
+					{
+						"t": " "
+					},
+					{
+						"t": "Actualitza ara",
+						"senyal": "urgencia"
+					},
+					{
+						"t": " per veure aquesta pàgina correctament.",
+						"senyal": "barra_dins_pagina"
+					}
+				],
+				"boto": "Descarrega l'actualització",
+				"fitxer": "actualitzacio-navegador.exe",
+				"origen": "descarrega-navegador.top",
+				"senyal_fitxer": "exe_top",
+				"senyal_origen": "exe_top"
+			}
+		}
+	},
+	"disparadors": [
+		{
+			"id": "descarregat",
+			"quan": {
+				"esdeveniment": "descarrega.fes",
+				"url": "tempsavui.cat",
+				"fitxer": "actualitzacio-navegador.exe"
+			},
+			"efectes": [
+				{
+					"tipus": "pescat"
+				}
+			]
+		}
+	],
+	"senyals": [
+		{
+			"id": "web_no_actualitza",
+			"titol": "Una web no actualitza el teu navegador",
+			"explicacio": "El navegador s'actualitza sol, o des del seu propi menú. Cap pàgina web no sap si el teu navegador està al dia ni te l'ha d'actualitzar. Si una web t'ho diu, et vol fer descarregar una altra cosa. Ho pots comprovar a «Quant a Brúixola», al menú del navegador: hi diu que està al dia.",
+			"reaccio": "Una web de previsió del temps actualitzant-te el navegador? Això ho fa el navegador tot sol."
+		},
+		{
+			"id": "barra_dins_pagina",
+			"titol": "Una barra que imita el navegador",
+			"explicacio": "Sembla un avís del navegador, però està dins de la pàgina, per sota de la barra d'adreces. Els avisos de veritat del navegador surten al seu menú, no enmig d'una web.",
+			"reaccio": "Mira on és: dins de la pàgina, no a les eines del navegador. És una disfressa."
+		},
+		{
+			"id": "urgencia",
+			"titol": "«Actualitza ara»",
+			"explicacio": "Et diuen que no veuràs bé la pàgina si no ho fas ara mateix. La pressa és perquè cliquis sense pensar. Una actualització de veritat pot esperar uns minuts.",
+			"reaccio": "«Ara». Sempre «ara». La pressa és l'esquer."
+		},
+		{
+			"id": "exe_top",
+			"requereix": "descarregat",
+			"titol": "Un .exe d'un domini .top",
+			"explicacio": "El fitxer és actualitzacio-navegador.exe i ve de descarrega-navegador.top, una adreça sense cap empresa al darrere. Un programa així pot ser un virus. Les actualitzacions de veritat no les descarregues mai d'una web qualsevol.",
+			"reaccio": "Un .exe des d'un «.top»? Això no és cap actualització."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això és normal, tranquil.",
+			"Aquí no hi ha res que piqui.",
+			"Tot en ordre, continua."
+		],
+		"pescat": "Ai, Àlex! Has obert el fitxer. Si fos de veritat, aquell .exe no actualitzaria res: podria instal·lar un virus, espiar el que fas o robar-te les contrasenyes. Tranquil, que és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb la barra d'actualització?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Ignoro la barra i comprovo la versió a «Quant a» del navegador.",
+				"valor": "correcta",
+				"resposta": "Perfecte! Qui sap si el navegador està al dia és el mateix navegador, i el teu ho està. No has descarregat res d'una web estranya."
+			},
+			{
+				"id": "b",
+				"text": "Tanco la barra i ja està.",
+				"valor": "parcial",
+				"resposta": "No has caigut, molt bé. La propera vegada, comprova-ho també a «Quant a» del menú del navegador: així sabràs segur que està al dia."
+			},
+			{
+				"id": "c",
+				"text": "Descarrego i obro el fitxer.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. Aquell fitxer no era cap actualització, i obrir-lo pot posar un programa maliciós al teu ordinador."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"El navegador s'actualitza sol o des del seu propi menú, mai des d'una web.",
+			"Si una barra o un avís és dins de la pàgina, és part de la web, no del navegador.",
+			"No obris mai un .exe que t'ofereix una web, i menys si ve d'un domini estrany.",
+			"Per saber si estàs al dia, mira «Quant a» al menú del navegador."
+		],
+		"consell": "Si has obert un fitxer així, desconnecta l'ordinador d'internet, passa-hi l'antivirus del sistema i canvia les contrasenyes des d'un altre dispositiu. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
+}

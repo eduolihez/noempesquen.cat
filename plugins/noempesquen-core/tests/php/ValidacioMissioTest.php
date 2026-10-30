@@ -57,6 +57,19 @@ final class ValidacioMissioTest extends TestCase {
 		return $casos;
 	}
 
+	/**
+	 * Fixtures vàlids (casos límit que han de passar a PHP i a JS).
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public static function valides(): array {
+		$casos = array();
+		foreach ( glob( self::MISSIONS . 'test-fixtures/valides/*.json' ) as $fitxer ) {
+			$casos[ basename( $fitxer ) ] = array( $fitxer );
+		}
+		return $casos;
+	}
+
 	public function test_hi_ha_prou_casos(): void {
 		$this->assertNotEmpty( self::reals() );
 		$this->assertGreaterThanOrEqual( 8, count( self::invalides() ) );
@@ -66,6 +79,21 @@ final class ValidacioMissioTest extends TestCase {
 	public function test_missio_real_es_valida( string $fitxer ): void {
 		$guio = self::llegeix( $fitxer );
 		$this->assertSame( array(), nep_valida_guio( $guio, $guio['dispositiu'], $guio['personatge'], array() ) );
+	}
+
+	#[DataProvider( 'reals' )]
+	public function test_missio_real_passa_pel_descodificador( string $fitxer ): void {
+		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ), $error );
+		$this->assertIsArray( $guio, (string) $error );
+		$this->assertSame( array(), nep_valida_guio( $guio, $guio['dispositiu'], $guio['personatge'], array() ) );
+	}
+
+	#[DataProvider( 'valides' )]
+	public function test_fixture_valid_es_valid( string $fitxer ): void {
+		$fixture = nep_descodifica_guio( (string) file_get_contents( $fitxer ) );
+		$meta    = $fixture['_meta'];
+		$guio    = array_filter( $fixture, static fn( $clau ) => ! str_starts_with( (string) $clau, '_' ), ARRAY_FILTER_USE_KEY );
+		$this->assertSame( array(), nep_valida_guio( $guio, $meta['dispositiu'], $meta['personatge'], $meta['ids_existents'] ) );
 	}
 
 	#[DataProvider( 'reals' )]
@@ -94,9 +122,32 @@ final class ValidacioMissioTest extends TestCase {
 		$this->assertSame( array( 'a' => 1 ), nep_descodifica_guio( '{"a":1}' ) );
 	}
 
-	public function test_versio_ha_de_ser_l_enter_2(): void {
+	public function test_descodifica_rebutja_massa_gran_i_massa_profund(): void {
+		$gran = '{"a":"' . str_repeat( 'x', NEP_GUIO_MIDA_MAXIMA ) . '"}';
+		$this->assertNull( nep_descodifica_guio( $gran, $error ) );
+		$this->assertStringContainsString( 'massa gran', (string) $error );
+
+		$profund = str_repeat( '{"a":', 70 ) . '1' . str_repeat( '}', 70 );
+		$this->assertNull( nep_descodifica_guio( $profund, $error ) );
+		$this->assertStringContainsString( 'massa nivells', (string) $error );
+
+		$this->assertNull( nep_descodifica_guio( '{no json', $error ) );
+		$this->assertSame( 'El guió no és un JSON vàlid.', $error );
+	}
+
+	public function test_versio_ha_de_ser_el_numero_2(): void {
 		$guio = self::llegeix( self::MISSIONS . 'llissa-01-factura.json' );
-		$guio['versio'] = '2';
+		foreach ( array( '2', 1, 2.5, null, true ) as $versio ) {
+			$guio['versio'] = $versio;
+			$this->assertNotEmpty( nep_valida_guio( $guio, 'pc', 'llissa', array() ), var_export( $versio, true ) );
+		}
+		$guio['versio'] = 2.0;
+		$this->assertSame( array(), nep_valida_guio( $guio, 'pc', 'llissa', array() ) );
+	}
+
+	public function test_id_amb_salt_de_linia_final_falla(): void {
+		$guio       = self::llegeix( self::MISSIONS . 'llissa-01-factura.json' );
+		$guio['id'] = $guio['id'] . "\n";
 		$this->assertNotEmpty( nep_valida_guio( $guio, 'pc', 'llissa', array() ) );
 	}
 }
