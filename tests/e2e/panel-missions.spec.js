@@ -4,8 +4,10 @@ const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-fact
 
 /**
  * Panell de missions: editor del guió amb diagnòstic en viu, publicació i
- * previsualització d'esborranys. Només al projecte d'escriptori. Les missions
- * creades van a la paperera en acabar (el selector compta les targetes).
+ * previsualització d'esborranys. Només al projecte `panell`, que corre quan
+ * els altres ja han acabat: una missió publicada surt a /simulador/ i
+ * canviaria el recompte de targetes d'altres specs. Les creades van a la
+ * paperera en acabar.
  */
 test.describe.configure( { mode: 'serial' } );
 
@@ -47,7 +49,7 @@ const guio = ( id, extra = {} ) =>
 	JSON.stringify( { ...factura, id, titol: `Prova ${ id }`, ...extra } );
 
 test.beforeEach( async ( { page }, testInfo ) => {
-	test.skip( testInfo.project.name !== 'escriptori', 'Només a escriptori' );
+	test.skip( testInfo.project.name !== 'panell', 'Només al projecte panell' );
 	await entra( page );
 } );
 
