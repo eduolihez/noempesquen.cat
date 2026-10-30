@@ -8,8 +8,10 @@ import llissa02 from '../../../../missions/llissa-02-banc.json';
 import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 import remei02 from '../../../../missions/remei-02-canviat.json';
+import remei03 from '../../../../missions/remei-03-sorteig.json';
+import remei04 from '../../../../missions/remei-04-codi.json';
 
-const INCLOSES = [ llissa01, llissa02, remei01, remei02 ];
+const INCLOSES = [ llissa01, llissa02, remei01, remei02, remei03, remei04 ];
 function emmagatzematge() {
 	try {
 		return window.localStorage;
