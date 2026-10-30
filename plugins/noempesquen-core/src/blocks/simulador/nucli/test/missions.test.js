@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
-import { combinaMissions } from '../missions.js';
+import { combinaMissions, diagnostica } from '../missions.js';
 import { validaMissio } from '../valida.js';
 import {
 	FASE,
@@ -207,5 +207,33 @@ describe( 'missió «El paquet retingut» (v2)', () => {
 			e = aplica( e, { tipus: 'RESPOSTA', id: `decisio:${ o.id }` } );
 			expect( e.opcio ).toBe( o.id );
 		} );
+	} );
+} );
+
+describe( 'diagnostica', () => {
+	it( 'llista les remotes descartades amb els seus errors', () => {
+		const res = diagnostica( [ v2( 'bona' ), v1, null, 5 ] );
+		expect( res.map( ( d ) => d.id ) ).toEqual( [ 'antiga', null, null ] );
+		expect( res[ 0 ].errors ).toContain( 'versio no suportada' );
+		expect( res[ 1 ].errors ).toEqual( [ 'no és un objecte' ] );
+	} );
+
+	it( 'no llança amb remotes que fan petar el validador', () => {
+		const trencada = v2( 'trencada' );
+		Object.defineProperty( trencada, 'intro', {
+			get() {
+				throw new Error( 'x' );
+			},
+		} );
+		expect( diagnostica( [ trencada ] ) ).toEqual( [
+			{ id: 'trencada', errors: [ 'estructura no vàlida' ] },
+		] );
+		const base = [ v2( 'a' ) ];
+		expect( combinaMissions( base, [ trencada ] ) ).toEqual( base );
+	} );
+
+	it( 'torna [] si tot és vàlid o no hi ha remotes', () => {
+		expect( diagnostica( [ v2( 'bona' ) ] ) ).toEqual( [] );
+		expect( diagnostica( null ) ).toEqual( [] );
 	} );
 } );

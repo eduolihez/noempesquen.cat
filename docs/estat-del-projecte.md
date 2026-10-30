@@ -91,7 +91,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 ### Antes de abrir la creación de misiones v2 desde el panel (CPT)
 
 - Resueltos: `validaMissio` no lanza con entradas malformadas (test `valida-robustesa.test.js`) y rechaza `apps`/`webs` no objeto; `llegeixProgres` devuelve `{}` si lo guardado no es objeto y descarta valores no numéricos.
-- Las misiones remotas v1 o inválidas se ignoran sin aviso (no se añadió el aviso en consola por la regla de no dejar `console`).
+- Las misiones remotas v1 o inválidas se ignoran en el juego, pero `diagnostica(remotes, mon)` (`nucli/missions.js`) devuelve cuáles y por qué; el panel/CPT de la Fase 3 debe usarla al guardar y mostrar los errores. La validación está protegida con `try/catch`.
 
 ### Mejoras menores anotadas
 
