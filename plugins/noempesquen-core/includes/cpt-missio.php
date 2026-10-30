@@ -53,6 +53,11 @@ add_action(
 /**
  * Només accepta JSON vàlid al guió.
  *
+ * Contracte sense canvis: si el JSON no és vàlid torna '{}'. Com que el callback
+ * no rep l'id de l'entrada, la protecció de les missions publicades és a
+ * `nep_valida_rest_missio`, `nep_valida_missio_classica` (validen el valor brut
+ * abans d'arribar aquí) i `nep_protegeix_guio_publicat` (escriptures directes).
+ *
  * @param mixed $value Valor rebut.
  * @return string JSON normalitzat o '{}' si no és vàlid.
  */
@@ -60,3 +65,187 @@ function nep_sanitize_guio( $value ): string {
 	$decoded = json_decode( (string) $value, true );
 	return is_array( $decoded ) ? wp_json_encode( $decoded ) : '{}';
 }
+
+/**
+ * Estats que publiquen (o publicaran) una missió.
+ *
+ * @param string $estat Estat de l'entrada.
+ * @return bool
+ */
+function nep_estat_publica( string $estat ): bool {
+	return in_array( $estat, array( 'publish', 'future' ), true );
+}
+
+/**
+ * Ids de guió de les altres entrades `nep_missio` (qualsevol estat excepte paperera).
+ *
+ * @param int $exclou Id de l'entrada que s'està desant.
+ * @return string[]
+ */
+function nep_ids_missions_existents( int $exclou ): array {
+	$posts = get_posts(
+		array(
+			'post_type'      => 'nep_missio',
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'exclude'        => $exclou ? array( $exclou ) : array(),
+		)
+	);
+	$ids   = array();
+	foreach ( $posts as $post_id ) {
+		$guio = nep_descodifica_guio( (string) get_post_meta( (int) $post_id, 'nep_guio', true ) );
+		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
+			$ids[] = $guio['id'];
+		}
+	}
+	return $ids;
+}
+
+/**
+ * Errors del guió candidat d'una missió.
+ *
+ * @param int         $post_id    Id de l'entrada (0 si és nova).
+ * @param string|null $json       Guió candidat (null = el desat).
+ * @param string|null $dispositiu Dispositiu candidat (null = el desat).
+ * @param string|null $personatge Personatge candidat (null = el desat).
+ * @return string[]
+ */
+function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?string $personatge ): array {
+	$desat = static function ( string $clau, string $defecte ) use ( $post_id ): string {
+		$valor = $post_id ? get_post_meta( $post_id, $clau, true ) : '';
+		return is_string( $valor ) && '' !== $valor ? $valor : $defecte;
+	};
+
+	$json       = $json ?? $desat( 'nep_guio', '{}' );
+	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu', 'pc' ) );
+	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge', 'llissa' ) );
+
+	$guio = nep_descodifica_guio( $json );
+	if ( null === $guio ) {
+		return array( 'El guió no és un JSON vàlid.' );
+	}
+	return nep_valida_guio( $guio, $dispositiu, $personatge, nep_ids_missions_existents( $post_id ) );
+}
+
+/**
+ * Valor de text d'una llista si hi és, o null.
+ *
+ * @param mixed  $llista Llista (array) o qualsevol altre valor.
+ * @param string $clau   Clau.
+ * @return string|null
+ */
+function nep_valor_text( $llista, string $clau ): ?string {
+	return is_array( $llista ) && isset( $llista[ $clau ] ) && is_scalar( $llista[ $clau ] ) ? (string) $llista[ $clau ] : null;
+}
+
+/**
+ * REST (editor de blocs): rebutja publicar una missió invàlida. Els esborranys es desen sempre.
+ *
+ * @param stdClass|WP_Error $prepared_post Entrada preparada.
+ * @param WP_REST_Request   $request       Petició.
+ * @return stdClass|WP_Error
+ */
+function nep_valida_rest_missio( $prepared_post, $request ) {
+	if ( is_wp_error( $prepared_post ) ) {
+		return $prepared_post;
+	}
+	$post_id = isset( $prepared_post->ID ) ? (int) $prepared_post->ID : 0;
+	$estat   = $prepared_post->post_status ?? ( $post_id ? (string) get_post_status( $post_id ) : 'draft' );
+	if ( ! nep_estat_publica( (string) $estat ) ) {
+		return $prepared_post;
+	}
+
+	$meta   = $request['meta'] ?? null;
+	$errors = nep_errors_missio(
+		$post_id,
+		nep_valor_text( $meta, 'nep_guio' ),
+		nep_valor_text( $meta, 'nep_dispositiu' ),
+		nep_valor_text( $meta, 'nep_personatge' )
+	);
+	if ( ! $errors ) {
+		return $prepared_post;
+	}
+	return new WP_Error(
+		'nep_missio_invalida',
+		__( 'No es pot publicar la missió:', 'noempesquen' ) . ' ' . implode( ' ', $errors ),
+		array(
+			'status' => 400,
+			'errors' => $errors,
+		)
+	);
+}
+add_filter( 'rest_pre_insert_nep_missio', 'nep_valida_rest_missio', 10, 2 );
+
+/**
+ * Desament clàssic: si es vol publicar una missió invàlida, la deixa en esborrany i desa un avís.
+ *
+ * No actua en REST (ja ho fa `nep_valida_rest_missio`) ni a WP-CLI: `wp noempesquen
+ * importa-missions` crea l'entrada abans d'escriure'n la meta i importa fitxers del plugin.
+ *
+ * @param array $data    Dades de l'entrada (amb barres).
+ * @param array $postarr Dades rebudes (amb barres).
+ * @return array
+ */
+function nep_valida_missio_classica( $data, $postarr ) {
+	if ( 'nep_missio' !== ( $data['post_type'] ?? '' ) || ! nep_estat_publica( (string) ( $data['post_status'] ?? '' ) ) ) {
+		return $data;
+	}
+	if ( wp_is_serving_rest_request() || ( defined( 'WP_CLI' ) && WP_CLI && ! apply_filters( 'nep_valida_missio_cli', false ) ) ) {
+		return $data;
+	}
+
+	$postarr = wp_unslash( (array) $postarr );
+	$errors  = nep_errors_missio(
+		(int) ( $postarr['ID'] ?? 0 ),
+		nep_valor_text( $postarr, 'nep_guio' ),
+		nep_valor_text( $postarr, 'nep_dispositiu' ),
+		nep_valor_text( $postarr, 'nep_personatge' )
+	);
+	if ( $errors ) {
+		$data['post_status'] = 'draft';
+		set_transient( 'nep_avis_' . get_current_user_id(), $errors, 60 );
+	}
+	return $data;
+}
+add_filter( 'wp_insert_post_data', 'nep_valida_missio_classica', 10, 2 );
+
+/**
+ * Mostra (i esborra) l'avís de missió no publicada.
+ */
+function nep_mostra_avis_missio(): void {
+	$clau   = 'nep_avis_' . get_current_user_id();
+	$errors = get_transient( $clau );
+	if ( ! is_array( $errors ) || ! $errors ) {
+		return;
+	}
+	delete_transient( $clau );
+	echo '<div class="notice notice-error is-dismissible"><p><strong>'
+		. esc_html__( 'La missió s\'ha desat com a esborrany perquè el guió no és vàlid:', 'noempesquen' )
+		. '</strong></p><ul>';
+	foreach ( $errors as $error ) {
+		echo '<li>' . esc_html( (string) $error ) . '</li>';
+	}
+	echo '</ul></div>';
+}
+add_action( 'admin_notices', 'nep_mostra_avis_missio' );
+
+/**
+ * Impedeix escriure un guió invàlid (p. ex. el '{}' de `nep_sanitize_guio`) a una missió publicada.
+ *
+ * @param null|bool $check      Valor de curtcircuit.
+ * @param int       $object_id  Id de l'entrada.
+ * @param string    $meta_key   Clau.
+ * @param mixed     $meta_value Valor ja sanejat.
+ * @return null|bool
+ */
+function nep_protegeix_guio_publicat( $check, $object_id, $meta_key, $meta_value ) {
+	if ( 'nep_guio' !== $meta_key || 'nep_missio' !== get_post_type( (int) $object_id ) ) {
+		return $check;
+	}
+	if ( ! nep_estat_publica( (string) get_post_status( (int) $object_id ) ) ) {
+		return $check;
+	}
+	return null === nep_descodifica_guio( (string) $meta_value ) || '{}' === $meta_value ? false : $check;
+}
+add_filter( 'update_post_metadata', 'nep_protegeix_guio_publicat', 10, 4 );

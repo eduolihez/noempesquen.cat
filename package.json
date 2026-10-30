@@ -16,7 +16,8 @@
     "lint:css": "wp-scripts lint-style \"plugins/noempesquen-core/src/**/*.scss\"",
     "format": "wp-scripts format plugins/noempesquen-core/src",
     "test:e2e": "playwright test",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "test:php": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli --env-cwd=wp-content/plugins/noempesquen-core phpunit && node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli wp eval-file wp-content/plugins/noempesquen-core/tests/php/integracio.php"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
