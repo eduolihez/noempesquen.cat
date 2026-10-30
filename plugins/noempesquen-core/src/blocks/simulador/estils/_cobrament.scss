@@ -1,0 +1,97 @@
+/* Revenda Cobra: web falsa, sota .nep-so per guanyar al reset. */
+
+$cb-verd: #065f46;
+$cb-fosc: #1f2937;
+$cb-fons: #ecfdf5;
+
+.nep-so .nep-cb {
+	background: #fff;
+	color: $cb-fosc;
+	display: flex;
+	flex: 1 0 auto;
+	flex-direction: column;
+	font-family: system-ui, "Segoe UI", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	min-height: 100%;
+
+	h1 {
+		font-size: 28px;
+		line-height: 1.2;
+		margin: 0 0 8px;
+	}
+
+	h2 {
+		font-size: 20px;
+		margin: 0 0 8px;
+	}
+
+	.nep-cb-cap {
+		background: $cb-fons;
+		border-bottom: 3px solid $cb-verd;
+		padding: 14px 24px;
+	}
+
+	.nep-cb-marca {
+		align-items: center;
+		display: inline-flex;
+		gap: 8px;
+	}
+
+	.nep-cb-marca__nom {
+		color: $cb-verd;
+		font-size: 22px;
+		font-weight: 800;
+	}
+
+	.nep-cb-cos {
+		flex: 1 0 auto;
+		margin: 0 auto;
+		max-width: 640px;
+		padding: 24px;
+		width: 100%;
+	}
+
+	.nep-cb-resum {
+		background: $cb-verd;
+		border-radius: 12px;
+		color: #fff;
+		margin-bottom: 24px;
+		padding: 24px;
+		text-align: center;
+	}
+
+	.nep-cb-import {
+		color: #fde68a;
+	}
+
+	.nep-cb-concepte {
+		margin: 0;
+	}
+
+	.nep-cb-pagament {
+		background: $cb-fons;
+		border-radius: 8px;
+		padding: 20px;
+	}
+
+	.nep-cb-peu {
+		background: $cb-fons;
+		color: #4b5563;
+		font-size: 14px;
+		padding: 16px 24px;
+		text-align: center;
+	}
+
+	.nep-cb-forma input,
+	.nep-cb-forma button {
+		min-height: 44px;
+	}
+
+	a:focus-visible,
+	button:focus-visible,
+	input:focus-visible {
+		outline: 3px solid $cb-verd;
+		outline-offset: 2px;
+	}
+}

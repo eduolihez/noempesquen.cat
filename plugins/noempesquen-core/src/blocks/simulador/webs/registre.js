@@ -12,4 +12,6 @@ export const WEBS = {
 	'banc-solid': lazy( () => import( './banc-solid/BancSolid' ) ),
 	diari: lazy( () => import( './diari/Diari' ) ),
 	sorteig: lazy( () => import( './sorteig/Sorteig' ) ),
+	cobrament: lazy( () => import( './cobrament/Cobrament' ) ),
+	inversio: lazy( () => import( './inversio/Inversio' ) ),
 };
