@@ -1,0 +1,303 @@
+{
+	"id": "remei-05-comprador",
+	"versio": 2,
+	"titol": "Compro la teva bici",
+	"resum": "Vens una bici per Revenda i un comprador te la vol pagar ara mateix amb un enllaç. Hi entraries per cobrar?",
+	"dispositiu": "mobil",
+	"personatge": "remei",
+	"nivell": 2,
+	"durada_minuts": 5,
+	"rellotge": "19:30",
+	"intro": [
+		"Ei, Àlex! Remei. Avui la trampa et ve quan ets tu qui ven. Has penjat la bici a Revenda i ja tens un comprador.",
+		"Sembla massa fàcil: la vol sense veure-la i et paga de seguida, amb un enllaç per cobrar. Doncs justament aquí és on t'enganxen.",
+		"Obre Revenda i mira el xat. Si alguna cosa no et quadra, activa la lupa i toca-la. Jo em quedo per aquí."
+	],
+	"instruccions": "Espera els missatges del comprador al xat de Revenda, busca'n els indicis amb la lupa i decideix què en fas. Per activar la lupa, obre el centre de control: llisca des de dalt de la pantalla i toca «Lupa».",
+	"pistes": [
+		"Obre Revenda, ves a «Xats» i llegeix el xat del Jordi. Què et diu de la bici, i com et vol pagar?",
+		"Fixa't en l'enllaç per cobrar: és de Revenda de veritat? Per cobrar una venda no t'han de demanar mai la targeta.",
+		"Si dubtes, no toquis l'enllaç. Bloqueja el comprador i ven només en persona, cobrant en mà."
+	],
+	"apps": {
+		"revenda": {
+			"anuncis": [
+				{
+					"id": "bici",
+					"titol": "Bici de muntanya",
+					"preu": 120,
+					"il": "bicicleta",
+					"descripcio": "Bici de muntanya de talla M, amb canvi de 21 velocitats. Feta servir però en bon estat. Es recull a Badalona."
+				}
+			],
+			"xats": [
+				{
+					"id": "jordi",
+					"contacte": "comprador",
+					"anunci": "bici",
+					"missatges": [
+						{
+							"id": "venda-0",
+							"de": "ells",
+							"ocult": true,
+							"hora": "19:31",
+							"cos": [
+								{ "t": "Hola! Encara la tens? En quin estat està?" }
+							]
+						},
+						{
+							"id": "venda-1",
+							"de": "ells",
+							"ocult": true,
+							"hora": "19:33",
+							"cos": [
+								{
+									"t": "Em va perfecte, la vull. No cal que la vegi.",
+									"senyal": "no_vol_veure"
+								}
+							]
+						},
+						{
+							"id": "venda-2",
+							"de": "ells",
+							"ocult": true,
+							"hora": "19:34",
+							"cos": [
+								{
+									"t": "Et pago ara per Revenda Cobra; t'envio un enllaç per cobrar.",
+									"senyal": "cobra_fora"
+								},
+								{ "t": " " },
+								{
+									"enllac": {
+										"text": "Cobra aquí",
+										"url": "https://revenda-cobra.com/cobrament"
+									}
+								}
+							]
+						},
+						{
+							"id": "venda-3",
+							"de": "ells",
+							"ocult": true,
+							"hora": "19:35",
+							"cos": [
+								{
+									"t": "Si no ho fas avui, ho agafo d'un altre.",
+									"senyal": "pressa"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	},
+	"webs": {
+		"revenda-cobra.com": {
+			"plantilla": "cobrament",
+			"variant": "falsa",
+			"https": true,
+			"titol": "Revenda Cobra · Cobra la teva venda",
+			"import": "120 €",
+			"concepte": "Venda: Bici de muntanya",
+			"domini_senyal": "domini",
+			"formulari": {
+				"id": "cobrament",
+				"boto": "Cobra 120 €",
+				"esdeveniment": "pagament.fes",
+				"camps": [
+					{
+						"id": "nom",
+						"etiqueta": "Nom i cognoms",
+						"autoompli": "Àlex Puig"
+					},
+					{
+						"id": "targeta",
+						"etiqueta": "Número de targeta",
+						"autoompli": "4000 1234 5678 9010",
+						"senyal": "dades_targeta"
+					},
+					{
+						"id": "caducitat",
+						"etiqueta": "Caducitat",
+						"autoompli": "08/28"
+					},
+					{
+						"id": "cvc",
+						"etiqueta": "CVC",
+						"autoompli": "123"
+					}
+				]
+			}
+		}
+	},
+	"disparadors": [
+		{
+			"id": "arriba-0",
+			"quan": { "esdeveniment": "inici" },
+			"retard": 6,
+			"efectes": [
+				{ "tipus": "mostra", "id": "venda-0" },
+				{
+					"tipus": "notifica",
+					"app": "revenda",
+					"titol": "Jordi M.",
+					"text": "Hola! Encara la tens? En quin estat està?",
+					"xat": "jordi",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "arriba-1",
+			"quan": { "esdeveniment": "inici" },
+			"retard": 20,
+			"efectes": [
+				{ "tipus": "mostra", "id": "venda-1" },
+				{
+					"tipus": "notifica",
+					"app": "revenda",
+					"titol": "Jordi M.",
+					"text": "Em va perfecte, la vull. No cal que la vegi.",
+					"xat": "jordi",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "arriba-2",
+			"quan": { "esdeveniment": "inici" },
+			"retard": 34,
+			"efectes": [
+				{ "tipus": "mostra", "id": "venda-2" },
+				{
+					"tipus": "notifica",
+					"app": "revenda",
+					"titol": "Jordi M.",
+					"text": "Et pago ara per Revenda Cobra; t'envio un enllaç...",
+					"xat": "jordi",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "arriba-3",
+			"quan": { "esdeveniment": "inici" },
+			"retard": 46,
+			"efectes": [
+				{ "tipus": "mostra", "id": "venda-3" },
+				{
+					"tipus": "notifica",
+					"app": "revenda",
+					"titol": "Jordi M.",
+					"text": "Si no ho fas avui, ho agafo d'un altre.",
+					"xat": "jordi",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "web-falsa",
+			"quan": {
+				"esdeveniment": "web.carrega",
+				"url": "revenda-cobra.com"
+			},
+			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
+		},
+		{
+			"id": "pagat",
+			"quan": {
+				"esdeveniment": "pagament.fes",
+				"url": "revenda-cobra.com"
+			},
+			"efectes": [ { "tipus": "pescat" } ]
+		},
+		{
+			"id": "bloquejat",
+			"quan": {
+				"esdeveniment": "contacte.bloqueja",
+				"id": "comprador"
+			},
+			"efectes": [ { "tipus": "decideix", "opcio": "a" } ]
+		}
+	],
+	"senyals": [
+		{
+			"id": "no_vol_veure",
+			"requereix": "venda-1",
+			"titol": "La vol sense veure-la",
+			"explicacio": "Qui compra una bici de segona mà la vol veure i provar abans de pagar. Si no li importa gens com està, és que no la vol: vol les teves dades.",
+			"reaccio": "Ni la vol veure? Ningú compra una bici a cegues, rei."
+		},
+		{
+			"id": "cobra_fora",
+			"requereix": "venda-2",
+			"titol": "Vol que cobris per un enllaç",
+			"explicacio": "Et proposa cobrar fora del xat, amb un enllaç que t'envia ell. Mai cobres una venda entrant en un enllaç d'un desconegut: o et paga en mà quan quedeu, o pel camí de sempre que tu ja coneixes.",
+			"reaccio": "Un enllaç per cobrar? Els diners te'ls han de donar, no te'ls has d'anar a buscar a una web."
+		},
+		{
+			"id": "pressa",
+			"requereix": "venda-3",
+			"titol": "Et fa córrer",
+			"explicacio": "«Si no ho fas avui, ho agafo d'un altre.» La pressa forma part de l'estafa: com més corres, menys penses. Un comprador de veritat pot esperar a quedar.",
+			"reaccio": "Ara amb presses. Clàssic: que no tinguis temps de pensar."
+		},
+		{
+			"id": "domini",
+			"requereix": "web-falsa",
+			"titol": "Una adreça que imita Revenda",
+			"explicacio": "La web és revenda-cobra.com, i Revenda de veritat és revenda.cat. Copien el nom i hi afegeixen una paraula perquè et sembli oficial. El cadenat només vol dir que la connexió està xifrada, també amb els estafadors.",
+			"reaccio": "Mira l'adreça: «revenda-cobra.com». Revenda és revenda.cat i prou."
+		},
+		{
+			"id": "dades_targeta",
+			"requereix": "web-falsa",
+			"titol": "Et demanen la targeta per cobrar",
+			"explicacio": "Per rebre diners no cal donar el número de la targeta, ni la caducitat, ni el CVC. Amb aquestes dades no t'ingressen res: et poden fer càrrecs a tu.",
+			"reaccio": "El CVC per cobrar? Això serveix per pagar, no per cobrar. Et volen buidar el compte."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això és normal, rei.",
+			"Aquí no hi ha res, continua.",
+			"Ni olor d'estafa."
+		],
+		"web_falsa": "Ho has obert. Mira bé l'adreça de dalt: no és la de Revenda. I tingues present que és un simulacre, no hi posis res de veritat.",
+		"pescat": "Ai, criatura! Has posat la targeta per «cobrar». Si fos de veritat, no t'haurien ingressat ni un euro: amb aquestes dades et farien càrrecs a tu. I la bici, encara a casa. Tranquil, que és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb el comprador de la bici?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Bloquejo el comprador i cobro només en persona.",
+				"valor": "correcta",
+				"resposta": "Ben fet! Bloquejar-lo talla la trampa, i vendre en persona, cobrant en mà, és la manera segura de fer-ho."
+			},
+			{
+				"id": "b",
+				"text": "Li dic que prefereixo quedar en persona.",
+				"valor": "parcial",
+				"resposta": "No has caigut, i quedar en persona és bona idea. Però aquest comprador ja t'ha volgut enganyar: millor bloqueja'l perquè no insisteixi."
+			},
+			{
+				"id": "c",
+				"text": "Obro l'enllaç i poso les dades per cobrar.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. Per cobrar no cal mai la targeta ni el CVC: aquell enllaç serveix per robar-te les dades i fer-te càrrecs."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"Per cobrar una venda no et cal donar la targeta ni el CVC: això només serveix per pagar.",
+			"No cobris mai entrant en un enllaç que t'envia el comprador. Ven en persona i cobra en mà.",
+			"Un comprador que ni vol veure el que compra no vol el producte: vol les teves dades.",
+			"La pressa forma part de l'estafa. Qui compra de veritat pot esperar."
+		],
+		"consell": "Si has posat les dades de la targeta en una web així, truca al banc de seguida per bloquejar-la i denuncia-ho. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
+}

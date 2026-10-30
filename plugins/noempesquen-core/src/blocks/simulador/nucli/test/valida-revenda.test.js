@@ -181,6 +181,27 @@ describe( 'validaMissio: plantilles, senyals de web i cruces', () => {
 		);
 	} );
 
+	it( 'notifica amb xat: admès a revenda i parla, no a altres apps', () => {
+		const m = fixture();
+		const efecte = {
+			tipus: 'notifica',
+			app: 'revenda',
+			titol: 'Jordi M.',
+			text: 'Hola!',
+			xat: 'xat-jordi',
+			font: 'mobil',
+		};
+		m.disparadors.push( {
+			quan: { esdeveniment: 'inici' },
+			efectes: [ efecte ],
+		} );
+		expect( errors( m ) ).toEqual( [] );
+		efecte.app = 'ullada';
+		expect( errors( m ) ).toContain(
+			'notifica: xat només amb app parla o revenda'
+		);
+	} );
+
 	it( 'contacte.bloqueja exigeix un contacte del món', () => {
 		const m = fixture();
 		m.disparadors.push( {

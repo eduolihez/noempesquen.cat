@@ -176,8 +176,11 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 		errors.push( `mostra: element inexistent: ${ e.id }` );
 	}
 	if ( e.tipus === 'notifica' ) {
-		if ( e.xat !== undefined && ( e.app !== 'parla' || ! e.xat ) ) {
-			errors.push( 'notifica: xat només amb app parla' );
+		if (
+			e.xat !== undefined &&
+			( ! [ 'parla', 'revenda' ].includes( e.app ) || ! e.xat )
+		) {
+			errors.push( 'notifica: xat només amb app parla o revenda' );
 		}
 		const font = e.font === 'mobil' ? APPS_MISSIO.mobil : FONTS_NOTIFICACIO;
 		if ( e.font !== undefined && e.font !== 'mobil' ) {

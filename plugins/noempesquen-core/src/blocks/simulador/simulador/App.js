@@ -10,8 +10,17 @@ import remei01 from '../../../../missions/remei-01-paquet.json';
 import remei02 from '../../../../missions/remei-02-canviat.json';
 import remei03 from '../../../../missions/remei-03-sorteig.json';
 import remei04 from '../../../../missions/remei-04-codi.json';
+import remei05 from '../../../../missions/remei-05-comprador.json';
 
-const INCLOSES = [ llissa01, llissa02, remei01, remei02, remei03, remei04 ];
+const INCLOSES = [
+	llissa01,
+	llissa02,
+	remei01,
+	remei02,
+	remei03,
+	remei04,
+	remei05,
+];
 function emmagatzematge() {
 	try {
 		return window.localStorage;

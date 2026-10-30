@@ -7,6 +7,7 @@ const MOBIL = [
 	'remei-02-canviat',
 	'remei-03-sorteig',
 	'remei-04-codi',
+	'remei-05-comprador',
 ];
 const TITOLS = {
 	'llissa-01-factura': 'La factura de la llum',
@@ -14,6 +15,7 @@ const TITOLS = {
 	'remei-02-canviat': 'Hola, he canviat de mòbil',
 	'remei-03-sorteig': 'Has guanyat un sorteig!',
 	'remei-04-codi': 'Em passes el codi?',
+	'remei-05-comprador': 'Compro la teva bici',
 };
 
 // Progrés de prova: la primera de cada dispositiu, ja jugada.
