@@ -108,6 +108,10 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `enllac.mantingut` | `url` (pulsació llarga o Maj+F10 sobre un enllaç) |
 | `publicacio.denuncia` | `id` (publicació d'Ullada denunciada) |
 | `codi.comparteix` | `contacte` (id del contacte a qui es dona el codi; mai el text escrit) |
+| `telefon.truca` | `url` (el jugador prem «Truca ara» o el telèfon d'una web falsa) |
+| `descarrega.fes` | `url`, `fitxer` (obre o executa el fitxer descarregat fictici; `fitxer` és un text opcional al filtre `quan`) |
+
+`telefon.truca` i `descarrega.fes` no porten mai text escrit pel jugador.
 
 `codi.comparteix` s'emet sense text: només quan el que ha tecleat el jugador coincideix amb un codi d'un SMS visible de `apps.missatges.missatges`. Limitació: no detecta codis trossejats (p. ex. «48 213 7») ni dits amb paraules («quatre-vuit…»); caldria una funció nova per detectar-los.
 

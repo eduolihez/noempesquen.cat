@@ -60,6 +60,8 @@ export const ESDEVENIMENTS = [
 	'enllac.mantingut',
 	'publicacio.denuncia',
 	'codi.comparteix',
+	'telefon.truca',
+	'descarrega.fes',
 ];
 
 /**
@@ -319,6 +321,12 @@ function validaDisparadors( m, mon, errors ) {
 			! idsDenunciables.has( d.quan?.id )
 		) {
 			errors.push( `denuncia: publicació inexistent: ${ d.quan?.id }` );
+		}
+		if (
+			d.quan?.fitxer !== undefined &&
+			typeof d.quan.fitxer !== 'string'
+		) {
+			errors.push( 'fitxer ha de ser text' );
 		}
 		if ( d.quan?.visible !== undefined ) {
 			if ( ! idsApps.has( d.quan.visible ) ) {
