@@ -33,11 +33,12 @@ export function patroTo( tipus ) {
  */
 export function idsNous( vistes, notificacions ) {
 	const vist = new Set( vistes ?? [] );
-	return ( Array.isArray( notificacions ) ? notificacions : [] )
+	const ids = ( Array.isArray( notificacions ) ? notificacions : [] )
 		.map( ( n ) => n?.id )
 		.filter(
 			( id ) => id !== undefined && id !== null && ! vist.has( id )
 		);
+	return [ ...new Set( ids ) ];
 }
 
 /**

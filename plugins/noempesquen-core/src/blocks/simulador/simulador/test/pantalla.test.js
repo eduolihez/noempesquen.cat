@@ -24,6 +24,16 @@ describe( 'calculaPantalla', () => {
 		expect( r.mode ).toBe( 'escalat' );
 		expect( r.escala ).toBe( 0.572 );
 	} );
+	it( 'centra el contingut escalat', () => {
+		const a = pc( 915, 412 );
+		expect( a.desplX ).toBe( 91 );
+		expect( a.desplY ).toBe( 0 );
+		const b = pc( 1920, 600 );
+		expect( b.mode ).toBe( 'escalat' );
+		expect( b.escala ).toBe( 0.833 );
+		expect( b.desplX ).toBe( 427 );
+		expect( b.desplY ).toBe( 0 );
+	} );
 	it( 'vertical estret demana girar', () => {
 		expect( pc( 412, 915 ).mode ).toBe( 'girar' );
 		expect( pc( 400, 800 ).mode ).toBe( 'girar' );

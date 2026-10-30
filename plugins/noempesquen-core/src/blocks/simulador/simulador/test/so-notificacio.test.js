@@ -30,6 +30,11 @@ describe( 'idsNous', () => {
 			'c',
 		] );
 	} );
+	it( 'no repeteix ids', () => {
+		expect(
+			idsNous( [], [ { id: 'a' }, { id: 'a' }, { id: 'b' } ] )
+		).toEqual( [ 'a', 'b' ] );
+	} );
 	it( 'tolera entrades invàlides', () => {
 		expect( idsNous( null, null ) ).toEqual( [] );
 		expect( idsNous( [], [ null, {}, { id: 'x' } ] ) ).toEqual( [ 'x' ] );

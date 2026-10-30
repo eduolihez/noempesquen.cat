@@ -19,6 +19,7 @@ const valid = ( n ) => Number.isFinite( n ) && n > 0;
  * @param {Object} p
  * @param {number} p.w          Ample de la finestra.
  * @param {number} p.h          Alt de la finestra.
+ * @param {boolean} [p.tactil] Reservat: encara no influeix en el resultat.
  * @param {string} p.dispositiu 'pc' o 'mobil'.
  * @return {{mode:string,escala:number,ample:number,alt:number,desplX:number,desplY:number}} Mode i geometria.
  */

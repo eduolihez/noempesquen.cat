@@ -20,6 +20,9 @@ function estrellesDe( progres, id ) {
 }
 
 /**
+ * `recomanada` també apareix dins del seu grup (principals o altres): qui
+ * pinti la targeta ha d'excloure-la per id de la llista.
+ *
  * @param {Array}  missions Missions (amb id i dispositiu).
  * @param {string} preferit Dispositiu en ús ('pc' o 'mobil').
  * @param {Object} progres  Estrelles per missió.
@@ -29,11 +32,13 @@ export function agrupaMissions( missions, preferit, progres ) {
 	const llista = Array.isArray( missions ) ? missions.filter( Boolean ) : [];
 	const principals = llista.filter( ( m ) => m.dispositiu === preferit );
 	const altres = llista.filter( ( m ) => m.dispositiu !== preferit );
-	// «Continua per aquí»: primera missió sense jugar, les del dispositiu primer.
+	// «Continua per aquí»: primera sense jugar; si no n'hi ha, la primera
+	// amb menys de 3 estrelles. Sempre les del dispositiu primer.
+	const ordre = [ ...principals, ...altres ];
 	const recomanada =
-		[ ...principals, ...altres ].find(
-			( m ) => estrellesDe( progres, m.id ) === 0
-		) ?? null;
+		ordre.find( ( m ) => estrellesDe( progres, m.id ) === 0 ) ??
+		ordre.find( ( m ) => estrellesDe( progres, m.id ) < MAX_ESTRELLES ) ??
+		null;
 	let jugades = 0;
 	let estrelles = 0;
 	llista.forEach( ( m ) => {

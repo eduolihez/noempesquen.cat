@@ -23,9 +23,20 @@ describe( 'agrupaMissions', () => {
 			agrupaMissions( M, 'mobil', { b: 2, d: 1 } ).recomanada.id
 		).toBe( 'a' );
 	} );
-	it( 'sense res pendent no hi ha recomanada', () => {
-		const p = { a: 1, b: 1, c: 3, d: 2 };
+	it( 'tot jugat: recomana la primera amb menys de 3 estrelles', () => {
+		const p = { a: 3, b: 3, c: 2, d: 1 };
+		expect( agrupaMissions( M, 'mobil', p ).recomanada.id ).toBe( 'd' );
+		expect( agrupaMissions( M, 'pc', p ).recomanada.id ).toBe( 'c' );
+	} );
+	it( 'tot a 3 estrelles no hi ha recomanada', () => {
+		const p = { a: 3, b: 3, c: 3, d: 3 };
 		expect( agrupaMissions( M, 'pc', p ).recomanada ).toBeNull();
+	} );
+	it( 'la recomanada també és dins del seu grup', () => {
+		const g = agrupaMissions( M, 'mobil', {} );
+		expect( ids( g.principals ) ).toContain( g.recomanada.id );
+		const h = agrupaMissions( M, 'mobil', { b: 3, d: 3, a: 3, c: 1 } );
+		expect( ids( h.altres ) ).toContain( h.recomanada.id );
 	} );
 	it( 'resum', () => {
 		expect( agrupaMissions( M, 'pc', { a: 3, b: 1 } ).resum ).toEqual( {
