@@ -14,6 +14,7 @@ import { IconaUllada } from './ullada/icones';
 import { IconaCalculadora } from './calculadora/icones';
 import { IconaRellotge } from './rellotge/icones';
 import { IconaAjustos } from './ajustos/icones';
+import { IconaRevenda } from './revenda/icones';
 
 const navegador = {
 	nom: __( 'Navegador', 'noempesquen' ),
@@ -87,10 +88,9 @@ const ajustos = {
 	Component: lazy( () => import( './ajustos/Ajustos' ) ),
 };
 
-// Icona provisional (la substituirà `revenda/icones.js` a T1b).
 const revenda = {
 	nom: __( 'Revenda', 'noempesquen' ),
-	Icona: IconaUllada,
+	Icona: IconaRevenda,
 	Component: lazy( () => import( './revenda/Revenda' ) ),
 };
 
