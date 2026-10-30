@@ -78,7 +78,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 - `apps.parla.xats[]` (xats de Parla afegits per la missió): `{ id, contacte?, nom?, missatges[] { id, de: "ells" o "jo", text, hora?, ocult? } }`. Un missatge `ocult` surt quan un efecte `mostra` (amb el `retard` del disparador) el fa visible; el xat apareix a la llista en tenir el primer missatge visible. `contacte` és l'id d'un contacte de `mon.json` (si és de rol `desconegut`, el xat ofereix bloquejar); sense `nom`, es fa servir el del contacte. Si l'`id` coincideix amb un xat de `mon.json` (p. ex. `pau`), els missatges s'hi afegeixen al final. Un missatge pot tenir `senyal` (id d'un senyal de la missió): amb la lupa activa es pot inspeccionar com a Posta o Missatges. El xat pot tenir `senyal_avis` (senyal del banner «Aquest número no és als teus contactes»). Per avisar al mòbil, combina `mostra` amb `notifica` (`app: "parla"`). Als xats de contactes coneguts (no guia ni desconeguts) el camp de text és actiu: el text escrit només es veu a la interfície i s'emet `missatge.envia`.
 - `senyals[]` poden dur `requereix: "<id>"` (id d'un element `ocult` o d'un disparador, p. ex. `web-falsa`). **Puntuació:** el màxim és `(senyals disponibles × 10) + 50`; un senyal amb `requereix` només hi compta si el jugador l'ha trobat o l'element ja s'ha mostrat (`mostra`) o el disparador ja s'ha executat. Així, qui decideix bé pel camí segur sense pistes ni pescat arriba a 3 estrelles sense haver d'entrar a la trampa; sense `requereix` (llissa-01, remei-01, paquet) res no canvia.
 - `apps.navegador.inici`: URLs que s'obren en iniciar.
-- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat` o `banc-solid`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat`, `banc-solid`, `diari` o `sorteig`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
 - `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc. A `quan`, `visible: "<id>"` fa que el disparador només coincideixi si l'element (p. ex. un correu amb `ocult`) ja s'ha mostrat amb l'efecte `mostra`; si no, no es consumeix.
 
 ## Esdeveniments
@@ -115,7 +115,7 @@ Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloque
 - `il`: il·lustració existent; `likes`: número.
 - `cos` (opcional): llista de paràgrafs, com als correus; cada segment és `{ "t": "...", "senyal"? }` o `{ "enllac": { "text", "url" } }` (url `http(s)://` o `cerca:`). Els senyals i les URL es validen igual que a la resta d'`apps`.
 
-La plantilla web `sorteig` (només falsa) es registrarà amb T3 (veure T3).
+La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa: dades opcionals `premi`, `premi_senyal`, `compte_enrere` i `formulari` (amb `esdeveniment: "pagament.fes"`).
 
 ## Efectes
 

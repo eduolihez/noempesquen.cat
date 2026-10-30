@@ -23,6 +23,7 @@ export const PLANTILLES_WEB = [
 	'llum-clara',
 	'enviat',
 	'banc-solid',
+	'sorteig',
 	'diari',
 ];
 export const ESDEVENIMENTS_FORMULARI = [
