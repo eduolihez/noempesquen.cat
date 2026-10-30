@@ -114,19 +114,6 @@ async function sensePistes( page, vist, valors, { dom = true } = {} ) {
 }
 
 /**
- * Cert quan el test corre en un dispositiu mòbil (vertical o horitzontal).
- * Per als specs de PC (`factura`, `banc`) que ara fan
- * `test.skip( isMobile, 'PC en mòbil: tall 4' )`.
- * T5: quan el PC escali en pantalles petites, substituir aquests skips per
- * `test.skip( esPcEnMobil( testInfo ) && ! escalaPc, ... )` o retirar-los i
- * afegir els specs de PC a `SPECS_HORITZONTAL` de playwright.config.js.
- *
- * @param {import('@playwright/test').TestInfo} testInfo
- * @return {boolean} Cert si el projecte és de mòbil.
- */
-const esPcEnMobil = ( testInfo ) => testInfo.project.name.startsWith( 'mobil' );
-
-/**
  * Cert si la pàgina és en horitzontal (més ampla que alta).
  *
  * @param {import('@playwright/test').Page} page
@@ -142,8 +129,8 @@ const esHoritzontal = ( page ) => {
  * (cos de les finestres) quan el PC és escalat: a escala ~0,5 el navegador,
  * Posta i Parla no arriben a 24 px reals. La resta del sistema PC sí que
  * es comprova.
- * T7: treure aquest filtre quan s'arreglin les apps o es baixi el mínim
- * lògic (D3, 1024×576).
+ * Deute: treure aquest filtre quan les apps tinguin objectius tàctils
+ * grans en mode escalat o es baixi el mínim lògic (D3, 1024×576).
  *
  * @param {import('@playwright/test').Page} page
  */
@@ -190,7 +177,6 @@ const senseFullscreen = ( page ) =>
 module.exports = {
 	greusAxePc,
 	senseFullscreen,
-	esPcEnMobil,
 	esHoritzontal,
 	greusAxe,
 	inspecciona,

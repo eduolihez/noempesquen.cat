@@ -9,7 +9,6 @@ const {
 	esHoritzontal,
 } = require( './ajudes' );
 
-
 const MISSIO = /El banc et bloqueja el compte/;
 const BLOQUEIG = /Clica o prem/;
 const ASSUMPTE = 'Compte bloquejat: verifica la teva identitat';
@@ -166,7 +165,9 @@ test.describe( 'El banc et bloqueja el compte', () => {
 		await vesA( page, 'bancsolid.cat' );
 		const capa = page.getByRole( 'dialog' );
 		await expect( capa ).toContainText( 'Molt bé!' );
-		await expect( capa ).toContainText( 'Al web oficial no hi ha cap bloqueig' );
+		await expect( capa ).toContainText(
+			'Al web oficial no hi ha cap bloqueig'
+		);
 	} );
 
 	test( 'entrar a bancsolid.cat abans del correu no tanca la missió', async ( {
@@ -226,13 +227,17 @@ test.describe( 'El banc et bloqueja el compte', () => {
 		await expect( centre ).toHaveCount( 0 );
 
 		await page.getByRole( 'textbox', { name: 'Codi SMS' } ).fill( CODI );
-		await page.getByRole( 'button', { name: 'Verifica', exact: true } ).click();
+		await page
+			.getByRole( 'button', { name: 'Verifica', exact: true } )
+			.click();
 
 		const capa = page.getByRole( 'dialog' );
 		await expect( capa ).toContainText( "T'han pescat!" );
 		await expect( capa ).toContainText( 'Has donat el codi' );
 		await expect(
-			page.locator( 'input[id^="nep-lc-codi-"], input[id^="nep-lc-acces-"]' )
+			page.locator(
+				'input[id^="nep-lc-codi-"], input[id^="nep-lc-acces-"]'
+			)
 		).toHaveCount( 0 );
 		await sensePistes( page, vist, Object.values( ESCRITS ) );
 		await veuResultat( page, 1 );
@@ -267,7 +272,7 @@ test.describe( 'El banc et bloqueja el compte', () => {
 		page,
 	}, testInfo ) => {
 		test.skip(
-			testInfo.project.name !== 'mobil-horitzontal',
+			! testInfo.project.name.includes( 'horitzontal' ),
 			'Només al projecte mòbil horitzontal'
 		);
 		await page.setViewportSize( { width: 915, height: 412 } );
@@ -281,14 +286,18 @@ test.describe( 'El banc et bloqueja el compte', () => {
 			.filter( { hasText: ORIGEN_MOBIL } );
 		await expect( toast ).toBeVisible();
 
-		// En vertical el joc s'atura: el toast (6 s) no es descarta.
+		// En vertical el joc s'atura: ni el toast (6 s) es descarta ni
+		// avança l'hora del joc.
+		const hora = page.locator( '.nep-so-barra__hora > span' ).first();
+		const horaAbans = await hora.textContent();
 		await page.setViewportSize( { width: 412, height: 915 } );
 		await expect(
 			page.getByRole( 'alertdialog', { name: 'Gira el mòbil' } )
 		).toBeVisible();
-		await page.clock.runFor( 8000 );
+		await page.clock.runFor( 120000 );
 		await page.setViewportSize( { width: 915, height: 412 } );
 		await expect( toast ).toBeVisible();
+		expect( await hora.textContent() ).toBe( horaAbans );
 	} );
 
 	test.describe( 'accessibilitat', () => {
@@ -320,7 +329,9 @@ test.describe( 'El banc et bloqueja el compte', () => {
 			await rellotge( page ).click();
 			await expect(
 				page
-					.getByRole( 'dialog', { name: 'Notificacions i calendari' } )
+					.getByRole( 'dialog', {
+						name: 'Notificacions i calendari',
+					} )
 					.getByRole( 'region', { name: ORIGEN_MOBIL } )
 			).toBeVisible();
 			expect( await greusAxePc( page ) ).toEqual( [] );

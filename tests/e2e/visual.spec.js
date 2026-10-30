@@ -1,10 +1,16 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxePc, iniciaMissio, senseFullscreen } = require( './ajudes' );
+const {
+	greusAxePc,
+	iniciaMissio,
+	petits,
+	senseFullscreen,
+} = require( './ajudes' );
 
 /*
- * Revisió visual (D8): captures sense baseline a `test-results/visual-*.png`.
+ * Revisió visual (D8): captures sense baseline a `test-results/visual/*.png`.
  * El test només falla per problemes mesurables: desbordament horitzontal de
- * la pàgina, peces clau fora de la finestra o violacions axe greus.
+ * la pàgina, peces clau fora de la finestra, violacions axe greus o (al
+ * mòbil simulat) objectius de menys de 44 px.
  * S'executa només al projecte escriptori: la mida es canvia a mà i el cas
  * tàctil en horitzontal es fa amb `test.use` al seu bloc.
  */
@@ -21,6 +27,18 @@ const FACTURA = /La factura de la llum/;
 const CANVIAT = /Hola, he canviat de mòbil/;
 const BLOQUEIG_PC = /Clica o prem/;
 const BLOQUEIG_MOBIL = /Llisca cap amunt/;
+const MISSIONS = [
+	{
+		nom: 'banc',
+		titol: /El banc et bloqueja el compte/,
+		bloqueig: BLOQUEIG_PC,
+	},
+	{ nom: 'paquet', titol: /El paquet retingut/, bloqueig: BLOQUEIG_MOBIL },
+];
+const MIDES_MISSIONS = [
+	{ width: 400, height: 800 },
+	{ width: 1024, height: 768 },
+];
 
 const senseDesbordament = ( page ) =>
 	page.evaluate(
@@ -55,19 +73,25 @@ const foraDeFinestra = ( page, selectors ) =>
  * @param {import('@playwright/test').Page} page
  * @param {string}                          nom   Nom de la pantalla.
  * @param {string[]}                        claus Selectors que han de cabre a la finestra.
+ * @param {Object}                          [opc]
+ * @param {boolean}                         [opc.tactil=false] Comprova també objectius de 44 px.
  */
-async function revisa( page, nom, claus ) {
+async function revisa( page, nom, claus, { tactil = false } = {} ) {
 	const { width, height } = page.viewportSize();
 	await page.screenshot( {
-		path: `test-results/visual-${ nom }-${ width }x${ height }.png`,
+		path: `test-results/visual/${ nom }-${ width }x${ height }.png`,
 	} );
 	expect( await senseDesbordament( page ), 'desbordament horitzontal' ).toBe(
 		true
 	);
-	expect( await foraDeFinestra( page, claus ), 'fora de la finestra' ).toEqual(
-		[]
-	);
+	expect(
+		await foraDeFinestra( page, claus ),
+		'fora de la finestra'
+	).toEqual( [] );
 	expect( await greusAxePc( page ), 'axe greu' ).toEqual( [] );
+	if ( tactil ) {
+		expect( await petits( page ), 'objectius petits' ).toEqual( [] );
+	}
 }
 
 const titolXat = ( page, nom ) =>
@@ -90,9 +114,7 @@ async function pc( page, mida, prefix ) {
 	await page.getByRole( 'button', { name: BLOQUEIG_PC } ).click();
 	const parla = page.getByRole( 'region', { name: 'Parla' } );
 	await expect( parla ).toBeVisible();
-	await parla
-		.getByRole( 'button', { name: 'Salta la presentació' } )
-		.click();
+	await parla.getByRole( 'button', { name: 'Salta la presentació' } ).click();
 	await page.clock.runFor( 8000 );
 	await revisa( page, `${ prefix }pc`, [
 		'.nep-so-barra',
@@ -117,10 +139,12 @@ async function mobil( page, mida, prefix ) {
 		.click();
 	await page.clock.runFor( 31000 );
 	await expect( titolXat( page, '+44 7700 900461' ) ).toBeVisible();
-	await revisa( page, `${ prefix }mobil-parla`, [
-		'.nep-so',
-		'.nep-parla-conversa__enrere',
-	] );
+	await revisa(
+		page,
+		`${ prefix }mobil-parla`,
+		[ '.nep-so', '.nep-parla-conversa__enrere' ],
+		{ tactil: true }
+	);
 
 	await page.getByRole( 'button', { name: 'Torna als xats' } ).click();
 	await page.getByRole( 'button', { name: /^Remei/ } ).click();
@@ -134,10 +158,19 @@ async function mobil( page, mida, prefix ) {
 	const resposta = page.getByRole( 'button', {
 		name: "No contesto i m'ho deixo estar.",
 	} );
-	await revisa( page, `${ prefix }mobil-respostes`, [ '.nep-parla-resposta' ] );
+	await revisa(
+		page,
+		`${ prefix }mobil-respostes`,
+		[ '.nep-parla-resposta' ],
+		{
+			tactil: true,
+		}
+	);
 	await resposta.click();
-	await page
-		.getByRole( 'dialog' )
+	const consequencia = page.getByRole( 'dialog' );
+	await expect( consequencia ).toBeVisible();
+	await revisa( page, `${ prefix }consequencia`, [ '[role="dialog"]' ] );
+	await consequencia
 		.getByRole( 'button', { name: 'Veure el resultat' } )
 		.click();
 	await expect(
@@ -176,6 +209,45 @@ test.describe( 'Revisió visual', () => {
 		test( `mòbil i resultat a ${ m }`, async ( { page } ) => {
 			await mobil( page, mida, '' );
 		} );
+	}
+
+	for ( const mida of MIDES_MISSIONS ) {
+		for ( const missio of MISSIONS ) {
+			const m = `${ mida.width }×${ mida.height }`;
+			test( `${ missio.nom } des del selector a ${ m }`, async ( {
+				page,
+			} ) => {
+				await senseFullscreen( page );
+				await page.setViewportSize( mida );
+				await page.clock.install();
+				await page.goto( '/simulador/' );
+				await expect(
+					page.getByRole( 'region', { name: 'Tria una missió' } )
+				).toBeVisible();
+				await page
+					.getByRole( 'button', { name: missio.titol } )
+					.click();
+				const girar = page.getByRole( 'alertdialog' );
+				const bloqueig = page.getByRole( 'button', {
+					name: missio.bloqueig,
+				} );
+				await expect( girar.or( bloqueig ) ).toBeVisible();
+				if ( await girar.isVisible() ) {
+					await revisa( page, `${ missio.nom }-girar`, [
+						'[role="alertdialog"]',
+					] );
+					return;
+				}
+				await bloqueig.click();
+				await page.clock.runFor( 2000 );
+				await expect(
+					page.locator( '.nep-so__sistema' )
+				).toBeVisible();
+				await revisa( page, missio.nom, [ '.nep-so__sistema' ], {
+					tactil: missio.bloqueig === BLOQUEIG_MOBIL,
+				} );
+			} );
+		}
 	}
 
 	test.describe( 'tàctil en horitzontal', () => {

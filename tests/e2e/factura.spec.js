@@ -1,11 +1,12 @@
 const { test, expect } = require( '@playwright/test' );
 const {
+	escoltaFuites,
 	esHoritzontal,
 	greusAxePc,
+	sensePistes,
 	inspecciona,
 	iniciaMissio,
 } = require( './ajudes' );
-
 
 const MISSIO = /La factura de la llum/;
 const BLOQUEIG = /Clica o prem/;
@@ -85,20 +86,6 @@ async function surtDePantallaCompleta( page ) {
 		.poll( () => page.evaluate( () => !! document.fullscreenElement ) )
 		.toBe( true );
 	await page.evaluate( () => document.exitFullscreen() );
-}
-
-async function sensePistes( page ) {
-	const text = await page.content();
-	const emmagatzemat = await page.evaluate( () =>
-		JSON.stringify( [
-			{ ...window.localStorage },
-			{ ...window.sessionStorage },
-		] )
-	);
-	for ( const valor of AUTOOMPLI ) {
-		expect( text ).not.toContain( valor );
-		expect( emmagatzemat ).not.toContain( valor );
-	}
 }
 
 test.describe( 'La factura de la llum', () => {
@@ -181,6 +168,7 @@ test.describe( 'La factura de la llum', () => {
 	} );
 
 	test( 'camí de pescat: pagar a la web falsa', async ( { page } ) => {
+		const vist = escoltaFuites( page );
 		await mirantElCorreu( page );
 		await page
 			.getByRole( 'link', { name: 'Paga ara a llumclara.cat' } )
@@ -208,13 +196,13 @@ test.describe( 'La factura de la llum', () => {
 		).toHaveCount( 0 );
 
 		// Les dades de la targeta no es queden enlloc.
-		await sensePistes( page );
+		await sensePistes( page, vist, AUTOOMPLI );
 
 		await capa.getByRole( 'button', { name: 'Veure el resultat' } ).click();
 		await expect(
 			page.getByRole( 'img', { name: '1 de 3 estrelles' } )
 		).toBeVisible();
-		await sensePistes( page );
+		await sensePistes( page, vist, AUTOOMPLI );
 	} );
 
 	test( 'decidir pel xat amb «Ja ho tinc clar»', async ( { page } ) => {
