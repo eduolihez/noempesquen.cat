@@ -50,3 +50,65 @@ export function ultimMissatge( xat, visibles = [] ) {
 	const v = missatgesVisibles( xat, visibles );
 	return v.length ? v[ v.length - 1 ] : null;
 }
+
+/**
+ * Ids dels elements ocults que el motor ja ha mostrat (`estat.visibles` és
+ * un objecte `{ id: true }`).
+ *
+ * @param {?Object} estat Estat del motor.
+ * @return {string[]} Ids visibles.
+ */
+export function idsVisibles( estat ) {
+	const v = estat?.visibles;
+	if ( ! v || typeof v !== 'object' ) {
+		return [];
+	}
+	return Object.keys( v ).filter( ( id ) => v[ id ] );
+}
+
+/**
+ * Preu d'un anunci en euros, en format català («120 €», «12,50 €»).
+ *
+ * @param {number} preu Preu.
+ * @return {string} Preu formatat.
+ */
+export function formataPreu( preu ) {
+	if ( typeof preu !== 'number' || ! Number.isFinite( preu ) ) {
+		return '';
+	}
+	const xifra = new Intl.NumberFormat( 'ca-ES', {
+		minimumFractionDigits: Number.isInteger( preu ) ? 0 : 2,
+		maximumFractionDigits: 2,
+	} ).format( preu );
+	return `${ xifra } €`;
+}
+
+/**
+ * Text pla d'un missatge (segments `{ t }` i `{ enllac: { text } }`), per a
+ * la llista de xats i els avisos.
+ *
+ * @param {?Object} msg Missatge amb `cos`.
+ * @return {string} Text.
+ */
+export function textMissatge( msg ) {
+	return ( Array.isArray( msg?.cos ) ? msg.cos : [] )
+		.map( ( s ) => ( s?.enllac ? s.enllac.text : s?.t ) ?? '' )
+		.join( '' );
+}
+
+/**
+ * Destí d'una notificació de Revenda al mòbil: la pestanya «Xats» i, si
+ * n'indica un, el xat concret.
+ *
+ * @param {Object} notificacio Notificació { app, xat? }.
+ * @return {[string, {pestanya:string, xat?:string}]} App i dades d'obertura.
+ */
+export function destiRevenda( notificacio ) {
+	return [
+		'revenda',
+		{
+			pestanya: 'xats',
+			...( notificacio?.xat ? { xat: notificacio.xat } : {} ),
+		},
+	];
+}
