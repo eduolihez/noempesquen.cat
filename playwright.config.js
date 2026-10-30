@@ -6,11 +6,13 @@ const { defineConfig, devices } = require( '@playwright/test' );
  * - escriptori: Desktop Chrome, tota la bateria (misions de PC i de mòbil
  *   segons `isMobile`).
  * - mobil: Pixel 7 en vertical, tota la bateria (misions de mòbil; les de PC
- *   queden saltades fins que T5 escali el PC).
- * - mobil-horitzontal: Pixel 7 en horitzontal, només els specs de mòbil clau
- *   (la resta de la bateria duplicaria la durada sense aportar cobertura).
+ *   queden saltades perquè hi apareix la petició de girar).
+ * - mobil-horitzontal: Pixel 7 en horitzontal, els specs de mòbil clau i les
+ *   missions de PC escalades (la resta duplicaria la durada sense aportar
+ *   cobertura).
  */
-const SPECS_HORITZONTAL = /(paquet|canviat|farcit|so|selector)\.spec\.js$/;
+const SPECS_HORITZONTAL =
+	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;
 
 module.exports = defineConfig( {
 	testDir: './tests/e2e',

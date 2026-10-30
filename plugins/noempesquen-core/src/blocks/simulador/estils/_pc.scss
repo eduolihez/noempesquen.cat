@@ -215,6 +215,7 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 		gap: 4px;
 		line-height: 16px;
 		min-height: var(--so-tactil, 0);
+		min-width: var(--so-tactil, 0);
 		padding: 8px 4px 6px;
 		text-shadow: 0 1px 2px rgb(0 0 0 / 70%);
 		width: 78px;

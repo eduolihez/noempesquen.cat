@@ -237,6 +237,9 @@
 		gap: 10px;
 		height: 36px;
 		margin: 28px 32px 0;
+
+		/* La vora (2 px) no compta: el camp de dins ha de fer 44 px. */
+		min-height: calc(var(--so-tactil, 0px) + 2px);
 		padding: 0 14px;
 
 		&:focus-within {
@@ -248,6 +251,7 @@
 			background: transparent;
 			border: 0;
 			color: #1a1a1a;
+			align-self: stretch;
 			flex: 1;
 			min-width: 0;
 			outline: none;
