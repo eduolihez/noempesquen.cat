@@ -12,8 +12,9 @@ defined( 'ABSPATH' ) || exit;
 global $wpdb;
 $nep_taula = nep_taula_resultats();
 // La mateixa clau que fa servir l'endpoint (WP-CLI pot definir REMOTE_ADDR).
-$nep_clau  = nep_clau_limit( isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '' );
+$nep_clau  = nep_clau_limit( nep_ip_client() );
 delete_transient( $nep_clau );
+delete_transient( NEP_CLAU_LIMIT_GLOBAL );
 
 $nep_envia = static function ( array $cos ): WP_REST_Response {
 	$peticio = new WP_REST_Request( 'POST', '/noempesquen/v1/resultat' );
@@ -114,6 +115,30 @@ for ( $nep_i = 0; $nep_i < NEP_RESULTATS_LIMIT; $nep_i++ ) {
 }
 $nep_r = $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 3 ) );
 $nep_comprova( NEP_RESULTATS_LIMIT === $nep_ok && 429 === $nep_r->get_status(), "resultat: $nep_ok enviaments acceptats i el següent → 429 (rebut {$nep_r->get_status()})" );
+// Límit global: ple → 429 encara que la IP no hagi enviat res.
+delete_transient( $nep_clau );
+set_transient( NEP_CLAU_LIMIT_GLOBAL, array( 'n' => NEP_RESULTATS_LIMIT_GLOBAL, 'fi' => time() + 600 ), 600 );
+$nep_r = $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 3 ) );
+$nep_comprova( 429 === $nep_r->get_status() && false === get_transient( $nep_clau ), 'resultat: límit global ple → 429 i no compta a la IP' );
+delete_transient( NEP_CLAU_LIMIT_GLOBAL );
+
+// Filtre nep_ip_client: IPv6 per /64; la clau no conté la IP.
+$nep_filtre_ip = static fn() => '2001:db8:aa:bb:1:2:3:4';
+add_filter( 'nep_ip_client', $nep_filtre_ip );
+$nep_comprova( '2001:db8:aa:bb::/64' === nep_ip_client(), 'ip: el filtre nep_ip_client s\'aplica i IPv6 es redueix a /64' );
+$nep_comprova( ! str_contains( nep_clau_limit( nep_ip_client() ), '2001' ), 'ip: la clau del límit no conté la IP' );
+remove_filter( 'nep_ip_client', $nep_filtre_ip );
+
+// Cau de missions: publicar o despublicar es veu a l'instant; posts_per_page sense tall.
+$nep_comprova( isset( nep_missions_jugables()[ $nep_est['id'] ] ) && is_array( get_transient( NEP_CAU_MISSIONS ) ), 'cau: la missió publicada és al cau' );
+wp_set_current_user( 1 );
+wp_trash_post( $nep_est_post );
+$nep_comprova( ! isset( nep_missions_jugables()[ $nep_est['id'] ] ), 'cau: enviar a la paperera la treu' );
+wp_untrash_post( $nep_est_post );
+wp_update_post( array( 'ID' => $nep_est_post, 'post_status' => 'publish' ) );
+wp_set_current_user( 0 );
+$nep_comprova( isset( nep_missions_jugables()[ $nep_est['id'] ] ), 'cau: recuperar-la la torna' );
+
 $nep_comprova( ! str_contains( (string) get_option( 'nep_sal_dia' ), '127.0.0.1' ) && str_starts_with( (string) get_option( 'nep_sal_dia' ), gmdate( 'Y-m-d' ) . '|' ), 'resultat: sal del dia amb la data d\'avui' );
 
 // Errors de base de dades (es reescriuen consultes amb el filtre `query`).
@@ -174,4 +199,5 @@ wp_set_current_user( 0 );
 // Neteja.
 $wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ); // phpcs:ignore WordPress.DB
 delete_transient( $nep_clau );
+delete_transient( NEP_CLAU_LIMIT_GLOBAL );
 wp_set_current_user( 1 );

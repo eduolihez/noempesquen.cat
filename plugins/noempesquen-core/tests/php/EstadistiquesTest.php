@@ -108,6 +108,23 @@ final class EstadistiquesTest extends TestCase {
 		$this->assertNotSame( nep_versio_hash( $a ), nep_versio_hash( $d ) );
 	}
 
+	public function test_hash_llanca_si_no_es_pot_codificar(): void {
+		$this->expectException( JsonException::class );
+		nep_versio_hash( array( 'x' => INF ) );
+	}
+
+	public function test_normalitza_ip(): void {
+		$this->assertSame( '203.0.113.7', nep_normalitza_ip( '203.0.113.7' ) );
+		$this->assertSame( '2001:db8:1:2::/64', nep_normalitza_ip( '2001:db8:1:2:aaaa:bbbb:cccc:dddd' ) );
+		// Dues adreces del mateix /64 comparteixen clau.
+		$this->assertSame( nep_normalitza_ip( '2001:db8:1:2::1' ), nep_normalitza_ip( '2001:DB8:1:2:ffff::9' ) );
+		$this->assertNotSame( nep_normalitza_ip( '2001:db8:1:2::1' ), nep_normalitza_ip( '2001:db8:1:3::1' ) );
+		$this->assertSame( '198.51.100.4', nep_normalitza_ip( '::ffff:198.51.100.4' ) );
+		$this->assertSame( '', nep_normalitza_ip( '' ) );
+		$this->assertSame( '', nep_normalitza_ip( 'no-es-una-ip' ) );
+		$this->assertSame( '', nep_normalitza_ip( '1.2.3.4, 5.6.7.8' ) );
+	}
+
 	public function test_ids_opcions(): void {
 		$this->assertSame( array( 'a', 'b' ), nep_ids_opcions( array( 'decisio' => array( 'opcions' => array( array( 'id' => 'a' ), array( 'id' => 'b' ), array( 'text' => 'x' ) ) ) ) ) );
 		$this->assertSame( array(), nep_ids_opcions( array() ) );

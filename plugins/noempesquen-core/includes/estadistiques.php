@@ -15,8 +15,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/** Enviaments màxims per clau (IP salada) i finestra. Ajustable. */
+/** Enviaments màxims per clau (IP seudonimitzada) i finestra. Ajustable. */
 const NEP_RESULTATS_LIMIT = 30;
+
+/** Enviaments màxims de tothom junt per finestra (fre contra inundacions des de moltes IP). Ajustable. */
+const NEP_RESULTATS_LIMIT_GLOBAL = 2000;
+
+/** Transient del comptador global. */
+const NEP_CLAU_LIMIT_GLOBAL = 'nep_rl_global';
+
+/** Transient amb el cau de les missions jugables. */
+const NEP_CAU_MISSIONS = 'nep_cau_missions';
 
 /** Durada de la finestra del límit, en segons (1 hora). */
 const NEP_RESULTATS_FINESTRA = 3600;
@@ -70,14 +79,39 @@ function nep_canonic( $valor ) {
 
 /**
  * Hash de versió d'un guió: 12 primers hex del sha1 del JSON canònic.
- * El calcula sempre el servidor, mai el client.
+ * El calcula sempre el servidor, mai el client. Si el guió no es pot
+ * codificar llança l'excepció (abans tots els guions fallits compartien el
+ * hash de la cadena buida).
  *
  * @param array $guio Guió descodificat.
  * @return string
+ * @throws JsonException Si el guió no es pot codificar.
  */
 function nep_versio_hash( array $guio ): string {
-	$json = json_encode( nep_canonic( $guio ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-	return substr( sha1( (string) $json ), 0, 12 );
+	$json = json_encode( nep_canonic( $guio ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+	return substr( sha1( $json ), 0, 12 );
+}
+
+/**
+ * Normalitza la IP per al límit: una IPv6 compta pel seu /64 (un sol client
+ * en sol tenir un de sencer); una IPv4 (també mapejada en IPv6) tal com és.
+ * Una adreça no vàlida torna ''.
+ *
+ * @param string $ip Adreça.
+ * @return string
+ */
+function nep_normalitza_ip( string $ip ): string {
+	if ( false !== filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		return $ip;
+	}
+	if ( false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return '';
+	}
+	$bin = (string) inet_pton( $ip );
+	if ( str_starts_with( $bin, str_repeat( "\0", 10 ) . "\xff\xff" ) ) {
+		return (string) inet_ntop( substr( $bin, 12 ) );
+	}
+	return inet_ntop( substr( $bin, 0, 8 ) . str_repeat( "\0", 8 ) ) . '/64';
 }
 
 /**
@@ -205,14 +239,25 @@ function nep_crea_taula_resultats(): bool {
  * (`missions/*.json`, sense `mon.json`) i les publicades al panell, que
  * substitueixen per id les incloses.
  *
+ * Es desa en un transient (una hora com a màxim) que s'esborra quan canvia
+ * una missió del panell; la signatura dels fitxers inclosos (nom i data)
+ * l'invalida també després d'un desplegament.
+ *
  * @return array<string, array> Guió per id.
  */
 function nep_missions_jugables(): array {
+	$fitxers = array_filter(
+		glob( NEP_PATH . 'missions/*.json' ) ?: array(),
+		static fn( $f ) => 'mon.json' !== basename( $f )
+	);
+	$firma   = md5( implode( '|', array_map( static fn( $f ) => basename( $f ) . ':' . filemtime( $f ), $fitxers ) ) );
+	$cau     = get_transient( NEP_CAU_MISSIONS );
+	if ( is_array( $cau ) && ( $cau['firma'] ?? '' ) === $firma && is_array( $cau['missions'] ?? null ) ) {
+		return $cau['missions'];
+	}
+
 	$missions = array();
-	foreach ( glob( NEP_PATH . 'missions/*.json' ) ?: array() as $fitxer ) {
-		if ( 'mon.json' === basename( $fitxer ) ) {
-			continue;
-		}
+	foreach ( $fitxers as $fitxer ) {
 		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
 			$missions[ $guio['id'] ] = $guio;
@@ -223,10 +268,11 @@ function nep_missions_jugables(): array {
 		array(
 			'post_type'      => 'nep_missio',
 			'post_status'    => 'publish',
-			'posts_per_page' => 50,
+			'posts_per_page' => -1, // Totes: si en faltés una, els seus resultats es rebutjarien.
 			'orderby'        => 'menu_order',
 			'order'          => 'ASC',
 			'fields'         => 'ids',
+			'no_found_rows'  => true,
 		)
 	);
 	foreach ( $posts as $post_id ) {
@@ -235,7 +281,22 @@ function nep_missions_jugables(): array {
 			$missions[ $guio['id'] ] = $guio;
 		}
 	}
+	set_transient(
+		NEP_CAU_MISSIONS,
+		array(
+			'firma'    => $firma,
+			'missions' => $missions,
+		),
+		HOUR_IN_SECONDS
+	);
 	return $missions;
+}
+
+/**
+ * Esborra el cau de missions jugables.
+ */
+function nep_buida_cau_missions(): void {
+	delete_transient( NEP_CAU_MISSIONS );
 }
 
 /**
@@ -267,31 +328,58 @@ function nep_clau_limit( string $ip ): string {
 }
 
 /**
- * Compta un enviament i diu si encara és dins del límit.
+ * IP del client per al límit, ja normalitzada (`nep_normalitza_ip`).
  *
  * Es fa servir REMOTE_ADDR. Darrere d'un proxy o CDN, REMOTE_ADDR és el del
- * proxy (tothom compartiria el límit): el desplegament haurà de decidir quina
- * capçalera d'IP real és de confiança. No es llegeix cap X-Forwarded-For a
- * cegues perquè el client el pot falsejar.
+ * proxy (tothom compartiria el límit). No es llegeix cap X-Forwarded-For a
+ * cegues perquè el client el pot falsejar. Al desplegament: si hi ha un
+ * proxy o CDN de confiança, afegir un filtre `nep_ip_client` que torni la
+ * capçalera que posa aquest proxy (p. ex. CF-Connecting-IP) només quan
+ * REMOTE_ADDR és una de les seves adreces.
+ *
+ * @return string
+ */
+function nep_ip_client(): string {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	/**
+	 * IP del client per al límit d'enviaments de /resultat.
+	 *
+	 * @param string $ip REMOTE_ADDR.
+	 */
+	return nep_normalitza_ip( (string) apply_filters( 'nep_ip_client', $ip ) );
+}
+
+/**
+ * Compta un enviament i diu si encara és dins dels límits: el de la IP
+ * (`NEP_RESULTATS_LIMIT`) i el global (`NEP_RESULTATS_LIMIT_GLOBAL`), tots dos
+ * per finestra d'una hora. Si un és ple no es compta a cap.
  *
  * @return bool Cert si l'enviament es pot registrar.
  */
 function nep_dins_limit(): bool {
-	$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	$clau  = nep_clau_limit( $ip );
-	$ara   = time();
-	$estat = get_transient( $clau );
-	if ( ! is_array( $estat ) || ( $estat['fi'] ?? 0 ) <= $ara ) {
-		$estat = array(
-			'n'  => 0,
-			'fi' => $ara + NEP_RESULTATS_FINESTRA,
-		);
+	$ara    = time();
+	$limits = array(
+		nep_clau_limit( nep_ip_client() ) => NEP_RESULTATS_LIMIT,
+		NEP_CLAU_LIMIT_GLOBAL             => NEP_RESULTATS_LIMIT_GLOBAL,
+	);
+	$estats = array();
+	foreach ( $limits as $clau => $limit ) {
+		$estat = get_transient( $clau );
+		if ( ! is_array( $estat ) || ( $estat['fi'] ?? 0 ) <= $ara ) {
+			$estat = array(
+				'n'  => 0,
+				'fi' => $ara + NEP_RESULTATS_FINESTRA,
+			);
+		}
+		if ( $estat['n'] >= $limit ) {
+			return false;
+		}
+		$estats[ $clau ] = $estat;
 	}
-	if ( $estat['n'] >= NEP_RESULTATS_LIMIT ) {
-		return false;
+	foreach ( $estats as $clau => $estat ) {
+		++$estat['n'];
+		set_transient( $clau, $estat, max( 1, $estat['fi'] - $ara ) );
 	}
-	++$estat['n'];
-	set_transient( $clau, $estat, max( 1, $estat['fi'] - $ara ) );
 	return true;
 }
 
@@ -317,6 +405,13 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 		return new WP_Error( 'nep_decisio_desconeguda', __( 'Decisió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );
 	}
 
+	try {
+		$hash = nep_versio_hash( $guio ); // Només el de la missió demanada.
+	} catch ( JsonException $e ) {
+		error_log( 'noempesquen: no es pot calcular el hash de la missió ' . $id ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Guió del servidor corrupte.
+		return new WP_Error( 'nep_error_desant', __( 'No s\'ha pogut desar el resultat.', 'noempesquen' ), array( 'status' => 500 ) );
+	}
+
 	global $wpdb;
 	$taula = nep_taula_resultats();
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Comptador agregat (UPSERT); no hi ha API ni cau aplicable.
@@ -325,7 +420,7 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
 			"INSERT INTO {$taula} (missio, versio_hash, dia, estrelles, decisio, n) VALUES (%s, %s, %s, %d, %s, 1) ON DUPLICATE KEY UPDATE n = n + 1",
 			$id,
-			nep_versio_hash( $guio ),
+			$hash,
 			gmdate( 'Y-m-d' ),
 			(int) $request['estrelles'],
 			$decisio
@@ -340,6 +435,34 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 }
 
 if ( function_exists( 'add_action' ) ) {
+	// Invalidació del cau de missions. `save_post` de REST arriba abans d'escriure la meta: també es buida en canviar `nep_guio`.
+	add_action( 'save_post_nep_missio', 'nep_buida_cau_missions' );
+	foreach ( array( 'trashed_post', 'untrashed_post', 'deleted_post' ) as $nep_accio ) {
+		add_action(
+			$nep_accio,
+			static function ( $post_id, $post = null ) {
+				$tipus = $post instanceof WP_Post ? $post->post_type : get_post_type( (int) $post_id );
+				if ( 'nep_missio' === $tipus ) {
+					nep_buida_cau_missions();
+				}
+			},
+			10,
+			2
+		);
+	}
+	foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $nep_accio ) {
+		add_action(
+			$nep_accio,
+			static function ( $meta_id, $post_id, $meta_key ) {
+				if ( 'nep_guio' === $meta_key ) {
+					nep_buida_cau_missions();
+				}
+			},
+			10,
+			3
+		);
+	}
+
 	add_action(
 		'rest_api_init',
 		static function () {
