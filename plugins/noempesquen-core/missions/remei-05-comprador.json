@@ -40,7 +40,7 @@
 							"id": "venda-0",
 							"de": "ells",
 							"ocult": true,
-							"hora": "19:31",
+							"hora": "19:30",
 							"cos": [
 								{ "t": "Hola! Encara la tens? En quin estat està?" }
 							]
@@ -49,7 +49,7 @@
 							"id": "venda-1",
 							"de": "ells",
 							"ocult": true,
-							"hora": "19:33",
+							"hora": "19:30",
 							"cos": [
 								{
 									"t": "Em va perfecte, la vull. No cal que la vegi.",
@@ -61,7 +61,7 @@
 							"id": "venda-2",
 							"de": "ells",
 							"ocult": true,
-							"hora": "19:34",
+							"hora": "19:30",
 							"cos": [
 								{
 									"t": "Et pago ara per Revenda Cobra; t'envio un enllaç per cobrar.",
@@ -80,7 +80,7 @@
 							"id": "venda-3",
 							"de": "ells",
 							"ocult": true,
-							"hora": "19:35",
+							"hora": "19:30",
 							"cos": [
 								{
 									"t": "Si no ho fas avui, ho agafo d'un altre.",
