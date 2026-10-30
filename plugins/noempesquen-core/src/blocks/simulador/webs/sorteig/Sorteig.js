@@ -34,9 +34,7 @@ export default function Sorteig( { dades, url } ) {
 							senyal={ dades?.premi_senyal }
 						/>
 					</p>
-					<p className="nep-sb-premi__compte">
-						{ compte }
-					</p>
+					<p className="nep-sb-premi__compte">{ compte }</p>
 				</section>
 				<section className="nep-sb-pagament">
 					<h2>{ __( "Despeses d'enviament", 'noempesquen' ) }</h2>
