@@ -16,6 +16,24 @@ const factura = JSON.parse( readFileSync( ruta, 'utf8' ) );
 const copia = () => structuredClone( factura );
 
 describe( 'validaMissio v2', () => {
+	it( 'no peta amb null o no-array a senyals, disparadors, efectes i opcions', () => {
+		[ null, 5, 'x', {} ].forEach( ( v ) => {
+			const m = copia();
+			m.senyals = v;
+			m.disparadors = v;
+			m.decisio.opcions = v;
+			expect( () => validaMissio( m ) ).not.toThrow();
+			const n = copia();
+			n.disparadors.forEach( ( d ) => {
+				d.efectes = v;
+			} );
+			expect( () => validaMissio( n ) ).not.toThrow();
+		} );
+		const m = copia();
+		m.senyals = [ null, ...m.senyals ];
+		expect( () => validaMissio( m ) ).not.toThrow();
+	} );
+
 	it( 'la missió factura v2 és vàlida', () => {
 		expect( validaMissio( factura ) ).toEqual( [] );
 	} );

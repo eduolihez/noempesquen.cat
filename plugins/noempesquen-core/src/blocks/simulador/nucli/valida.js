@@ -54,6 +54,14 @@ export const ESDEVENIMENTS = [
 	'enllac.mantingut',
 ];
 
+/**
+ * Torna el valor si és una llista; si no, una llista buida.
+ *
+ * @param {*} v Valor qualsevol.
+ * @return {Array} Llista.
+ */
+const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
+
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
 
 const CAMPS_SENYAL = [
@@ -179,14 +187,14 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 
 function validaDisparadors( m, errors ) {
 	const opcions = new Set(
-		( m.decisio?.opcions ?? [] )
+		llista( m.decisio?.opcions )
 			.filter( ( o ) => o && typeof o === 'object' )
 			.map( ( o ) => o.id )
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
 	let hiHaPescat = false;
-	( m.disparadors ?? [] ).forEach( ( d ) => {
+	llista( m.disparadors ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
 			errors.push( 'disparador invàlid' );
 			return;
@@ -202,7 +210,7 @@ function validaDisparadors( m, errors ) {
 				);
 			}
 		}
-		( d.efectes ?? [] ).forEach( ( e ) => {
+		llista( d.efectes ).forEach( ( e ) => {
 			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
 				hiHaPescat = true;
 			}
@@ -311,7 +319,7 @@ export function validaMissio( m, mon ) {
 		errors.push( 'falta intro' );
 	}
 
-	const ids = new Set( ( m.senyals ?? [] ).map( ( s ) => s.id ) );
+	const ids = new Set( llista( m.senyals ).map( ( s ) => s?.id ) );
 	const usats = [ ...recullSenyals( m.apps ), ...recullSenyals( m.webs ) ];
 	new Set( usats ).forEach( ( s ) => {
 		if ( ! ids.has( s ) ) {
@@ -325,8 +333,8 @@ export function validaMissio( m, mon ) {
 		}
 	} );
 
-	( m.disparadors ?? [] )
-		.flatMap( ( d ) => d?.efectes ?? [] )
+	llista( m.disparadors )
+		.flatMap( ( d ) => llista( d?.efectes ) )
 		.filter( ( e ) => e?.tipus === 'notifica' && e.font === 'mobil' )
 		.forEach( ( e ) => {
 			if ( ! APPS_MISSIO.mobil.includes( e.app ) ) {
@@ -338,8 +346,8 @@ export function validaMissio( m, mon ) {
 	if ( permeses ) {
 		const usades = [
 			...Object.keys( m.apps ?? {} ),
-			...( m.disparadors ?? [] )
-				.flatMap( ( d ) => d?.efectes ?? [] )
+			...llista( m.disparadors )
+				.flatMap( ( d ) => llista( d?.efectes ) )
 				.filter( ( e ) => e?.tipus === 'notifica' && ! e.font )
 				.map( ( e ) => e.app ),
 		];
@@ -366,12 +374,12 @@ export function validaMissio( m, mon ) {
 	validaXatsParla( m, mon, errors );
 	validaDisparadors( m, errors );
 
-	( m.decisio?.opcions ?? [] ).forEach( ( o ) => {
+	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {
 			errors.push( 'opció invàlida' );
 		}
 	} );
-	const valors = ( m.decisio?.opcions ?? [] ).map( ( o ) => o?.valor );
+	const valors = llista( m.decisio?.opcions ).map( ( o ) => o?.valor );
 	if ( ! valors.includes( 'correcta' ) ) {
 		errors.push( 'cap opció correcta' );
 	}
