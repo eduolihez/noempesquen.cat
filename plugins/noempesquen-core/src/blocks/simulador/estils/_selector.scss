@@ -105,17 +105,18 @@
 /* Targeta */
 .nep-selector .nep-sel-targeta {
 	align-items: flex-start;
-	background: #fff;
+	--sel-barra: linear-gradient(var(--sel-accent), var(--sel-accent));
+
+	background: var(--sel-barra) top / 100% 6px no-repeat, #fff;
 	border: 1px solid var(--sel-filet);
 	border-radius: var(--nep-radi, 12px);
-	border-top: 6px solid var(--sel-accent);
 	box-shadow: 0 1px 2px rgb(20 33 61 / 8%);
 	color: var(--sel-tinta);
 	cursor: pointer;
 	display: flex;
 	gap: 1rem;
 	min-height: 44px;
-	padding: 1.25rem;
+	padding: calc(1.25rem + 6px) 1.25rem 1.25rem;
 	position: relative;
 	text-align: left;
 	transition: box-shadow 0.18s ease, transform 0.18s ease;
