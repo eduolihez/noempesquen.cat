@@ -10,6 +10,9 @@
 	   +0.5px compensa l'arrodoniment de l'escala (si no, queden 43,99 px). */
 	&.is-tactil {
 		--so-tactil: max(1px, calc(44px / var(--so-escala, 1) + 0.5px));
+
+		/* Mínim WCAG 2.5.8 (24 px reals) per al contingut de les apps. */
+		--so-objectiu: max(1px, calc(24px / var(--so-escala, 1) + 0.5px));
 	}
 
 	&__contingut {
@@ -17,7 +20,11 @@
 		width: 100%;
 	}
 
+	/* Contenidor de mida: les unitats cqb del contingut (p. ex. les pàgines
+	   del navegador) es mesuren sobre el PC lògic, no sobre la finestra real.
+	   Sense escalar no hi ha contenidor i cqb equival a svh. */
 	&.is-escalat &__contingut {
+		container-type: size;
 		position: absolute;
 		transform: scale(var(--so-escala));
 		transform-origin: 0 0;

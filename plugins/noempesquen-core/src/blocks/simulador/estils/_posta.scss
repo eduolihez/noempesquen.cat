@@ -374,3 +374,12 @@
 		animation: none;
 	}
 }
+
+/* PC escalat i tàctil: carpetes i estrelles a 24 px reals com a mínim. */
+.nep-so .nep-so-pantalla.is-tactil .nep-posta__carpeta {
+	height: max(32px, var(--so-objectiu, 32px));
+}
+
+.nep-so .nep-so-pantalla.is-tactil .nep-posta-fila__estrella {
+	min-height: var(--so-objectiu, 0);
+}
