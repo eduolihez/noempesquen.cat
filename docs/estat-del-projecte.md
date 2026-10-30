@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`)
+Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`; 5a hecho en rama)
 
 ## Dónde estamos
 
@@ -13,7 +13,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
 | Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
 | Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
-| Fase 2 y 3       | Misiones 5-10: sorteo falso en Ullada, robo del código de Parla, comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
+| Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho en rama** `feat/fase2-corte5a-sorteig-codi`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
+| Fase 2 y 3       | Misiones 7-10: comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
 
 ## Cómo retomar
 
@@ -44,9 +45,17 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 - Borrar el correo del banco cierra la misión como parcial y ya no se puede marcar phishing (decisión de diseño, fijada en test).
 - Menores: error genérico «Omple aquest camp.» en formularios comunes, `h1` fijo en la web del banco, `Object.freeze` de `ESDEVENIMENTS_FORMULARI`, falta test de `codi.envia` con url no coincidente, reutilizar `formulari.js` en la transferencia de la app.
 
+### Pendiente tras el corte 5a
+
+- `Publicacio`: el estado «denunciada» es local y se pierde al desmontar; subirlo al estado del motor o de Ullada.
+- Validar cruces disparador↔mundo: `publicacio.denuncia` con `id` de publicación existente y `codi.comparteix` con un SMS que contenga código.
+- Extraer la decisión de `codi.comparteix` a una función pura testeable (hoy solo la cubre el e2e).
+- Limitación: no se detectan códigos troceados ni dichos con palabras; sería una función nueva (documentado en `docs/format-missions.md`).
+- `role="status"` de la denuncia en `Publicacio` se monta solo al denunciar; si algún lector no lo anuncia, dejar un único contenedor live en Ullada.
+
 ### Pendiente tras el corte 4a (para 4b)
 
-- `missio.apps.ullada.publicacions` no se valida en `valida.js`; `propsEnllac` debería validar esquema http/https si las URLs vinieran de una misión.
+- `propsEnllac` debería validar esquema http/https si las URLs vinieran de una misión.
 - `agrupa.js` (Galeria): «Avui»/«Ahir» sin `__()` y con fecha real; cadenas de `Subpantalla` sin `__()`; infinitivos e imperativos mezclados entre apps; `<h1>` en Ullada y `<h2>` en las demás.
 - El Diari: todas las secciones enlazan a la portada; ilustración con `role=img` duplica el título; portada sin mensaje si `mon.diari` está vacío.
 - Ullada: `split` de `nom` sin guarda, nombre del jugador fijo, borde `is-buida` a 2,7:1. Càmera: comprobar contraste de estados deshabilitados.

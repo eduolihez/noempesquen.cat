@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
-import { respostesRapides } from '../../nucli/motor';
+import { respostesRapides, visible } from '../../nucli/motor';
+import { coincideixCodi, extreuCodis } from './codi';
 import { menysMoviment } from '../../sistemes/pc/moviment';
 import { AvatarXat } from './LlistaXats';
 import { contacteDelXat } from './desconegut';
@@ -218,6 +219,15 @@ export function useParla( xatInicial = ID_GUIA ) {
 		} ) );
 		// Només l'id del contacte: el text no surt de la UI.
 		emet( 'missatge.envia', { contacte: contacte.id } );
+		// Els codis dels SMS visibles es comparen aquí, en local.
+		const codis = extreuCodis(
+			( missio?.apps?.missatges?.missatges ?? [] ).filter( ( m ) =>
+				visible( estat, m )
+			)
+		);
+		if ( codis.some( ( codi ) => coincideixCodi( text, codi ) ) ) {
+			emet( 'codi.comparteix', { contacte: contacte.id } );
+		}
 	};
 
 	const dadesDesconegut = ( contacte, senyalAvis ) => ( {

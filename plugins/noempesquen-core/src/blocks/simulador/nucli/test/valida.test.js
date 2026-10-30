@@ -491,3 +491,105 @@ describe( 'validaMissio: apps.ullada.publicacions', () => {
 		expect( amb( [ bona, bona ] ) ).toHaveLength( 1 );
 	} );
 } );
+
+describe( 'validaMissio: cos i autor de publicacions', () => {
+	const bona = {
+		id: 'p1',
+		autor: 'p_nuria',
+		text: 'Hola',
+		il: 'gat',
+		likes: 3,
+	};
+	const mon = { ullada: { perfils: [ { id: 'p_nuria' } ] } };
+	const amb = ( p, monArg ) => {
+		const m = copia();
+		m.apps.ullada = { publicacions: [ { ...bona, ...p } ] };
+		return validaMissio( m, monArg ).filter(
+			( e ) =>
+				e.startsWith( 'ullada' ) ||
+				e.startsWith( 'senyal' ) ||
+				e.startsWith( 'url' )
+		);
+	};
+
+	it( 'accepta un cos vàlid amb text i enllaç', () => {
+		const cos = [
+			[
+				{ t: 'Hola ' },
+				{ enllac: { text: 'aquí', url: 'https://x.cat' } },
+			],
+		];
+		expect( amb( { cos }, mon ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja cos malformat', () => {
+		expect( amb( { cos: 'x' } ) ).toHaveLength( 1 );
+		expect( amb( { cos: [ 'x' ] } ) ).toHaveLength( 1 );
+		expect( amb( { cos: [ [ null ] ] } ) ).toHaveLength( 1 );
+		expect( amb( { cos: [ [ { x: 1 } ] ] } ) ).toHaveLength( 1 );
+		expect( amb( { cos: [ [ { enllac: { text: 'a' } } ] ] } ) ).not.toEqual(
+			[]
+		);
+	} );
+
+	it( 'rebutja enllaç amb url no permesa', () => {
+		const cos = [ [ { enllac: { text: 'a', url: 'ftp://x' } } ] ];
+		expect( amb( { cos } ) ).toHaveLength( 1 );
+		const ok = [ [ { enllac: { text: 'a', url: 'cerca:x' } } ] ];
+		expect( amb( { cos: ok } ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja senyal inexistent dins un segment', () => {
+		const cos = [ [ { t: 'a', senyal: 'no-existeix' } ] ];
+		expect( amb( { cos } ) ).toHaveLength( 1 );
+	} );
+
+	it( 'valida autor només si hi ha mon', () => {
+		expect( amb( {}, mon ) ).toEqual( [] );
+		expect( amb( { autor: 'p_x' }, mon ) ).toHaveLength( 1 );
+		expect( amb( { autor: 'p_x' } ) ).toEqual( [] );
+	} );
+
+	it( 'coneix els esdeveniments nous', () => {
+		expect( ESDEVENIMENTS ).toContain( 'publicacio.denuncia' );
+		expect( ESDEVENIMENTS ).toContain( 'codi.comparteix' );
+	} );
+} );
+
+describe( 'validaMissio: sorteig i premi_senyal', () => {
+	const sorteig = () =>
+		JSON.parse(
+			readFileSync(
+				new URL(
+					'../../../../../missions/remei-03-sorteig.json',
+					import.meta.url
+				),
+				'utf8'
+			)
+		);
+
+	it( 'detecta premi_senyal inexistent', () => {
+		const m = sorteig();
+		m.webs[ 'sorteig-calroig.top' ].premi_senyal = 'no_existeix';
+		expect( validaMissio( m ) ).toContain(
+			'senyal desconegut: no_existeix'
+		);
+	} );
+
+	it( 'rebutja variant diferent de falsa a la plantilla sorteig', () => {
+		const m = sorteig();
+		m.webs[ 'sorteig-calroig.top' ].variant = 'oficial';
+		expect( validaMissio( m ) ).toContain(
+			'sorteig només admet variant falsa: sorteig-calroig.top'
+		);
+	} );
+
+	it( 'amb mon.ullada.perfils buit, tot autor és inexistent', () => {
+		const m = sorteig();
+		const mon = { ullada: { perfils: [] } };
+		const errors = validaMissio( m, mon );
+		expect( errors.some( ( e ) => e.includes( 'autor inexistent' ) ) ).toBe(
+			true
+		);
+	} );
+} );

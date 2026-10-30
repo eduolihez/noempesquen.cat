@@ -1,0 +1,108 @@
+/* Sorteig del Barri: web falsa, sota .nep-so per guanyar al reset. */
+
+$sb-lila: #5b21b6;
+$sb-fosc: #1f2937;
+$sb-fons: #f5f3ff;
+$sb-groc: #fde047;
+
+.nep-so .nep-sb {
+	background: #fff;
+	color: $sb-fosc;
+	display: flex;
+	flex: 1 0 auto;
+	flex-direction: column;
+	font-family: system-ui, "Segoe UI", sans-serif;
+	font-size: 16px;
+	line-height: 1.5;
+	min-height: 100%;
+
+	h1 {
+		font-size: 30px;
+		line-height: 1.2;
+		margin: 0 0 12px;
+	}
+
+	h2 {
+		font-size: 20px;
+		margin: 0 0 8px;
+	}
+
+	.nep-sb-cap {
+		background: $sb-fons;
+		border-bottom: 3px solid $sb-lila;
+		padding: 14px 24px;
+	}
+
+	.nep-sb-marca {
+		align-items: center;
+		display: inline-flex;
+		gap: 8px;
+	}
+
+	.nep-sb-marca__nom {
+		color: $sb-lila;
+		font-size: 22px;
+		font-weight: 800;
+	}
+
+	.nep-sb-cos {
+		flex: 1 0 auto;
+		margin: 0 auto;
+		max-width: 640px;
+		padding: 24px;
+		width: 100%;
+	}
+
+	.nep-sb-premi {
+		background: $sb-lila;
+		border: 4px solid $sb-groc;
+		border-radius: 12px;
+		color: #fff;
+		margin-bottom: 24px;
+		padding: 24px;
+		text-align: center;
+	}
+
+	.nep-sb-premi__nom {
+		color: $sb-groc;
+		font-size: 24px;
+		font-weight: 800;
+		margin: 0 0 12px;
+	}
+
+	.nep-sb-premi__compte {
+		background: #fff;
+		border-radius: 8px;
+		color: #991b1b;
+		display: inline-block;
+		font-weight: 700;
+		margin: 0;
+		padding: 8px 16px;
+	}
+
+	.nep-sb-pagament {
+		background: $sb-fons;
+		border-radius: 8px;
+		padding: 20px;
+	}
+
+	.nep-sb-peu {
+		background: $sb-fons;
+		color: #4b5563;
+		font-size: 14px;
+		padding: 16px 24px;
+		text-align: center;
+	}
+
+	.nep-sb-forma input,
+	.nep-sb-forma button {
+		min-height: 44px;
+	}
+
+	a:focus-visible,
+	button:focus-visible,
+	input:focus-visible {
+		outline: 3px solid $sb-lila;
+		outline-offset: 2px;
+	}
+}

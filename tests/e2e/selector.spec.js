@@ -2,11 +2,18 @@ const { test, expect } = require( '@playwright/test' );
 const { greusAxe, petits } = require( './ajudes' );
 
 const PC = [ 'llissa-01-factura', 'llissa-02-banc' ];
-const MOBIL = [ 'remei-01-paquet', 'remei-02-canviat' ];
+const MOBIL = [
+	'remei-01-paquet',
+	'remei-02-canviat',
+	'remei-03-sorteig',
+	'remei-04-codi',
+];
 const TITOLS = {
 	'llissa-01-factura': 'La factura de la llum',
 	'remei-01-paquet': 'El paquet retingut',
 	'remei-02-canviat': 'Hola, he canviat de mòbil',
+	'remei-03-sorteig': 'Has guanyat un sorteig!',
+	'remei-04-codi': 'Em passes el codi?',
 };
 
 // Progrés de prova: la primera de cada dispositiu, ja jugada.
@@ -61,9 +68,9 @@ test.describe( 'Selector de missions', () => {
 		expect( await idsDe( seccio( page, 'Continua per aquí' ) ) ).toEqual( [
 			propi[ 0 ],
 		] );
-		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual( [
-			propi[ 1 ],
-		] );
+		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual(
+			propi.slice( 1 )
+		);
 		expect( await idsDe( seccio( page, 'Altres dispositius' ) ) ).toEqual(
 			altre
 		);

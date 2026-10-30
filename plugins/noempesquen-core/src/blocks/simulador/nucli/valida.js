@@ -23,6 +23,7 @@ export const PLANTILLES_WEB = [
 	'llum-clara',
 	'enviat',
 	'banc-solid',
+	'sorteig',
 	'diari',
 ];
 export const ESDEVENIMENTS_FORMULARI = [
@@ -53,6 +54,8 @@ export const ESDEVENIMENTS = [
 	'missatge.respon',
 	'missatge.envia',
 	'enllac.mantingut',
+	'publicacio.denuncia',
+	'codi.comparteix',
 ];
 
 /**
@@ -70,6 +73,7 @@ const CAMPS_SENYAL = [
 	'assumpte_senyal',
 	'domini_senyal',
 	'senyal_avis',
+	'premi_senyal',
 ];
 
 /**
@@ -272,7 +276,40 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
-function validaPublicacionsUllada( m, errors ) {
+function validaCosPublicacio( cos, ref, errors ) {
+	if ( ! Array.isArray( cos ) ) {
+		errors.push( `${ ref }: «cos» ha de ser una llista de paràgrafs` );
+		return;
+	}
+	cos.forEach( ( par, j ) => {
+		if ( ! Array.isArray( par ) ) {
+			errors.push(
+				`${ ref }.cos[${ j }]: paràgraf ha de ser una llista`
+			);
+			return;
+		}
+		par.forEach( ( seg, k ) => {
+			const r = `${ ref }.cos[${ j }][${ k }]`;
+			if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
+				errors.push( `${ r }: segment ha de ser un objecte` );
+			} else if ( seg.enllac !== undefined ) {
+				const e = seg.enllac;
+				if (
+					! e ||
+					typeof e !== 'object' ||
+					typeof e.text !== 'string' ||
+					typeof e.url !== 'string'
+				) {
+					errors.push( `${ r }: enllaç ha de tenir text i url` );
+				}
+			} else if ( typeof seg.t !== 'string' ) {
+				errors.push( `${ r }: segment sense «t» ni «enllac»` );
+			}
+		} );
+	} );
+}
+
+function validaPublicacionsUllada( m, mon, errors ) {
 	const publicacions = m.apps?.ullada?.publicacions;
 	if ( publicacions === undefined ) {
 		return;
@@ -282,6 +319,9 @@ function validaPublicacionsUllada( m, errors ) {
 		return;
 	}
 	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	const perfils = Array.isArray( mon?.ullada?.perfils )
+		? new Set( mon.ullada.perfils.map( ( x ) => x?.id ) )
+		: null;
 	const ids = new Set();
 	publicacions.forEach( ( p, i ) => {
 		const ref = `ullada.publicacions[${ i }]`;
@@ -294,6 +334,12 @@ function validaPublicacionsUllada( m, errors ) {
 				errors.push( `${ ref }: camp «${ c }» buit o absent` );
 			}
 		} );
+		if ( text( p.autor ) && perfils && ! perfils.has( p.autor ) ) {
+			errors.push( `${ ref }: autor inexistent «${ p.autor }»` );
+		}
+		if ( p.cos !== undefined ) {
+			validaCosPublicacio( p.cos, ref, errors );
+		}
 		if ( text( p.id ) ) {
 			if ( ids.has( p.id ) ) {
 				errors.push( `${ ref }: id duplicat «${ p.id }»` );
@@ -406,11 +452,14 @@ export function validaMissio( m, mon ) {
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
 		}
+		if ( web.plantilla === 'sorteig' && web.variant !== 'falsa' ) {
+			errors.push( `sorteig només admet variant falsa: ${ domini }` );
+		}
 		validaFormularis( domini, web, errors );
 	} );
 
 	validaXatsParla( m, mon, errors );
-	validaPublicacionsUllada( m, errors );
+	validaPublicacionsUllada( m, mon, errors );
 	validaDisparadors( m, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {

@@ -1,20 +1,52 @@
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { useJoc } from '../../simulador/context';
+import { useSistema } from '../../sistemes/pc/context';
+import { Cos } from '../../ui/Cos';
 import { Ilustracio } from '../../ui/ilustracions';
+import { esUrlNavegable } from '../../webs/enllac';
+import { PREFIX_CERCA } from '../navegador/historial';
 import { formataLikes } from './feed.js';
-import { IconaCor } from './icones';
+import { IconaCor, IconaDenuncia } from './icones';
 
 /**
- * Una publicació del feed. El «m'agrada» és estat local (suma o resta 1).
+ * Una publicació del feed. El «m'agrada» i la denúncia són estat local; al
+ * motor li arriben `publicacio.denuncia` i, si el `cos` té enllaços,
+ * `enllac.obre`. `useSistema()` ve de `sistemes/pc/context`: és un context
+ * compartit que el mòbil també proveeix (obreApp). En passar o enfocar un
+ * enllaç es mostra la URL de destí a baix, com la barra d'estat del navegador.
  *
  * @param {Object} props
  * @param {Object} props.publicacio Publicació amb el perfil resolt.
  */
 export function Publicacio( { publicacio } ) {
+	const { emet } = useJoc();
+	const { obreApp } = useSistema();
 	const [ agrada, setAgrada ] = useState( false );
-	const { perfil, text, il, likes } = publicacio;
+	const [ denunciada, setDenunciada ] = useState( false );
+	const [ hover, setHover ] = useState( null );
+	const { id, perfil, text, cos, il, likes } = publicacio;
 	const nom = perfil.nom || perfil.usuari || __( 'Usuari', 'noempesquen' );
 	const total = likes + ( agrada ? 1 : 0 );
+
+	const obreEnllac = ( url ) => {
+		const valida =
+			esUrlNavegable( url ) ||
+			( typeof url === 'string' && url.startsWith( PREFIX_CERCA ) );
+		if ( ! valida ) {
+			return;
+		}
+		emet( 'enllac.obre', { url } );
+		obreApp( 'navegador', { url } );
+	};
+
+	const denuncia = () => {
+		if ( denunciada ) {
+			return;
+		}
+		setDenunciada( true );
+		emet( 'publicacio.denuncia', { id } );
+	};
 
 	return (
 		<article
@@ -58,10 +90,45 @@ export function Publicacio( { publicacio } ) {
 				<span className="nep-ullada-pub__likes" aria-live="polite">
 					{ formataLikes( total ) }
 				</span>
+				<button
+					type="button"
+					className="nep-ullada-pub__denuncia"
+					aria-disabled={ denunciada }
+					aria-label={ sprintf(
+						/* translators: %s: nom de l'autor */
+						__( 'Denuncia la publicació de %s', 'noempesquen' ),
+						nom
+					) }
+					onClick={ denuncia }
+				>
+					<IconaDenuncia mida={ 20 } />
+					<span>{ __( 'Denuncia', 'noempesquen' ) }</span>
+				</button>
 			</div>
-			<p className="nep-ullada-pub__text">
-				<strong>{ perfil.usuari || nom }</strong> { text }
-			</p>
+			{ denunciada && (
+				<p className="nep-ullada-pub__estat" role="status">
+					{ __( 'Denunciada. Gràcies.', 'noempesquen' ) }
+				</p>
+			) }
+			{ Array.isArray( cos ) && cos.length ? (
+				<div className="nep-ullada-pub__text nep-ullada-pub__cos">
+					<strong>{ perfil.usuari || nom }</strong>
+					<Cos
+						paragrafs={ cos }
+						onEnllac={ obreEnllac }
+						onHoverUrl={ setHover }
+					/>
+				</div>
+			) : (
+				<p className="nep-ullada-pub__text">
+					<strong>{ perfil.usuari || nom }</strong> { text }
+				</p>
+			) }
+			{ hover && (
+				<div className="nep-ullada-pub__url" aria-hidden="true">
+					{ hover }
+				</div>
+			) }
 		</article>
 	);
 }
