@@ -86,6 +86,7 @@ $ull-accent: #7a2fc0;
 	&__boto:focus-visible,
 	&__pestanya:focus-visible,
 	&__panell:focus-visible,
+	.nep-ullada-histories:focus-visible,
 	.nep-ullada-pub__agrada:focus-visible {
 		outline: 3px solid var(--nep-focus, #1f5fd1);
 		outline-offset: -3px;

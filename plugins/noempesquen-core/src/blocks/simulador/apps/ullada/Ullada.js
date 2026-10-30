@@ -111,6 +111,7 @@ export default function Ullada() {
 				<ul
 					className="nep-ullada-histories"
 					aria-label={ __( 'Històries', 'noempesquen' ) }
+					tabIndex={ 0 }
 				>
 					{ perfils.map( ( pf ) => (
 						<li key={ pf.id } className="nep-ullada-historia">
