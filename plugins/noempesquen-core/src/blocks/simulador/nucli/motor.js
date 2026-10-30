@@ -299,8 +299,29 @@ export function visible( estat, item ) {
 	return ! item.ocult || !! estat.visibles?.[ item.id ];
 }
 
+/**
+ * Un senyal amb `requereix` (id d'un element ocult o d'un disparador) només
+ * compta al màxim si el jugador l'ha trobat o aquell element ja s'ha vist
+ * (`mostra`) o executat (p. ex. `web-falsa`). Sense `requereix`, sempre compta.
+ *
+ * @param {Object} estat  Estat del motor.
+ * @param {Object} senyal Senyal de la missió.
+ * @return {boolean} Si compta al màxim.
+ */
+function senyalDisponible( estat, senyal ) {
+	return (
+		! senyal.requereix ||
+		estat.trobats.includes( senyal.id ) ||
+		!! estat.visibles?.[ senyal.requereix ] ||
+		estat.executats.includes( senyal.requereix )
+	);
+}
+
 export function puntuacio( missio, estat ) {
-	const maxim = missio.senyals.length * PUNTS.senyal + PUNTS.correcta;
+	const disponibles = missio.senyals.filter( ( s ) =>
+		senyalDisponible( estat, s )
+	);
+	const maxim = disponibles.length * PUNTS.senyal + PUNTS.correcta;
 	const opcio = opcioTriada( missio, estat );
 	let punts = estat.trobats.length * PUNTS.senyal;
 	if ( opcio ) {

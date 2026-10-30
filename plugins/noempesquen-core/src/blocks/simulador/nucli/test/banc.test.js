@@ -60,6 +60,53 @@ describe( 'missió «El banc et bloqueja el compte» (v2)', () => {
 		expect( puntuacio( p, e ).estrelles ).toBe( 3 );
 	} );
 
+	it( 'camí segur net (sense obrir la web falsa) dóna 3 estrelles', () => {
+		const cami = p.senyals.filter( ( s ) => ! s.requereix );
+		expect( cami.length ).toBeGreaterThanOrEqual( 4 );
+		const e = aplica(
+			ambCorreu(),
+			{ tipus: 'LUPA' },
+			...cami.map( ( s ) => ( { tipus: 'INSPECCIONA', senyal: s.id } ) ),
+			evt( 'correu.marca', { id: 'm2', com: 'phishing' } )
+		);
+		expect( puntuacio( p, e ).estrelles ).toBe( 3 );
+		const sensePistes = puntuacio( p, e );
+		expect( sensePistes.punts ).toBe( sensePistes.maxim );
+	} );
+
+	it( 'obrir la web falsa fa comptar els seus indicis i el pescat penalitza', () => {
+		const cami = p.senyals.filter( ( s ) => ! s.requereix );
+		let e = aplica(
+			ambCorreu(),
+			evt( 'web.carrega', { url: FALSA } ),
+			{ tipus: 'LUPA' },
+			...cami.map( ( s ) => ( { tipus: 'INSPECCIONA', senyal: s.id } ) ),
+			evt( 'correu.marca', { id: 'm2', com: 'phishing' } )
+		);
+		expect( puntuacio( p, e ).estrelles ).toBeLessThan( 3 );
+		e = aplica(
+			ambCorreu(),
+			{ tipus: 'LUPA' },
+			...p.senyals.map( ( s ) => ( {
+				tipus: 'INSPECCIONA',
+				senyal: s.id,
+			} ) ),
+			evt( 'formulari.envia', { url: FALSA, formulari: 'acces' } ),
+			evt( 'codi.envia', { url: FALSA, formulari: 'codi' } )
+		);
+		expect( e.pescat ).toBe( true );
+		expect( puntuacio( p, e ).estrelles ).toBeLessThan( 3 );
+	} );
+
+	it( 'esborrar tanca la missió: després ja no es pot marcar com a phishing', () => {
+		const e = aplica(
+			ambCorreu(),
+			evt( 'correu.marca', { id: 'm2', com: 'esborra' } ),
+			evt( 'correu.marca', { id: 'm2', com: 'phishing' } )
+		);
+		expect( e.opcio ).toBe( 'b' );
+	} );
+
 	it( 'esborrar és parcial', () => {
 		const e = aplica(
 			ambCorreu(),

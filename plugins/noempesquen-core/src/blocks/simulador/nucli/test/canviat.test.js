@@ -79,6 +79,58 @@ describe( 'missió «Hola, he canviat de mòbil» (v2)', () => {
 		);
 	} );
 
+	it( 'escriure al Pau abans que arribi l’engany no tanca la missió; després sí, i el Pau respon', () => {
+		let e = aplica( joc(), evt( 'missatge.envia', { contacte: 'pau' } ) );
+		expect( e.fase ).toBe( FASE.JOC );
+		e = aplica( e, { tipus: 'TICK', segons: 10 } );
+		e = aplica( e, evt( 'missatge.envia', { contacte: 'pau' } ) );
+		expect( e.opcio ).toBe( 'd' );
+		expect( e.visibles.pau1 ).toBe( true );
+	} );
+
+	it( 'camí segur net: bloquejar amb els indicis disponibles dóna 3 estrelles', () => {
+		const buscaTot = ( e ) =>
+			aplica(
+				e,
+				{ tipus: 'LUPA' },
+				...p.senyals
+					.filter(
+						( s ) => ! s.requereix || e.visibles[ s.requereix ]
+					)
+					.map( ( s ) => ( { tipus: 'INSPECCIONA', senyal: s.id } ) )
+			);
+		// Bloqueja just en arribar el primer missatge.
+		let e = buscaTot( aplica( joc(), { tipus: 'TICK', segons: 10 } ) );
+		e = aplica(
+			e,
+			evt( 'contacte.bloqueja', { id: 'numero_desconegut' } )
+		);
+		expect( e.opcio ).toBe( 'c' );
+		expect( puntuacio( p, e ).estrelles ).toBe( 3 );
+		// Sense buscar res, en canvi, no.
+		const pobre = aplica(
+			aplica( joc(), { tipus: 'TICK', segons: 10 } ),
+			evt( 'contacte.bloqueja', { id: 'numero_desconegut' } )
+		);
+		expect( puntuacio( p, pobre ).estrelles ).toBeLessThan( 3 );
+	} );
+
+	it( 'amb pescat segueix penalitzant', () => {
+		const e = aplica(
+			ambTot(),
+			{ tipus: 'LUPA' },
+			...p.senyals.map( ( s ) => ( {
+				tipus: 'INSPECCIONA',
+				senyal: s.id,
+			} ) ),
+			evt( 'pagament.fes', {
+				url: 'app://bancsolid',
+				formulari: 'transferencia',
+			} )
+		);
+		expect( puntuacio( p, e ).estrelles ).toBeLessThan( 3 );
+	} );
+
 	it( 'escriure a un altre contacte no tanca la missió', () => {
 		const e = aplica(
 			ambTot(),
