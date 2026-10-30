@@ -77,6 +77,20 @@ export function AvisFals( {
 		};
 	}, [ registraMenu ] );
 
+	// La lupa canvia el número (botó ↔ text inspeccionable): si el focus hi
+	// era, cauria a <body>; el tornem al número o a «Tanca».
+	useEffect( () => {
+		const doc = arrel.current.ownerDocument;
+		if ( doc.activeElement && doc.activeElement !== doc.body ) {
+			return;
+		}
+		(
+			arrel.current.querySelector( '.nep-avis__numero button' ) ??
+			arrel.current.querySelector( 'button.nep-avis__numero' ) ??
+			arrel.current.querySelector( '[data-focus-inicial]' )
+		)?.focus();
+	}, [ estat.lupa ] );
+
 	const clicTanca = () => {
 		if ( ! reobre ) {
 			onTanca?.();
