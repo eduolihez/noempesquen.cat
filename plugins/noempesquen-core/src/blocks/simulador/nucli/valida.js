@@ -71,7 +71,7 @@ export const ESDEVENIMENTS = [
 const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
-const URL_HTTP = /^https?:\/\//i;
+const URL_HTTP = /^https?:\/\/\S+/i;
 
 const CAMPS_SENYAL = [
 	'senyal',
@@ -206,14 +206,21 @@ function validaDisparadors( m, mon, errors ) {
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
 	const contactesMon = Array.isArray( mon?.contactes )
-		? new Set( mon.contactes.map( ( c ) => c?.id ) )
+		? new Set(
+				mon.contactes
+					.map( ( c ) => c?.id )
+					.filter( ( id ) => typeof id === 'string' )
+			)
 		: null;
-	// Publicacions denunciables: Ullada (món i missió) i anuncis de webs (T3).
-	const idsDenunciables = new Set( [
-		...llista( mon?.ullada?.publicacions ).map( ( p ) => p?.id ),
-		...llista( m.apps?.ullada?.publicacions ).map( ( p ) => p?.id ),
-		...Object.values( m.webs ?? {} ).map( ( w ) => w?.anunci?.id ),
-	] );
+	// Publicacions denunciables: Ullada (món i missió) i anuncis de webs.
+	// TODO(T3): validar l'esquema de `webs.*.anunci`; ara només se'n llegeix l'id.
+	const idsDenunciables = new Set(
+		[
+			...llista( mon?.ullada?.publicacions ).map( ( p ) => p?.id ),
+			...llista( m.apps?.ullada?.publicacions ).map( ( p ) => p?.id ),
+			...Object.values( m.webs ?? {} ).map( ( w ) => w?.anunci?.id ),
+		].filter( ( id ) => typeof id === 'string' )
+	);
 	let hiHaPescat = false;
 	llista( m.disparadors ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
@@ -405,8 +412,12 @@ function validaAnuncisRevenda( anuncis, text, errors ) {
 				errors.push( `${ ref }: camp «${ c }» buit o absent` );
 			}
 		} );
-		if ( typeof a.preu !== 'number' || ! Number.isFinite( a.preu ) ) {
-			errors.push( `${ ref }: «preu» ha de ser un número` );
+		if (
+			typeof a.preu !== 'number' ||
+			! Number.isFinite( a.preu ) ||
+			a.preu < 0
+		) {
+			errors.push( `${ ref }: «preu» ha de ser un número >= 0` );
 		}
 		if ( ! text( a.il ) || ! existeixIlustracio( a.il ) ) {
 			errors.push( `${ ref }: il·lustració inexistent «${ a.il }»` );
@@ -433,6 +444,12 @@ function validaMissatgeRevenda( msg, ref, idsMsg, errors ) {
 	if ( ! [ 'ells', 'jo' ].includes( msg.de ) ) {
 		errors.push( `${ ref }: remitent invàlid «${ msg.de }»` );
 	}
+	if ( msg.ocult !== undefined && typeof msg.ocult !== 'boolean' ) {
+		errors.push( `${ ref }: «ocult» ha de ser booleà` );
+	}
+	if ( msg.hora !== undefined && typeof msg.hora !== 'string' ) {
+		errors.push( `${ ref }: «hora» ha de ser text` );
+	}
 	if ( ! Array.isArray( msg.cos ) || ! msg.cos.length ) {
 		errors.push( `${ ref }: «cos» ha de ser una llista de segments` );
 		return;
@@ -440,6 +457,9 @@ function validaMissatgeRevenda( msg, ref, idsMsg, errors ) {
 	msg.cos.forEach( ( seg, k ) => {
 		const rs = `${ ref }.cos[${ k }]`;
 		validaSegmentCos( seg, rs, errors );
+		if ( seg?.senyal !== undefined && typeof seg.senyal !== 'string' ) {
+			errors.push( `${ rs }: «senyal» ha de ser text` );
+		}
 		const url = seg?.enllac?.url;
 		if ( typeof url === 'string' && ! URL_HTTP.test( url ) ) {
 			errors.push( `${ rs }: url sense http(s) «${ url }»` );
@@ -556,6 +576,13 @@ export function validaMissio( m, mon ) {
 	}
 
 	const ids = new Set( llista( m.senyals ).map( ( s ) => s?.id ) );
+	const vistes = new Set();
+	llista( m.senyals ).forEach( ( s ) => {
+		if ( vistes.has( s?.id ) ) {
+			errors.push( `senyal duplicada: ${ s?.id }` );
+		}
+		vistes.add( s?.id );
+	} );
 	const usats = [ ...recullSenyals( m.apps ), ...recullSenyals( m.webs ) ];
 	new Set( usats ).forEach( ( s ) => {
 		if ( ! ids.has( s ) ) {
@@ -563,6 +590,9 @@ export function validaMissio( m, mon ) {
 		}
 	} );
 
+	// Només compta el que recullen `recullSenyals` sobre `m.apps` i `m.webs`
+	// (camps de CAMPS_SENYAL); una senyal usada només en disparadors o en
+	// altres seccions es considera sense referència.
 	const referenciats = new Set( usats );
 	ids.forEach( ( id ) => {
 		if ( id !== undefined && ! referenciats.has( id ) ) {

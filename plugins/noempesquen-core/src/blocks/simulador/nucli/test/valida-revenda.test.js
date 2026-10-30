@@ -211,3 +211,59 @@ describe( 'validaMissio: plantilles, senyals de web i cruces', () => {
 		expect( errors( m ) ).toEqual( [] );
 	} );
 } );
+
+describe( 'validaMissio: arrestos de robustesa', () => {
+	it( 'bloqueja i denuncia sense id fallen', () => {
+		[
+			[ 'contacte.bloqueja', 'bloqueja: contacte inexistent: undefined' ],
+			[
+				'publicacio.denuncia',
+				'denuncia: publicació inexistent: undefined',
+			],
+		].forEach( ( [ esdeveniment, error ] ) => {
+			const m = fixture();
+			m.webs[ 'sorteig-calroig.top' ].anunci = {};
+			m.disparadors.push( {
+				quan: { esdeveniment },
+				efectes: [ { tipus: 'guia-diu', text: 'ok' } ],
+			} );
+			expect( errors( m ) ).toContain( error );
+		} );
+	} );
+
+	it( 'valida preu, ocult, hora i senyal del segment', () => {
+		const m = fixture();
+		const r = m.apps.revenda;
+		r.anuncis[ 0 ].preu = -1;
+		r.xats[ 0 ].missatges[ 0 ].ocult = 'si';
+		r.xats[ 0 ].missatges[ 0 ].hora = 5;
+		r.xats[ 0 ].missatges[ 0 ].cos[ 0 ].senyal = 7;
+		const e = errors( m ).join( ', ' );
+		expect( e ).toMatch( /«preu»/ );
+		expect( e ).toMatch( /«ocult»/ );
+		expect( e ).toMatch( /«hora»/ );
+		expect( e ).toMatch( /«senyal» ha de ser text/ );
+	} );
+
+	it( 'rebutja una URL http(s) buida', () => {
+		const m = fixture();
+		m.apps.revenda.xats[ 0 ].missatges[ 1 ].cos[ 1 ].enllac.url =
+			'https://';
+		expect( errors( m ).join( ', ' ) ).toMatch( /url sense http/ );
+	} );
+
+	it( 'una senyal referenciada només a webs.*.compte_senyal és vàlida', () => {
+		const m = fixture();
+		delete m.apps.revenda.xats[ 0 ].missatges[ 1 ].cos[ 1 ].senyal;
+		m.webs[ 'sorteig-calroig.top' ].compte_senyal = 'fora_revenda';
+		expect( errors( m ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja ids de senyal duplicats', () => {
+		const m = fixture();
+		m.senyals.push( { ...m.senyals[ 0 ] } );
+		expect( errors( m ) ).toContain(
+			`senyal duplicada: ${ m.senyals[ 0 ].id }`
+		);
+	} );
+} );
