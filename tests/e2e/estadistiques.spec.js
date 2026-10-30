@@ -1,4 +1,4 @@
-const { test, expect } = require( '@playwright/test' );
+const { test, expect } = require( './ajudes' );
 const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-factura.json' );
 const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
 const { iniciaMissio, senseFullscreen } = require( './ajudes' );

@@ -1,4 +1,4 @@
-const { test, expect } = require( '@playwright/test' );
+const { test, expect } = require( './ajudes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-factura.json' );
 

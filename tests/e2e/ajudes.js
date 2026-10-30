@@ -1,5 +1,23 @@
-const { expect } = require( '@playwright/test' );
+const { test: base, expect } = require( '@playwright/test' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
+
+/** Endpoint d'estadístiques. */
+const RESULTAT = /\/noempesquen\/v1\/resultat/;
+
+/**
+ * `test` comú de tots els specs: per defecte el POST /resultat es respon amb
+ * 204 sense arribar al servidor (no escriu files a la BD de desenvolupament ni
+ * consumeix el límit d'enviaments). És una ruta del context: un `page.route`
+ * propi del spec (p. ex. `estadistiques.spec.js`) hi té preferència.
+ */
+const test = base.extend( {
+	context: async ( { context }, use ) => {
+		await context.route( RESULTAT, ( route ) =>
+			route.fulfill( { status: 204 } )
+		);
+		await use( context );
+	},
+} );
 
 /**
  * Violacions axe greus (serious / critical) dins del bloc del simulador.
@@ -175,6 +193,9 @@ const senseFullscreen = ( page ) =>
 	} );
 
 module.exports = {
+	test,
+	expect,
+	RESULTAT,
 	greusAxePc,
 	senseFullscreen,
 	esHoritzontal,
