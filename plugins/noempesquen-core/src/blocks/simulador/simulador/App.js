@@ -92,7 +92,6 @@ export function App( { config } ) {
 				missions={ missions }
 				progres={ progres }
 				preferit={ preferit }
-				esMobil={ esMobil }
 				onTria={ tria }
 				enfoca={ jugada.current }
 			/>

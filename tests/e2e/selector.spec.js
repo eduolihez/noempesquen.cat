@@ -9,11 +9,14 @@ const TITOLS = {
 	'remei-02-canviat': 'Hola, he canviat de mòbil',
 };
 
+// Progrés de prova: la primera de cada dispositiu, ja jugada.
+const PROGRES = { [ PC[ 0 ] ]: 3, [ MOBIL[ 0 ] ]: 2 };
+
 const selector = ( page ) =>
 	page.getByRole( 'region', { name: 'Tria una missió' } );
 
 const seccio = ( page, nom ) =>
-	selector( page ).getByRole( 'region', { name: nom, exact: true } );
+	selector( page ).getByRole( 'group', { name: nom, exact: true } );
 
 const idsDe = ( loc ) =>
 	loc
@@ -65,21 +68,23 @@ test.describe( 'Selector de missions', () => {
 			altre
 		);
 
-		const titols = await selector( page )
-			.getByRole( 'heading', { level: 2 } )
-			.allTextContents();
-		expect( titols ).toEqual( [
-			'Tria una missió',
-			'Continua per aquí',
-			titolPropi,
-			'Altres dispositius',
-		] );
+		// Un sol h2 (el selector) i les seccions com a h3 que en pengen.
+		expect(
+			await selector( page )
+				.getByRole( 'heading', { level: 2 } )
+				.allTextContents()
+		).toEqual( [ 'Tria una missió' ] );
+		expect(
+			await selector( page )
+				.getByRole( 'heading', { level: 3 } )
+				.allTextContents()
+		).toEqual( [ 'Continua per aquí', titolPropi, 'Altres dispositius' ] );
 
 		// «Millor en horitzontal» només a les de PC vistes des d'un mòbil.
 		const horitzontal = selector( page ).getByText(
 			'Millor en horitzontal'
 		);
-		await expect( horitzontal ).toHaveCount( isMobile ? 2 : 0 );
+		await expect( horitzontal ).toHaveCount( isMobile ? PC.length : 0 );
 	} );
 
 	test( 'la recomanada apareix una sola vegada', async ( { page } ) => {
@@ -94,35 +99,42 @@ test.describe( 'Selector de missions', () => {
 		).toHaveCount( 1 );
 		await expect(
 			page.getByRole( 'img', { name: "Encara no l'has jugada" } )
-		).toHaveCount( 4 );
+		).toHaveCount( PC.length + MOBIL.length );
 	} );
 
 	test( 'amb progrés recomana la següent i mostra el resum', async ( {
 		page,
 	} ) => {
 		const isMobile = estret( page );
-		await page.addInitScript( () => {
+		await page.addInitScript( ( p ) => {
 			window.localStorage.setItem(
 				'noempesquen-progres-v2',
-				JSON.stringify( {
-					'llissa-01-factura': 3,
-					'remei-01-paquet': 2,
-				} )
+				JSON.stringify( p )
 			);
-		} );
+		}, PROGRES );
 		await page.goto( '/simulador/' );
-		const esperada = isMobile ? 'remei-02-canviat' : 'llissa-02-banc';
+		const esperada = isMobile ? MOBIL[ 1 ] : PC[ 1 ];
 		expect( await idsDe( seccio( page, 'Continua per aquí' ) ) ).toEqual( [
 			esperada,
 		] );
+		const total = PC.length + MOBIL.length;
+		const valors = Object.values( PROGRES );
+		const guanyades = valors.reduce( ( a, b ) => a + b, 0 );
 		await expect( selector( page ) ).toContainText(
-			'2 de 4 missions jugades · 5 de 12 estrelles'
+			`${ valors.length } de ${ total } missions jugades · ${ guanyades } de ${
+				total * 3
+			} estrelles`
 		);
+		for ( const n of new Set( valors ) ) {
+			await expect(
+				page.getByRole( 'img', {
+					name: `Millor resultat: ${ n } de 3 estrelles`,
+				} )
+			).toHaveCount( valors.filter( ( v ) => v === n ).length );
+		}
 		await expect(
-			page.getByRole( 'img', {
-				name: 'Millor resultat: 3 de 3 estrelles',
-			} )
-		).toHaveCount( 1 );
+			page.getByRole( 'img', { name: "Encara no l'has jugada" } )
+		).toHaveCount( total - valors.length );
 	} );
 
 	test( 'el focus torna a la targeta jugada', async ( { page } ) => {

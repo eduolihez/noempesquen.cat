@@ -140,27 +140,20 @@ function Seccio( { id, titol, missions, pinta } ) {
 		return null;
 	}
 	return (
-		<section className="nep-sel-seccio" aria-labelledby={ id }>
-			<h2 id={ id } className="nep-sel-seccio__titol">
+		<div role="group" className="nep-sel-seccio" aria-labelledby={ id }>
+			<h3 id={ id } className="nep-sel-seccio__titol">
 				{ titol }
-			</h2>
+			</h3>
 			<ul className="nep-sel-graella">
 				{ missions.map( ( m ) => (
 					<li key={ m.id }>{ pinta( m ) }</li>
 				) ) }
 			</ul>
-		</section>
+		</div>
 	);
 }
 
-export function Selector( {
-	missions,
-	progres,
-	preferit,
-	esMobil,
-	onTria,
-	enfoca,
-} ) {
+export function Selector( { missions, progres, preferit, onTria, enfoca } ) {
 	const arrel = useRef( null );
 	const { recomanada, principals, altres, resum } = useMemo(
 		() => agrupaMissions( missions, preferit, progres ),
@@ -169,22 +162,28 @@ export function Selector( {
 	const sense = ( llista ) =>
 		recomanada ? llista.filter( ( m ) => m.id !== recomanada.id ) : llista;
 
-	// En tornar d'una partida, el focus va a la targeta que s'ha jugat.
+	// En tornar d'una partida, el focus va a la targeta que s'ha jugat. Si
+	// encara no hi és (missions remotes que arriben després), es reintenta
+	// quan canvia la llista; un cop trobada, no es torna a moure el focus.
+	const pendent = useRef( enfoca );
 	useEffect( () => {
-		if ( enfoca ) {
-			arrel.current
-				?.querySelector(
-					`[data-missio="${ window.CSS.escape( enfoca ) }"]`
-				)
-				?.focus();
+		if ( ! pendent.current ) {
+			return;
 		}
-	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+		const targeta = arrel.current?.querySelector(
+			`[data-missio="${ window.CSS.escape( pendent.current ) }"]`
+		);
+		if ( targeta ) {
+			targeta.focus();
+			pendent.current = null;
+		}
+	}, [ missions.length ] );
 
 	const pinta = ( m, destacada = false ) => (
 		<Targeta
 			missio={ m }
 			estrelles={ estrellesDe( progres, m.id ) }
-			horitzontal={ esMobil && m.dispositiu === 'pc' }
+			horitzontal={ preferit === 'mobil' && m.dispositiu === 'pc' }
 			destacada={ destacada }
 			onTria={ onTria }
 		/>
@@ -218,15 +217,16 @@ export function Selector( {
 			</header>
 
 			{ recomanada && (
-				<section
+				<div
+					role="group"
 					className="nep-sel-seccio nep-sel-seccio--destacada"
 					aria-labelledby="nep-sel-continua"
 				>
-					<h2 id="nep-sel-continua" className="nep-sel-seccio__titol">
+					<h3 id="nep-sel-continua" className="nep-sel-seccio__titol">
 						{ __( 'Continua per aquí', 'noempesquen' ) }
-					</h2>
+					</h3>
 					{ pinta( recomanada, true ) }
-				</section>
+				</div>
 			) }
 
 			<Seccio
