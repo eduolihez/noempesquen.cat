@@ -425,7 +425,7 @@
 			{ "id": "p_biel", "nom": "Biel Costa", "usuari": "bielcosta", "il": "gos" },
 			{ "id": "p_laia", "nom": "Laia Mas", "usuari": "laia.mas", "il": "platja" },
 			{ "id": "p_quim", "nom": "Quim Serra", "usuari": "quimserra", "il": "parc" },
-			{ "id": "p_sorteigs", "nom": "Sorteigs Cal Roig", "usuari": "cal.roig.sorteigs", "il": "pa" },
+			{ "id": "p_sorteigs", "nom": "Sorteigs Cal Roig", "usuari": "cal.roig.botlga", "il": "pa" },
 			{ "id": "p_botiga", "nom": "Cal Roig · Botiga", "usuari": "cal.roig.botiga", "il": "pa" }
 		],
 		"publicacions": [
