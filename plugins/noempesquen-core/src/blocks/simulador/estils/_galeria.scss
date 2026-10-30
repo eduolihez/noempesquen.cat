@@ -1,0 +1,191 @@
+/* Galeria del mòbil: quadrícula per dates i visor. */
+
+$gal-text: #1a1a1a;
+$gal-text-2: #555b63;
+$gal-vora: #e2e5ea;
+$gal-fons-visor: #101215;
+
+.nep-so .nep-galeria {
+	background: #fff;
+	color: $gal-text;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	position: relative;
+
+	&__vista {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	&__cap {
+		align-items: center;
+		border-bottom: 1px solid $gal-vora;
+		display: flex;
+		min-height: 56px;
+		padding: 6px 16px;
+	}
+
+	&__titol {
+		font-size: 20px;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	&__cos {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		padding: 8px 8px 16px;
+	}
+
+	&__grup {
+		margin-bottom: 12px;
+	}
+
+	&__data {
+		color: $gal-text-2;
+		font-size: 14px;
+		font-weight: 600;
+		margin: 8px 4px;
+	}
+
+	&__graella {
+		display: grid;
+		gap: 4px;
+		grid-template-columns: repeat(3, 1fr);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__foto {
+		aspect-ratio: 1;
+		background: #eef1f5;
+		border: 0;
+		border-radius: 4px;
+		cursor: pointer;
+		display: block;
+		min-height: 44px;
+		overflow: hidden;
+		padding: 0;
+		width: 100%;
+
+		&:focus-visible {
+			outline: var(--nep-focus);
+			outline-offset: -3px;
+		}
+	}
+
+	&__il {
+		display: block;
+		height: 100%;
+		object-fit: cover;
+		pointer-events: none;
+		width: 100%;
+	}
+}
+
+.nep-so .nep-galeria-visor {
+	animation: nep-galeria-entra 0.18s ease-out;
+	background: $gal-fons-visor;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	inset: 0;
+	position: absolute;
+	z-index: 5;
+
+	&__cap,
+	&__nav {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 12px;
+	}
+
+	&__boto {
+		align-items: center;
+		background: rgba(255, 255, 255, 0.12);
+		border: 0;
+		border-radius: 22px;
+		color: #fff;
+		cursor: pointer;
+		display: inline-flex;
+		font: inherit;
+		font-size: 15px;
+		gap: 6px;
+		justify-content: center;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 0 16px;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.22);
+		}
+
+		&:focus-visible {
+			outline: 3px solid #fff;
+			outline-offset: 2px;
+		}
+
+		&[aria-disabled="true"] {
+			cursor: default;
+			opacity: 0.55;
+		}
+	}
+
+	&__foto {
+		align-items: center;
+		display: flex;
+		flex: 1 1 auto;
+		justify-content: center;
+		min-height: 0;
+		padding: 8px;
+	}
+
+	&__il {
+		display: block;
+		height: auto;
+		max-height: 100%;
+		max-width: 100%;
+		width: 100%;
+	}
+
+	&__peu {
+		padding: 4px 16px 8px;
+		text-align: center;
+	}
+
+	&__titol {
+		font-size: 17px;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	&__data {
+		color: #d0d4da;
+		font-size: 14px;
+		margin: 2px 0 0;
+	}
+}
+
+@keyframes nep-galeria-entra {
+
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-so .nep-galeria-visor {
+		animation: none;
+	}
+}
