@@ -1,6 +1,5 @@
 const { test, expect } = require( '@playwright/test' );
 const {
-	esHoritzontal,
 	greusAxe,
 	inspecciona,
 	iniciaMissio,
@@ -211,11 +210,6 @@ test.describe( 'Hola, he canviat de mòbil', () => {
 	} );
 
 	test( 'via parcial: no contestar i deixar-ho estar', async ( { page } ) => {
-		// BUG horitzontal (915x412): el log del xat tapa els botons de resposta.
-		test.fixme(
-			esHoritzontal( page ),
-			'Bug en horitzontal: .nep-parla-missatges intercepta el clic a les respostes'
-		);
 		await alXatDesconegut( page );
 		await page.getByRole( 'button', { name: 'Torna als xats' } ).click();
 		await page.getByRole( 'button', { name: /^Remei/ } ).click();
