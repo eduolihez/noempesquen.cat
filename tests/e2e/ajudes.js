@@ -113,7 +113,33 @@ async function sensePistes( page, vist, valors, { dom = true } = {} ) {
 	}
 }
 
+/**
+ * Cert quan el test corre en un dispositiu mòbil (vertical o horitzontal).
+ * Per als specs de PC (`factura`, `banc`) que ara fan
+ * `test.skip( isMobile, 'PC en mòbil: tall 4' )`.
+ * T5: quan el PC escali en pantalles petites, substituir aquests skips per
+ * `test.skip( esPcEnMobil( testInfo ) && ! escalaPc, ... )` o retirar-los i
+ * afegir els specs de PC a `SPECS_HORITZONTAL` de playwright.config.js.
+ *
+ * @param {import('@playwright/test').TestInfo} testInfo
+ * @return {boolean} Cert si el projecte és de mòbil.
+ */
+const esPcEnMobil = ( testInfo ) => testInfo.project.name.startsWith( 'mobil' );
+
+/**
+ * Cert si la pàgina és en horitzontal (més ampla que alta).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @return {boolean} Cert si és horitzontal.
+ */
+const esHoritzontal = ( page ) => {
+	const { width, height } = page.viewportSize();
+	return width > height;
+};
+
 module.exports = {
+	esPcEnMobil,
+	esHoritzontal,
 	greusAxe,
 	inspecciona,
 	iniciaMissio,

@@ -15,6 +15,7 @@ const CAMPS_TARGETA = {
 };
 
 test.beforeEach( ( { isMobile } ) => {
+	// T5: substituir per esPcEnMobil( testInfo ) (ajudes.js) quan el PC escali.
 	test.skip( isMobile, 'PC en mòbil: tall 4' );
 } );
 
