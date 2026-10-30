@@ -153,7 +153,9 @@ function etiquetes() {
 }
 
 /**
- * Transferència: cada camp és un <input> no controlat. El que s'hi escriu no
+ * Transferència: formulari propi (no FormulariFals) perquè és una app
+ * interna amb camps fixos i validació pròpia, sense URL ni pàgina falsa.
+ * Cada camp és un <input> no controlat. El que s'hi escriu no
  * entra a cap estat ni surt del camp; en enviar, els camps es buiden i el
  * motor només rep { url, formulari }.
  *
@@ -164,8 +166,15 @@ function Transferencia( { onTorna } ) {
 	const { emet } = useJoc();
 	const [ errors, setErrors ] = useState( {} );
 	const [ enviada, setEnviada ] = useState( false );
+	// Regió viva: es munta buida i s'omple després, perquè s'anunciï.
+	const [ anunci, setAnunci ] = useState( '' );
 	const refs = useRef( {} );
 	const refConfirmacio = useRef( null );
+	const regio = (
+		<p role="status" className="screen-reader-text">
+			{ anunci }
+		</p>
+	);
 	const textos = etiquetes();
 	const missatges = MISSATGES_ERROR();
 
@@ -195,6 +204,7 @@ function Transferencia( { onTorna } ) {
 	useEffect( () => {
 		if ( enviada ) {
 			refConfirmacio.current?.focus();
+			setAnunci( __( 'Transferència enviada', 'noempesquen' ) );
 		}
 	}, [ enviada ] );
 
@@ -211,11 +221,12 @@ function Transferencia( { onTorna } ) {
 	if ( enviada ) {
 		return (
 			<div className="nep-bsm-transferencia">
+				{ regio }
 				<Capcalera
 					titol={ __( 'Transferència', 'noempesquen' ) }
 					onTorna={ onTorna }
 				/>
-				<div className="nep-bsm-confirmacio" role="status">
+				<div className="nep-bsm-confirmacio">
 					<IconaCorrecteApp mida={ 40 } />
 					<p
 						className="nep-bsm-confirmacio__titol"
@@ -238,6 +249,7 @@ function Transferencia( { onTorna } ) {
 
 	return (
 		<div className="nep-bsm-transferencia">
+			{ regio }
 			<Capcalera
 				titol={ __( 'Transferència', 'noempesquen' ) }
 				onTorna={ onTorna }
@@ -304,10 +316,9 @@ export default function BancSolid() {
 
 	const empeny = ( v ) => setVistes( ( vs ) => [ ...vs, v ] );
 	const torna = () => {
-		setVistes( ( vs ) => {
-			tornaA.current = `[data-accio="${ vs[ vs.length - 1 ] }"]`;
-			return vs.length > 1 ? vs.slice( 0, -1 ) : vs;
-		} );
+		// El destí del focus es calcula fora de l'updater (ha de ser pur).
+		tornaA.current = `[data-accio="${ vistes[ vistes.length - 1 ] }"]`;
+		setVistes( ( vs ) => ( vs.length > 1 ? vs.slice( 0, -1 ) : vs ) );
 	};
 	const tornaRef = useRef( torna );
 	tornaRef.current = torna;

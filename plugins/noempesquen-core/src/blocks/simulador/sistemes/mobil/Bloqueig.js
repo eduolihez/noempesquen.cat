@@ -33,9 +33,16 @@ export function Bloqueig( { sortint, onFi, onObreGuia } ) {
 	}, [] );
 
 	useEffect( () => {
-		if ( sortint && menysMoviment() ) {
-			onFi();
+		if ( ! sortint ) {
+			return undefined;
 		}
+		if ( menysMoviment() ) {
+			onFi();
+			return undefined;
+		}
+		// Reserva si `animationend` no arriba (animació 0,35 s + marge).
+		const t = setTimeout( onFi, 700 );
+		return () => clearTimeout( t );
 	}, [ sortint, onFi ] );
 
 	useEffect( () => {

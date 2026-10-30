@@ -100,6 +100,16 @@ export function useParla( xatInicial = ID_GUIA ) {
 	// Contactes bloquejats: estat local de la UI; el motor només rep l'esdeveniment.
 	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
 	const [ avis, setAvis ] = useState( '' );
+	// L'avís s'esborra en canviar de xat o passat un temps, perquè un segon
+	// bloqueig es torni a anunciar.
+	useEffect( () => {
+		if ( ! avis ) {
+			return undefined;
+		}
+		const t = setTimeout( () => setAvis( '' ), 4000 );
+		return () => clearTimeout( t );
+	}, [ avis ] );
+	useEffect( () => setAvis( '' ), [ actiu ] );
 	// Missatges escrits pel jugador: només estat local de la UI, mai al motor.
 	const [ enviats, setEnviats ] = useState( {} );
 	// Hora (del joc) en què es va veure cada missatge de missió sense `hora`.
@@ -149,6 +159,9 @@ export function useParla( xatInicial = ID_GUIA ) {
 	const contacteGuia =
 		contactes?.find( ( c ) => c.id === missio.personatge ) ?? null;
 	const bloqueja = ( contacte ) => {
+		if ( ! contacte ) {
+			return;
+		}
 		setBloquejats( ( s ) => new Set( [ ...s, contacte.id ] ) );
 		emet( 'contacte.bloqueja', { id: contacte.id } );
 		setAvis( __( 'Has bloquejat aquest número', 'noempesquen' ) );
