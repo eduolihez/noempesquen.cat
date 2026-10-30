@@ -1,16 +1,24 @@
 import { createRef, useMemo, useState } from '@wordpress/element';
+import { nomJugador } from '../../nucli/jugador.js';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Inspeccionable } from '../../ui/Inspeccionable';
 import { CampSuggerit } from './CampSuggerit';
-import { datesEnviades } from './formulari';
+import {
+	datesEnviades,
+	esdevenimentDe,
+	opcionsCamp,
+	textosFormulari,
+} from './formulari';
 import { IconaCadenat } from './icones';
 
-const CURTS = [ 'caducitat', 'cvv' ];
-const AMAGATS = [ 'cvv', 'pin' ];
-const NUMERICS = [ 'numero', 'caducitat', 'cvv', 'pin' ];
-
-function Processant() {
+/**
+ * Pantalla d'espera després d'enviar.
+ *
+ * @param {Object} props
+ * @param {string} props.titol Text principal.
+ */
+function Processant( { titol } ) {
 	return (
 		<div className="nep-lc-processa" role="status">
 			<svg
@@ -22,9 +30,7 @@ function Processant() {
 			>
 				<circle cx="24" cy="24" r="19" />
 			</svg>
-			<p className="nep-lc-processa__titol">
-				{ __( 'Processant el pagament…', 'noempesquen' ) }
-			</p>
+			<p className="nep-lc-processa__titol">{ titol }</p>
 			<p>
 				{ __(
 					'No tanquis ni actualitzis aquesta pàgina.',
@@ -36,13 +42,15 @@ function Processant() {
 }
 
 /**
- * Formulari de pagament de la web falsa. Cada camp és un <input> no
- * controlat: el que s'hi escriu no surt mai del camp. En enviar-lo, el
- * motor només rep `formulari.envia` amb { url, formulari } i els camps es
+ * Formulari de la web falsa (targeta, accés, codi, transferència...). Cada
+ * camp és un <input> no controlat: el que s'hi escriu no surt mai del camp.
+ * En enviar-lo, el motor només rep l'esdeveniment del formulari
+ * (`formulari.envia` per defecte) amb { url, formulari } i els camps es
  * buiden i es desmunten.
  *
  * @param {Object}    props
- * @param {Object}    props.formulari Definició (id, boto, camps).
+ * @param {Object}    props.formulari Definició (id, boto, camps, esdeveniment,
+ *                                    processant, nota).
  * @param {string}    props.url       URL de la pàgina.
  * @param {?Function} props.onEnvia   Avisa que s'ha enviat.
  */
@@ -56,14 +64,26 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 		[ camps.length ] // eslint-disable-line react-hooks/exhaustive-deps
 	);
 
-	const numero = camps.find( ( c ) => c.id === 'numero' )?.autoompli ?? '';
+	const opcions = camps.map( opcionsCamp );
+	const textos = textosFormulari( formulari, {
+		processant: __( 'Processant el pagament…', 'noempesquen' ),
+		nota: __( 'Pagament segur i verificat', 'noempesquen' ),
+	} );
+	const nom = nomJugador( mon );
+	const numero = camps.find( ( c ) => c.id === 'numero' )?.autoompli;
 	const suggeriment = {
-		titol: sprintf(
-			/* translators: 1: titular, 2: quatre darreres xifres */
-			__( '%1$s · targeta acabada en %2$s', 'noempesquen' ),
-			mon?.jugador?.nom ?? 'Àlex Puig',
-			numero.replace( /\D/g, '' ).slice( -4 )
-		),
+		titol: numero
+			? sprintf(
+					/* translators: 1: titular, 2: quatre darreres xifres */
+					__( '%1$s · targeta acabada en %2$s', 'noempesquen' ),
+					nom,
+					numero.replace( /\D/g, '' ).slice( -4 )
+				)
+			: sprintf(
+					/* translators: %s: nom del titular */
+					__( '%s · dades desades', 'noempesquen' ),
+					nom
+				),
 		detall: __( 'Omple aquest camp', 'noempesquen' ),
 	};
 
@@ -89,7 +109,10 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 			].current?.focus();
 			return;
 		}
-		emet( 'formulari.envia', datesEnviades( { url, formulari } ) );
+		emet(
+			esdevenimentDe( formulari ),
+			datesEnviades( { url, formulari } )
+		);
 		refs.forEach( ( r ) => {
 			if ( r.current ) {
 				r.current.value = '';
@@ -100,7 +123,7 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 	};
 
 	if ( processant ) {
-		return <Processant />;
+		return <Processant titol={ textos.processant } />;
 	}
 
 	return (
@@ -117,7 +140,11 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 								senyal={ c.senyal }
 							/>
 						}
-						suggeriment={ c.autoompli ? suggeriment : null }
+						suggeriment={
+							c.autoompli && opcions[ i ].autocomplete
+								? suggeriment
+								: null
+						}
 						onTria={ () => omple( i ) }
 						onEscriu={ () =>
 							setErrors( ( e ) =>
@@ -129,11 +156,12 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 								? __( 'Omple aquest camp.', 'noempesquen' )
 								: null
 						}
-						amaga={ AMAGATS.includes( c.id ) }
+						amaga={ opcions[ i ].amagat }
 						inputMode={
-							NUMERICS.includes( c.id ) ? 'numeric' : undefined
+							opcions[ i ].numeric ? 'numeric' : undefined
 						}
-						classe={ CURTS.includes( c.id ) ? 'is-curt' : '' }
+						maxLength={ opcions[ i ].maxLength }
+						classe={ opcions[ i ].curt ? 'is-curt' : '' }
 					/>
 				) ) }
 			</div>
@@ -142,7 +170,7 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 			</button>
 			<p className="nep-lc-form__segell">
 				<IconaCadenat mida={ 16 } />
-				{ __( 'Pagament segur i verificat', 'noempesquen' ) }
+				{ textos.nota }
 			</p>
 		</form>
 	);

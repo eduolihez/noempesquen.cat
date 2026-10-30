@@ -1,0 +1,304 @@
+{
+	"id": "remei-02-canviat",
+	"versio": 2,
+	"titol": "Hola, he canviat de mòbil",
+	"resum": "Un número desconegut diu que és el Pau, que ha canviat de mòbil i que necessita 380 € ara mateix. Els hi enviaries?",
+	"dispositiu": "mobil",
+	"personatge": "remei",
+	"nivell": 2,
+	"durada_minuts": 5,
+	"rellotge": "20:15",
+	"intro": [
+		"Ei, Àlex! Remei altra vegada. Avui toca una estafa que fa mal perquè juga amb l'afecte: la del familiar que «ha canviat de mòbil».",
+		"No et demanen la contrasenya ni et fan clicar enlloc. Et parlen com si fossin algú de casa, i de cop et demanen un favor amb diners.",
+		"Mantén els ulls oberts a Parla. Quan t'escrigui algú, llegeix amb calma i decideix què fas. Jo em quedo per aquí."
+	],
+	"instruccions": "Espera un missatge nou a Parla, llegeix-lo sencer, busca'n els indicis amb la lupa i decideix què en fas.",
+	"pistes": [
+		"Obre Parla i mira el xat nou. Qui t'escriu? És a la teva agenda?",
+		"Fixa't en com escriu i en què et demana. Et sona al que faria algú de casa?",
+		"Si dubtes, no paguis res. Bloqueja el número, o escriu al Pau pel xat de sempre per preguntar-li si és ell."
+	],
+	"apps": {
+		"parla": {
+			"xats": [
+				{
+					"id": "nou",
+					"contacte": "numero_desconegut",
+					"missatges": [
+						{
+							"id": "p1",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:23",
+							"text": "Hola, he canviat de mòbil. Aquest és el meu número nou. Em pots ajudar amb una cosa urgent?",
+							"senyal": "canvi_mobil"
+						},
+						{
+							"id": "p2",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:24",
+							"text": "Soc el Pau, no m'has desat? Se m'ha bloquejat la targeta i ho he de pagar avui mateix",
+							"senyal": "estil"
+						},
+						{
+							"id": "p3",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:24",
+							"text": "No puc parlar, estic en una reunió. Escriu-me només per aqui vale?",
+							"senyal": "evita_trucada"
+						},
+						{
+							"id": "p4",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:26",
+							"text": "Em pots fer una transferència de 380 € ara? És urgent, demà te'ls torno",
+							"senyal": "diners"
+						},
+						{
+							"id": "p5",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:26",
+							"text": "IBAN: ES21 9999 0000 0000 0000 0000, a nom de R. Dumitrescu. Avisa'm quan ho facis",
+							"senyal": "iban"
+						},
+						{
+							"id": "p6",
+							"de": "ells",
+							"ocult": true,
+							"hora": "20:27",
+							"senyal": "urgencia",
+							"text": "Va, que es urgent, no puc esperar. Fes-ho ja si pots"
+						}
+					],
+					"senyal_avis": "desconegut"
+				},
+					{
+						"id": "pau",
+						"contacte": "pau",
+						"missatges": [
+							{
+								"id": "pau1",
+								"de": "ells",
+								"ocult": true,
+								"hora": "20:29",
+								"text": "Què dius? Jo no he canviat de número! Aquest és el meu, el de sempre."
+							}
+						]
+					}
+			]
+		}
+	},
+	"disparadors": [
+		{
+			"id": "arriba-1",
+			"quan": {
+				"esdeveniment": "inici"
+			},
+			"retard": 8,
+			"efectes": [
+				{
+					"tipus": "mostra",
+					"id": "p1"
+				},
+				{
+					"tipus": "notifica",
+					"app": "parla",
+					"titol": "+44 7700 900461",
+					"text": "Hola, he canviat de mòbil. Aquest és el meu número nou.",
+					"xat": "nou",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "arriba-2",
+			"quan": {
+				"esdeveniment": "inici"
+			},
+			"retard": 22,
+			"efectes": [
+				{
+					"tipus": "mostra",
+					"id": "p2"
+				},
+				{
+					"tipus": "mostra",
+					"id": "p3"
+				}
+			]
+		},
+		{
+			"id": "arriba-3",
+			"quan": {
+				"esdeveniment": "inici"
+			},
+			"retard": 38,
+			"efectes": [
+				{
+					"tipus": "mostra",
+					"id": "p4"
+				},
+				{
+					"tipus": "mostra",
+					"id": "p5"
+				},
+				{
+					"tipus": "mostra",
+					"id": "p6"
+				},
+				{
+					"tipus": "notifica",
+					"app": "parla",
+					"titol": "+44 7700 900461",
+					"text": "Em pots fer una transferència de 380 € ara?",
+					"xat": "nou",
+					"font": "mobil"
+				}
+			]
+		},
+		{
+			"id": "pagat",
+			"quan": {
+				"esdeveniment": "pagament.fes",
+				"url": "app://bancsolid",
+				"formulari": "transferencia"
+			},
+			"efectes": [
+				{
+					"tipus": "pescat"
+				}
+			]
+		},
+		{
+			"id": "bloquejat",
+			"quan": {
+				"esdeveniment": "contacte.bloqueja",
+				"id": "numero_desconegut"
+			},
+			"efectes": [
+				{
+					"tipus": "decideix",
+					"opcio": "c"
+				}
+			]
+		},
+		{
+			"id": "escrit-al-pau",
+			"quan": {
+				"esdeveniment": "missatge.envia",
+				"contacte": "pau",
+				"visible": "p1"
+			},
+			"efectes": [
+				{
+						"tipus": "mostra",
+						"id": "pau1"
+					},
+					{
+					"tipus": "decideix",
+					"opcio": "d"
+				}
+			]
+		}
+	],
+	"senyals": [
+		{
+			"id": "desconegut",
+			"titol": "Número que no tens a l'agenda",
+			"explicacio": "Parla t'avisa que aquest número no és als teus contactes, i és estranger (+44). Si és algú de casa, el seu número de sempre no ha canviat sol.",
+			"reaccio": "Mira l'avís de dalt: «Aquest número no és als teus contactes». Això ja és una bandera vermella."
+		},
+		{
+			"id": "canvi_mobil",
+			"titol": "«He canviat de mòbil»",
+			"explicacio": "És la frase d'obertura de l'estafa: justifica que no el tinguis desat i que no el reconeguis. Un familiar de veritat t'ho diria pel número que ja tens, o ho comprovaries trucant-li.",
+			"reaccio": "«He canviat de mòbil»... El guió de sempre, rei."
+		},
+		{
+			"id": "urgencia",
+			"requereix": "p6",
+			"titol": "Urgència",
+			"explicacio": "«Urgent», «avui mateix», «ara». La pressa serveix perquè no t'aturis a comprovar res.",
+			"reaccio": "Tot urgent i res comprovable. Tothom té pressa menys qui diu la veritat."
+		},
+		{
+			"id": "diners",
+			"requereix": "p4",
+			"titol": "Et demanen diners",
+			"explicacio": "380 € per una transferència, amb la promesa de tornar-los demà. Que un contacte nou et demani diners per xat és el que busquen des del principi.",
+			"reaccio": "380 € per xat i a l'acte? Quin favor tan bonic i tan car."
+		},
+		{
+			"id": "evita_trucada",
+			"requereix": "p3",
+			"titol": "Evita la trucada",
+			"explicacio": "«No puc parlar, escriu-me només per aquí». Així impedeix que sentis la veu i t'adonis que no és ell. Truca sempre al número de sempre.",
+			"reaccio": "«No puc parlar»... Casualment, just quan podries comprovar-ho."
+		},
+		{
+			"id": "iban",
+			"requereix": "p5",
+			"titol": "IBAN d'un tercer",
+			"explicacio": "El compte és d'una altra persona (R. Dumitrescu), no del Pau. Si el pagament no va a nom de qui t'ho demana, desconfia.",
+			"reaccio": "Un IBAN a nom d'un desconegut. El Pau no té cap compte amb aquest nom."
+		},
+		{
+			"id": "estil",
+			"requereix": "p2",
+			"titol": "No escriu com el Pau",
+			"explicacio": "El Pau escriu amb accents i frases cuidades: «Ja he arribat a l'institut. Fins després!». Aquest número escriu sense accents, sense punts i amb pressa.",
+			"reaccio": "Compara-ho amb el xat de sempre del Pau. No sona a ell."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això és normal, rei.",
+			"Aquí no hi ha res, continua.",
+			"Ni olor d'estafa."
+		],
+		"pescat": "Ai, criatura! Has fet la transferència. Si fos de veritat, els 380 € ja haurien marxat a un compte que no és del Pau, i recuperar-los és gairebé impossible. Tranquil, que és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb el missatge del número nou?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Faig la transferència de 380 €: és el Pau i ho necessita.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. No era el Pau, i els diners han anat a un compte d'un desconegut. Si et passa de veritat, avisa el banc de seguida: com més aviat, més possibilitats de frenar-ho."
+			},
+			{
+				"id": "b",
+				"text": "No contesto i m'ho deixo estar.",
+				"valor": "parcial",
+				"resposta": "No has pagat, i això és el més important. Però el número et pot seguir escrivint. Bloqueja'l i, si tens dubtes, pregunta al Pau pel xat de sempre."
+			},
+			{
+				"id": "c",
+				"text": "Bloquejo el número i no responc.",
+				"valor": "correcta",
+				"resposta": "Ben fet! Bloquejar talla el fil, i així no pot seguir insistint-te. I si de debò dubtaves, sempre pots preguntar al Pau pel número que ja tens."
+			},
+			{
+				"id": "d",
+				"text": "Escric al Pau pel seu xat de sempre per preguntar-li si és ell.",
+				"valor": "correcta",
+				"resposta": "Molt bé! Verificar per una altra via és el truc que desmunta aquesta estafa. Ara, bloqueja també el número nou perquè no insisteixi."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"Si algú diu que ha canviat de mòbil, comprova-ho pel número de sempre o trucant-li.",
+			"Cap urgència justifica pagar sense verificar: la pressa és part de l'estafa.",
+			"Desconfia dels IBAN a nom d'una altra persona.",
+			"Bloqueja el número i no responguis, o verifica per una altra via."
+		],
+		"consell": "Si has fet un pagament a un estafador, truca al banc de seguida per intentar frenar-lo i denuncia-ho. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
+}

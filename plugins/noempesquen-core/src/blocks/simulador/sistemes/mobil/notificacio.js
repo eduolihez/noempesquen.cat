@@ -15,12 +15,18 @@ import { IconaCampana, IconaParla, IconaPosta } from '../../ui/icones';
  */
 export function descriu( n, { mon, nomGuia, Avatar } ) {
 	if ( n.app === 'parla' ) {
-		const contacte = mon?.contactes?.find( ( c ) => c.id === n.titol );
+		// El títol pot ser l'id del contacte o el seu nom visible (p. ex. un
+		// número desconegut). Si és algú que no és el guia, no porta l'avatar
+		// ni el nom del guia.
+		const contacte = mon?.contactes?.find(
+			( c ) => c.id === n.titol || c.nom === n.titol
+		);
+		const noGuia = contacte && contacte.rol !== 'guia';
 		return {
 			app: __( 'Parla', 'noempesquen' ),
 			AppIcona: IconaParla,
 			titol: contacte?.nom ?? nomGuia,
-			imatge: <Avatar mida={ 40 } />,
+			imatge: noGuia ? null : <Avatar mida={ 40 } />,
 		};
 	}
 	if ( n.app === 'posta' ) {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
+import { nomJugador } from '../../nucli/jugador.js';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { CampSuggerit } from '../comu/CampSuggerit';
@@ -104,7 +105,7 @@ export function AreaClient( { missatge } ) {
 	const [ errors, setErrors ] = useState( [] );
 	const correu = useRef( null );
 	const clau = useRef( null );
-	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nom = nomJugador( mon );
 	const adreca = mon?.jugador?.correu ?? 'alex.puig@posta.cat';
 
 	const suggeriment = {

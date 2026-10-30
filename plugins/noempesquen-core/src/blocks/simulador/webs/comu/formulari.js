@@ -7,7 +7,8 @@
  */
 
 /**
- * Dades de l'esdeveniment `formulari.envia`.
+ * Dades de l'esdeveniment que emet el formulari (`formulari.envia`,
+ * `codi.envia` o `pagament.fes`).
  *
  * @param {Object} form           Formulari enviat.
  * @param {string} form.url       URL de la pàgina.
@@ -16,6 +17,76 @@
  */
 export function datesEnviades( { url, formulari } ) {
 	return { url, formulari: formulari.id };
+}
+
+export const ESDEVENIMENTS_FORMULARI = [
+	'formulari.envia',
+	'codi.envia',
+	'pagament.fes',
+];
+
+/**
+ * Esdeveniment que emet el formulari en enviar-se. Si el JSON no en declara
+ * cap o en declara un de no permès, el segur per defecte: `formulari.envia`.
+ *
+ * @param {Object} formulari Definició del formulari.
+ * @return {string} Nom de l'esdeveniment.
+ */
+export function esdevenimentDe( formulari ) {
+	const ev = formulari?.esdeveniment;
+	return ESDEVENIMENTS_FORMULARI.includes( ev ) ? ev : 'formulari.envia';
+}
+
+/* Compatibilitat: com es comportaven els ids de targeta abans de poder-ho
+ * declarar al JSON. */
+const PER_DEFECTE = {
+	numero: { numeric: true },
+	caducitat: { curt: true, numeric: true },
+	cvv: { curt: true, amagat: true, numeric: true },
+	pin: { amagat: true, numeric: true },
+	codi: { curt: true, numeric: true, maxLength: 6, autocomplete: false },
+};
+
+/**
+ * Opcions de presentació d'un camp: les que declara el JSON i, si no, les
+ * de compatibilitat segons l'id. `autocomplete` indica si el navegador
+ * simulat hi ofereix el suggeriment (el real sempre queda desactivat).
+ *
+ * @param {Object} camp Definició del camp ({ id, curt?, amagat?, ... }).
+ * @return {{curt:boolean, amagat:boolean, numeric:boolean, maxLength:(number|undefined), autocomplete:boolean}} Opcions.
+ */
+export function opcionsCamp( camp ) {
+	const base = PER_DEFECTE[ camp?.id ] ?? {};
+	const tria = ( clau, defecte ) => {
+		if ( typeof camp?.[ clau ] === 'boolean' ) {
+			return camp[ clau ];
+		}
+		return base[ clau ] ?? defecte;
+	};
+	const max = camp?.maxLength ?? base.maxLength;
+	return {
+		curt: tria( 'curt', false ),
+		amagat: tria( 'amagat', false ),
+		numeric: tria( 'numeric', false ),
+		maxLength: Number.isInteger( max ) && max > 0 ? max : undefined,
+		autocomplete: tria( 'autocomplete', true ),
+	};
+}
+
+/**
+ * Textos del formulari que pot declarar el JSON de la web (`processant`,
+ * `nota`). Si no hi són o no són text, els per defecte (els de pagament).
+ *
+ * @param {Object} formulari Definició del formulari.
+ * @param {Object} defectes  { processant, nota } per defecte.
+ * @return {{processant:string, nota:string}} Textos.
+ */
+export function textosFormulari( formulari, defectes ) {
+	const tria = ( clau ) => {
+		const v = formulari?.[ clau ];
+		return typeof v === 'string' && v.trim() ? v : defectes[ clau ];
+	};
+	return { processant: tria( 'processant' ), nota: tria( 'nota' ) };
 }
 
 const dos = ( n ) => String( n ).padStart( 2, '0' );

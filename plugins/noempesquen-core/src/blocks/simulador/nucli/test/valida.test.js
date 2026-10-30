@@ -140,6 +140,19 @@ describe( 'validaMissio v2', () => {
 		expect( validaMissio( m ) ).toEqual( [] );
 	} );
 
+	it( 'accepta banc-solid com a app de missió al mòbil', () => {
+		const m = copia();
+		m.dispositiu = 'mobil';
+		m.apps = { 'banc-solid': {} };
+		expect( validaMissio( m ) ).not.toContain(
+			'app inexistent al dispositiu mobil: banc-solid'
+		);
+		m.apps = { 'banc-fals': {} };
+		expect( validaMissio( m ) ).toContain(
+			'app inexistent al dispositiu mobil: banc-fals'
+		);
+	} );
+
 	it( 'rebutja un esdeveniment inexistent', () => {
 		const m = copia();
 		m.disparadors[ 0 ].quan.esdeveniment = 'missatge.vola';
@@ -233,5 +246,186 @@ describe( 'validaMissio v2', () => {
 		expect( validaMissio( n ) ).toContain(
 			'app inexistent al dispositiu pc: missatges'
 		);
+	} );
+
+	describe( 'font de notificació i esdeveniments nous', () => {
+		const amb = ( efecte ) => {
+			const m = copia();
+			m.disparadors.push( {
+				id: 'x',
+				quan: { esdeveniment: 'inici' },
+				efectes: [
+					{ tipus: 'notifica', titol: 't', text: 'x', ...efecte },
+				],
+			} );
+			return validaMissio( m );
+		};
+
+		it( 'accepta codi.envia i pagament.fes', () => {
+			expect( ESDEVENIMENTS ).toContain( 'codi.envia' );
+			expect( ESDEVENIMENTS ).toContain( 'pagament.fes' );
+			const m = copia();
+			m.disparadors.push( {
+				id: 'y',
+				quan: { esdeveniment: 'pagament.fes' },
+				efectes: [ { tipus: 'pescat' } ],
+			} );
+			expect( validaMissio( m ) ).toEqual( [] );
+		} );
+
+		it( 'segueix rebutjant esdeveniments desconeguts', () => {
+			const m = copia();
+			m.disparadors[ 0 ].quan.esdeveniment = 'inventat.nou';
+			expect( validaMissio( m ) ).toContain(
+				'esdeveniment desconegut: inventat.nou'
+			);
+		} );
+
+		it( 'accepta font mobil amb app de mòbil en missió pc', () => {
+			expect( amb( { app: 'missatges', font: 'mobil' } ) ).toEqual( [] );
+		} );
+
+		it( 'accepta font mobil amb banc-solid', () => {
+			expect( amb( { app: 'banc-solid', font: 'mobil' } ) ).toEqual( [] );
+		} );
+
+		it( 'rebutja font diferent de mobil', () => {
+			expect( amb( { app: 'posta', font: 'pc' } ) ).toContain(
+				'notifica: font invàlida: pc'
+			);
+		} );
+
+		it( 'font mobil exigeix app de mòbil', () => {
+			expect( amb( { app: 'posta', font: 'mobil' } ) ).toContain(
+				'app inexistent al dispositiu mobil: posta'
+			);
+		} );
+
+		it( 'sense font manté la regla del dispositiu', () => {
+			expect( amb( { app: 'missatges' } ) ).toContain(
+				'app inexistent al dispositiu pc: missatges'
+			);
+		} );
+	} );
+} );
+
+describe( 'validaMissio: webs banc-solid i formularis', () => {
+	const base = () => ( {
+		versio: 2,
+		id: 'x',
+		titol: 'x',
+		dispositiu: 'pc',
+		personatge: 'llissa',
+		intro: [ 'hola' ],
+		senyals: [],
+		webs: {
+			'bancsolid.cat': { plantilla: 'banc-solid', variant: 'oficial' },
+		},
+		disparadors: [
+			{
+				quan: { esdeveniment: 'inici' },
+				efectes: [ { tipus: 'pescat' } ],
+			},
+		],
+		decisio: { opcions: [ { id: 'a', valor: 'correcta' } ] },
+	} );
+	const amb = ( formulari ) => {
+		const m = base();
+		m.webs[ 'bancsolid.cat' ].formulari = formulari;
+		return validaMissio( m );
+	};
+
+	it( 'accepta la plantilla banc-solid', () => {
+		expect( validaMissio( base() ) ).toEqual( [] );
+	} );
+
+	it( 'accepta esdeveniments de formulari coneguts', () => {
+		[ 'formulari.envia', 'codi.envia', 'pagament.fes' ].forEach( ( esd ) =>
+			expect( amb( { esdeveniment: esd } ) ).toEqual( [] )
+		);
+	} );
+
+	it( 'rebutja un esdeveniment de formulari desconegut', () => {
+		expect( amb( { esdeveniment: 'inici' } ) ).toContain(
+			'formulari: esdeveniment invàlid a bancsolid.cat: inici'
+		);
+	} );
+
+	it( 'exigeix que processant i nota siguin text', () => {
+		const errors = amb( { processant: 3, nota: {} } );
+		expect( errors ).toContain(
+			'formulari: processant ha de ser text a bancsolid.cat'
+		);
+		expect( errors ).toContain(
+			'formulari: nota ha de ser text a bancsolid.cat'
+		);
+		expect( amb( { processant: 'Espera', nota: 'Segur' } ) ).toEqual( [] );
+	} );
+} );
+
+describe( 'validaMissio: apps.parla.xats', () => {
+	const mon = { contactes: [ { id: 'pau' } ] };
+	const xats = () => [
+		{
+			id: 'x1',
+			contacte: 'pau',
+			missatges: [
+				{ id: 'p1', de: 'ells', text: 'Hola', ocult: true },
+				{ id: 'p2', de: 'jo', text: 'Ei' },
+			],
+		},
+	];
+	const amb = ( llista ) => {
+		const m = copia();
+		m.apps = { ...m.apps, parla: { xats: llista } };
+		m.disparadors = [
+			...m.disparadors,
+			{
+				id: 'dp',
+				quan: { esdeveniment: 'missatge.envia', contacte: 'pau' },
+				efectes: [ { tipus: 'mostra', id: 'p1' } ],
+			},
+		];
+		return m;
+	};
+
+	it( 'accepta xats vàlids, missatge.envia i mostra cap a un missatge', () => {
+		expect( ESDEVENIMENTS ).toContain( 'missatge.envia' );
+		expect( validaMissio( amb( xats() ), mon ) ).toEqual( [] );
+	} );
+
+	it( 'detecta ids duplicats i contacte inexistent', () => {
+		const llista = xats();
+		llista.push( { ...llista[ 0 ], contacte: 'ningu' } );
+		const errors = validaMissio( amb( llista ), mon );
+		expect( errors ).toContain( 'parla: xat duplicat: x1' );
+		expect( errors ).toContain( 'parla: missatge duplicat: p1' );
+		expect( errors ).toContain( 'parla: contacte inexistent: ningu' );
+	} );
+
+	it( 'detecta mostra cap a un id inexistent', () => {
+		const m = amb( xats() );
+		m.disparadors[ m.disparadors.length - 1 ].efectes[ 0 ].id = 'zz';
+		expect( validaMissio( m, mon ) ).toContain(
+			'mostra: element inexistent: zz'
+		);
+	} );
+
+	it( 'valida senyal, senyal_avis i xat de notifica', () => {
+		const llista = xats();
+		llista[ 0 ].missatges[ 0 ].senyal = 'inexistent';
+		llista[ 0 ].senyal_avis = 'altre';
+		const m = amb( llista );
+		m.disparadors[ m.disparadors.length - 1 ].efectes.push( {
+			tipus: 'notifica',
+			app: 'posta',
+			titol: 't',
+			text: 't',
+			xat: 'x1',
+		} );
+		const errors = validaMissio( m, mon );
+		expect( errors ).toContain( 'senyal desconegut: inexistent' );
+		expect( errors ).toContain( 'senyal desconegut: altre' );
+		expect( errors ).toContain( 'notifica: xat només amb app parla' );
 	} );
 } );

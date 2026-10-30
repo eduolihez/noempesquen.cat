@@ -4,7 +4,11 @@ import { estatInicial, reductor } from '../../nucli/motor.js';
 import {
 	compteEnrere,
 	datesEnviades,
+	esdevenimentDe,
+	ESDEVENIMENTS_FORMULARI,
 	importDe,
+	opcionsCamp,
+	textosFormulari,
 	referencia,
 	seccioOficial,
 } from '../comu/formulari.js';
@@ -90,5 +94,187 @@ describe( 'llum clara: ajudes', () => {
 			'inici'
 		);
 		expect( seccioOficial( 'malament' ) ).toBe( 'inici' );
+	} );
+} );
+
+describe( 'formulari fals: opcions per camp', () => {
+	it( 'sense res declarat, els ids de targeta es comporten com abans', () => {
+		expect( opcionsCamp( { id: 'titular' } ) ).toEqual( {
+			curt: false,
+			amagat: false,
+			numeric: false,
+			maxLength: undefined,
+			autocomplete: true,
+		} );
+		expect( opcionsCamp( { id: 'numero' } ) ).toMatchObject( {
+			curt: false,
+			amagat: false,
+			numeric: true,
+		} );
+		expect( opcionsCamp( { id: 'caducitat' } ) ).toMatchObject( {
+			curt: true,
+			amagat: false,
+			numeric: true,
+		} );
+		expect( opcionsCamp( { id: 'cvv' } ) ).toMatchObject( {
+			curt: true,
+			amagat: true,
+			numeric: true,
+		} );
+		expect( opcionsCamp( { id: 'pin' } ) ).toMatchObject( {
+			curt: false,
+			amagat: true,
+			numeric: true,
+		} );
+	} );
+
+	it( 'els camps de les missions actuals no canvien', () => {
+		const opcions = Object.fromEntries(
+			formulari.camps.map( ( c ) => [ c.id, opcionsCamp( c ) ] )
+		);
+		expect( opcions.cvv.amagat ).toBe( true );
+		expect( opcions.pin.amagat ).toBe( true );
+		expect( opcions.caducitat.curt ).toBe( true );
+		expect( opcions.titular.numeric ).toBe( false );
+		Object.values( opcions ).forEach( ( o ) =>
+			expect( o.autocomplete ).toBe( true )
+		);
+	} );
+
+	it( 'el JSON mana sobre els valors per defecte', () => {
+		expect(
+			opcionsCamp( {
+				id: 'cvv',
+				curt: false,
+				amagat: false,
+				numeric: false,
+			} )
+		).toMatchObject( { curt: false, amagat: false, numeric: false } );
+		expect(
+			opcionsCamp( {
+				id: 'contrasenya',
+				amagat: true,
+				maxLength: 20,
+				autocomplete: false,
+			} )
+		).toEqual( {
+			curt: false,
+			amagat: true,
+			numeric: false,
+			maxLength: 20,
+			autocomplete: false,
+		} );
+	} );
+
+	it( 'el camp de codi és numèric, de 6 xifres i sense suggeriment', () => {
+		expect( opcionsCamp( { id: 'codi' } ) ).toEqual( {
+			curt: true,
+			amagat: false,
+			numeric: true,
+			maxLength: 6,
+			autocomplete: false,
+		} );
+	} );
+
+	it( 'maxLength no vàlid queda sense límit', () => {
+		[ 0, -3, 2.5, '6', null ].forEach( ( v ) =>
+			expect(
+				opcionsCamp( { id: 'iban', maxLength: v } ).maxLength
+			).toBeUndefined()
+		);
+	} );
+
+	it( 'opcions no booleanes es descarten', () => {
+		expect( opcionsCamp( { id: 'pin', amagat: 'no' } ).amagat ).toBe(
+			true
+		);
+		expect( opcionsCamp( undefined ) ).toMatchObject( {
+			amagat: false,
+			autocomplete: true,
+		} );
+	} );
+} );
+
+describe( 'formulari fals: esdeveniment', () => {
+	it( 'per defecte és formulari.envia', () => {
+		expect( esdevenimentDe( formulari ) ).toBe( 'formulari.envia' );
+		expect( esdevenimentDe( {} ) ).toBe( 'formulari.envia' );
+		expect( esdevenimentDe( undefined ) ).toBe( 'formulari.envia' );
+	} );
+
+	it( 'accepta només els esdeveniments permesos', () => {
+		expect( ESDEVENIMENTS_FORMULARI ).toEqual( [
+			'formulari.envia',
+			'codi.envia',
+			'pagament.fes',
+		] );
+		ESDEVENIMENTS_FORMULARI.forEach( ( ev ) =>
+			expect( esdevenimentDe( { esdeveniment: ev } ) ).toBe( ev )
+		);
+	} );
+
+	it( 'un esdeveniment no permès torna al segur per defecte', () => {
+		[ 'missatge.envia', 'inici', '', 42, null ].forEach( ( ev ) =>
+			expect( esdevenimentDe( { esdeveniment: ev } ) ).toBe(
+				'formulari.envia'
+			)
+		);
+	} );
+
+	it( 'datesEnviades no porta valors escrits per a cap esdeveniment', () => {
+		const codi = {
+			id: 'codi-sms',
+			esdeveniment: 'codi.envia',
+			camps: [ { id: 'codi', autoompli: '482913' } ],
+		};
+		const dades = datesEnviades( {
+			url: 'https://bancsolid-verifica.com/',
+			formulari: codi,
+			valors: { codi: '482913' },
+		} );
+		expect( dades ).toEqual( {
+			url: 'https://bancsolid-verifica.com/',
+			formulari: 'codi-sms',
+		} );
+		expect( JSON.stringify( dades ) ).not.toContain( '482913' );
+	} );
+} );
+
+describe( 'formulari fals: textos', () => {
+	const defectes = {
+		processant: 'Processant el pagament…',
+		nota: 'Pagament segur i verificat',
+	};
+
+	it( 'sense res declarat, manté els textos de pagament', () => {
+		expect( textosFormulari( formulari, defectes ) ).toEqual( defectes );
+		expect( textosFormulari( {}, defectes ) ).toEqual( defectes );
+		expect( textosFormulari( undefined, defectes ) ).toEqual( defectes );
+	} );
+
+	it( 'el JSON pot declarar processant i nota', () => {
+		expect(
+			textosFormulari(
+				{
+					processant: 'Verificant el codi…',
+					nota: 'Connexió segura amb Banc Sòlid',
+				},
+				defectes
+			)
+		).toEqual( {
+			processant: 'Verificant el codi…',
+			nota: 'Connexió segura amb Banc Sòlid',
+		} );
+		expect( textosFormulari( { nota: 'Accés segur' }, defectes ) ).toEqual(
+			{ processant: defectes.processant, nota: 'Accés segur' }
+		);
+	} );
+
+	it( 'valors buits o que no són text tornen al per defecte', () => {
+		[ '', '   ', 42, null, {} ].forEach( ( v ) =>
+			expect(
+				textosFormulari( { processant: v, nota: v }, defectes )
+			).toEqual( defectes )
+		);
 	} );
 } );

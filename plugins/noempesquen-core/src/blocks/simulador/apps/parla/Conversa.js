@@ -7,7 +7,10 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import { IconaCerca, IconaLupa } from '../../ui/icones';
 import { IconaEnrere } from '../missatges/icones';
+import { Inspeccionable } from '../../ui/Inspeccionable';
 import { Respostes } from './Respostes';
+import { AvisDesconegut, MenuXat } from './AvisDesconegut';
+import { esDesconegut, estatAvis } from './desconegut';
 import { parteixHora } from './xats';
 import {
 	IconaAvall,
@@ -54,7 +57,7 @@ function Bombolla( { m, cua, nom } ) {
 							) }
 				</span>
 				<p className="nep-parla-msg__text">
-					{ m.text }
+					<Inspeccionable text={ m.text } senyal={ m.senyal } />
 					<span className="nep-parla-msg__espai" aria-hidden="true" />
 				</p>
 				<span className="nep-parla-msg__meta">
@@ -97,16 +100,21 @@ function Escrivint() {
  * ja els anuncia la regió de notificacions del sistema (Notificacions.js),
  * també quan Parla és en primer pla.
  *
- * @param {Object}            props
- * @param {string}            props.nom           Nom del contacte.
- * @param {string}            props.estatContacte Text sota el nom («en línia»…).
- * @param {Object}            props.avatar        Foto de perfil.
- * @param {Object[]}          props.grups         [{ dia, missatges: [{ id, propi, text, nota, hora }] }].
- * @param {boolean}           props.escriu        El contacte escriu.
- * @param {Object[]}          props.respostes     Respostes ràpides.
- * @param {(id:string)=>void} props.onResposta    Rep l'id de la resposta.
- * @param {string}            props.placeholder   Text del camp desactivat.
- * @param {()=>void}          props.onEnrere      Només al mòbil: botó per tornar a la llista.
+ * @param {Object}               props
+ * @param {string}               props.nom           Nom del contacte.
+ * @param {string}               props.estatContacte Text sota el nom («en línia»…).
+ * @param {Object}               props.avatar        Foto de perfil.
+ * @param {Object[]}             props.grups         [{ dia, missatges: [{ id, propi, text, nota, hora }] }].
+ * @param {boolean}              props.escriu        El contacte escriu.
+ * @param {Object[]}             props.respostes     Respostes ràpides.
+ * @param {(id:string)=>void}    props.onResposta    Rep l'id de la resposta.
+ * @param {string}               props.placeholder   Text del camp desactivat.
+ * @param {?(text:string)=>void} props.onEnvia       Si hi és, el camp de text és actiu i rep el text escrit.
+ * @param {()=>void}             props.onEnrere      Només al mòbil: botó per tornar a la llista.
+ * @param {?string}              props.senyalAvis    Senyal del banner de número desconegut.
+ * @param {?Object}              props.contacte      Contacte de mon.json del xat (null: cap).
+ * @param {boolean}              props.bloquejat     El número ja és bloquejat.
+ * @param {()=>void}             props.onBloqueja    Bloqueja el número (desconeguts).
  */
 export function Conversa( {
 	nom,
@@ -118,7 +126,16 @@ export function Conversa( {
 	onResposta,
 	placeholder,
 	onEnrere,
+	onEnvia,
+	contacte = null,
+	senyalAvis,
+	bloquejat = false,
+	onBloqueja,
 } ) {
+	const [ descartat, setDescartat ] = useState( false );
+	const [ escrit, setEscrit ] = useState( '' );
+	const estat = estatAvis( { contacte, bloquejat, descartat } );
+	const estatBloq = useRef( null );
 	const registre = useRef( null );
 	const alFinal = useRef( true );
 	const [ nous, setNous ] = useState( false );
@@ -150,6 +167,31 @@ export function Conversa( {
 			baixa();
 		}
 	}, [ respostes.length ] );
+
+	// Al mòbil, bloquejar torna a la llista (el focus el gestiona ParlaMobil);
+	// a l'escriptori el focus passa a l'avís d'estat.
+	const bloqueja = () => {
+		onBloqueja();
+		onEnrere?.();
+	};
+	useLayoutEffect( () => {
+		if ( estat === 'bloquejat' ) {
+			estatBloq.current?.focus();
+		}
+	}, [ estat ] );
+
+	const enviaText = ( e ) => {
+		e.preventDefault();
+		if ( escrit.trim() ) {
+			onEnvia( escrit );
+			setEscrit( '' );
+		}
+	};
+
+	const afegeix = () => {
+		setDescartat( true );
+		registre.current?.focus();
+	};
 
 	const enDesplacar = () => {
 		const el = registre.current;
@@ -186,14 +228,36 @@ export function Conversa( {
 						</p>
 					) }
 				</div>
-				<span
-					className="nep-parla-conversa__accions"
-					aria-hidden="true"
-				>
-					<IconaCerca mida={ 18 } />
-					<IconaMes mida={ 18 } />
+				<span className="nep-parla-conversa__accions">
+					<span aria-hidden="true">
+						<IconaCerca mida={ 18 } />
+					</span>
+					{ esDesconegut( contacte ) && ! bloquejat ? (
+						<MenuXat onBloqueja={ bloqueja } />
+					) : (
+						<span aria-hidden="true">
+							<IconaMes mida={ 18 } />
+						</span>
+					) }
 				</span>
 			</div>
+			{ estat === 'avis' && (
+				<AvisDesconegut
+					onBloqueja={ bloqueja }
+					onAfegeix={ afegeix }
+					senyal={ senyalAvis }
+				/>
+			) }
+			{ estat === 'bloquejat' && (
+				<p
+					ref={ estatBloq }
+					className="nep-parla-bloquejat"
+					role="status"
+					tabIndex={ -1 }
+				>
+					{ __( 'Has bloquejat aquest número', 'noempesquen' ) }
+				</p>
+			) }
 			<div className="nep-parla-conversa__fil">
 				{ /* Focusable per poder-lo desplaçar amb el teclat. */ }
 				<div
@@ -244,7 +308,11 @@ export function Conversa( {
 				) }
 			</div>
 			<Respostes respostes={ respostes } onResposta={ onResposta } />
-			<div className="nep-parla-compon">
+			<form
+				className="nep-parla-compon"
+				onSubmit={ enviaText }
+				autoComplete="off"
+			>
 				<span className="nep-parla-compon__eina" aria-hidden="true">
 					<IconaCara mida={ 22 } />
 				</span>
@@ -256,12 +324,20 @@ export function Conversa( {
 					className="nep-parla-compon__camp"
 					placeholder={ placeholder }
 					aria-label={ __( 'Missatge', 'noempesquen' ) }
-					disabled
+					disabled={ ! onEnvia }
+					value={ onEnvia ? escrit : '' }
+					onChange={ ( e ) => setEscrit( e.target.value ) }
 				/>
-				<span className="nep-parla-compon__eina" aria-hidden="true">
-					<IconaMicro mida={ 22 } />
-				</span>
-			</div>
+				{ onEnvia ? (
+					<button type="submit" className="nep-parla-compon__envia">
+						{ __( 'Envia', 'noempesquen' ) }
+					</button>
+				) : (
+					<span className="nep-parla-compon__eina" aria-hidden="true">
+						<IconaMicro mida={ 22 } />
+					</span>
+				) }
+			</form>
 		</div>
 	);
 }

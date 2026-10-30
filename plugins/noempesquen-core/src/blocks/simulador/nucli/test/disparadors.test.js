@@ -228,3 +228,90 @@ describe( 'disparadors del vocabulari mòbil', () => {
 		expect( bis ).toBe( e );
 	} );
 } );
+
+describe( 'codi.envia i notificacions amb font', () => {
+	const mis = {
+		id: 't',
+		frases: { pescat: 'Pescat' },
+		disparadors: [
+			{
+				id: 'codi',
+				quan: {
+					esdeveniment: 'codi.envia',
+					url: 'banc-solid-verifica.com',
+				},
+				efectes: [ { tipus: 'pescat' } ],
+			},
+			{
+				id: 'sms',
+				quan: { esdeveniment: 'inici' },
+				efectes: [
+					{
+						tipus: 'notifica',
+						app: 'missatges',
+						font: 'mobil',
+						titol: 'Banc Sòlid',
+						text: 'Codi',
+					},
+				],
+			},
+		],
+	};
+	const inici = () => ( { ...estatInicial( m ), fase: FASE.JOC } );
+
+	it( 'codi.envia amb url coincident per hostname porta a pescat', () => {
+		const e = processaEsdeveniment( mis, inici(), 'codi.envia', {
+			url: 'https://banc-solid-verifica.com/codi',
+			formulari: 'codi',
+		} );
+		expect( e.pescat ).toBe( true );
+		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+
+	it( 'notifica amb font mobil copia font a la notificació', () => {
+		const e = processaEsdeveniment( mis, inici(), 'inici', {} );
+		expect( e.notificacions.at( -1 ) ).toMatchObject( {
+			app: 'missatges',
+			font: 'mobil',
+			llegida: false,
+		} );
+	} );
+} );
+
+describe( 'quan.visible', () => {
+	const quan = { esdeveniment: 'web.carrega', visible: 'm2' };
+	it( "coincideix només si l'element ja és visible", () => {
+		const dades = { url: 'https://x.cat/' };
+		expect(
+			coincideix( quan, 'web.carrega', dades, { visibles: {} } )
+		).toBe( false );
+		expect( coincideix( quan, 'web.carrega', dades ) ).toBe( false );
+		expect(
+			coincideix( quan, 'web.carrega', dades, { visibles: { m2: true } } )
+		).toBe( true );
+	} );
+
+	it( 'sense el correu no es dispara ni es consumeix; amb el correu sí', () => {
+		const mis = {
+			...m,
+			disparadors: [
+				{
+					id: 'oficial',
+					quan,
+					efectes: [ { tipus: 'decideix', opcio: 'c' } ],
+				},
+			],
+		};
+		const e0 = jocSenseIntro();
+		const e1 = processaEsdeveniment( mis, e0, 'web.carrega', {} );
+		expect( e1.fase ).toBe( FASE.JOC );
+		expect( e1.executats ).not.toContain( 'oficial' );
+		const e2 = processaEsdeveniment(
+			mis,
+			{ ...e1, visibles: { ...e1.visibles, m2: true } },
+			'web.carrega',
+			{}
+		);
+		expect( e2.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+} );

@@ -1,4 +1,5 @@
 import { useState } from '@wordpress/element';
+import { nomJugador } from '../../nucli/jugador.js';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { APPS } from '../../apps/registre';
@@ -18,7 +19,7 @@ export function MenuInici( { onObre, onApaga, onTanca, origen } ) {
 	const { mon } = useJoc();
 	const { panell, onBlur } = usePanell( onTanca, origen );
 	const [ cerca, setCerca ] = useState( '' );
-	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nom = nomJugador( mon );
 
 	const filtre = cerca.trim().toLocaleLowerCase( 'ca' );
 	const apps = Object.entries( APPS ).filter( ( [ , app ] ) =>

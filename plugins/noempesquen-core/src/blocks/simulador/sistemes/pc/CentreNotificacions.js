@@ -2,22 +2,23 @@ import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { DATA_LLARGA, DIA, DIES_SETMANA, MES, setmanes } from './calendari';
 import { CosNotificacio, descriu } from './Notificacions';
+import { clauGrup } from './notificacio';
 import { usePanell } from './usePanell';
 
 /**
  * Agrupa per app, amb el grup de la notificació més recent primer.
  *
  * @param {Object[]} notificacions Notificacions en ordre d'arribada.
- * @return {{app:string, llista:Object[]}[]} Grups, cadascun del més nou al més antic.
+ * @return {{clau:string, llista:Object[]}[]} Grups, cadascun del més nou al més antic.
  */
 function agrupa( notificacions ) {
 	const grups = [];
 	[ ...notificacions ].reverse().forEach( ( n ) => {
-		const grup = grups.find( ( g ) => g.app === n.app );
+		const grup = grups.find( ( g ) => g.clau === clauGrup( n ) );
 		if ( grup ) {
 			grup.llista.push( n );
 		} else {
-			grups.push( { app: n.app, llista: [ n ] } );
+			grups.push( { clau: clauGrup( n ), llista: [ n ] } );
 		}
 	} );
 	return grups;
@@ -102,7 +103,7 @@ export function CentreNotificacions( { onObre, onTanca, origen } ) {
 							const cap = descriu( g.llista[ 0 ], joc );
 							return (
 								<section
-									key={ g.app }
+									key={ g.clau }
 									className="nep-so-centre__grup"
 									aria-label={ cap.app }
 								>

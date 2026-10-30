@@ -18,12 +18,16 @@ function hostname( valor ) {
  * @param {Object} quan  Condició (`esdeveniment` + claus a comparar).
  * @param {string} nom   Nom de l'esdeveniment.
  * @param {Object} dades Dades de l'esdeveniment.
+ * @param {Object} estat Estat (opcional); `quan.visible` exigeix aquest element mostrat.
  * @return {boolean} Si coincideix.
  */
-export function coincideix( quan, nom, dades = {} ) {
+export function coincideix( quan, nom, dades = {}, estat ) {
 	return Object.entries( quan ).every( ( [ clau, valor ] ) => {
 		if ( clau === 'esdeveniment' ) {
 			return valor === nom;
+		}
+		if ( clau === 'visible' ) {
+			return !! estat?.visibles?.[ valor ];
 		}
 		if ( clau === 'url' ) {
 			return dades.url === valor || hostname( dades.url ) === valor;
@@ -84,7 +88,9 @@ function aplicaEfecte( missio, estat, efecte ) {
 						app: efecte.app,
 						titol: efecte.titol,
 						text: efecte.text,
+						...( efecte.xat ? { xat: efecte.xat } : {} ),
 						llegida: false,
+						...( efecte.font ? { font: efecte.font } : {} ),
 					},
 				],
 			};
@@ -163,7 +169,7 @@ export function processaEsdeveniment( missio, estat, nom, dades = {} ) {
 		}
 		if (
 			actual.executats.includes( d.id ) ||
-			! coincideix( d.quan, nom, dades )
+			! coincideix( d.quan, nom, dades, actual )
 		) {
 			continue;
 		}

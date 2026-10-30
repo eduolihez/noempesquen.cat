@@ -1,0 +1,252 @@
+/* App Banc Sòlid del mòbil: compte, moviments i transferència. */
+
+$bsm-blau: #12355b;
+$bsm-verd: #1a6b4a;
+$bsm-text: #1b2733;
+$bsm-text-2: #4a5568;
+$bsm-vora: #d6dde5;
+$bsm-fons: #f3f6f9;
+$bsm-error: #b3261e;
+
+.nep-so .nep-bsm {
+	background: $bsm-fons;
+	color: $bsm-text;
+	font-family: "Segoe UI", system-ui, sans-serif;
+	font-size: 16px;
+	line-height: 1.4;
+	min-height: 100%;
+	padding-bottom: 24px;
+
+	h2,
+	h3,
+	p {
+		margin: 0;
+	}
+
+	h2,
+	h3 {
+		color: $bsm-blau;
+		font-weight: 600;
+	}
+
+	h3 {
+		font-size: 16px;
+	}
+
+	&__cap {
+		align-items: center;
+		background: #fff;
+		border-bottom: 1px solid $bsm-vora;
+		display: flex;
+		gap: 8px;
+		min-height: 56px;
+		padding: 6px 12px;
+	}
+
+	&__titol {
+		font-size: 22px;
+		padding: 16px 16px 8px;
+
+		&:focus-visible {
+			outline: var(--nep-focus);
+			box-shadow: var(--nep-focus-halo);
+			outline-offset: -3px;
+		}
+	}
+
+	&__cap &__titol {
+		flex: 1 1 auto;
+		padding: 0;
+	}
+
+	&__boto-icona {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 50%;
+		color: $bsm-blau;
+		cursor: pointer;
+		display: inline-flex;
+		height: 44px;
+		justify-content: center;
+		width: 44px;
+	}
+
+	.nep-bs-marca {
+		align-items: center;
+		display: inline-flex;
+		gap: 10px;
+	}
+
+	.nep-bs-marca__nom {
+		color: $bsm-blau;
+		font-size: 20px;
+		font-weight: 600;
+	}
+
+	button:focus-visible,
+	input:focus-visible {
+		outline: var(--nep-focus);
+		box-shadow: var(--nep-focus-halo);
+		outline-offset: 2px;
+	}
+}
+
+.nep-so .nep-bsm-suau {
+	color: $bsm-text-2;
+	font-size: 14px;
+}
+
+.nep-so .nep-bsm-targeta,
+.nep-so .nep-bsm-avisos {
+	background: #fff;
+	border: 1px solid $bsm-vora;
+	border-radius: 14px;
+	margin: 8px 16px;
+	padding: 16px;
+}
+
+.nep-so .nep-bsm-saldo {
+	color: $bsm-blau;
+	font-size: 32px;
+	font-weight: 600;
+	margin-top: 4px;
+}
+
+.nep-so .nep-bsm-iban {
+	color: $bsm-text-2;
+	font-family: ui-monospace, "Cascadia Mono", monospace;
+	font-size: 14px;
+	margin-top: 8px;
+}
+
+.nep-so .nep-bsm-avisos {
+	align-items: flex-start;
+	color: $bsm-verd;
+	display: flex;
+	gap: 12px;
+
+	p {
+		color: $bsm-text;
+	}
+}
+
+.nep-so .nep-bsm-accions {
+	display: grid;
+	gap: 8px;
+	grid-template-columns: 1fr 1fr;
+	margin: 8px 16px;
+}
+
+.nep-so .nep-bsm-accio,
+.nep-so .nep-bsm-boto {
+	align-items: center;
+	background: $bsm-blau;
+	border: 0;
+	border-radius: 12px;
+	color: #fff;
+	cursor: pointer;
+	display: inline-flex;
+	font: inherit;
+	font-weight: 600;
+	gap: 8px;
+	justify-content: center;
+	min-height: 48px;
+	padding: 10px 14px;
+}
+
+.nep-so .nep-bsm-llista {
+	background: #fff;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nep-so .nep-bsm-fila {
+	align-items: center;
+	border-bottom: 1px solid $bsm-vora;
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	min-height: 56px;
+	padding: 10px 16px;
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__concepte {
+		font-size: 15px;
+	}
+
+	&__import {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		white-space: nowrap;
+
+		&.is-entrada {
+			color: $bsm-verd;
+		}
+	}
+}
+
+.nep-so .nep-bsm-form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 16px;
+}
+
+.nep-so .nep-bsm-camp {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	label {
+		font-weight: 600;
+	}
+
+	input {
+		background: #fff;
+		border: 1px solid #6b7785;
+		border-radius: 10px;
+		color: $bsm-text;
+		font: inherit;
+		min-height: 48px;
+		padding: 8px 12px;
+	}
+
+	input[aria-invalid="true"] {
+		border-color: $bsm-error;
+		border-width: 2px;
+	}
+}
+
+.nep-so .nep-bsm-error {
+	color: $bsm-error;
+	font-size: 14px;
+}
+
+.nep-so .nep-bsm-confirmacio {
+	align-items: center;
+	color: $bsm-verd;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 32px 16px;
+	text-align: center;
+
+	&__titol {
+		color: $bsm-blau;
+		font-size: 20px;
+		font-weight: 600;
+
+		&:focus-visible {
+			outline: var(--nep-focus);
+			box-shadow: var(--nep-focus-halo);
+			outline-offset: 4px;
+		}
+	}
+}

@@ -1,30 +1,19 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxe } = require( './ajudes' );
+const { greusAxe, inspecciona, iniciaMissio } = require( './ajudes' );
 
 const MISSIO = /El paquet retingut/;
+const BLOQUEIG = /Llisca cap amunt/;
 const NUMERO = '+44 7700 900461';
 
 const mobil = ( page ) => page.locator( '.nep-so' );
 const barraEstat = ( page ) =>
 	page.getByRole( 'button', { name: /Obre el centre de control/ } );
 const dock = ( page ) => page.getByRole( 'list', { name: 'Apps preferides' } );
-const inspecciona = ( page, text ) =>
-	page.getByRole( 'button', { name: `Inspecciona: ${ text }`, exact: true } );
-
-/** Obre la missió des del selector (pantalla de bloqueig). */
-async function iniciaMissio( page ) {
-	await page.clock.install();
-	await page.goto( '/simulador/' );
-	await page.getByRole( 'button', { name: MISSIO } ).click();
-	await expect(
-		page.getByRole( 'button', { name: /Llisca cap amunt/ } )
-	).toBeVisible();
-}
 
 /** Desbloqueja i arriba a la pantalla d'inici. */
 async function entra( page ) {
-	await iniciaMissio( page );
-	await page.getByRole( 'button', { name: /Llisca cap amunt/ } ).click();
+	await iniciaMissio( page, MISSIO, BLOQUEIG );
+	await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 	await expect( dock( page ) ).toBeVisible();
 }
 
@@ -246,7 +235,7 @@ test.describe( 'El paquet retingut', () => {
 
 	test.describe( 'accessibilitat', () => {
 		test( 'sense violacions axe greus: bloqueig', async ( { page } ) => {
-			await iniciaMissio( page );
+			await iniciaMissio( page, MISSIO, BLOQUEIG );
 			expect( await greusAxe( page ) ).toEqual( [] );
 		} );
 
@@ -311,9 +300,9 @@ test.describe( 'El paquet retingut', () => {
 							}`
 					)
 			);
-		await iniciaMissio( page );
+		await iniciaMissio( page, MISSIO, BLOQUEIG );
 		expect( await petits() ).toEqual( [] );
-		await page.getByRole( 'button', { name: /Llisca cap amunt/ } ).click();
+		await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 		await expect( dock( page ) ).toBeVisible();
 		expect( await petits() ).toEqual( [] );
 		await obreMissatges( page );

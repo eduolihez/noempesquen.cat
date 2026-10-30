@@ -202,7 +202,13 @@
 					],
 					[
 						{
-							"t": "Pots llegir-lo complet a la teva àrea privada, entrant amb l'adreça que ja coneixes."
+							"t": "Pots llegir-lo complet a la teva àrea privada: "
+						},
+						{
+							"enllac": {
+								"text": "bancsolid.cat",
+								"url": "https://bancsolid.cat/area-clients"
+							}
 						}
 					],
 					[ { "t": "Banc Sòlid" } ]

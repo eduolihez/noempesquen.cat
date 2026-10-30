@@ -28,6 +28,7 @@ const SENSE_AUTOOMPLE = {
  * @param {?string}   props.error       Missatge d'error.
  * @param {boolean}   props.amaga       Mostra punts en lloc del text.
  * @param {string}    props.inputMode   Teclat virtual.
+ * @param {?number}   props.maxLength   Llargada màxima.
  * @param {string}    props.classe      Classe extra del contenidor.
  * @param {?Function} props.onEscriu    L'usuari hi escriu (sense el valor).
  */
@@ -40,6 +41,7 @@ export function CampSuggerit( {
 	error,
 	amaga = false,
 	inputMode,
+	maxLength,
 	classe = '',
 	onEscriu,
 } ) {
@@ -89,6 +91,7 @@ export function CampSuggerit( {
 				type="text"
 				className={ `nep-lc-camp__input${ amaga ? ' is-amagat' : '' }` }
 				inputMode={ inputMode }
+				maxLength={ maxLength }
 				aria-invalid={ error ? true : undefined }
 				aria-describedby={ error ? idError : undefined }
 				aria-controls={ obert && suggeriment ? idSug : undefined }

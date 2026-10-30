@@ -7,6 +7,7 @@ import { lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { IconaNavegador, IconaParla } from '../ui/icones';
 import { IconaMissatges } from './missatges/icones';
+import { IconaBancSolid } from './banc-solid/icones';
 
 const navegador = {
 	nom: __( 'Navegador', 'noempesquen' ),
@@ -38,12 +39,19 @@ const navegadorMobil = {
 	Component: lazy( () => import( './navegador/NavegadorMobil' ) ),
 };
 
+const bancSolid = {
+	nom: __( 'Banc Sòlid', 'noempesquen' ),
+	Icona: IconaBancSolid,
+	Component: lazy( () => import( './banc-solid/BancSolid' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
 	missatges,
 	parla: parlaMobil,
 	navegador: navegadorMobil,
+	'banc-solid': bancSolid,
 };
 
 /* Àlies per al codi del PC que encara importa `APPS`. */
