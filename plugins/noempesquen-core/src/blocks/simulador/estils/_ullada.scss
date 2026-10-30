@@ -87,7 +87,8 @@ $ull-accent: #7a2fc0;
 	&__pestanya:focus-visible,
 	&__panell:focus-visible,
 	.nep-ullada-histories:focus-visible,
-	.nep-ullada-pub__agrada:focus-visible {
+	.nep-ullada-pub__agrada:focus-visible,
+	.nep-ullada-pub__denuncia:focus-visible {
 		outline: 3px solid var(--nep-focus, #1f5fd1);
 		outline-offset: -3px;
 	}
@@ -217,10 +218,48 @@ $ull-accent: #7a2fc0;
 		font-weight: 600;
 	}
 
+	&__denuncia {
+		align-items: center;
+		background: #fff;
+		border: 1px solid $ull-vora;
+		border-radius: 22px;
+		color: $ull-text;
+		cursor: pointer;
+		display: inline-flex;
+		font-size: 14px;
+		gap: 6px;
+		margin-left: auto;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 0 12px;
+
+		&[aria-disabled="true"] {
+			background: #f1f2f4;
+			color: $ull-text-2;
+			cursor: default;
+		}
+	}
+
+	&__estat {
+		color: #1d6b3a;
+		font-size: 14px;
+		font-weight: 600;
+		margin: 0;
+		padding: 0 12px;
+
+		&:empty {
+			display: none;
+		}
+	}
+
 	&__text {
 		margin: 0;
 		overflow-wrap: anywhere;
 		padding: 0 12px;
+	}
+
+	&__cos p {
+		margin: 0 0 4px;
 	}
 }
 

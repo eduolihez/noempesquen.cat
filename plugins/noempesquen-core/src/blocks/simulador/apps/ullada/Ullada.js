@@ -17,8 +17,8 @@ const PESTANYES = [ 'inici', 'cerca', 'perfil' ];
 const ICONES = { inici: IconaCasa, cerca: IconaCerca, perfil: IconaPerfil };
 
 /**
- * Ullada: xarxa social de farciment (feed de fotos). Tot és decoratiu i
- * local; no emet res al motor.
+ * Ullada: xarxa social (feed de fotos). Tot és local; només les
+ * publicacions emeten al motor (denúncia i enllaços del `cos`).
  */
 export default function Ullada() {
 	const { mon, missio } = useJoc();

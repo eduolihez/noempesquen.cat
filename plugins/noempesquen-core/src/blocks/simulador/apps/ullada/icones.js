@@ -99,3 +99,10 @@ export const IconaAvisos = ( p ) => (
 		<path d="M8.5 17.5h3" />
 	</Glif>
 );
+
+export const IconaDenuncia = ( p ) => (
+	<Glif { ...p }>
+		<path d="M5 17.5V3.5" />
+		<path d="M5 4h9.5l-2 3.5 2 3.5H5" />
+	</Glif>
+);
