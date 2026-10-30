@@ -30,8 +30,9 @@ add_action(
 				'callback'            => 'nep_rest_previsualitza',
 				'args'                => array(
 					'id' => array(
-						'type'     => 'integer',
-						'required' => true,
+						'type'              => 'integer',
+						'required'          => true,
+						'sanitize_callback' => 'absint',
 					),
 				),
 			)

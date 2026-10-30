@@ -12,7 +12,16 @@ import './style.scss';
 
 const ESPERA_MS = 300;
 
+// Darrer resultat pintat: si no canvia, no es repinta (el lector de pantalla
+// tornaria a anunciar la regió viva).
+let darrer = null;
+
 function pinta( caixa, errors ) {
+	const clau = JSON.stringify( errors );
+	if ( clau === darrer ) {
+		return;
+	}
+	darrer = clau;
 	caixa.replaceChildren();
 	caixa.classList.toggle( 'nep-guio-diagnostic--error', errors.length > 0 );
 	const titol = document.createElement( 'p' );

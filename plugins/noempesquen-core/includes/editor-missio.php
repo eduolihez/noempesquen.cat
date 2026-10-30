@@ -51,6 +51,22 @@ function nep_url_simulador(): string {
 }
 
 /**
+ * La pàgina del simulador amb `?previsualitza` per a un gestor porta un nonce
+ * i un guió no publicat: que no la desi cap memòria cau.
+ */
+function nep_no_cache_previsualitzacio(): void {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Només comprova si hi ha el paràmetre.
+	if ( ! isset( $_GET['previsualitza'] ) || ! current_user_can( 'nep_gestiona_missions' ) ) {
+		return;
+	}
+	nocache_headers();
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
+}
+add_action( 'template_redirect', 'nep_no_cache_previsualitzacio' );
+
+/**
  * Pinta la caixa del guió.
  *
  * @param WP_Post $post Missió.
