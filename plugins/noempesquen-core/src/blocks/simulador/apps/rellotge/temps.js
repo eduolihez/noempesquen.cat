@@ -2,6 +2,8 @@
  * Lògica pura del Rellotge: format de temps, voltes, ciutats i temporitzador.
  */
 
+import { FASE } from '../../nucli/motor';
+
 const MINUT = 1440;
 
 function dosDigits( n ) {
@@ -82,4 +84,15 @@ export function horaCiutat( horaBase, desfaseHores ) {
  */
 export function restant( totalMs, transcorregut ) {
 	return Math.max( 0, totalMs - transcorregut );
+}
+
+/**
+ * Els comptadors només avancen igual que el temps del motor: en fase de
+ * joc i sense pausa.
+ *
+ * @param {{fase:string,pausa:boolean}} estat Estat del joc.
+ * @return {boolean} Cert si el temps corre.
+ */
+export function correTemps( estat ) {
+	return estat?.fase === FASE.JOC && ! estat?.pausa;
 }

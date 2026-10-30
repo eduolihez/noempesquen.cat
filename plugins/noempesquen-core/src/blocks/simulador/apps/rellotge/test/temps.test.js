@@ -5,7 +5,9 @@ import {
 	afegeixVolta,
 	horaCiutat,
 	restant,
+	correTemps,
 } from '../temps.js';
+import { FASE } from '../../../nucli/motor.js';
 
 describe( 'formata', () => {
 	it( 'mm:ss,cc', () => {
@@ -64,5 +66,16 @@ describe( 'restant', () => {
 		expect( restant( 60000, 20000 ) ).toBe( 40000 );
 		expect( restant( 60000, 60000 ) ).toBe( 0 );
 		expect( restant( 60000, 90000 ) ).toBe( 0 );
+	} );
+} );
+
+describe( 'correTemps', () => {
+	it( 'només en fase de joc i sense pausa', () => {
+		expect( correTemps( { fase: FASE.JOC, pausa: false } ) ).toBe( true );
+		expect( correTemps( { fase: FASE.JOC, pausa: true } ) ).toBe( false );
+		expect( correTemps( { fase: FASE.CONSEQUENCIA, pausa: false } ) ).toBe(
+			false
+		);
+		expect( correTemps( undefined ) ).toBe( false );
 	} );
 } );

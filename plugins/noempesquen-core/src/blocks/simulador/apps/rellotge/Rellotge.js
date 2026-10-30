@@ -14,6 +14,7 @@ import {
 	afegeixVolta,
 	horaCiutat,
 	restant,
+	correTemps,
 } from './temps';
 
 const PESTANYES = [
@@ -145,7 +146,7 @@ function PanellTemp( { temp, trieu, alternar, reinicia } ) {
 
 export default function Rellotge() {
 	const { hora, estat } = useJoc();
-	const pausa = !! estat.pausa;
+	const corre = correTemps( estat );
 	const [ pestanya, setPestanya ] = useState( 'hora' );
 	const [ crono, setCrono ] = useState( { ms: 0, corrent: false } );
 	const [ voltes, setVoltes ] = useState( [] );
@@ -160,7 +161,7 @@ export default function Rellotge() {
 	const hiHaCorrent = crono.corrent || temp.corrent;
 
 	useEffect( () => {
-		if ( ! hiHaCorrent || pausa ) {
+		if ( ! hiHaCorrent || ! corre ) {
 			return undefined;
 		}
 		let darrer = performance.now();
@@ -180,17 +181,24 @@ export default function Rellotge() {
 			} );
 		}, TICK_MS );
 		return () => clearInterval( id );
-	}, [ hiHaCorrent, pausa ] );
+	}, [ hiHaCorrent, corre ] );
 
 	const teclat = ( e ) => {
-		const pas = { ArrowRight: 1, ArrowLeft: -1 }[ e.key ];
-		if ( ! pas ) {
+		const i = PESTANYES.findIndex( ( p ) => p.id === pestanya );
+		let nou;
+		if ( e.key === 'ArrowRight' ) {
+			nou = ( i + 1 ) % PESTANYES.length;
+		} else if ( e.key === 'ArrowLeft' ) {
+			nou = ( i - 1 + PESTANYES.length ) % PESTANYES.length;
+		} else if ( e.key === 'Home' ) {
+			nou = 0;
+		} else if ( e.key === 'End' ) {
+			nou = PESTANYES.length - 1;
+		} else {
 			return;
 		}
 		e.preventDefault();
-		const i = PESTANYES.findIndex( ( p ) => p.id === pestanya );
-		const seg =
-			PESTANYES[ ( i + pas + PESTANYES.length ) % PESTANYES.length ];
+		const seg = PESTANYES[ nou ];
 		setPestanya( seg.id );
 		botonsPestanya.current[ seg.id ]?.focus();
 	};
@@ -231,60 +239,67 @@ export default function Rellotge() {
 					</button>
 				) ) }
 			</div>
-			<div
-				className="nep-rellotge__panell"
-				role="tabpanel"
-				id={ `nep-rellotge-panell-${ pestanya }` }
-				aria-labelledby={ `nep-rellotge-tab-${ pestanya }` }
-			>
-				{ pestanya === 'hora' && <PanellHora hora={ hora } /> }
-				{ pestanya === 'crono' && (
-					<PanellCrono
-						crono={ crono }
-						voltes={ voltes }
-						alternar={ () =>
-							setCrono( ( c ) => ( {
-								...c,
-								corrent: ! c.corrent,
-							} ) )
-						}
-						volta={ () =>
-							setVoltes( ( v ) => afegeixVolta( v, crono.ms ) )
-						}
-						reinicia={ () => {
-							setCrono( { ms: 0, corrent: false } );
-							setVoltes( [] );
-						} }
-					/>
-				) }
-				{ pestanya === 'temp' && (
-					<PanellTemp
-						temp={ temp }
-						trieu={ ( total ) =>
-							setTemp( {
-								total,
-								ms: 0,
-								corrent: false,
-								acabat: false,
-							} )
-						}
-						alternar={ () =>
-							setTemp( ( t ) => ( {
-								...t,
-								corrent: ! t.corrent,
-							} ) )
-						}
-						reinicia={ () =>
-							setTemp( ( t ) => ( {
-								...t,
-								ms: 0,
-								corrent: false,
-								acabat: false,
-							} ) )
-						}
-					/>
-				) }
-			</div>
+			{ PESTANYES.map( ( p ) => (
+				<div
+					key={ p.id }
+					className="nep-rellotge__panell"
+					role="tabpanel"
+					id={ `nep-rellotge-panell-${ p.id }` }
+					aria-labelledby={ `nep-rellotge-tab-${ p.id }` }
+					hidden={ pestanya !== p.id }
+					tabIndex={ pestanya === p.id ? 0 : undefined }
+				>
+					{ p.id === 'hora' && <PanellHora hora={ hora } /> }
+					{ p.id === 'crono' && (
+						<PanellCrono
+							crono={ crono }
+							voltes={ voltes }
+							alternar={ () =>
+								setCrono( ( c ) => ( {
+									...c,
+									corrent: ! c.corrent,
+								} ) )
+							}
+							volta={ () =>
+								setVoltes( ( v ) =>
+									afegeixVolta( v, crono.ms )
+								)
+							}
+							reinicia={ () => {
+								setCrono( { ms: 0, corrent: false } );
+								setVoltes( [] );
+							} }
+						/>
+					) }
+					{ p.id === 'temp' && (
+						<PanellTemp
+							temp={ temp }
+							trieu={ ( total ) =>
+								setTemp( {
+									total,
+									ms: 0,
+									corrent: false,
+									acabat: false,
+								} )
+							}
+							alternar={ () =>
+								setTemp( ( t ) => ( {
+									...t,
+									corrent: ! t.corrent,
+								} ) )
+							}
+							reinicia={ () =>
+								setTemp( ( t ) => ( {
+									...t,
+									ms: 0,
+									corrent: false,
+									acabat: false,
+								} ) )
+							}
+						/>
+					) }
+				</div>
+			) ) }
 		</div>
 	);
 }

@@ -5,6 +5,7 @@ $rlg-text: #f2f4f7;
 $rlg-text-2: #b8bec8;
 $rlg-vora: #2c313a;
 $rlg-boto: #272b33;
+$rlg-vora-boto: #7a8290;
 $rlg-accent: #ff9f43;
 
 .nep-so .nep-rellotge {
@@ -54,6 +55,10 @@ $rlg-accent: #ff9f43;
 	}
 
 	&__panell {
+		&[hidden] {
+			display: none;
+		}
+
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
@@ -119,7 +124,7 @@ $rlg-accent: #ff9f43;
 
 	&__boto {
 		background: $rlg-boto;
-		border: 1px solid $rlg-vora;
+		border: 1px solid $rlg-vora-boto;
 		border-radius: 22px;
 		color: $rlg-text;
 		cursor: pointer;
