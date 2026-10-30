@@ -1,0 +1,165 @@
+/* Rellotge del mòbil: hora, cronòmetre i temporitzador. */
+
+$rlg-fons: #101216;
+$rlg-text: #f2f4f7;
+$rlg-text-2: #b8bec8;
+$rlg-vora: #2c313a;
+$rlg-boto: #272b33;
+$rlg-vora-boto: #7a8290;
+$rlg-accent: #ff9f43;
+
+.nep-so .nep-rellotge {
+	background: $rlg-fons;
+	color: $rlg-text;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	&__cap {
+		padding: 10px 16px 4px;
+	}
+
+	&__titol {
+		font-size: 20px;
+		font-weight: 600;
+		margin: 0;
+	}
+
+	&__pestanyes {
+		border-bottom: 1px solid $rlg-vora;
+		display: flex;
+	}
+
+	&__pestanya {
+		background: none;
+		border: 0;
+		border-bottom: 3px solid transparent;
+		color: $rlg-text-2;
+		cursor: pointer;
+		flex: 1 1 0;
+		font: inherit;
+		font-size: 14px;
+		min-height: 44px;
+		padding: 6px 4px;
+
+		&[aria-selected="true"] {
+			border-bottom-color: $rlg-accent;
+			color: $rlg-text;
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #fff);
+			outline-offset: -3px;
+		}
+	}
+
+	&__panell {
+		&[hidden] {
+			display: none;
+		}
+
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		padding: 16px;
+	}
+
+	&__hora-gran,
+	&__digits {
+		font-size: 44px;
+		font-variant-numeric: tabular-nums;
+		font-weight: 300;
+		margin: 8px 0 16px;
+		text-align: center;
+	}
+
+	&__ciutats,
+	&__voltes {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	&__ciutat,
+	&__volta {
+		align-items: center;
+		border-top: 1px solid $rlg-vora;
+		display: flex;
+		font-variant-numeric: tabular-nums;
+		justify-content: space-between;
+		min-height: 44px;
+	}
+
+	&__ciutat-hora {
+		font-size: 22px;
+	}
+
+	&__volta {
+		gap: 8px;
+		font-size: 14px;
+
+		span:first-child {
+			color: $rlg-text-2;
+			flex: 1 1 auto;
+		}
+	}
+
+	&__botons,
+	&__presets {
+		display: flex;
+		gap: 12px;
+		justify-content: center;
+		margin-bottom: 16px;
+	}
+
+	&__avis {
+		color: $rlg-accent;
+		font-size: 20px;
+		font-weight: 600;
+		margin: 0 0 12px;
+		min-height: 28px;
+		text-align: center;
+	}
+
+	&__boto {
+		background: $rlg-boto;
+		border: 1px solid $rlg-vora-boto;
+		border-radius: 22px;
+		color: $rlg-text;
+		cursor: pointer;
+		font: inherit;
+		font-size: 15px;
+		min-height: 44px;
+		min-width: 44px;
+		padding: 0 20px;
+
+		&:disabled {
+			cursor: default;
+			opacity: 0.55;
+		}
+
+		&[aria-pressed="true"] {
+			border-color: $rlg-accent;
+			color: $rlg-accent;
+		}
+
+		&--primari {
+			background: $rlg-accent;
+			border-color: $rlg-accent;
+			color: #1a1205;
+			font-weight: 600;
+		}
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #fff);
+			outline-offset: 2px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		* {
+			transition: none;
+		}
+	}
+}
