@@ -83,6 +83,14 @@ export function textCerca( url ) {
 }
 
 /**
+ * Hostname sense el prefix `www.`.
+ *
+ * @param {string} host Hostname.
+ * @return {string} Hostname sense `www.`.
+ */
+export const senseWww = ( host ) => host.replace( /^www\./i, '' );
+
+/**
  * Web registrada per a una URL, buscada pel hostname a `missio.webs`.
  *
  * @param {string} url    URL.
@@ -94,7 +102,9 @@ export function resolWeb( url, missio ) {
 	if ( ! host ) {
 		return null;
 	}
-	const web = missio?.webs?.[ host ];
+	// Primer el host exacte (una missió pot declarar un `www.` a propòsit);
+	// si no hi és, la mateixa entrada sense `www.`.
+	const web = missio?.webs?.[ host ] ?? missio?.webs?.[ senseWww( host ) ];
 	if ( web?.plantilla ) {
 		return { plantilla: web.plantilla, dades: web };
 	}
