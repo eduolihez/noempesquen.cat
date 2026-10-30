@@ -16,8 +16,8 @@ const MISSATGES = [
 	'Hola, he canviat de mòbil. Aquest és el meu número nou. Em pots ajudar amb una cosa urgent?',
 	"Soc el Pau, no m'has desat? Se m'ha bloquejat la targeta i ho he de pagar avui mateix",
 	'No puc parlar, estic en una reunió. Escriu-me només per aqui vale?',
-	"Em pots fer una transferencia de 380 € ara? Es urgent, demà te'ls torno",
-	"IBAN: ES00 0000 0000 0000 0000 0000, a nom de R. Dumitrescu. Avisa'm quan ho facis",
+	"Em pots fer una transferència de 380 € ara? És urgent, demà te'ls torno",
+	"IBAN: ES21 9999 0000 0000 0000 0000, a nom de R. Dumitrescu. Avisa'm quan ho facis",
 	'Va, que es urgent, no puc esperar. Fes-ho ja si pots',
 ];
 // Valors escrits a mà: no han de quedar enlloc.

@@ -17,7 +17,7 @@
 	"pistes": [
 		"Obre Posta i fixa't en el correu nou. De quin domini és l'adreça del remitent?",
 		"Compara l'adreça de l'enllaç amb la del teu banc: bancsolid.cat. Si hi ha alguna cosa afegida, desconfia.",
-		"Si dubtes, no facis servir l'enllaç. Escriu bancsolid.cat al navegador i mira si el teu compte té cap avís, o marca el correu com a phishing."
+		"Si dubtes, no facis servir l'enllaç. Comprova-ho pel camí de sempre, sense fer servir l'enllaç del correu, o marca el correu com a phishing."
 	],
 	"apps": {
 		"posta": {
@@ -278,6 +278,7 @@
 		},
 		{
 			"id": "bloqueig",
+			"requereix": "web-falsa",
 			"titol": "L'amenaça del compte bloquejat",
 			"explicacio": "Dir-te que el compte ja està bloquejat és l'esquer: vol que corris a «desbloquejar-lo». Si fos cert, ho veuries entrant tu al web oficial.",
 			"reaccio": "Bloquejat, diu. Doncs comprova-ho tu, per la porta de sempre."
@@ -290,24 +291,28 @@
 		},
 		{
 			"id": "domini",
+			"requereix": "web-falsa",
 			"titol": "L'adreça de la web no és l'oficial",
 			"explicacio": "La barra d'adreces diu bancsolid-acces.top. Que tingui cadenat no vol dir que sigui fiable: només vol dir que la connexió està xifrada, també amb els estafadors.",
 			"reaccio": "Té cadenat, sí, però l'adreça no és la del banc. El cadenat no t'assegura res."
 		},
 		{
 			"id": "errata",
+			"requereix": "web-falsa",
 			"titol": "Una errata que delata",
 			"explicacio": "Hi diu «conte» en lloc de «compte». Un banc revisa els textos; les estafes sovint tenen faltes.",
 			"reaccio": "«Conte»? Això és un conte, i no precisament bo."
 		},
 		{
 			"id": "dni",
+			"requereix": "web-falsa",
 			"titol": "Et demana més dades de les necessàries",
 			"explicacio": "Per entrar només caldria l'usuari i la contrasenya. Que et demanin també el DNI és una manera de robar-te més informació.",
 			"reaccio": "Un camp de més. Quan et demanen més del compte, sospita."
 		},
 		{
 			"id": "codi_sms",
+			"requereix": "web-falsa",
 			"titol": "El banc no et demana el codi SMS en una web",
 			"explicacio": "El codi que et ve per SMS és personal i serveix per autoritzar operacions. Si el donen als estafadors, el fan servir al banc de veritat. Cap banc te'l demana per aquí.",
 			"reaccio": "Aquest codi és la clau del pany. Mai no el donis."
@@ -320,7 +325,7 @@
 			"Res d'estrany per aquí."
 		],
 		"web_falsa": "Ho has obert. Fixa't bé en aquesta web: s'assembla a la del banc, però mira l'adreça de dalt. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"dades_donades": "Ostres, ja has donat l'usuari i la contrasenya... encara pots aturar-ho: no escriguis el codi.",
+		"dades_donades": "Ostres, ja els has donat l'usuari, la contrasenya i el DNI. No escriguis el codi que et demanaran i, de seguida, canvia la contrasenya i avisa el banc pel canal oficial.",
 		"pescat": "Ai, ai, ai. Has donat el codi. Si fos de veritat, ara els estafadors podrien entrar al teu compte i moure'n els diners. Calma, això és un simulacre."
 	},
 	"decisio": {
@@ -340,9 +345,9 @@
 			},
 			{
 				"id": "c",
-				"text": "Marco el correu com a phishing, l'esborro i aviso el banc pel canal oficial.",
+				"text": "Marco el correu com a phishing.",
 				"valor": "correcta",
-				"resposta": "Perfecte. Era una estafa, i avisar el banc i marcar el correu ajuda a frenar-la també per a altres persones."
+				"resposta": "Perfecte. Era una estafa, i marcar el correu com a phishing ajuda a frenar-la també per a altres persones."
 			},
 			{
 				"id": "d",
