@@ -1,6 +1,7 @@
 import { useId, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { nomJugador } from '../../nucli/jugador';
 
 const APPS_INSTALLADES = [
 	[ 'Navegador', '2.4.1' ],
@@ -156,7 +157,7 @@ function Sobre() {
 		<>
 			<Dada
 				etiqueta={ __( 'Nom del dispositiu', 'noempesquen' ) }
-				valor={ mon?.jugador?.nom ?? '' }
+				valor={ nomJugador( mon ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Model', 'noempesquen' ) }

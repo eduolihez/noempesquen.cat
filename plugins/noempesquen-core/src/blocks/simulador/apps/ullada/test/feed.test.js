@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { construeixFeed, formataLikes } from '../feed.js';
+import { construeixFeed, formataLikes, primerNom, usuariDe } from '../feed.js';
 
 const mon = {
 	ullada: {
@@ -48,5 +48,20 @@ describe( 'formataLikes', () => {
 		expect( formataLikes( 1 ) ).toBe( "1 m'agrada" );
 		expect( formataLikes( 1234 ) ).toBe( "1.234 m'agrada" );
 		expect( formataLikes( 1234567 ) ).toBe( "1.234.567 m'agrada" );
+	} );
+} );
+
+describe( 'primerNom i usuariDe', () => {
+	it( 'primerNom no peta amb valors que no són text', () => {
+		expect( primerNom( 'Núria Pons' ) ).toBe( 'Núria' );
+		expect( primerNom( '' ) ).toBe( '' );
+		[ undefined, null, 5, {} ].forEach( ( v ) =>
+			expect( primerNom( v ) ).toBe( '' )
+		);
+	} );
+
+	it( 'usuariDe treu accents i posa punts', () => {
+		expect( usuariDe( 'Àlex Puig' ) ).toBe( 'alex.puig' );
+		expect( usuariDe( undefined ) ).toBe( '' );
 	} );
 } );
