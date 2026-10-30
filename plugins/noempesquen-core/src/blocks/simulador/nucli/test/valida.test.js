@@ -456,3 +456,38 @@ describe( 'validaMissio: apps.parla.xats', () => {
 		expect( errors ).toContain( 'notifica: xat només amb app parla' );
 	} );
 } );
+
+describe( 'validaMissio: apps.ullada.publicacions', () => {
+	const bona = {
+		id: 'p1',
+		autor: 'a1',
+		text: 'Hola',
+		il: 'gat',
+		likes: 3,
+	};
+	const amb = ( publicacions ) => {
+		const m = copia();
+		m.apps.ullada = { publicacions };
+		return validaMissio( m ).filter( ( e ) => e.startsWith( 'ullada' ) );
+	};
+
+	it( 'accepta una publicació vàlida o sense publicacions', () => {
+		expect( amb( [ bona ] ) ).toEqual( [] );
+		expect( amb( undefined ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja no-array, elements no objecte i camps absents', () => {
+		expect( amb( null ) ).toHaveLength( 1 );
+		expect( amb( [ null ] ) ).toHaveLength( 1 );
+		expect( amb( [ { ...bona, text: '' } ] ) ).toHaveLength( 1 );
+	} );
+
+	it( 'rebutja il·lustració inexistent i likes no numèrics', () => {
+		expect( amb( [ { ...bona, il: 'xyz' } ] ) ).toHaveLength( 1 );
+		expect( amb( [ { ...bona, likes: '3' } ] ) ).toHaveLength( 1 );
+	} );
+
+	it( 'rebutja ids duplicats', () => {
+		expect( amb( [ bona, bona ] ) ).toHaveLength( 1 );
+	} );
+} );

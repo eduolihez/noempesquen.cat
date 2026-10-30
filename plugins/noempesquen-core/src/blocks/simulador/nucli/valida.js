@@ -3,6 +3,7 @@
  */
 
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
+import { existeixIlustracio } from '../ui/ilustracions-ids';
 
 export const APPS_PC = CLAUS_APPS_PC;
 export const APPS_MOBIL = CLAUS_APPS_MOBIL;
@@ -271,6 +272,43 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
+function validaPublicacionsUllada( m, errors ) {
+	const publicacions = m.apps?.ullada?.publicacions;
+	if ( publicacions === undefined ) {
+		return;
+	}
+	if ( ! Array.isArray( publicacions ) ) {
+		errors.push( 'ullada: publicacions ha de ser una llista' );
+		return;
+	}
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	const ids = new Set();
+	publicacions.forEach( ( p, i ) => {
+		const ref = `ullada.publicacions[${ i }]`;
+		if ( ! p || typeof p !== 'object' || Array.isArray( p ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'autor', 'text' ].forEach( ( c ) => {
+			if ( ! text( p[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if ( text( p.id ) ) {
+			if ( ids.has( p.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ p.id }»` );
+			}
+			ids.add( p.id );
+		}
+		if ( ! text( p.il ) || ! existeixIlustracio( p.il ) ) {
+			errors.push( `${ ref }: il·lustració inexistent «${ p.il }»` );
+		}
+		if ( typeof p.likes !== 'number' || ! Number.isFinite( p.likes ) ) {
+			errors.push( `${ ref }: «likes» ha de ser un número` );
+		}
+	} );
+}
+
 function validaFormularis( domini, web, errors ) {
 	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
 		if ( ! f || typeof f !== 'object' ) {
@@ -372,6 +410,7 @@ export function validaMissio( m, mon ) {
 	} );
 
 	validaXatsParla( m, mon, errors );
+	validaPublicacionsUllada( m, errors );
 	validaDisparadors( m, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
