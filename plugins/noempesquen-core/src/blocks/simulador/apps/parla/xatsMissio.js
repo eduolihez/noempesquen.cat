@@ -30,6 +30,7 @@ export function xatsVisibles( estat, mon, missio ) {
 				de: m.de,
 				text: m.text,
 				hora: m.hora ?? '',
+				...( m.senyal ? { senyal: m.senyal } : {} ),
 				missio: true,
 			} ) );
 		if ( ! nous.length ) {
@@ -46,6 +47,7 @@ export function xatsVisibles( estat, mon, missio ) {
 					?.nom ??
 				xm.id,
 			...( contacte ? { contacte } : {} ),
+			...( xm.senyal_avis ? { senyalAvis: xm.senyal_avis } : {} ),
 			missatges: [ ...( base?.missatges ?? [] ), ...nous ],
 		} );
 	} );
@@ -69,4 +71,15 @@ export function xatEscriptible( xat, contactes, bloquejats = new Set() ) {
 		! esDesconegut( contacte ) &&
 		! bloquejats.has( contacte.id )
 	);
+}
+
+/**
+ * Destí d'una notificació de Parla al mòbil: el xat que indica (`xat`) o,
+ * si no n'indica cap, el del guia.
+ *
+ * @param {Object} notificacio Notificació { app, xat? }.
+ * @return {[string, {xat:string}]} App i dades d'obertura.
+ */
+export function destiParla( notificacio ) {
+	return [ 'parla', { xat: notificacio?.xat ?? 'guia' } ];
 }

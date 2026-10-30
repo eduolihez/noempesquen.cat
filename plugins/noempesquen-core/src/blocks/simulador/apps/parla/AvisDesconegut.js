@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { Inspeccionable } from '../../ui/Inspeccionable';
 import { IconaBloqueja } from '../missatges/icones';
 import { IconaMes } from './icones';
 
@@ -10,8 +11,9 @@ import { IconaMes } from './icones';
  * @param {Object}   props
  * @param {()=>void} props.onBloqueja Bloqueja el número.
  * @param {()=>void} props.onAfegeix  Només tanca el banner (no toca el motor).
+ * @param {?string}  props.senyal     Senyal del text del banner, si n'és un.
  */
-export function AvisDesconegut( { onBloqueja, onAfegeix } ) {
+export function AvisDesconegut( { onBloqueja, onAfegeix, senyal } ) {
 	return (
 		<div
 			className="nep-parla-avis"
@@ -19,10 +21,13 @@ export function AvisDesconegut( { onBloqueja, onAfegeix } ) {
 			aria-label={ __( 'Número desconegut', 'noempesquen' ) }
 		>
 			<p className="nep-parla-avis__text">
-				{ __(
-					'Aquest número no és als teus contactes',
-					'noempesquen'
-				) }
+				<Inspeccionable
+					text={ __(
+						'Aquest número no és als teus contactes',
+						'noempesquen'
+					) }
+					senyal={ senyal }
+				/>
 			</p>
 			<div className="nep-parla-avis__accions">
 				<button

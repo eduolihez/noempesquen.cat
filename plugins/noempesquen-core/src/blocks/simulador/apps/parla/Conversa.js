@@ -7,6 +7,7 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import { IconaCerca, IconaLupa } from '../../ui/icones';
 import { IconaEnrere } from '../missatges/icones';
+import { Inspeccionable } from '../../ui/Inspeccionable';
 import { Respostes } from './Respostes';
 import { AvisDesconegut, MenuXat } from './AvisDesconegut';
 import { esDesconegut, estatAvis } from './desconegut';
@@ -56,7 +57,7 @@ function Bombolla( { m, cua, nom } ) {
 							) }
 				</span>
 				<p className="nep-parla-msg__text">
-					{ m.text }
+					<Inspeccionable text={ m.text } senyal={ m.senyal } />
 					<span className="nep-parla-msg__espai" aria-hidden="true" />
 				</p>
 				<span className="nep-parla-msg__meta">
@@ -110,6 +111,7 @@ function Escrivint() {
  * @param {string}               props.placeholder   Text del camp desactivat.
  * @param {?(text:string)=>void} props.onEnvia       Si hi és, el camp de text és actiu i rep el text escrit.
  * @param {()=>void}             props.onEnrere      Només al mòbil: botó per tornar a la llista.
+ * @param {?string}              props.senyalAvis    Senyal del banner de número desconegut.
  * @param {?Object}              props.contacte      Contacte de mon.json del xat (null: cap).
  * @param {boolean}              props.bloquejat     El número ja és bloquejat.
  * @param {()=>void}             props.onBloqueja    Bloqueja el número (desconeguts).
@@ -126,6 +128,7 @@ export function Conversa( {
 	onEnrere,
 	onEnvia,
 	contacte = null,
+	senyalAvis,
 	bloquejat = false,
 	onBloqueja,
 } ) {
@@ -239,7 +242,11 @@ export function Conversa( {
 				</span>
 			</div>
 			{ estat === 'avis' && (
-				<AvisDesconegut onBloqueja={ bloqueja } onAfegeix={ afegeix } />
+				<AvisDesconegut
+					onBloqueja={ bloqueja }
+					onAfegeix={ afegeix }
+					senyal={ senyalAvis }
+				/>
 			) }
 			{ estat === 'bloquejat' && (
 				<p

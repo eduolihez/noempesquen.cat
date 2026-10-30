@@ -88,6 +88,7 @@ function aplicaEfecte( missio, estat, efecte ) {
 						app: efecte.app,
 						titol: efecte.titol,
 						text: efecte.text,
+						...( efecte.xat ? { xat: efecte.xat } : {} ),
 						llegida: false,
 						...( efecte.font ? { font: efecte.font } : {} ),
 					},

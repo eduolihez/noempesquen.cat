@@ -77,6 +77,7 @@ const missatgeFarciment = ( xatId ) => ( m, i ) => ( {
 	propi: m.de === 'jo',
 	text: m.text,
 	hora: m.hora,
+	senyal: m.senyal,
 } );
 
 /* Hora a la llista de xats: l'hora si és d'avui; si no, el dia. */
@@ -205,8 +206,9 @@ export function useParla( xatInicial = ID_GUIA ) {
 		emet( 'missatge.envia', { contacte: contacte.id } );
 	};
 
-	const dadesDesconegut = ( contacte ) => ( {
+	const dadesDesconegut = ( contacte, senyalAvis ) => ( {
 		contacte,
+		senyalAvis,
 		bloquejat: bloquejats.has( contacte?.id ),
 		onBloqueja: () => bloqueja( contacte ),
 	} );
@@ -226,7 +228,10 @@ export function useParla( xatInicial = ID_GUIA ) {
 				onEnvia: xatEscriptible( xatObert, contactes, bloquejats )
 					? ( text ) => envia( xatObert, text )
 					: undefined,
-				...dadesDesconegut( contacteDelXat( xatObert, contactes ) ),
+				...dadesDesconegut(
+					contacteDelXat( xatObert, contactes ),
+					xatObert.senyalAvis
+				),
 			}
 		: {
 				nom,

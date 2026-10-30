@@ -46,7 +46,12 @@ export const ESDEVENIMENTS = [
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
 
-const CAMPS_SENYAL = [ 'senyal', 'assumpte_senyal', 'domini_senyal' ];
+const CAMPS_SENYAL = [
+	'senyal',
+	'assumpte_senyal',
+	'domini_senyal',
+	'senyal_avis',
+];
 
 /**
  * Recull recursivament tots els ids de senyal referenciats.
@@ -140,6 +145,9 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 		errors.push( `mostra: element inexistent: ${ e.id }` );
 	}
 	if ( e.tipus === 'notifica' ) {
+		if ( e.xat !== undefined && ( e.app !== 'parla' || ! e.xat ) ) {
+			errors.push( 'notifica: xat només amb app parla' );
+		}
 		if ( e.font !== undefined && e.font !== 'mobil' ) {
 			errors.push( `notifica: font invàlida: ${ e.font }` );
 		} else if ( ! FONTS_NOTIFICACIO.includes( e.app ) ) {

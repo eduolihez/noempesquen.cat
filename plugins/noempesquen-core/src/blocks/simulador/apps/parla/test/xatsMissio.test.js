@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { xatEscriptible, xatsVisibles } from '../xatsMissio.js';
+import { destiParla, xatEscriptible, xatsVisibles } from '../xatsMissio.js';
 
 const mon = {
 	contactes: [
@@ -90,5 +90,41 @@ describe( 'xatEscriptible', () => {
 		expect( xatEscriptible( { id: 'pau' }, c, new Set( [ 'pau' ] ) ) ).toBe(
 			false
 		);
+	} );
+} );
+
+describe( 'senyals i destí de notificació', () => {
+	it( 'propaga senyal i senyal_avis', () => {
+		const m = {
+			apps: {
+				parla: {
+					xats: [
+						{
+							id: 'n',
+							senyal_avis: 's2',
+							missatges: [
+								{
+									id: 'a',
+									de: 'ells',
+									text: 'x',
+									senyal: 's1',
+								},
+							],
+						},
+					],
+				},
+			},
+		};
+		const x = xatsVisibles( {}, {}, m )[ 0 ];
+		expect( x.senyalAvis ).toBe( 's2' );
+		expect( x.missatges[ 0 ].senyal ).toBe( 's1' );
+	} );
+
+	it( 'obre el xat indicat o, si no, el del guia', () => {
+		expect( destiParla( { app: 'parla', xat: 'nou' } ) ).toEqual( [
+			'parla',
+			{ xat: 'nou' },
+		] );
+		expect( destiParla( { app: 'parla' } )[ 1 ].xat ).toBe( 'guia' );
 	} );
 } );

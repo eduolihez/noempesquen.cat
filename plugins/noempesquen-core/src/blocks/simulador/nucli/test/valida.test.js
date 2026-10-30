@@ -406,4 +406,22 @@ describe( 'validaMissio: apps.parla.xats', () => {
 			'mostra: element inexistent: zz'
 		);
 	} );
+
+	it( 'valida senyal, senyal_avis i xat de notifica', () => {
+		const llista = xats();
+		llista[ 0 ].missatges[ 0 ].senyal = 'inexistent';
+		llista[ 0 ].senyal_avis = 'altre';
+		const m = amb( llista );
+		m.disparadors[ m.disparadors.length - 1 ].efectes.push( {
+			tipus: 'notifica',
+			app: 'posta',
+			titol: 't',
+			text: 't',
+			xat: 'x1',
+		} );
+		const errors = validaMissio( m, mon );
+		expect( errors ).toContain( 'senyal desconegut: inexistent' );
+		expect( errors ).toContain( 'senyal desconegut: altre' );
+		expect( errors ).toContain( 'notifica: xat només amb app parla' );
+	} );
 } );
