@@ -83,7 +83,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
   - `missatges[]`: `{ id, de: "ells" o "jo", ocult?, hora?, cos[] }`. `id` únic a tota l'app; `ocult` (booleà) surt quan un efecte `mostra` el fa visible, i el xat apareix en tenir el primer missatge visible. `cos` és una llista no buida de segments: `{ "t", "senyal"? }` o `{ "enllac": { "text", "url" } }` (aquí la url ha de ser `http(s)://`, no s'admet `cerca:`).
   - El text que escriu el jugador no surt del component: al motor només li arriben `contacte.bloqueja`, `missatge.envia { contacte }` i `enllac.obre`. Per avisar, combina `mostra` amb `notifica` (`app: "revenda"`, `xat`, `font: "mobil"`).
 - `apps.navegador.inici`: URLs que s'obren en iniciar.
-- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat`, `banc-solid`, `diari`, `sorteig`, `cobrament` o `inversio`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat`, `banc-solid`, `diari`, `sorteig`, `cobrament`, `inversio` o `article`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
 - Normalització de `www.`: el navegador cerca primer la web amb el host exacte i, si no hi és, la mateixa entrada sense `www.` (així `www.exemple.cat` obre la web declarada com `exemple.cat`; una missió pot declarar un `www.` a propòsit). Al filtre `url` d'un disparador passa igual: coincideix si és idèntica o si els hosts coincideixen un cop tret el `www.` (en aquest cas `url` és el host).
 - `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc. A `quan`, `visible: "<id>"` fa que el disparador només coincideixi si l'element (p. ex. un correu amb `ocult`) ja s'ha mostrat amb l'efecte `mostra`; si no, no es consumeix.
 
@@ -142,6 +142,21 @@ La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa (el 
 - `id` (únic, també respecte de les publicacions d'Ullada), `etiqueta` (p. ex. «Contingut patrocinat»), `titol` i `avatar { nom, inicials }` són obligatoris. L'avatar són inicials, mai una foto.
 - Opcionals: `etiqueta_senyal` (senyal de l'etiqueta), `boto_denuncia` (text del botó; per defecte «Informa d'aquest anunci») i `cos` (paràgrafs com a les publicacions d'Ullada, amb `senyal` i enllaços `http(s)://`).
 - Denunciar-lo emet `publicacio.denuncia` amb l'`id` de l'anunci; el validador l'accepta com a publicació denunciable.
+
+## Plantilla `article` (web de contingut amb avís o barra falsos)
+
+Web neutra de contingut (receptes, el temps...) amb un logotip propi. Obligatoris: `nom_lloc`, `titol` i `seccions[]` (llista no buida de `{ titol, cos }` o `{ titol, llista }`, només un dels dos; `cos` són paràgrafs de segments i `llista` és una llista de segments `{ "t", "senyal"? }`). Opcional: `entradeta` (paràgrafs). `avis` i `barra` van a l'arrel de `webs.<host>` i **només** s'admeten en aquesta plantilla.
+
+- `avis` (overlay fals a sobre de la pàgina, `role="alertdialog"`):
+  - Obligatoris: `retard` (número ≥ 0, en **mil·lisegons**), `titol`, `cos` (segments o paràgrafs), `telefon`, `etiquetaTelefon` i `contador` (text estàtic, p. ex. «Temps restant: 04:59»; no compta enrere, WCAG 2.2.2).
+  - Opcionals: `senyal_telefon` (senyal del número; amb la lupa es pot inspeccionar), `reobre` (booleà: el botó «Tanca» no tanca i mostra «No s'ha pogut tancar») i `instal_la { fitxer, origen, text_boto, senyal_fitxer?, senyal_origen? }` (afegeix un botó que obre el diàleg de descàrrega ficticia).
+  - `retard`: es converteix a segons de joc arrodonint amunt (`8000` → 8 s; `1` → 1 s) i només compta mentre la pestanya és l'activa i la partida no està en pausa. L'avís només es munta a la pestanya activa. `Esc` sempre el tanca (també amb `reobre`, perquè el jugador no quedi mai atrapat) i ja no torna a sortir en aquella vista de la pàgina.
+  - «Truca ara» o el número emeten `telefon.truca { url }`.
+- `barra` (barra falsa d'actualització a dalt de la pàgina): obligatoris `text` (llista no buida de segments, amb `senyal` opcional), `boto`, `fitxer` i `origen`; opcionals `senyal_fitxer` i `senyal_origen`. El botó obre el diàleg de descàrrega ficticia; «Tanca la barra» l'amaga.
+- Diàleg de descàrrega ficticia: mostra `fitxer` i `origen` (inspeccionables si porten senyal). «Obre» emet `descarrega.fes { url, fitxer }`; «Cancel·la» o `Esc` el tanquen sense emetre res. No es crea cap fitxer, `Blob` ni petició de xarxa.
+- Si alguna web `article` declara fitxers (`avis.instal_la.fitxer` o `barra.fitxer`), el `quan.fitxer` de cada disparador `descarrega.fes` ha de ser un d'aquests; sense cap fitxer declarat no es creua res.
+- Els senyals que només es veuen al diàleg de descàrrega porten `requereix` amb l'id del disparador `descarrega.fes` (no hi ha cap esdeveniment en obrir el diàleg): així no compten al màxim si el jugador no l'obre.
+- Exemples: `llissa-04-suport.json` (Cuina Avui, avís de «suport tècnic» de Suport Segur Digital amb `reobre` i `instal_la`) i `llissa-05-actualitzacio.json` (Temps Avui, barra d'actualització; la comprovació bona és «Quant a Brúixola» al menú del navegador).
 
 
 ## Efectes
