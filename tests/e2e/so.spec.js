@@ -1,5 +1,10 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxe, iniciaMissio, petits } = require( './ajudes' );
+const {
+	greusAxe,
+	iniciaMissio,
+	petits,
+	senseFullscreen,
+} = require( './ajudes' );
 
 const MISSIONS = {
 	escriptori: {
@@ -179,5 +184,58 @@ test.describe( 'So de les notificacions', () => {
 				a.getByRole( 'switch', { name: 'Sons de notificació' } )
 			).toHaveAttribute( 'aria-checked', 'false' );
 		}
+	} );
+
+	test( 'sense cap interacció prèvia no sona', async ( {
+		page,
+		isMobile,
+	} ) => {
+		await espiaAudio( page, true );
+		const { titol, bloqueig } =
+			MISSIONS[ isMobile ? 'mobil' : 'escriptori' ];
+		await iniciaMissio( page, titol, bloqueig );
+		// Només l'esdeveniment click: cap pointerdown ni tecla dins del joc.
+		await page
+			.getByRole( 'button', { name: bloqueig } )
+			.dispatchEvent( 'click' );
+		await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
+		await page.clock.runFor( 9000 );
+		await expect( avis( page ) ).toContainText(
+			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
+		);
+		expect( await osciladors( page ) ).toBe( 0 );
+	} );
+
+	test( 'PC demanant girar: no sona ni en tornar, i després sí', async ( {
+		page,
+	}, testInfo ) => {
+		test.skip(
+			! testInfo.project.name.includes( 'horitzontal' ),
+			'Només al projecte mòbil horitzontal'
+		);
+		await page.setViewportSize( { width: 915, height: 412 } );
+		await senseFullscreen( page );
+		await espiaAudio( page, true );
+		await entra( page, false );
+		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 2000 );
+		const abans = await osciladors( page );
+
+		await page.setViewportSize( { width: 412, height: 915 } );
+		const girar = page.getByRole( 'alertdialog', {
+			name: 'Gira el mòbil',
+		} );
+		await expect( girar ).toBeVisible();
+		// Si el joc no s'aturés, el correu trampa arribaria ara (i en
+		// silenci, perquè compta com a pausa).
+		await page.clock.runFor( 20000 );
+		expect( await osciladors( page ) ).toBe( abans );
+
+		await page.setViewportSize( { width: 915, height: 412 } );
+		await expect( girar ).toBeHidden();
+		expect( await osciladors( page ) ).toBe( abans );
+		await page.clock.runFor( 9000 );
+		await expect( avis( page ) ).toContainText( TRAMPA.escriptori );
+		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
 	} );
 } );

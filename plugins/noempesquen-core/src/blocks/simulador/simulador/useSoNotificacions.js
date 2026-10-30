@@ -50,18 +50,21 @@ export function useSoNotificacions( arrel, estat ) {
 		if ( ! noves.length ) {
 			return;
 		}
+		// Es marquen vistes encara que no sonin: el que arriba en pausa (o
+		// mentre es demana girar) no sona en reprendre. És intencionat: un
+		// so endarrerit no correspon a cap avís visual nou.
 		noves.forEach( ( id ) => vistes.current.add( id ) );
 		// El lot que crea desbloquejar (bloqueig -> joc) no sona.
 		if ( ! veniaDeJoc ) {
 			return;
 		}
-		const actiu = llegeixSons( emmagatzem() );
+		const soActivat = llegeixSons( emmagatzem() );
 		if (
 			deuSonar( {
-				actiu,
+				soActivat,
 				interaccio: interaccio.current,
 				pausa: estat.pausa,
-				silenci: ! enJoc,
+				enJoc,
 				noves,
 			} )
 		) {

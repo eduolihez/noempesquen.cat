@@ -43,20 +43,20 @@ describe( 'idsNous', () => {
 
 describe( 'deuSonar', () => {
 	const base = {
-		actiu: true,
+		soActivat: true,
 		interaccio: true,
 		pausa: false,
-		silenci: false,
+		enJoc: true,
 		noves: [ 'a' ],
 	};
 	it( 'sona quan tot és favorable', () => {
 		expect( deuSonar( base ) ).toBe( true );
 	} );
-	it( 'no sona en pausa, silenci, sense interacció, inactiu o sense noves', () => {
+	it( 'no sona en pausa, fora del joc, sense interacció, amb el so apagat o sense noves', () => {
 		expect( deuSonar( { ...base, pausa: true } ) ).toBe( false );
-		expect( deuSonar( { ...base, silenci: true } ) ).toBe( false );
+		expect( deuSonar( { ...base, enJoc: false } ) ).toBe( false );
 		expect( deuSonar( { ...base, interaccio: false } ) ).toBe( false );
-		expect( deuSonar( { ...base, actiu: false } ) ).toBe( false );
+		expect( deuSonar( { ...base, soActivat: false } ) ).toBe( false );
 		expect( deuSonar( { ...base, noves: [] } ) ).toBe( false );
 		expect( deuSonar() ).toBe( false );
 	} );

@@ -99,10 +99,10 @@ export default function Ajustos() {
 		}
 	}, [ vista ] );
 
-	// No emet EVENT_SONS: la pausa llegeix l'emmagatzematge en muntar-se.
 	const canviaSons = ( valor ) => {
 		setSons( valor );
 		desaSons( emmagatzem(), valor );
+		window.dispatchEvent( new window.Event( EVENT_SONS ) );
 	};
 
 	const entrada = ENTRADES.find( ( e ) => e.id === vista );

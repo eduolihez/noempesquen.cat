@@ -43,15 +43,21 @@ export function idsNous( vistes, notificacions ) {
 
 /**
  * @param {Object}   p
- * @param {boolean}  p.actiu      Hi ha una partida en marxa (no bloqueig).
+ * @param {boolean}  p.soActivat  El jugador té el so activat (preferència).
  * @param {boolean}  p.interaccio El jugador ja ha interactuat (AudioContext).
- * @param {boolean}  p.pausa      Joc en pausa.
- * @param {boolean}  p.silenci    So desactivat pel jugador.
+ * @param {boolean}  p.pausa      Joc en pausa (o demanant girar).
+ * @param {boolean}  p.enJoc      Fase de joc (no bloqueig ni final).
  * @param {string[]} p.noves      Ids nous.
  * @return {boolean} Si ha de sonar.
  */
-export function deuSonar( { actiu, interaccio, pausa, silenci, noves } = {} ) {
+export function deuSonar( {
+	soActivat,
+	interaccio,
+	pausa,
+	enJoc,
+	noves,
+} = {} ) {
 	return Boolean(
-		actiu && interaccio && ! pausa && ! silenci && noves && noves.length > 0
+		soActivat && interaccio && ! pausa && enJoc && noves && noves.length > 0
 	);
 }
