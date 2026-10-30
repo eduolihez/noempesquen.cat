@@ -5,6 +5,7 @@ import { useNavegador } from './useNavegador';
 import { Pestanyes } from './Pestanyes';
 import { BarraAdreces } from './BarraAdreces';
 import { BotoEina } from './BotoEina';
+import { MenuNavegador } from './MenuNavegador';
 import { Panells } from './Panells';
 import { IconaEndavant, IconaEnrere, IconaRecarrega } from './icones';
 
@@ -89,6 +90,7 @@ export default function Navegador( { dades } ) {
 						panells.current[ estat.activa ]?.focus();
 					} }
 				/>
+				<MenuNavegador />
 			</div>
 			<div className="nep-nav__contingut">
 				<Panells
