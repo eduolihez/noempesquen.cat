@@ -25,7 +25,11 @@ export const PLANTILLES_WEB = [
 	'banc-solid',
 	'sorteig',
 	'diari',
+	'cobrament',
+	'inversio',
 ];
+// Plantilles que només tenen variant falsa (no hi ha versió oficial).
+export const PLANTILLES_SOLO_FALSES = [ 'sorteig', 'cobrament', 'inversio' ];
 export const ESDEVENIMENTS_FORMULARI = [
 	'formulari.envia',
 	'codi.envia',
@@ -67,6 +71,7 @@ export const ESDEVENIMENTS = [
 const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
+const URL_HTTP = /^https?:\/\//i;
 
 const CAMPS_SENYAL = [
 	'senyal',
@@ -74,6 +79,8 @@ const CAMPS_SENYAL = [
 	'domini_senyal',
 	'senyal_avis',
 	'premi_senyal',
+	'compte_senyal',
+	'promesa_senyal',
 ];
 
 /**
@@ -190,7 +197,7 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 	return e.tipus === 'pescat';
 }
 
-function validaDisparadors( m, errors ) {
+function validaDisparadors( m, mon, errors ) {
 	const opcions = new Set(
 		llista( m.decisio?.opcions )
 			.filter( ( o ) => o && typeof o === 'object' )
@@ -198,6 +205,15 @@ function validaDisparadors( m, errors ) {
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
+	const contactesMon = Array.isArray( mon?.contactes )
+		? new Set( mon.contactes.map( ( c ) => c?.id ) )
+		: null;
+	// Publicacions denunciables: Ullada (món i missió) i anuncis de webs (T3).
+	const idsDenunciables = new Set( [
+		...llista( mon?.ullada?.publicacions ).map( ( p ) => p?.id ),
+		...llista( m.apps?.ullada?.publicacions ).map( ( p ) => p?.id ),
+		...Object.values( m.webs ?? {} ).map( ( w ) => w?.anunci?.id ),
+	] );
 	let hiHaPescat = false;
 	llista( m.disparadors ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
@@ -207,6 +223,20 @@ function validaDisparadors( m, errors ) {
 		const ev = d.quan?.esdeveniment;
 		if ( ! ESDEVENIMENTS.includes( ev ) ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
+		}
+		if (
+			ev === 'contacte.bloqueja' &&
+			contactesMon &&
+			! contactesMon.has( d.quan?.id )
+		) {
+			errors.push( `bloqueja: contacte inexistent: ${ d.quan?.id }` );
+		}
+		if (
+			ev === 'publicacio.denuncia' &&
+			mon &&
+			! idsDenunciables.has( d.quan?.id )
+		) {
+			errors.push( `denuncia: publicació inexistent: ${ d.quan?.id }` );
 		}
 		if ( d.quan?.visible !== undefined ) {
 			if ( ! idsApps.has( d.quan.visible ) ) {
@@ -276,6 +306,24 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
+function validaSegmentCos( seg, r, errors ) {
+	if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
+		errors.push( `${ r }: segment ha de ser un objecte` );
+	} else if ( seg.enllac !== undefined ) {
+		const e = seg.enllac;
+		if (
+			! e ||
+			typeof e !== 'object' ||
+			typeof e.text !== 'string' ||
+			typeof e.url !== 'string'
+		) {
+			errors.push( `${ r }: enllaç ha de tenir text i url` );
+		}
+	} else if ( typeof seg.t !== 'string' ) {
+		errors.push( `${ r }: segment sense «t» ni «enllac»` );
+	}
+}
+
 function validaCosPublicacio( cos, ref, errors ) {
 	if ( ! Array.isArray( cos ) ) {
 		errors.push( `${ ref }: «cos» ha de ser una llista de paràgrafs` );
@@ -288,24 +336,9 @@ function validaCosPublicacio( cos, ref, errors ) {
 			);
 			return;
 		}
-		par.forEach( ( seg, k ) => {
-			const r = `${ ref }.cos[${ j }][${ k }]`;
-			if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
-				errors.push( `${ r }: segment ha de ser un objecte` );
-			} else if ( seg.enllac !== undefined ) {
-				const e = seg.enllac;
-				if (
-					! e ||
-					typeof e !== 'object' ||
-					typeof e.text !== 'string' ||
-					typeof e.url !== 'string'
-				) {
-					errors.push( `${ r }: enllaç ha de tenir text i url` );
-				}
-			} else if ( typeof seg.t !== 'string' ) {
-				errors.push( `${ r }: segment sense «t» ni «enllac»` );
-			}
-		} );
+		par.forEach( ( seg, k ) =>
+			validaSegmentCos( seg, `${ ref }.cos[${ j }][${ k }]`, errors )
+		);
 	} );
 }
 
@@ -352,6 +385,125 @@ function validaPublicacionsUllada( m, mon, errors ) {
 		if ( typeof p.likes !== 'number' || ! Number.isFinite( p.likes ) ) {
 			errors.push( `${ ref }: «likes» ha de ser un número` );
 		}
+	} );
+}
+
+function validaAnuncisRevenda( anuncis, text, errors ) {
+	const ids = new Set();
+	if ( ! Array.isArray( anuncis ) ) {
+		errors.push( 'revenda: anuncis ha de ser una llista' );
+		return ids;
+	}
+	anuncis.forEach( ( a, i ) => {
+		const ref = `revenda.anuncis[${ i }]`;
+		if ( ! a || typeof a !== 'object' || Array.isArray( a ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'titol', 'descripcio' ].forEach( ( c ) => {
+			if ( ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if ( typeof a.preu !== 'number' || ! Number.isFinite( a.preu ) ) {
+			errors.push( `${ ref }: «preu» ha de ser un número` );
+		}
+		if ( ! text( a.il ) || ! existeixIlustracio( a.il ) ) {
+			errors.push( `${ ref }: il·lustració inexistent «${ a.il }»` );
+		}
+		if ( text( a.id ) ) {
+			if ( ids.has( a.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ a.id }»` );
+			}
+			ids.add( a.id );
+		}
+	} );
+	return ids;
+}
+
+function validaMissatgeRevenda( msg, ref, idsMsg, errors ) {
+	if ( ! msg || typeof msg !== 'object' || ! msg.id ) {
+		errors.push( `${ ref }: missatge invàlid` );
+		return;
+	}
+	if ( idsMsg.has( msg.id ) ) {
+		errors.push( `${ ref }: id duplicat «${ msg.id }»` );
+	}
+	idsMsg.add( msg.id );
+	if ( ! [ 'ells', 'jo' ].includes( msg.de ) ) {
+		errors.push( `${ ref }: remitent invàlid «${ msg.de }»` );
+	}
+	if ( ! Array.isArray( msg.cos ) || ! msg.cos.length ) {
+		errors.push( `${ ref }: «cos» ha de ser una llista de segments` );
+		return;
+	}
+	msg.cos.forEach( ( seg, k ) => {
+		const rs = `${ ref }.cos[${ k }]`;
+		validaSegmentCos( seg, rs, errors );
+		const url = seg?.enllac?.url;
+		if ( typeof url === 'string' && ! URL_HTTP.test( url ) ) {
+			errors.push( `${ rs }: url sense http(s) «${ url }»` );
+		}
+	} );
+}
+
+function validaRevenda( m, mon, errors ) {
+	const revenda = m.apps?.revenda;
+	if ( revenda === undefined ) {
+		return;
+	}
+	if (
+		! revenda ||
+		typeof revenda !== 'object' ||
+		Array.isArray( revenda )
+	) {
+		errors.push( 'revenda: ha de ser un objecte' );
+		return;
+	}
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	if ( ! Array.isArray( revenda.xats ) ) {
+		errors.push( 'revenda: xats ha de ser una llista' );
+	}
+	const idsAnunci = validaAnuncisRevenda( revenda.anuncis, text, errors );
+	const contactes = Array.isArray( mon?.contactes )
+		? new Set( mon.contactes.map( ( c ) => c?.id ) )
+		: null;
+	const idsXat = new Set();
+	const idsMsg = new Set();
+	( Array.isArray( revenda.xats ) ? revenda.xats : [] ).forEach( ( x, i ) => {
+		const ref = `revenda.xats[${ i }]`;
+		if ( ! x || typeof x !== 'object' || Array.isArray( x ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		if ( ! text( x.id ) ) {
+			errors.push( `${ ref }: camp «id» buit o absent` );
+		} else {
+			if ( idsXat.has( x.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ x.id }»` );
+			}
+			idsXat.add( x.id );
+		}
+		if ( ! text( x.contacte ) ) {
+			errors.push( `${ ref }: camp «contacte» buit o absent` );
+		} else if ( contactes && ! contactes.has( x.contacte ) ) {
+			errors.push( `${ ref }: contacte inexistent «${ x.contacte }»` );
+		}
+		if ( ! text( x.anunci ) || ! idsAnunci.has( x.anunci ) ) {
+			errors.push( `${ ref }: anunci inexistent «${ x.anunci }»` );
+		}
+		if ( ! Array.isArray( x.missatges ) || ! x.missatges.length ) {
+			errors.push( `${ ref }: xat sense missatges` );
+			return;
+		}
+		x.missatges.forEach( ( msg, j ) =>
+			validaMissatgeRevenda(
+				msg,
+				`${ ref }.missatges[${ j }]`,
+				idsMsg,
+				errors
+			)
+		);
 	} );
 }
 
@@ -411,8 +563,21 @@ export function validaMissio( m, mon ) {
 		}
 	} );
 
+	const referenciats = new Set( usats );
+	ids.forEach( ( id ) => {
+		if ( id !== undefined && ! referenciats.has( id ) ) {
+			errors.push( `senyal sense referència: ${ id }` );
+		}
+	} );
+
 	recullUrlsEnllac( m.apps ).forEach( ( url ) => {
 		if ( typeof url !== 'string' || ! URL_VALIDA.test( url ) ) {
+			errors.push( `url d'enllaç no permesa: ${ url }` );
+		}
+	} );
+	// Les webs no admeten l'esquema intern «cerca:».
+	recullUrlsEnllac( m.webs ).forEach( ( url ) => {
+		if ( typeof url !== 'string' || ! URL_HTTP.test( url ) ) {
 			errors.push( `url d'enllaç no permesa: ${ url }` );
 		}
 	} );
@@ -452,15 +617,21 @@ export function validaMissio( m, mon ) {
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
 		}
-		if ( web.plantilla === 'sorteig' && web.variant !== 'falsa' ) {
-			errors.push( `sorteig només admet variant falsa: ${ domini }` );
+		if (
+			PLANTILLES_SOLO_FALSES.includes( web.plantilla ) &&
+			web.variant !== 'falsa'
+		) {
+			errors.push(
+				`${ web.plantilla } només admet variant falsa: ${ domini }`
+			);
 		}
 		validaFormularis( domini, web, errors );
 	} );
 
 	validaXatsParla( m, mon, errors );
 	validaPublicacionsUllada( m, mon, errors );
-	validaDisparadors( m, errors );
+	validaRevenda( m, mon, errors );
+	validaDisparadors( m, mon, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {
