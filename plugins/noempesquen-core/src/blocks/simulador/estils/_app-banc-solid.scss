@@ -87,7 +87,7 @@ $bsm-error: #b3261e;
 	button:focus-visible,
 	input:focus-visible {
 		outline: var(--nep-focus);
-			box-shadow: var(--nep-focus-halo);
+		box-shadow: var(--nep-focus-halo);
 		outline-offset: 2px;
 	}
 }

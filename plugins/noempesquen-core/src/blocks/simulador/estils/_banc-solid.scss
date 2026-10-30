@@ -306,8 +306,9 @@ $bs-titol: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
 		}
 	}
 
-	.nep-bs-taula__import {
-		text-align: right !important;
+	.nep-bs-taula td.nep-bs-taula__import,
+	.nep-bs-taula th.nep-bs-taula__import {
+		text-align: right;
 		white-space: nowrap;
 
 		&.is-entrada {
@@ -394,6 +395,13 @@ $bs-titol: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
 	/* El formulari comú duu els seus estils sota .nep-lc: aquí se'n
 	   neutralitza el contenidor i es pinta el botó amb els colors del banc. */
 	.nep-bs-forma.nep-lc {
+
+		:focus-visible {
+			box-shadow: var(--nep-focus-halo);
+			outline: var(--nep-focus);
+			outline-offset: 2px;
+		}
+
 		container-type: normal;
 		display: block;
 		font-family: inherit;
@@ -425,6 +433,12 @@ $bs-titol: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
 		p {
 			margin: 0;
 		}
+	}
+
+	/* El logotip és blau fosc com el peu: se li afegeix un contorn clar. */
+	.nep-bs-peu .nep-bs-marca svg rect:first-child {
+		stroke: #fff;
+		stroke-width: 2px;
 	}
 
 	.nep-bs-peu__dins {
