@@ -204,26 +204,44 @@ function nep_valida_missio_classica( $data, $postarr ) {
 	);
 	if ( $errors ) {
 		$data['post_status'] = 'draft';
-		set_transient( 'nep_avis_' . get_current_user_id(), $errors, 60 );
+		nep_desa_avis( 'esborrany', $errors );
 	}
 	return $data;
 }
 add_filter( 'wp_insert_post_data', 'nep_valida_missio_classica', 10, 2 );
 
 /**
- * Mostra (i esborra) l'avís de missió no publicada.
+ * Desa l'avís per a l'usuari actual (transient de 60 s).
+ *
+ * @param string   $motiu  'esborrany' (publicació aturada) o 'guio-conservat' (guió no desat).
+ * @param string[] $errors Errors en català.
+ */
+function nep_desa_avis( string $motiu, array $errors ): void {
+	set_transient(
+		'nep_avis_' . get_current_user_id(),
+		array(
+			'motiu'  => $motiu,
+			'errors' => $errors,
+		),
+		60
+	);
+}
+
+/**
+ * Mostra (i esborra) l'avís de missió no publicada o de guió no desat.
  */
 function nep_mostra_avis_missio(): void {
-	$clau   = 'nep_avis_' . get_current_user_id();
-	$errors = get_transient( $clau );
-	if ( ! is_array( $errors ) || ! $errors ) {
+	$clau = 'nep_avis_' . get_current_user_id();
+	$avis = get_transient( $clau );
+	if ( ! is_array( $avis ) || empty( $avis['errors'] ) || ! is_array( $avis['errors'] ) ) {
 		return;
 	}
 	delete_transient( $clau );
-	echo '<div class="notice notice-error is-dismissible"><p><strong>'
-		. esc_html__( 'La missió s\'ha desat com a esborrany perquè el guió no és vàlid:', 'noempesquen' )
-		. '</strong></p><ul>';
-	foreach ( $errors as $error ) {
+	$titol = 'guio-conservat' === ( $avis['motiu'] ?? '' )
+		? __( 'No s\'ha desat el guió nou i es conserva l\'anterior:', 'noempesquen' )
+		: __( 'La missió s\'ha desat com a esborrany perquè el guió no és vàlid:', 'noempesquen' );
+	echo '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html( $titol ) . '</strong></p><ul>';
+	foreach ( $avis['errors'] as $error ) {
 		echo '<li>' . esc_html( (string) $error ) . '</li>';
 	}
 	echo '</ul></div>';
@@ -249,3 +267,30 @@ function nep_protegeix_guio_publicat( $check, $object_id, $meta_key, $meta_value
 	return null === nep_descodifica_guio( (string) $meta_value ) || '{}' === $meta_value ? false : $check;
 }
 add_filter( 'update_post_metadata', 'nep_protegeix_guio_publicat', 10, 4 );
+
+/**
+ * El mateix per a la caixa «Camps personalitzats» (actualitza per meta_id i no
+ * passa per `update_post_metadata`). Aquí el valor encara no està sanejat.
+ *
+ * @param null|bool    $check      Valor de curtcircuit.
+ * @param int          $meta_id    Id de la meta.
+ * @param mixed        $meta_value Valor sense barres ni sanejar.
+ * @param string|false $meta_key   Clau nova, o false.
+ * @return null|bool
+ */
+function nep_protegeix_guio_publicat_per_mid( $check, $meta_id, $meta_value, $meta_key ) {
+	$meta = get_metadata_by_mid( 'post', (int) $meta_id );
+	if ( ! $meta || ( 'nep_guio' !== $meta->meta_key && 'nep_guio' !== $meta_key ) ) {
+		return $check;
+	}
+	$post_id = (int) $meta->post_id;
+	if ( 'nep_missio' !== get_post_type( $post_id ) || ! nep_estat_publica( (string) get_post_status( $post_id ) ) ) {
+		return $check;
+	}
+	if ( null !== nep_descodifica_guio( (string) $meta_value ) ) {
+		return $check;
+	}
+	nep_desa_avis( 'guio-conservat', array( 'El guió no és un JSON vàlid.' ) );
+	return false;
+}
+add_filter( 'update_post_metadata_by_mid', 'nep_protegeix_guio_publicat_per_mid', 10, 4 );

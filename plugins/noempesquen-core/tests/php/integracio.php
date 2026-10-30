@@ -103,6 +103,21 @@ $nep_comprova( 200 === $nep_publica( $nep_valida, 'publish', $nep_publicada )->g
 update_post_meta( $nep_publicada, 'nep_guio', '{trencat' );
 $nep_comprova( json_decode( (string) get_post_meta( $nep_publicada, 'nep_guio', true ), true ) === $nep_valida, 'guió publicat no es sobreescriu amb \'{}\'' );
 
+// Caixa «Camps personalitzats» (update_meta per meta_id) amb JSON invàlid a una publicada: es rebutja i avisa.
+require_once ABSPATH . 'wp-admin/includes/post.php';
+delete_transient( 'nep_avis_1' );
+$nep_mid = 0;
+foreach ( has_meta( $nep_publicada ) as $nep_fila ) {
+	if ( 'nep_guio' === $nep_fila['meta_key'] ) {
+		$nep_mid = (int) $nep_fila['meta_id'];
+	}
+}
+update_meta( $nep_mid, 'nep_guio', '{trencat' );
+$nep_comprova( $nep_mid && json_decode( (string) get_post_meta( $nep_publicada, 'nep_guio', true ), true ) === $nep_valida, 'camps personalitzats: guió publicat intacte' );
+$nep_avis = get_transient( 'nep_avis_1' );
+$nep_comprova( is_array( $nep_avis ) && 'guio-conservat' === $nep_avis['motiu'], 'camps personalitzats: avís de guió no desat' );
+delete_transient( 'nep_avis_1' );
+
 // Desament clàssic: publicar una invàlida la deixa en esborrany i desa l'avís.
 add_filter( 'nep_valida_missio_cli', '__return_true' );
 delete_transient( 'nep_avis_1' );
@@ -119,7 +134,7 @@ $nep_classica = wp_insert_post(
 $nep_creades[] = (int) $nep_classica;
 $nep_comprova( 'draft' === get_post_status( $nep_classica ), 'clàssic publicar invàlida → esborrany' );
 $nep_avis = get_transient( 'nep_avis_1' );
-$nep_comprova( is_array( $nep_avis ) && in_array( 'La versió del guió ha de ser 2.', $nep_avis, true ), 'clàssic avís al transient' );
+$nep_comprova( is_array( $nep_avis ) && 'esborrany' === $nep_avis['motiu'] && in_array( 'La versió del guió ha de ser 2.', $nep_avis['errors'], true ), 'clàssic avís al transient' );
 ob_start();
 nep_mostra_avis_missio();
 $nep_html = (string) ob_get_clean();
