@@ -71,7 +71,9 @@ function previsualitzacio( config ) {
 		if ( ! guio || typeof guio !== 'object' || ! guio.titol ) {
 			return null;
 		}
-		return { ...guio, titol: `${ guio.titol } · esborrany` };
+		return r.estat === 'publish'
+			? guio
+			: { ...guio, titol: `${ guio.titol } · esborrany` };
 	} );
 }
 

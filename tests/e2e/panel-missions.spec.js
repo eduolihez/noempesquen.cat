@@ -51,19 +51,25 @@ test.beforeEach( async ( { page }, testInfo ) => {
 	await entra( page );
 } );
 
+/** Envia una missió a la paperera (fora del selector i dels ids existents). */
+async function paperera( page, id ) {
+	await page.goto( `/wp-admin/post.php?post=${ id }&action=edit` );
+	const enllac = page.locator( '#delete-action a.submitdelete' );
+	if ( await enllac.count() ) {
+		await enllac.click();
+		await page.waitForURL( /edit\.php/ );
+	}
+	creades.splice( creades.indexOf( id ), 1 );
+}
+
 test.afterAll( async ( { browser } ) => {
 	if ( ! creades.length ) {
 		return;
 	}
 	const page = await browser.newPage();
 	await entra( page );
-	for ( const id of creades ) {
-		await page.goto( `/wp-admin/post.php?post=${ id }&action=edit` );
-		const paperera = page.locator( '#delete-action a.submitdelete' );
-		if ( await paperera.count() ) {
-			await paperera.click();
-			await page.waitForURL( /edit\.php/ );
-		}
+	for ( const id of [ ...creades ] ) {
+		await paperera( page, id );
 	}
 	await page.close();
 } );
@@ -90,8 +96,10 @@ test( 'mostra els errors en viu i no publica un guió invàlid', async ( { page 
 	expect( greus ).toEqual( [] );
 
 	await desa( page, '#publish' );
+	// «Esborrany actualitzat» (10), no «publicada» (6).
+	await expect( page.locator( '#message' ) ).toContainText( 'esborrany' );
 	await expect( page.locator( '.notice-error' ) ).toContainText( 'esborrany' );
-	await expect( page.locator( '#message' ) ).not.toContainText( /publicad/i );
+	await expect( page.locator( '#message' ) ).not.toContainText( /publicad|publicat/i );
 	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
 } );
 
@@ -100,12 +108,17 @@ test( 'publica un guió vàlid i surt al simulador', async ( { page } ) => {
 	await novaMissio( page, 'Prova e2e publicada' );
 	await escriuGuio( page, guio( id ) );
 	await expect( page.locator( '#nep-guio-diagnostic' ) ).toHaveText( 'Cap error' );
-	await desa( page, '#publish' );
-	await expect( page.locator( '.notice-error' ) ).toHaveCount( 0 );
-	await expect( page.locator( '#post-status-display' ) ).toContainText( /publicad/i );
+	const post = await desa( page, '#publish' );
+	try {
+		await expect( page.locator( '.notice-error' ) ).toHaveCount( 0 );
+		await expect( page.locator( '#post-status-display' ) ).toContainText( /publicad/i );
 
-	await page.goto( '/simulador/' );
-	await expect( page.locator( `[data-missio="${ id }"]` ) ).toBeVisible();
+		await page.goto( '/simulador/' );
+		await expect( page.locator( `[data-missio="${ id }"]` ) ).toBeVisible();
+	} finally {
+		// Publicada la veu tothom: a la paperera de seguida (el selector compta les targetes).
+		await paperera( page, post );
+	}
 } );
 
 test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona', async ( {
