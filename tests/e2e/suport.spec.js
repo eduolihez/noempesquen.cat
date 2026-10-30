@@ -204,11 +204,15 @@ test.describe( 'Virus detectat!', () => {
 		await barra.fill( 'diaridelbarri.cat' );
 		await barra.press( 'Enter' );
 		await expect(
-			page.getByRole( 'heading', { name: 'Crema de carbassa en 20 minuts' } )
+			page.getByRole( 'heading', {
+				name: 'Crema de carbassa en 20 minuts',
+			} )
 		).toHaveCount( 0 );
 		await page.getByRole( 'button', { name: 'Enrere' } ).click();
 		await expect(
-			page.getByRole( 'heading', { name: 'Crema de carbassa en 20 minuts' } )
+			page.getByRole( 'heading', {
+				name: 'Crema de carbassa en 20 minuts',
+			} )
 		).toBeVisible();
 		await page.clock.runFor( 12000 );
 		await expect( avis( page ) ).toHaveCount( 0 );

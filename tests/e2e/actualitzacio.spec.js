@@ -132,11 +132,15 @@ test.describe( 'Actualitza el navegador', () => {
 		await adreces.fill( 'diaridelbarri.cat' );
 		await adreces.press( 'Enter' );
 		await expect(
-			page.getByRole( 'heading', { name: 'El temps al barri per a avui' } )
+			page.getByRole( 'heading', {
+				name: 'El temps al barri per a avui',
+			} )
 		).toHaveCount( 0 );
 		await page.getByRole( 'button', { name: 'Enrere' } ).click();
 		await expect(
-			page.getByRole( 'heading', { name: 'El temps al barri per a avui' } )
+			page.getByRole( 'heading', {
+				name: 'El temps al barri per a avui',
+			} )
 		).toBeVisible();
 		await expect( barra( page ) ).toHaveCount( 0 );
 	} );
