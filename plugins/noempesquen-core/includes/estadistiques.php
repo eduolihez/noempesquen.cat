@@ -30,8 +30,8 @@ const NEP_CAU_MISSIONS = 'nep_cau_missions';
 /** Durada de la finestra del límit, en segons (1 hora). */
 const NEP_RESULTATS_FINESTRA = 3600;
 
-/** Patró d'id de missió (el mateix que `nep_valida_guio`). */
-const NEP_PATRO_ID = '^[a-z0-9]+(-[a-z0-9]+)*$';
+/** Patró d'id de missió (el mateix que `nep_valida_guio`). `\z`: cap salt de línia final (el `$` de PCRE l'admet). */
+const NEP_PATRO_ID = '^[a-z0-9]+(-[a-z0-9]+)*\z';
 
 /** Partides mínimes per mostrar xifres d'una missió al panell. */
 const NEP_RESULTATS_K = 10;

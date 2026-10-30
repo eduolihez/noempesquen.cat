@@ -44,6 +44,8 @@ $nep_comprova( $nep_est_post > 0 && 'publish' === get_post_status( $nep_est_post
 
 $nep_comprova( 400 === $nep_envia( array( 'missio' => 'no-existeix-mai', 'estrelles' => 2 ) )->get_status(), 'resultat: missió inexistent → 400' );
 $nep_comprova( 400 === $nep_envia( array( 'missio' => $nep_est['id'] . '--prova', 'estrelles' => 2 ) )->get_status(), 'resultat: id de previsualització → 400' );
+$nep_r = $nep_envia( array( 'missio' => $nep_est['id'] . "\n", 'estrelles' => 2 ) );
+$nep_comprova( 400 === $nep_r->get_status() && 'rest_invalid_param' === ( $nep_r->get_data()['code'] ?? '' ), 'resultat: id amb salt de línia final → 400 del patró' );
 $nep_comprova( 400 === $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 4 ) )->get_status(), 'resultat: 4 estrelles → 400' );
 $nep_comprova( 400 === $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 0 ) )->get_status(), 'resultat: 0 estrelles → 400' );
 $nep_comprova( 400 === $nep_envia( array( 'missio' => $nep_est['id'], 'estrelles' => 2, 'decisio' => 'zz' ) )->get_status(), 'resultat: decisió aliena → 400' );

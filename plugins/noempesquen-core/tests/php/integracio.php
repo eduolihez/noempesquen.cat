@@ -318,6 +318,20 @@ foreach ( array_unique( $nep_creades ) as $nep_id ) {
 	wp_delete_post( $nep_id, true );
 }
 
+// user_has_cap: rol administrador sense les capacitats i sense nep_db_version → l'administrador les té igualment; un editor no.
+$nep_admin_rol = get_role( 'administrator' );
+foreach ( nep_capacitats() as $nep_cap ) {
+	$nep_admin_rol->remove_cap( $nep_cap );
+}
+delete_option( 'nep_db_version' );
+$nep_admin  = new WP_User( 1 );
+$nep_editor = new WP_User( (int) wp_insert_user( array( 'user_login' => 'nep_editor_' . wp_rand( 1000, 9999 ), 'user_pass' => wp_generate_password(), 'role' => 'editor' ) ) );
+$nep_comprova( ! $nep_admin_rol->has_cap( 'nep_veu_estadistiques' ) && $nep_admin->has_cap( 'nep_veu_estadistiques' ) && $nep_admin->has_cap( 'nep_gestiona_missions' ), 'user_has_cap: administrador sense caps al rol ni nep_db_version → les té' );
+$nep_comprova( $nep_editor->exists() && ! $nep_editor->has_cap( 'nep_veu_estadistiques' ) && ! $nep_editor->has_cap( 'nep_gestiona_missions' ), 'user_has_cap: un editor no les té' );
+require_once ABSPATH . 'wp-admin/includes/user.php';
+wp_delete_user( $nep_editor->ID );
+nep_actualitza();
+
 // Desinstal·lació (a l'entorn de proves): esborra transients propis, opcions i taula; després es restaura.
 set_transient( 'nep_rl_prova', array( 'n' => 1 ), 60 );
 set_transient( 'nep_avis_99999', array( 'errors' => array( 'x' ) ), 60 );
