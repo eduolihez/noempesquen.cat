@@ -71,13 +71,15 @@ export function agrupaPerData( fotos, ara = new Date() ) {
  * Foto veïna dins l'ordre de la quadrícula (de més recent a més antiga).
  * `delta` -1 = anterior, +1 = següent; fora de rang torna null.
  *
- * @param {Array}  fotos Fotos.
- * @param {string} id    Foto actual.
- * @param {number} delta Desplaçament.
+ * @param {Array}  fotos           Fotos.
+ * @param {string} id              Foto actual.
+ * @param {number} delta           Desplaçament.
+ * @param {Array}  [ordreCalculat] Ordre ja calculat (opcional, evita recalcular).
  * @return {Object|null} La foto veïna.
  */
-export function vei( fotos, id, delta ) {
-	const ordre = agrupaPerData( fotos ).flatMap( ( g ) => g.fotos );
+export function vei( fotos, id, delta, ordreCalculat ) {
+	const ordre =
+		ordreCalculat ?? agrupaPerData( fotos ).flatMap( ( g ) => g.fotos );
 	const i = ordre.findIndex( ( f ) => f.id === id );
 	if ( i < 0 ) {
 		return null;

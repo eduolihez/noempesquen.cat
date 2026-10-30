@@ -27,11 +27,13 @@ export default function Galeria() {
 	const idOberta = useRef( null );
 	idOberta.current = oberta;
 	const estatEnrere = useRef();
-	// Moment de muntar l'app: només cal per a «Avui» i «Ahir».
+	// Moment de muntar l'app: només cal per a «Avui» i «Ahir». Amb les dates
+	// de mon.galeria (2026) normalment sortiran etiquetes absolutes.
 	const [ ara ] = useState( () => new Date() );
 
 	const fotos = useMemo( () => mon.galeria ?? [], [ mon ] );
 	const grups = useMemo( () => agrupaPerData( fotos, ara ), [ fotos, ara ] );
+	const ordre = useMemo( () => grups.flatMap( ( g ) => g.fotos ), [ grups ] );
 	const foto = oberta ? fotos.find( ( f ) => f.id === oberta ) : null;
 
 	const tanca = useCallback( () => {
@@ -69,12 +71,15 @@ export default function Galeria() {
 	// L'app queda muntada i amagada: el visor no es queda obert.
 	useEffect( () => {
 		if ( appActiva !== APP ) {
+			// App en segon pla (oculta): tancar sense tornar el focus,
+			// que robaria el focus de l'app activa.
+			estavaObert.current = false;
 			setOberta( null );
 		}
 	}, [ appActiva ] );
 
 	const canvia = ( delta ) => {
-		const v = vei( fotos, oberta, delta );
+		const v = vei( fotos, oberta, delta, ordre );
 		if ( v ) {
 			setOberta( v.id );
 		}
@@ -133,8 +138,8 @@ export default function Galeria() {
 				<Visor
 					foto={ foto }
 					etiqueta={ etiquetaData( foto.data, ara ) }
-					hiHaAnt={ !! vei( fotos, foto.id, -1 ) }
-					hiHaSeg={ !! vei( fotos, foto.id, 1 ) }
+					hiHaAnt={ !! vei( fotos, foto.id, -1, ordre ) }
+					hiHaSeg={ !! vei( fotos, foto.id, 1, ordre ) }
 					onCanvia={ canvia }
 					onTanca={ tanca }
 				/>
