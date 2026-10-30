@@ -179,7 +179,7 @@ function Apagar() {
 		<div className="nep-ajustos__apagar">
 			<p>
 				{ __(
-					'Si apagues el telèfon, la partida es posarà en pausa.',
+					'Apagar el telèfon posa la partida en pausa.',
 					'noempesquen'
 				) }
 			</p>
