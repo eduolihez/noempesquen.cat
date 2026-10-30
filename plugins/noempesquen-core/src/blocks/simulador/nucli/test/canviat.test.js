@@ -112,4 +112,28 @@ describe( 'missió «Hola, he canviat de mòbil» (v2)', () => {
 		expect( e.opcio ).toBe( 'b' );
 		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
 	} );
+
+	it( 'cada indici és inspeccionable a un missatge del desconegut o a l’avís', () => {
+		const xat = p.apps.parla.xats[ 0 ];
+		const llocs = [
+			xat.senyal_avis,
+			...xat.missatges.map( ( m ) => m.senyal ),
+		].filter( Boolean );
+		expect( new Set( llocs ) ).toEqual(
+			new Set( p.senyals.map( ( s ) => s.id ) )
+		);
+		xat.missatges.forEach( ( m ) => {
+			expect( m.senyal ).toBeDefined();
+		} );
+	} );
+
+	it( 'les notificacions de Parla apunten al xat de la missió', () => {
+		const notis = p.disparadors
+			.flatMap( ( d ) => d.efectes )
+			.filter( ( e ) => e.tipus === 'notifica' );
+		expect( notis.length ).toBeGreaterThan( 0 );
+		notis.forEach( ( n ) =>
+			expect( n.xat ).toBe( p.apps.parla.xats[ 0 ].id )
+		);
+	} );
 } );
