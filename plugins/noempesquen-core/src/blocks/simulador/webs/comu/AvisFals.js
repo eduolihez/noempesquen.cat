@@ -39,6 +39,8 @@ const IconaTelefon = ( p ) => (
  * @param {Function} props.onTruca         «Truca ara» o clic al número.
  * @param {Function} props.onTanca         Tanca l'overlay.
  * @param {boolean}  props.reobre          El botó «Tanca» no tanca.
+ * @param {*}        props.children        Accions extra (opcional), dins del
+ *                                         diàleg i del focus atrapat.
  */
 export function AvisFals( {
 	titol,
@@ -50,6 +52,7 @@ export function AvisFals( {
 	onTruca,
 	onTanca,
 	reobre = false,
+	children,
 } ) {
 	const { estat, registraMenu } = useJoc();
 	const arrel = useRef( null );
@@ -151,6 +154,7 @@ export function AvisFals( {
 					<IconaTelefon mida={ 22 } />
 					{ __( 'Truca ara', 'noempesquen' ) }
 				</button>
+				{ children }
 				<p className="nep-avis__estat" role="status">
 					{ noTanca
 						? __( "No s'ha pogut tancar", 'noempesquen' )

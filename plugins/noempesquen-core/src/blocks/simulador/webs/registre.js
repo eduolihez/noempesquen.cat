@@ -14,4 +14,5 @@ export const WEBS = {
 	sorteig: lazy( () => import( './sorteig/Sorteig' ) ),
 	cobrament: lazy( () => import( './cobrament/Cobrament' ) ),
 	inversio: lazy( () => import( './inversio/Inversio' ) ),
+	article: lazy( () => import( './article/Article' ) ),
 };

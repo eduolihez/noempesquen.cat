@@ -27,6 +27,7 @@ export const PLANTILLES_WEB = [
 	'diari',
 	'cobrament',
 	'inversio',
+	'article',
 ];
 // Plantilles que només tenen variant falsa (no hi ha versió oficial).
 export const PLANTILLES_SOLO_FALSES = [ 'sorteig', 'cobrament', 'inversio' ];
@@ -85,6 +86,9 @@ const CAMPS_SENYAL = [
 	'promesa_senyal',
 	'etiqueta_senyal',
 	'ingres_senyal',
+	'senyal_telefon',
+	'senyal_fitxer',
+	'senyal_origen',
 ];
 
 /**
@@ -721,6 +725,205 @@ function validaPlantillaPagament( domini, web, errors ) {
 }
 
 /**
+ * Valida un cos de la plantilla `article`: llista de segments (un paràgraf)
+ * o llista de paràgrafs (com accepta `normalitzaParagrafs`).
+ *
+ * @param {*}        cos    Cos.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaCosArticle( cos, ref, errors ) {
+	if ( ! Array.isArray( cos ) || ! cos.length ) {
+		errors.push( `${ ref }: ha de ser una llista no buida` );
+		return;
+	}
+	if ( cos.every( Array.isArray ) ) {
+		validaCosPublicacio( cos, ref, errors );
+		return;
+	}
+	cos.forEach( ( seg, i ) =>
+		validaSegmentCos( seg, `${ ref }[${ i }]`, errors )
+	);
+}
+
+const esObjecte = ( x ) =>
+	!! x && typeof x === 'object' && ! Array.isArray( x );
+const esText = ( x ) => typeof x === 'string' && x.trim() !== '';
+
+/**
+ * Comprova que els camps indicats siguin text no buit.
+ *
+ * @param {Object}   obj    Objecte.
+ * @param {string[]} camps  Camps obligatoris.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function campsText( obj, camps, ref, errors ) {
+	camps.forEach( ( c ) => {
+		if ( ! esText( obj[ c ] ) ) {
+			errors.push( `${ ref }: camp «${ c }» buit o absent` );
+		}
+	} );
+}
+
+/**
+ * Valida l'avís fals (`avis`) d'una web `article`.
+ *
+ * @param {*}        avis   Avís.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaAvisArticle( avis, ref, errors ) {
+	if ( ! esObjecte( avis ) ) {
+		errors.push( `${ ref }: ha de ser un objecte` );
+		return;
+	}
+	if (
+		typeof avis.retard !== 'number' ||
+		! Number.isFinite( avis.retard ) ||
+		avis.retard < 0
+	) {
+		errors.push( `${ ref }: «retard» ha de ser un nombre ≥ 0` );
+	}
+	campsText(
+		avis,
+		[ 'titol', 'telefon', 'etiquetaTelefon', 'contador' ],
+		ref,
+		errors
+	);
+	validaCosArticle( avis.cos, `${ ref }.cos`, errors );
+	if ( avis.reobre !== undefined && typeof avis.reobre !== 'boolean' ) {
+		errors.push( `${ ref }: «reobre» ha de ser booleà` );
+	}
+	const inst = avis.instal_la;
+	if ( inst === undefined ) {
+		return;
+	}
+	if ( ! esObjecte( inst ) ) {
+		errors.push( `${ ref }.instal_la: ha de ser un objecte` );
+		return;
+	}
+	campsText(
+		inst,
+		[ 'fitxer', 'origen', 'text_boto' ],
+		`${ ref }.instal_la`,
+		errors
+	);
+}
+
+/**
+ * Valida la barra falsa d'actualització (`barra`) d'una web `article`.
+ *
+ * @param {*}        barra  Barra.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaBarraArticle( barra, ref, errors ) {
+	if ( ! esObjecte( barra ) ) {
+		errors.push( `${ ref }: ha de ser un objecte` );
+		return;
+	}
+	campsText( barra, [ 'boto', 'fitxer', 'origen' ], ref, errors );
+	if ( ! Array.isArray( barra.text ) || ! barra.text.length ) {
+		errors.push( `${ ref }: «text» ha de ser una llista no buida` );
+		return;
+	}
+	barra.text.forEach( ( seg, i ) =>
+		validaSegmentCos( seg, `${ ref }.text[${ i }]`, errors )
+	);
+}
+
+/**
+ * Valida una web amb la plantilla `article` (nom del lloc, títol, seccions i,
+ * opcionalment, `entradeta`, `avis` i `barra`). Fora d'`article`, `avis` i
+ * `barra` no s'admeten.
+ *
+ * @param {string}   domini Domini de la web.
+ * @param {Object}   web    Web.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaArticle( domini, web, errors ) {
+	const ref = `article ${ domini }`;
+	if ( web.plantilla !== 'article' ) {
+		[ 'avis', 'barra' ].forEach( ( c ) => {
+			if ( web[ c ] !== undefined ) {
+				errors.push(
+					`${ domini }.${ c }: només admès a la plantilla article`
+				);
+			}
+		} );
+		return;
+	}
+	campsText( web, [ 'nom_lloc', 'titol' ], ref, errors );
+	if ( web.entradeta !== undefined ) {
+		validaCosArticle( web.entradeta, `${ ref }.entradeta`, errors );
+	}
+	if ( ! Array.isArray( web.seccions ) || ! web.seccions.length ) {
+		errors.push( `${ ref }: «seccions» ha de ser una llista no buida` );
+	} else {
+		web.seccions.forEach( ( s, i ) => {
+			const r = `${ ref }.seccions[${ i }]`;
+			if ( ! esObjecte( s ) ) {
+				errors.push( `${ r }: ha de ser un objecte` );
+				return;
+			}
+			campsText( s, [ 'titol' ], r, errors );
+			if ( ( s.cos === undefined ) === ( s.llista === undefined ) ) {
+				errors.push( `${ r }: cal «cos» o «llista» (només un)` );
+			} else if ( s.cos !== undefined ) {
+				validaCosArticle( s.cos, `${ r }.cos`, errors );
+			} else if ( ! Array.isArray( s.llista ) || ! s.llista.length ) {
+				errors.push( `${ r }: «llista» ha de ser una llista no buida` );
+			} else {
+				s.llista.forEach( ( seg, j ) =>
+					validaSegmentCos( seg, `${ r }.llista[${ j }]`, errors )
+				);
+			}
+		} );
+	}
+	if ( web.avis !== undefined ) {
+		validaAvisArticle( web.avis, `${ ref }.avis`, errors );
+	}
+	if ( web.barra !== undefined ) {
+		validaBarraArticle( web.barra, `${ ref }.barra`, errors );
+	}
+}
+
+/**
+ * Si alguna web `article` declara fitxers de baixada (`avis.instal_la.fitxer`
+ * o `barra.fitxer`), el `quan.fitxer` de cada disparador `descarrega.fes` ha
+ * de ser un d'aquests. Sense cap fitxer declarat no es creua res.
+ *
+ * @param {Object}   m      Missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaFitxersDescarrega( m, errors ) {
+	const fitxers = new Set();
+	Object.values( m.webs ?? {} )
+		.filter( ( w ) => w?.plantilla === 'article' )
+		.forEach( ( w ) => {
+			[ w.avis?.instal_la?.fitxer, w.barra?.fitxer ]
+				.filter( esText )
+				.forEach( ( f ) => fitxers.add( f ) );
+		} );
+	if ( ! fitxers.size ) {
+		return;
+	}
+	llista( m.disparadors )
+		.map( ( d ) => d?.quan )
+		.filter(
+			( q ) =>
+				q?.esdeveniment === 'descarrega.fes' &&
+				typeof q.fitxer === 'string'
+		)
+		.forEach( ( q ) => {
+			if ( ! fitxers.has( q.fitxer ) ) {
+				errors.push( `descarrega: fitxer no declarat: ${ q.fitxer }` );
+			}
+		} );
+}
+
+/**
  * Valida una missió v2.
  *
  * @param {Object}  m   Missió a validar.
@@ -840,6 +1043,7 @@ export function validaMissio( m, mon ) {
 		}
 		validaFormularis( domini, web, errors );
 		validaPlantillaPagament( domini, web, errors );
+		validaArticle( domini, web, errors );
 	} );
 
 	validaIdsEntreApps( m.apps, errors );
@@ -848,6 +1052,7 @@ export function validaMissio( m, mon ) {
 	validaRevenda( m, mon, errors );
 	validaAnuncisDiari( m, mon, errors );
 	validaDisparadors( m, mon, errors );
+	validaFitxersDescarrega( m, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {

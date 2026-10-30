@@ -1,0 +1,129 @@
+/* Plantilla «article»: web de contingut neutra (receptes, el temps...).
+   L'arrel és `position: relative` i el contingut es desplaça a dins, de
+   manera que els avisos (absolute) cobreixen la part visible de la pàgina. */
+
+$ar-verd: #0f766e;
+$ar-fosc: #1f2937;
+$ar-gris: #4b5563;
+$ar-fons: #f8fafc;
+
+.nep-so .nep-ar {
+	background: #fff;
+	color: $ar-fosc;
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	font-family: system-ui, "Segoe UI", sans-serif;
+	font-size: 16px;
+	line-height: 1.55;
+	min-height: 0;
+	position: relative;
+
+	h1 {
+		font-size: 28px;
+		line-height: 1.2;
+		margin: 0 0 12px;
+	}
+
+	h2 {
+		font-size: 20px;
+		margin: 0 0 8px;
+	}
+
+	p {
+		margin: 0 0 10px;
+	}
+}
+
+.nep-so .nep-ar__contingut {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-height: 0;
+	overflow: auto;
+
+	&:focus-visible {
+		box-shadow: var(--nep-focus-halo);
+		outline: var(--nep-focus);
+		outline-offset: -3px;
+	}
+}
+
+.nep-so .nep-ar-cap {
+	background: $ar-verd;
+	color: #fff;
+	padding: 12px 20px;
+}
+
+.nep-so .nep-ar-marca {
+	align-items: center;
+	display: inline-flex;
+	gap: 10px;
+}
+
+.nep-so .nep-ar-marca__nom {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.nep-so .nep-ar-cos {
+	flex: 1 0 auto;
+	margin: 0 auto;
+	max-width: 720px;
+	padding: 24px 20px;
+	width: 100%;
+}
+
+.nep-so .nep-ar-entradeta {
+	color: $ar-gris;
+	font-size: 18px;
+	margin-bottom: 16px;
+}
+
+.nep-so .nep-ar-seccio {
+	margin-bottom: 20px;
+
+	ul {
+		margin: 0;
+		padding-left: 22px;
+	}
+
+	li {
+		margin-bottom: 4px;
+	}
+}
+
+.nep-so .nep-ar-peu {
+	background: $ar-fons;
+	border-top: 1px solid #e2e8f0;
+	color: $ar-gris;
+	font-size: 14px;
+	padding: 12px 20px;
+
+	p {
+		margin: 0;
+	}
+}
+
+/* Botó extra de l'avís («Instal·la l'eina...»). */
+.nep-so .nep-avis__instala {
+	align-items: center;
+	background: #fff;
+	border: 2px solid #a4161a;
+	border-radius: 8px;
+	color: #a4161a;
+	cursor: pointer;
+	display: inline-flex;
+	font-weight: 700;
+	justify-content: center;
+	margin-top: 10px;
+	min-height: 44px;
+	padding: 8px 16px;
+	width: 100%;
+
+	&:focus-visible {
+		box-shadow: var(--nep-focus-halo);
+		outline: var(--nep-focus);
+		outline-offset: 2px;
+	}
+}
