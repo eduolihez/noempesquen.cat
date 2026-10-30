@@ -44,7 +44,7 @@ Antes de decir que algo está listo: lint, test:unit, build y Playwright, con la
 - **`Esc` y menús**: todo menú, popover o diálogo registra su cierre con `useJoc().registraMenu( cierra )` (devuelve la función para desregistrar). `Esc` cierra primero el último menú y solo si no hay ninguno abre la pausa.
 - **Formularios falsos**: lo que escribe el jugador nunca entra en el estado del motor, `localStorage`, consola ni red. El motor solo recibe `{ url, formulari }`.
 - **Enlaces simulados**: nunca deben navegar el navegador real (click, clic central, menú contextual, arrastrar).
-- **Sin marcas reales** (Windows, Gmail, WhatsApp, bancos...). Marcas inventadas: Posta, Parla, Llum Clara, Banc Sòlid, Envia't, Ullada, El Diari del Barri. Iconos SVG propios, nunca emojis.
+- **Sin marcas reales** (Windows, Gmail, WhatsApp, bancos...). Marcas inventadas: Posta, Parla, Llum Clara, Banc Sòlid, Envia't, Ullada, El Diari del Barri, Revenda, Revenda Cobra, Invest Rapid. Personatges inventats: Carla Montsant, Jordi M. Iconos SVG propios, nunca emojis.
 - **WCAG 2.2 AA** también dentro del sistema simulado (contraste, foco visible, objetivos ≥ 24 px, axe en e2e sin violaciones serias).
 - Archivos en **UTF-8 con LF**; revisa la codificación si editas con scripts.
 - Textos del juego en **catalán**; identificadores en catalán como el código existente; commits en inglés (convencionales).
