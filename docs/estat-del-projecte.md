@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (corte 4a hecho en rama)
+Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`)
 
 ## Dónde estamos
 
@@ -10,9 +10,9 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Fase 1 · corte 1 | Núcleo v2, PC simulado, Navegador, Parla, Posta, Llum Clara, misión «La factura de la llum»                                                                                                         | **Hecho** (merge a `master` el 2026-10-29, plan `docs/superpowers/plans/2026-10-29-fase1-corte1-pc-factura.md`) |
 | Fase 1 · corte 2 | Sistema móvil (bloqueo, inicio, centro de control, banners), Missatges, Parla móvil, Navegador móvil, webs de Envia't; reescribir «El paquet retingut» a v2; **eliminar el legado v1** (`SIM/app/`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-29-fase1-corte2-mobil-paquet.md`) |
-| Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho en la rama `feat/fase1-corte3-banc`** (pendiente de merge a `master`, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
-| Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho en la rama `feat/fase1-corte4a-farcit`** (pendiente de merge a `master`, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
-| Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | Pendiente |
+| Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
+| Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
+| Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
 | Fase 2 y 3       | Misiones 5-10: sorteo falso en Ullada, robo del código de Parla, comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
 
 ## Cómo retomar
@@ -23,13 +23,15 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 ## Pendientes conocidos
 
-### Comprobación manual que falta
+### Pendiente tras el corte 4b
 
-- En Chrome con ventana visible: `Esc` real durante la misión debe abrir la pausa y mantener el simulador cubriendo la pantalla (los e2e solo simulan `document.exitFullscreen()`). Con «Més» o el candado abiertos, `Esc` los cierra primero.
+- Hecho a mano el 2026-10-30: `Esc` real en Chrome visible y prueba en móvil horizontal.
+- Deudas de accesibilidad y tamaño aceptadas (target-size en apps a escala ~0,57, texto ~8 px a 768×1024, borde de botones 1,3:1, estrellas del selector con lector de pantalla, CSS 251 KiB): detalle en `docs/decisions.md`.
+- `agrupa.js` usa `DATA_MON='2026-10-29'` fija (mejor `mon.avui` validado); `cerca:` pasa el validador pero es inerte en enlaces de mensaje; `llegeixProgres` no filtra que los valores sean números; `validaMissio` no comprueba `typeof m.apps`.
 
 ### Pendiente tras el corte 2
 
-- La barra de tareas del PC desborda a ~400 px (se resuelve con «PC en móvil», corte 4).
+- ~~La barra de tareas del PC desborda a ~400 px~~ (resuelto en 4b con el PC escalado).
 - Sin tests propios para el `Esc` con `prefers-reduced-motion` de `usePista.js` ni para el `MutationObserver` de `aillament.js`.
 - Menores: `IconaCadenat` vive en `llum-clara/Marca` y lo importa `webs/comu`; Envia't reutiliza estilos `nep-lc-*`; el `role="status"` de la web oficial de Envia't debería estar siempre en el DOM; `reset`/`enfocaAdreca` duplicado entre `Navegador` y `NavegadorMobil`; reabrir el mismo xat de Parla no recoloca el foco; el banner de Missatges abre la lista, no la conversación.
 
@@ -44,7 +46,6 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 ### Pendiente tras el corte 4a (para 4b)
 
-- El conmutador «Sons de notificació» de Ajustos guarda `noempesquen-sons`, pero nada lo lee todavía.
 - `missio.apps.ullada.publicacions` no se valida en `valida.js`; `propsEnllac` debería validar esquema http/https si las URLs vinieran de una misión.
 - `agrupa.js` (Galeria): «Avui»/«Ahir» sin `__()` y con fecha real; cadenas de `Subpantalla` sin `__()`; infinitivos e imperativos mezclados entre apps; `<h1>` en Ullada y `<h2>` en las demás.
 - El Diari: todas las secciones enlazan a la portada; ilustración con `role=img` duplica el título; portada sin mensaje si `mon.diari` está vacío.

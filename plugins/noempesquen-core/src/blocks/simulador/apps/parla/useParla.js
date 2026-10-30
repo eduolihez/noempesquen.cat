@@ -36,10 +36,11 @@ function segella( xat, hora ) {
  * Missatges del guia visibles: els que hi havia en obrir Parla es mostren
  * de cop; cada missatge nou del guia va precedit de «escrivint…».
  *
- * @param {Object[]} xat Missatges del motor.
+ * @param {Object[]} xat    Missatges del motor.
+ * @param {boolean}  aturat Cert en pausa (o demanant girar): no avança.
  * @return {{visibles:Object[], escriu:boolean}} Què es veu i si escriu.
  */
-function useRevelacio( xat ) {
+function useRevelacio( xat, aturat ) {
 	const [ mostrats, setMostrats ] = useState( xat.length );
 	const pas = properPas( xat, mostrats, ! menysMoviment() );
 
@@ -50,7 +51,7 @@ function useRevelacio( xat ) {
 	}
 
 	useEffect( () => {
-		if ( ! pas.escriu ) {
+		if ( ! pas.escriu || aturat ) {
 			return undefined;
 		}
 		const t = setTimeout(
@@ -58,7 +59,7 @@ function useRevelacio( xat ) {
 			MS_ESCRIU
 		);
 		return () => clearTimeout( t );
-	}, [ pas.escriu, pas.mostrats ] );
+	}, [ pas.escriu, pas.mostrats, aturat ] );
 
 	return { visibles: xat.slice( 0, pas.mostrats ), escriu: pas.escriu };
 }
@@ -116,7 +117,7 @@ export function useParla( xatInicial = ID_GUIA ) {
 	const horesMissio = useRef( new Map() );
 
 	segella( estat.xat, hora );
-	const { visibles, escriu } = useRevelacio( estat.xat );
+	const { visibles, escriu } = useRevelacio( estat.xat, estat.pausa );
 
 	const nom =
 		mon?.contactes?.find( ( c ) => c.id === missio.personatge )?.nom ??

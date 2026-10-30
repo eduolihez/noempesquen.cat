@@ -3,6 +3,7 @@
 @use "estils/pc";
 @use "estils/pc-barra";
 @use "estils/pc-notificacions";
+@use "estils/pantalla";
 @use "estils/mobil";
 @use "estils/missatges";
 @use "estils/parla";
@@ -29,6 +30,7 @@
 @use "estils/resultat-tokens";
 @use "estils/consequencia";
 @use "estils/resultat";
+@use "estils/selector";
 
 .wp-block-noempesquen-simulador {
 	--nep-fons: var(--wp--preset--color--fons, #f7f4ec);
@@ -121,54 +123,6 @@
 	&--lupa.is-actiu {
 		background: #fff3c4;
 		border-color: #b98a00;
-	}
-}
-
-/* Selector de missions */
-.nep-targetes {
-	display: grid;
-	gap: 1rem;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
-.nep-targeta {
-	align-items: flex-start;
-	background: #fff;
-	border: 2px solid var(--nep-vora);
-	border-radius: var(--nep-radi);
-	cursor: pointer;
-	display: flex;
-	gap: 1rem;
-	height: 100%;
-	padding: 1rem;
-	text-align: left;
-	width: 100%;
-
-	&:hover {
-		border-color: var(--nep-mar);
-	}
-
-	&__cos {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	&__meta {
-		font-size: 0.85rem;
-		opacity: 0.8;
-	}
-
-	&__titol {
-		font-size: 1.2rem;
-	}
-
-	&__estrelles {
-		color: #8a6700;
-		letter-spacing: 2px;
 	}
 }
 

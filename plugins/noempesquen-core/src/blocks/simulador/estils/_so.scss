@@ -163,6 +163,30 @@ html.nep-so-bloqueja-scroll {
 		line-height: 20px;
 	}
 
+	.nep-so &__so {
+		align-items: center;
+		background: rgb(255 255 255 / 70%);
+		border: 1px solid rgb(0 0 0 / 14%);
+		border-radius: 4px;
+		color: var(--so-text);
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		margin-top: 8px;
+		min-height: 44px;
+		padding: 5px 16px;
+		text-align: left;
+		width: 100%;
+	}
+
+	&__estat {
+		font-weight: 600;
+	}
+
+	.nep-so-boto {
+		min-height: 44px;
+	}
+
 	&__botons {
 		display: flex;
 		flex-direction: column;

@@ -3,6 +3,7 @@
  */
 
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
+import { existeixIlustracio } from '../ui/ilustracions-ids';
 
 export const APPS_PC = CLAUS_APPS_PC;
 export const APPS_MOBIL = CLAUS_APPS_MOBIL;
@@ -53,6 +54,14 @@ export const ESDEVENIMENTS = [
 	'missatge.envia',
 	'enllac.mantingut',
 ];
+
+/**
+ * Torna el valor si és una llista; si no, una llista buida.
+ *
+ * @param {*} v Valor qualsevol.
+ * @return {Array} Llista.
+ */
+const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
 
@@ -123,9 +132,9 @@ function recullIdsApps( apps ) {
 	const objectes = ( v ) =>
 		v && typeof v === 'object' ? Object.values( v ) : [];
 	objectes( apps ).forEach( ( app ) => {
-		objectes( app ).forEach( ( llista ) => {
-			if ( Array.isArray( llista ) ) {
-				llista.forEach( ( item ) => {
+		objectes( app ).forEach( ( valors ) => {
+			if ( Array.isArray( valors ) ) {
+				valors.forEach( ( item ) => {
 					if ( item?.id !== undefined ) {
 						ids.add( item.id );
 					}
@@ -179,14 +188,14 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 
 function validaDisparadors( m, errors ) {
 	const opcions = new Set(
-		( m.decisio?.opcions ?? [] )
+		llista( m.decisio?.opcions )
 			.filter( ( o ) => o && typeof o === 'object' )
 			.map( ( o ) => o.id )
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
 	let hiHaPescat = false;
-	( m.disparadors ?? [] ).forEach( ( d ) => {
+	llista( m.disparadors ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
 			errors.push( 'disparador invàlid' );
 			return;
@@ -202,7 +211,7 @@ function validaDisparadors( m, errors ) {
 				);
 			}
 		}
-		( d.efectes ?? [] ).forEach( ( e ) => {
+		llista( d.efectes ).forEach( ( e ) => {
 			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
 				hiHaPescat = true;
 			}
@@ -263,6 +272,43 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
+function validaPublicacionsUllada( m, errors ) {
+	const publicacions = m.apps?.ullada?.publicacions;
+	if ( publicacions === undefined ) {
+		return;
+	}
+	if ( ! Array.isArray( publicacions ) ) {
+		errors.push( 'ullada: publicacions ha de ser una llista' );
+		return;
+	}
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	const ids = new Set();
+	publicacions.forEach( ( p, i ) => {
+		const ref = `ullada.publicacions[${ i }]`;
+		if ( ! p || typeof p !== 'object' || Array.isArray( p ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'autor', 'text' ].forEach( ( c ) => {
+			if ( ! text( p[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if ( text( p.id ) ) {
+			if ( ids.has( p.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ p.id }»` );
+			}
+			ids.add( p.id );
+		}
+		if ( ! text( p.il ) || ! existeixIlustracio( p.il ) ) {
+			errors.push( `${ ref }: il·lustració inexistent «${ p.il }»` );
+		}
+		if ( typeof p.likes !== 'number' || ! Number.isFinite( p.likes ) ) {
+			errors.push( `${ ref }: «likes» ha de ser un número` );
+		}
+	} );
+}
+
 function validaFormularis( domini, web, errors ) {
 	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
 		if ( ! f || typeof f !== 'object' ) {
@@ -311,7 +357,7 @@ export function validaMissio( m, mon ) {
 		errors.push( 'falta intro' );
 	}
 
-	const ids = new Set( ( m.senyals ?? [] ).map( ( s ) => s.id ) );
+	const ids = new Set( llista( m.senyals ).map( ( s ) => s?.id ) );
 	const usats = [ ...recullSenyals( m.apps ), ...recullSenyals( m.webs ) ];
 	new Set( usats ).forEach( ( s ) => {
 		if ( ! ids.has( s ) ) {
@@ -325,8 +371,8 @@ export function validaMissio( m, mon ) {
 		}
 	} );
 
-	( m.disparadors ?? [] )
-		.flatMap( ( d ) => d?.efectes ?? [] )
+	llista( m.disparadors )
+		.flatMap( ( d ) => llista( d?.efectes ) )
 		.filter( ( e ) => e?.tipus === 'notifica' && e.font === 'mobil' )
 		.forEach( ( e ) => {
 			if ( ! APPS_MISSIO.mobil.includes( e.app ) ) {
@@ -338,8 +384,8 @@ export function validaMissio( m, mon ) {
 	if ( permeses ) {
 		const usades = [
 			...Object.keys( m.apps ?? {} ),
-			...( m.disparadors ?? [] )
-				.flatMap( ( d ) => d?.efectes ?? [] )
+			...llista( m.disparadors )
+				.flatMap( ( d ) => llista( d?.efectes ) )
 				.filter( ( e ) => e?.tipus === 'notifica' && ! e.font )
 				.map( ( e ) => e.app ),
 		];
@@ -364,14 +410,15 @@ export function validaMissio( m, mon ) {
 	} );
 
 	validaXatsParla( m, mon, errors );
+	validaPublicacionsUllada( m, errors );
 	validaDisparadors( m, errors );
 
-	( m.decisio?.opcions ?? [] ).forEach( ( o ) => {
+	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {
 			errors.push( 'opció invàlida' );
 		}
 	} );
-	const valors = ( m.decisio?.opcions ?? [] ).map( ( o ) => o?.valor );
+	const valors = llista( m.decisio?.opcions ).map( ( o ) => o?.valor );
 	if ( ! valors.includes( 'correcta' ) ) {
 		errors.push( 'cap opció correcta' );
 	}

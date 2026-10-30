@@ -2,7 +2,8 @@ import { useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Ilustracio } from '../../ui/ilustracions';
-import { construeixFeed } from './feed.js';
+import { nomJugador } from '../../nucli/jugador';
+import { construeixFeed, primerNom, usuariDe } from './feed.js';
 import { Publicacio } from './Publicacio';
 import {
 	IconaAvisos,
@@ -82,14 +83,14 @@ export default function Ullada() {
 							className="nep-ullada-perfil__avatar"
 							aria-hidden="true"
 						>
-							À
+							{ nomJugador( mon ).charAt( 0 ) }
 						</span>
 						<div>
 							<h2 className="nep-ullada-perfil__nom">
-								Àlex Puig
+								{ nomJugador( mon ) }
 							</h2>
 							<p className="nep-ullada-perfil__usuari">
-								@alex.puig
+								@{ usuariDe( nomJugador( mon ) ) }
 							</p>
 						</div>
 					</div>
@@ -122,7 +123,7 @@ export default function Ullada() {
 								<Ilustracio id={ pf.il } />
 							</span>
 							<span className="nep-ullada-historia__nom">
-								{ pf.nom.split( ' ' )[ 0 ] }
+								{ primerNom( pf.nom ) }
 							</span>
 						</li>
 					) ) }

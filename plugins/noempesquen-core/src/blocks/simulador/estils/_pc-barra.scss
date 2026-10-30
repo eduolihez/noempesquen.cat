@@ -12,7 +12,7 @@
 	bottom: 0;
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
-	height: 48px;
+	height: var(--so-alt-barra, 48px);
 	left: 0;
 	position: absolute;
 	right: 0;
@@ -40,11 +40,11 @@
 		border: 1px solid transparent;
 		border-radius: 4px;
 		display: flex;
-		height: 40px;
+		height: max(40px, var(--so-tactil, 0px));
 		justify-content: center;
 		position: relative;
 		transition: background-color 0.1s ease;
-		width: 40px;
+		width: max(40px, var(--so-tactil, 0px));
 
 		&:hover {
 			background: rgb(255 255 255 / 65%);
@@ -74,7 +74,7 @@
 		color: $text-secundari;
 		display: flex;
 		gap: 8px;
-		height: 32px;
+		height: max(32px, var(--so-tactil, 0px));
 		margin: 0 6px 0 2px;
 		min-width: 168px;
 		padding: 0 14px 0 11px;
@@ -118,7 +118,7 @@
 		align-items: center;
 		display: flex;
 		gap: 9px;
-		height: 40px;
+		height: max(40px, var(--so-tactil, 0px));
 		padding: 0 9px;
 	}
 
@@ -129,7 +129,7 @@
 		border-radius: 4px;
 		display: flex;
 		gap: 10px;
-		height: 40px;
+		height: max(40px, var(--so-tactil, 0px));
 		padding: 0 8px 0 10px;
 
 		&:hover,
@@ -210,7 +210,7 @@
 	@include superficie;
 
 	animation: nep-so-panell-puja 0.22s $corba-entrada both;
-	bottom: 60px;
+	bottom: calc(var(--so-alt-barra, 48px) + 12px);
 	position: absolute;
 	z-index: 4;
 
@@ -237,6 +237,9 @@
 		gap: 10px;
 		height: 36px;
 		margin: 28px 32px 0;
+
+		/* La vora (2 px) no compta: el camp de dins ha de fer 44 px. */
+		min-height: calc(var(--so-tactil, 0px) + 2px);
 		padding: 0 14px;
 
 		&:focus-within {
@@ -248,6 +251,7 @@
 			background: transparent;
 			border: 0;
 			color: #1a1a1a;
+			align-self: stretch;
 			flex: 1;
 			min-width: 0;
 			outline: none;
@@ -286,6 +290,7 @@
 		flex-direction: column;
 		font-size: 12px;
 		gap: 8px;
+		min-height: var(--so-tactil, 0);
 		padding: 14px 4px 10px;
 		width: 100%;
 
@@ -324,9 +329,9 @@
 		border: 1px solid transparent;
 		border-radius: 4px;
 		display: flex;
-		height: 40px;
+		height: max(40px, var(--so-tactil, 0px));
 		justify-content: center;
-		width: 40px;
+		width: max(40px, var(--so-tactil, 0px));
 
 		&:hover {
 			background: rgb(255 255 255 / 75%);

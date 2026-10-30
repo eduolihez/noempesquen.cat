@@ -3,11 +3,13 @@
  * (a l'app, window.localStorage) i qualsevol error s'empassa.
  */
 export const CLAU_SONS = 'noempesquen-sons';
+/* Esdeveniment de window que avisa que la preferència ha canviat. */
+export const EVENT_SONS = 'noempesquen-sons-canvi';
 
 /* Retorna true per defecte si no hi ha valor, és corrupte o falla l'accés. */
-export function llegeixSons( emmagatzem ) {
+export function llegeixSons( magatzem ) {
 	try {
-		const valor = emmagatzem?.getItem( CLAU_SONS );
+		const valor = magatzem?.getItem( CLAU_SONS );
 		if ( valor === 'true' ) {
 			return true;
 		}
@@ -21,11 +23,20 @@ export function llegeixSons( emmagatzem ) {
 }
 
 /* Desa un booleà; retorna si s'ha pogut desar. */
-export function desaSons( emmagatzem, valor ) {
+export function desaSons( magatzem, valor ) {
 	try {
-		emmagatzem.setItem( CLAU_SONS, valor ? 'true' : 'false' );
+		magatzem.setItem( CLAU_SONS, valor ? 'true' : 'false' );
 		return true;
 	} catch {
 		return false;
+	}
+}
+
+/* Emmagatzematge del navegador, o undefined si està bloquejat. */
+export function emmagatzem() {
+	try {
+		return window.localStorage;
+	} catch {
+		return undefined;
 	}
 }

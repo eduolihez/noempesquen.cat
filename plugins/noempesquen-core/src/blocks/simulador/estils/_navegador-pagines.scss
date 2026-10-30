@@ -56,7 +56,7 @@
 	line-height: 1.55;
 	margin: 0 auto;
 	max-width: 600px;
-	padding: clamp(32px, 12vh, 112px) 24px 48px;
+	padding: clamp(32px, 12cqb, 112px) 24px 48px;
 	width: 100%;
 
 	&__icona {
@@ -114,7 +114,7 @@
 	align-items: center;
 	display: flex;
 	flex-direction: column;
-	padding: clamp(32px, 14vh, 140px) 16px 48px;
+	padding: clamp(32px, 14cqb, 140px) 16px 48px;
 
 	&__marca {
 		margin-bottom: 28px;

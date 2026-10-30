@@ -10,3 +10,6 @@ Thumbs.db
 .superpowers/
 .impeccable/
 .playwright-mcp/
+
+# Claude Code (orquestación y estado local)
+.claude/

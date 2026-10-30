@@ -5,17 +5,24 @@
 const CLAU_V1 = 'noempesquen-progres-v1';
 const CLAU_V2 = 'noempesquen-progres-v2';
 
+const esObjecte = ( v ) =>
+	!! v && typeof v === 'object' && ! Array.isArray( v );
+
 export function llegeixProgres( storage ) {
 	try {
 		const actual = storage.getItem( CLAU_V2 );
 		if ( actual !== null && actual !== undefined ) {
-			return JSON.parse( actual );
+			const llegit = JSON.parse( actual );
+			return esObjecte( llegit ) ? llegit : {};
 		}
 		const antic = storage.getItem( CLAU_V1 );
 		if ( antic === null || antic === undefined ) {
 			return {};
 		}
 		const progres = JSON.parse( antic );
+		if ( ! esObjecte( progres ) ) {
+			return {};
+		}
 		storage.setItem( CLAU_V2, antic );
 		return progres;
 	} catch {

@@ -21,6 +21,15 @@ const trenca = {
 };
 
 describe( 'progres', () => {
+	it( 'torna {} si el que hi ha guardat no és un objecte', () => {
+		[ 'null', '5', '"x"', '[1]', 'true' ].forEach( ( v ) => {
+			const s = memoria( { 'noempesquen-progres-v2': v } );
+			expect( llegeixProgres( s ) ).toEqual( {} );
+		} );
+		const antic = memoria( { 'noempesquen-progres-v1': '[1]' } );
+		expect( llegeixProgres( antic ) ).toEqual( {} );
+	} );
+
 	it( 'llegeix el progrés v2', () => {
 		const s = memoria( { 'noempesquen-progres-v2': '{"a":2}' } );
 		expect( llegeixProgres( s ) ).toEqual( { a: 2 } );

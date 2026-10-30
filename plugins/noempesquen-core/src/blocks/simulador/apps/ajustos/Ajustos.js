@@ -2,7 +2,12 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Subpantalla } from './Subpantalla';
-import { desaSons, llegeixSons } from './preferencies.js';
+import {
+	desaSons,
+	llegeixSons,
+	emmagatzem,
+	EVENT_SONS,
+} from '../../simulador/preferencies.js';
 import {
 	IconaAplicacions,
 	IconaApagar,
@@ -12,14 +17,6 @@ import {
 	IconaTelefon,
 	IconaWifi,
 } from './icones';
-
-function emmagatzem() {
-	try {
-		return window.localStorage;
-	} catch {
-		return undefined;
-	}
-}
 
 const ENTRADES = [
 	{ id: 'wifi', Icona: IconaWifi, text: () => __( 'Wi-Fi', 'noempesquen' ) },
@@ -56,6 +53,13 @@ export default function Ajustos() {
 	vistaRef.current = vista;
 	const movFoc = useRef( false );
 	const origen = useRef( null );
+
+	// La pausa pot canviar el so mentre Ajustos és obert.
+	useEffect( () => {
+		const relegeix = () => setSons( llegeixSons( emmagatzem() ) );
+		window.addEventListener( EVENT_SONS, relegeix );
+		return () => window.removeEventListener( EVENT_SONS, relegeix );
+	}, [] );
 	const focDins = useCallback(
 		() =>
 			!! arrel.current?.contains(
@@ -98,6 +102,7 @@ export default function Ajustos() {
 	const canviaSons = ( valor ) => {
 		setSons( valor );
 		desaSons( emmagatzem(), valor );
+		window.dispatchEvent( new window.Event( EVENT_SONS ) );
 	};
 
 	const entrada = ENTRADES.find( ( e ) => e.id === vista );

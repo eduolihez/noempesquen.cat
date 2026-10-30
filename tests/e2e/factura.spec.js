@@ -1,5 +1,12 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxe, inspecciona, iniciaMissio } = require( './ajudes' );
+const {
+	escoltaFuites,
+	esHoritzontal,
+	greusAxePc,
+	sensePistes,
+	inspecciona,
+	iniciaMissio,
+} = require( './ajudes' );
 
 const MISSIO = /La factura de la llum/;
 const BLOQUEIG = /Clica o prem/;
@@ -14,8 +21,10 @@ const CAMPS_TARGETA = {
 	'PIN de la targeta': '1234',
 };
 
-test.beforeEach( ( { isMobile } ) => {
-	test.skip( isMobile, 'PC en mòbil: tall 4' );
+test.beforeEach( ( { page } ) => {
+	// En mòbil vertical el PC no hi cap: hi apareix la petició de girar
+	// (pc-mobil.spec.js). En horitzontal el PC s'escala i es juga sencera.
+	test.skip( ! esHoritzontal( page ), 'PC en vertical: demana girar' );
 } );
 
 const barraTasques = ( page ) =>
@@ -77,20 +86,6 @@ async function surtDePantallaCompleta( page ) {
 		.poll( () => page.evaluate( () => !! document.fullscreenElement ) )
 		.toBe( true );
 	await page.evaluate( () => document.exitFullscreen() );
-}
-
-async function sensePistes( page ) {
-	const text = await page.content();
-	const emmagatzemat = await page.evaluate( () =>
-		JSON.stringify( [
-			{ ...window.localStorage },
-			{ ...window.sessionStorage },
-		] )
-	);
-	for ( const valor of AUTOOMPLI ) {
-		expect( text ).not.toContain( valor );
-		expect( emmagatzemat ).not.toContain( valor );
-	}
 }
 
 test.describe( 'La factura de la llum', () => {
@@ -173,6 +168,7 @@ test.describe( 'La factura de la llum', () => {
 	} );
 
 	test( 'camí de pescat: pagar a la web falsa', async ( { page } ) => {
+		const vist = escoltaFuites( page );
 		await mirantElCorreu( page );
 		await page
 			.getByRole( 'link', { name: 'Paga ara a llumclara.cat' } )
@@ -200,13 +196,13 @@ test.describe( 'La factura de la llum', () => {
 		).toHaveCount( 0 );
 
 		// Les dades de la targeta no es queden enlloc.
-		await sensePistes( page );
+		await sensePistes( page, vist, AUTOOMPLI );
 
 		await capa.getByRole( 'button', { name: 'Veure el resultat' } ).click();
 		await expect(
 			page.getByRole( 'img', { name: '1 de 3 estrelles' } )
 		).toBeVisible();
-		await sensePistes( page );
+		await sensePistes( page, vist, AUTOOMPLI );
 	} );
 
 	test( 'decidir pel xat amb «Ja ho tinc clar»', async ( { page } ) => {
@@ -371,7 +367,7 @@ test.describe( 'La factura de la llum', () => {
 		await entra( page );
 		await saltaIntroIEsperaCorreu( page );
 		await obreCorreu( page );
-		const greus = await greusAxe( page );
+		const greus = await greusAxePc( page );
 		expect( greus ).toEqual( [] );
 	} );
 } );

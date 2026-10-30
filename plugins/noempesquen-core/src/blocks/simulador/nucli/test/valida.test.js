@@ -16,6 +16,24 @@ const factura = JSON.parse( readFileSync( ruta, 'utf8' ) );
 const copia = () => structuredClone( factura );
 
 describe( 'validaMissio v2', () => {
+	it( 'no peta amb null o no-array a senyals, disparadors, efectes i opcions', () => {
+		[ null, 5, 'x', {} ].forEach( ( v ) => {
+			const m = copia();
+			m.senyals = v;
+			m.disparadors = v;
+			m.decisio.opcions = v;
+			expect( () => validaMissio( m ) ).not.toThrow();
+			const n = copia();
+			n.disparadors.forEach( ( d ) => {
+				d.efectes = v;
+			} );
+			expect( () => validaMissio( n ) ).not.toThrow();
+		} );
+		const m = copia();
+		m.senyals = [ null, ...m.senyals ];
+		expect( () => validaMissio( m ) ).not.toThrow();
+	} );
+
 	it( 'la missió factura v2 és vàlida', () => {
 		expect( validaMissio( factura ) ).toEqual( [] );
 	} );
@@ -436,5 +454,40 @@ describe( 'validaMissio: apps.parla.xats', () => {
 		expect( errors ).toContain( 'senyal desconegut: inexistent' );
 		expect( errors ).toContain( 'senyal desconegut: altre' );
 		expect( errors ).toContain( 'notifica: xat només amb app parla' );
+	} );
+} );
+
+describe( 'validaMissio: apps.ullada.publicacions', () => {
+	const bona = {
+		id: 'p1',
+		autor: 'a1',
+		text: 'Hola',
+		il: 'gat',
+		likes: 3,
+	};
+	const amb = ( publicacions ) => {
+		const m = copia();
+		m.apps.ullada = { publicacions };
+		return validaMissio( m ).filter( ( e ) => e.startsWith( 'ullada' ) );
+	};
+
+	it( 'accepta una publicació vàlida o sense publicacions', () => {
+		expect( amb( [ bona ] ) ).toEqual( [] );
+		expect( amb( undefined ) ).toEqual( [] );
+	} );
+
+	it( 'rebutja no-array, elements no objecte i camps absents', () => {
+		expect( amb( null ) ).toHaveLength( 1 );
+		expect( amb( [ null ] ) ).toHaveLength( 1 );
+		expect( amb( [ { ...bona, text: '' } ] ) ).toHaveLength( 1 );
+	} );
+
+	it( 'rebutja il·lustració inexistent i likes no numèrics', () => {
+		expect( amb( [ { ...bona, il: 'xyz' } ] ) ).toHaveLength( 1 );
+		expect( amb( [ { ...bona, likes: '3' } ] ) ).toHaveLength( 1 );
+	} );
+
+	it( 'rebutja ids duplicats', () => {
+		expect( amb( [ bona, bona ] ) ).toHaveLength( 1 );
 	} );
 } );

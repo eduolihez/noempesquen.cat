@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../simulador/context';
+import { propsEnllac } from '../webs/enllac';
 import { Inspeccionable } from './Inspeccionable';
 
 function Enllac( { seg, onEnllac, onHoverUrl } ) {
@@ -39,28 +40,10 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 		);
 	}
 
-	// Sempre s'intercepta: cap gest (clic, Ctrl+clic, clic del mig, menú
-	// contextual, arrossegar) ha de portar el navegador real a una URL del joc.
-	const obre = ( e ) => {
-		e.preventDefault();
-		onEnllac?.( url );
-	};
-	// Només el botó del mig obre; la resta de botons auxiliars s'ignoren.
-	const obreAux = ( e ) => {
-		e.preventDefault();
-		if ( e.button === 1 ) {
-			onEnllac?.( url );
-		}
-	};
 	return (
 		<a
-			href={ url }
 			className={ `nep-enllac${ trobat ? ' nep-marcat' : '' }` }
-			onClick={ obre }
-			onAuxClick={ obreAux }
-			onContextMenu={ ( e ) => e.preventDefault() }
-			onDragStart={ ( e ) => e.preventDefault() }
-			{ ...hover }
+			{ ...propsEnllac( url, ( u ) => onEnllac?.( u ), onHoverUrl ) }
 		>
 			{ text }
 		</a>

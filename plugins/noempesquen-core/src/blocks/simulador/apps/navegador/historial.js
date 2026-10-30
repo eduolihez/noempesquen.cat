@@ -184,11 +184,15 @@ function tanca( estat, id ) {
 	return { ...estat, pestanyes, activa };
 }
 
-const navega = ( url ) => ( p ) => ( {
+const afegeix = ( url ) => ( p ) => ( {
 	...p,
 	historial: [ ...p.historial.slice( 0, p.index + 1 ), url ],
 	index: p.index + 1,
 } );
+
+/* Anar a la URL en què ja som no afegeix res a l'historial: recarrega. */
+const navega = ( url ) => ( p ) =>
+	urlActual( p ) === url ? p : afegeix( url )( p );
 
 const mou = ( pas ) => ( p ) => {
 	const index = p.index + pas;

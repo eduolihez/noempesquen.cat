@@ -1,6 +1,7 @@
 import { useId, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { nomJugador } from '../../nucli/jugador';
 
 const APPS_INSTALLADES = [
 	[ 'Navegador', '2.4.1' ],
@@ -151,19 +152,20 @@ function Aplicacions() {
 }
 
 function Sobre() {
+	const { mon } = useJoc();
 	return (
 		<>
 			<Dada
 				etiqueta={ __( 'Nom del dispositiu', 'noempesquen' ) }
-				valor="Àlex Puig"
+				valor={ nomJugador( mon ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Model', 'noempesquen' ) }
-				valor="Mòbil Nova 5"
+				valor={ __( 'Mòbil Nova 5', 'noempesquen' ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Versió del sistema', 'noempesquen' ) }
-				valor="Nova OS 3.2"
+				valor={ __( 'Nova OS 3.2', 'noempesquen' ) }
 			/>
 			<Dada
 				etiqueta={ __( 'Emmagatzematge', 'noempesquen' ) }

@@ -9,7 +9,7 @@ import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Ilustracio } from '../../ui/ilustracions';
-import { agrupaPerData, etiquetaData, vei } from './agrupa.js';
+import { DATA_MON, agrupaPerData, etiquetaData, vei } from './agrupa.js';
 import { Visor } from './Visor';
 
 const APP = 'galeria';
@@ -27,9 +27,8 @@ export default function Galeria() {
 	const idOberta = useRef( null );
 	idOberta.current = oberta;
 	const estatEnrere = useRef();
-	// Moment de muntar l'app: només cal per a «Avui» i «Ahir». Amb les dates
-	// de mon.galeria (2026) normalment sortiran etiquetes absolutes.
-	const [ ara ] = useState( () => new Date() );
+	// «Avui» i «Ahir» són els del món simulat, no els del dia real.
+	const ara = DATA_MON;
 
 	const fotos = useMemo( () => mon.galeria ?? [], [ mon ] );
 	const grups = useMemo( () => agrupaPerData( fotos, ara ), [ fotos, ara ] );
