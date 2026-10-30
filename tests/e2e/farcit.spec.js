@@ -183,4 +183,29 @@ test.describe( 'Apps de farciment del mòbil', () => {
 			'true'
 		);
 	} );
+
+	test( 'El Diari del Barri: carrega a diaridelbarri.cat i obre una notícia', async ( {
+		page,
+	} ) => {
+		await entra( page );
+		await dock( page ).getByRole( 'button', { name: 'Navegador' } ).click();
+		const cerca = page.getByRole( 'textbox', {
+			name: 'Cerca o escriu una adreça web',
+		} );
+		await cerca.fill( 'diaridelbarri.cat' );
+		await cerca.press( 'Enter' );
+		const h1 = page.locator( '.nep-dv h1' );
+		await expect( h1 ).toHaveCount( 1 );
+		await expect(
+			page.getByRole( 'link', { name: /El Diari del Barri/ } ).first()
+		).toBeVisible();
+		expect( await greusAxe( page ) ).toEqual( [] );
+		const url = page.url();
+		await page.locator( '.nep-dv a[href*="/noticia/"]' ).first().click();
+		expect( page.url() ).toBe( url );
+		await expect( page.locator( '.nep-dv h1' ) ).toHaveCount( 1 );
+		await expect(
+			page.getByText( 'No hem trobat aquesta notícia' )
+		).toHaveCount( 0 );
+	} );
 } );
