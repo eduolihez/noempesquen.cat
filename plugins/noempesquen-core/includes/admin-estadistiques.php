@@ -94,6 +94,19 @@ function nep_pinta_estadistiques(): void {
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Estadístiques', 'noempesquen' ); ?></h1>
+		<?php if ( ! $error_bd && nep_hi_ha_demo() ) : ?>
+			<div class="notice notice-warning inline nep-avis-demo" role="status">
+				<p><strong><?php esc_html_e( 'Avís:', 'noempesquen' ); ?></strong>
+					<?php
+					printf(
+						/* translators: %s: ordre de WP-CLI. */
+						esc_html__( 'Dades de demostració incloses. Esborra-les amb %s abans de publicar.', 'noempesquen' ),
+						'<code>wp nep demo-estadistiques esborra</code>'
+					);
+					?>
+				</p>
+			</div>
+		<?php endif; ?>
 		<?php if ( $error_bd ) : ?>
 			<div class="notice notice-error inline"><p><?php esc_html_e( 'No s\'ha pogut llegir la taula d\'estadístiques.', 'noempesquen' ); ?></p></div>
 		<?php endif; ?>

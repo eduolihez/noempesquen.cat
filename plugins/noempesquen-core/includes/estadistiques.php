@@ -53,11 +53,146 @@ versio_hash varchar(12) NOT NULL,
 dia date NOT NULL,
 estrelles tinyint(3) unsigned NOT NULL,
 decisio varchar(32) NOT NULL DEFAULT '',
+demo tinyint(1) NOT NULL DEFAULT 0,
 n int(10) unsigned NOT NULL DEFAULT 0,
 PRIMARY KEY  (id),
-UNIQUE KEY resultat (missio,versio_hash,dia,estrelles,decisio),
+UNIQUE KEY resultat_demo (missio,versio_hash,dia,estrelles,decisio,demo),
 KEY dia (dia)
 ) {$charset_collate};";
+}
+
+/**
+ * Generador pseudoaleatori determinista (xorshift32) per a les dades demo:
+ * sense `mt_srand`, que canviaria l'estat global.
+ *
+ * @param int $estat Estat (es modifica). Mai 0.
+ * @return float Valor a [0, 1).
+ */
+function nep_aleatori_demo( int &$estat ): float {
+	$x      = $estat & 0xFFFFFFFF;
+	$x     ^= ( $x << 13 ) & 0xFFFFFFFF;
+	$x     ^= $x >> 17;
+	$x     ^= ( $x << 5 ) & 0xFFFFFFFF;
+	$estat  = $x ?: 1;
+	return $estat / 4294967296;
+}
+
+/**
+ * Tria un índex segons uns pesos.
+ *
+ * @param float[] $pesos Pesos positius.
+ * @param int     $estat Estat del generador.
+ * @return int
+ */
+function nep_tria_demo( array $pesos, int &$estat ): int {
+	$r = nep_aleatori_demo( $estat ) * array_sum( $pesos );
+	foreach ( array_values( $pesos ) as $i => $pes ) {
+		$r -= $pes;
+		if ( $r < 0 ) {
+			return $i;
+		}
+	}
+	return count( $pesos ) - 1;
+}
+
+/**
+ * Files demo deterministes (mateixa llavor → mateixes files): per a cada
+ * missió, `$partides` partides repartides pels darrers 30 dies (fins a avui),
+ * d'1 a 3 estrelles i amb una de les decisions de la missió (una de cada deu,
+ * aproximadament, sense decisió). Les files tenen `demo` = 1.
+ *
+ * @param array<string, array{hash: string, opcions: string[]}> $missions Hash actual i ids d'opció per missió.
+ * @param int                                                   $partides Partides per missió.
+ * @param int                                                   $llavor   Llavor.
+ * @param string                                                $avui     Data d'avui (Y-m-d, UTC).
+ * @return array[] Files `missio`, `versio_hash`, `dia`, `estrelles`, `decisio`, `demo`, `n`.
+ */
+function nep_genera_files_demo( array $missions, int $partides, int $llavor, string $avui ): array {
+	$estat = ( $llavor & 0xFFFFFFFF ) ?: 1;
+	$base  = (int) strtotime( $avui . ' 00:00:00 UTC' );
+	$files = array();
+	ksort( $missions, SORT_STRING );
+	foreach ( $missions as $missio => $info ) {
+		$opcions = array_values( $info['opcions'] );
+		// Pesos propis de cada missió: unes decisions més triades que d'altres.
+		$p_estrelles = array( 1 + 3 * nep_aleatori_demo( $estat ), 2 + 3 * nep_aleatori_demo( $estat ), 2 + 3 * nep_aleatori_demo( $estat ) );
+		$p_decisions = array_map( static fn() => 0.5 + 4 * nep_aleatori_demo( $estat ), $opcions );
+		for ( $i = 0; $i < $partides; $i++ ) {
+			$dia       = gmdate( 'Y-m-d', $base - (int) floor( 30 * nep_aleatori_demo( $estat ) ) * 86400 );
+			$estrelles = 1 + nep_tria_demo( $p_estrelles, $estat );
+			$decisio   = ( ! $opcions || nep_aleatori_demo( $estat ) < 0.1 ) ? '' : $opcions[ nep_tria_demo( $p_decisions, $estat ) ];
+			$clau      = "$dia|$estrelles|$decisio";
+			$files[ $missio . '|' . $clau ] ??= array(
+				'missio'      => (string) $missio,
+				'versio_hash' => $info['hash'],
+				'dia'         => $dia,
+				'estrelles'   => $estrelles,
+				'decisio'     => $decisio,
+				'demo'        => 1,
+				'n'           => 0,
+			);
+			++$files[ $missio . '|' . $clau ]['n'];
+		}
+	}
+	ksort( $files, SORT_STRING );
+	return array_values( $files );
+}
+
+/**
+ * Distribució d'estrelles i de decisions per a les barres del panell.
+ *
+ * Només per a missions amb `$k` partides o més (les altres no hi surten).
+ * Cada valor porta el recompte i el percentatge sobre totes les partides de
+ * la missió; el panell n'amaga el percentatge si el recompte és menor que `$k`.
+ *
+ * @param array                        $files   Files `missio`, `estrelles`, `decisio`, `n`.
+ * @param int                          $k       Partides mínimes.
+ * @param array<string, string[]>|null $opcions Ids d'opció vàlids per missió (null = totes).
+ * @return array<string, array{estrelles: array<int, array{n: int, percentatge: int}>, decisions: array<string, array{n: int, percentatge: int}>}>
+ */
+function nep_distribucions( array $files, int $k, ?array $opcions = null ): array {
+	$acumulat = array();
+	foreach ( $files as $fila ) {
+		$missio = (string) ( $fila['missio'] ?? '' );
+		$n      = (int) ( $fila['n'] ?? 0 );
+		if ( '' === $missio || $n <= 0 ) {
+			continue;
+		}
+		$acumulat[ $missio ] ??= array(
+			'partides'  => 0,
+			'estrelles' => array(
+				1 => 0,
+				2 => 0,
+				3 => 0,
+			),
+			'decisions' => array_fill_keys( null === $opcions ? array() : ( $opcions[ $missio ] ?? array() ), 0 ),
+		);
+		$acumulat[ $missio ]['partides'] += $n;
+		$estrelles                        = (int) ( $fila['estrelles'] ?? 0 );
+		if ( isset( $acumulat[ $missio ]['estrelles'][ $estrelles ] ) ) {
+			$acumulat[ $missio ]['estrelles'][ $estrelles ] += $n;
+		}
+		$decisio = (string) ( $fila['decisio'] ?? '' );
+		if ( '' !== $decisio && ( null === $opcions || in_array( $decisio, $opcions[ $missio ] ?? array(), true ) ) ) {
+			$acumulat[ $missio ]['decisions'][ $decisio ] = ( $acumulat[ $missio ]['decisions'][ $decisio ] ?? 0 ) + $n;
+		}
+	}
+	$resultat = array();
+	foreach ( $acumulat as $missio => $a ) {
+		if ( $a['partides'] < $k ) {
+			continue;
+		}
+		$pct = static fn( int $n ): array => array(
+			'n'           => $n,
+			'percentatge' => (int) round( 100 * $n / $a['partides'] ),
+		);
+		$resultat[ $missio ] = array(
+			'estrelles' => array_map( $pct, $a['estrelles'] ),
+			'decisions' => array_map( $pct, $a['decisions'] ),
+		);
+	}
+	ksort( $resultat, SORT_STRING );
+	return $resultat;
 }
 
 /**
@@ -281,10 +416,20 @@ function nep_crea_taula_resultats(): bool {
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	$taula = nep_taula_resultats();
 	dbDelta( nep_sql_taula_resultats( $taula, $wpdb->get_charset_collate() ) );
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Comprovació de l'esquema just després de dbDelta.
-	if ( $taula === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $taula ) ) ) ) {
-		return true;
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Esquema de la taula pròpia just després de dbDelta.
+	$existeix = $taula === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $taula ) ) );
+	if ( $existeix ) {
+		// v2 → v3: dbDelta no canvia índices existents. La clau única antiga (sense `demo`) faria que una fila demo sumés a una de real.
+		$index = static fn( string $nom ) => (bool) $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM {$taula} WHERE Key_name = %s", $nom ) );
+		if ( $index( 'resultat' ) ) {
+			$wpdb->query( "ALTER TABLE {$taula} DROP INDEX resultat" );
+		}
+		$columna = (bool) $wpdb->get_var( $wpdb->prepare( "SHOW COLUMNS FROM {$taula} LIKE %s", 'demo' ) );
+		if ( $columna && $index( 'resultat_demo' ) && ! $index( 'resultat' ) ) {
+			return true;
+		}
 	}
+	// phpcs:enable
 	error_log( 'noempesquen: no s\'ha pogut crear la taula d\'estadístiques: ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error d'esquema per a l'administrador.
 	set_transient( 'nep_avis_taula', 1, DAY_IN_SECONDS );
 	return false;
@@ -346,6 +491,82 @@ function nep_missions_jugables(): array {
 		HOUR_IN_SECONDS
 	);
 	return $missions;
+}
+
+/**
+ * Hash actual i ids d'opció amb text de cada missió jugable (el que compta al panell).
+ *
+ * @return array<string, array{hash: string, opcions: string[], textos: array<string, string>}>
+ */
+function nep_info_missions_jugables(): array {
+	$info = array();
+	foreach ( nep_missions_jugables() as $id => $guio ) {
+		try {
+			$hash = nep_versio_hash( $guio );
+		} catch ( JsonException $e ) {
+			continue;
+		}
+		$info[ $id ] = array(
+			'hash'    => $hash,
+			'opcions' => array(),
+			'textos'  => array(),
+		);
+		foreach ( (array) ( $guio['decisio']['opcions'] ?? array() ) as $o ) {
+			if ( is_array( $o ) && is_string( $o['id'] ?? null ) && is_string( $o['text'] ?? null ) && '' !== trim( $o['text'] ) ) {
+				$info[ $id ]['opcions'][]          = $o['id'];
+				$info[ $id ]['textos'][ $o['id'] ] = $o['text'];
+			}
+		}
+	}
+	return $info;
+}
+
+/**
+ * Esborra les files demo (`demo` = 1). Les reals no es toquen.
+ *
+ * @return int|false Files esborrades, o false si falla.
+ */
+function nep_esborra_demo() {
+	global $wpdb;
+	$taula = nep_taula_resultats();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Taula pròpia.
+	return $wpdb->query( "DELETE FROM {$taula} WHERE demo = 1" );
+}
+
+/**
+ * Sembra dades demo per a les missions jugables (substitueix les demo que hi hagués).
+ *
+ * @param int $partides Partides per missió.
+ * @param int $llavor   Llavor del generador.
+ * @return int|false Partides sembrades, o false si falla.
+ */
+function nep_sembra_demo( int $partides, int $llavor ) {
+	global $wpdb;
+	if ( false === nep_esborra_demo() ) {
+		return false;
+	}
+	$taula = nep_taula_resultats();
+	$total = 0;
+	foreach ( nep_genera_files_demo( nep_info_missions_jugables(), $partides, $llavor, gmdate( 'Y-m-d' ) ) as $fila ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Taula pròpia.
+		if ( false === $wpdb->insert( $taula, $fila, array( '%s', '%s', '%s', '%d', '%s', '%d', '%d' ) ) ) {
+			return false;
+		}
+		$total += $fila['n'];
+	}
+	return $total;
+}
+
+/**
+ * Hi ha files demo a la taula (de qualsevol dia)?
+ *
+ * @return bool
+ */
+function nep_hi_ha_demo(): bool {
+	global $wpdb;
+	$taula = nep_taula_resultats();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Taula pròpia.
+	return (bool) $wpdb->get_var( "SELECT 1 FROM {$taula} WHERE demo = 1 LIMIT 1" );
 }
 
 /**
@@ -474,7 +695,7 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 	$desat = $wpdb->query(
 		$wpdb->prepare(
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
-			"INSERT INTO {$taula} (missio, versio_hash, dia, estrelles, decisio, n) VALUES (%s, %s, %s, %d, %s, 1) ON DUPLICATE KEY UPDATE n = n + 1",
+			"INSERT INTO {$taula} (missio, versio_hash, dia, estrelles, decisio, demo, n) VALUES (%s, %s, %s, %d, %s, 0, 1) ON DUPLICATE KEY UPDATE n = n + 1",
 			$id,
 			$hash,
 			gmdate( 'Y-m-d' ),

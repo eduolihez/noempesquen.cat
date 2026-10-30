@@ -183,8 +183,42 @@ final class EstadistiquesTest extends TestCase {
 	public function test_sql_taula_sense_dades_personals(): void {
 		$sql = nep_sql_taula_resultats( 'wp_nep_resultats', 'DEFAULT CHARSET=utf8mb4' );
 		$this->assertStringContainsString( 'PRIMARY KEY  (id)', $sql );
-		$this->assertStringContainsString( 'UNIQUE KEY resultat (missio,versio_hash,dia,estrelles,decisio)', $sql );
+		$this->assertStringContainsString( 'UNIQUE KEY resultat_demo (missio,versio_hash,dia,estrelles,decisio,demo)', $sql );
 		$this->assertStringContainsString( "decisio varchar(32) NOT NULL DEFAULT ''", $sql );
+		$this->assertStringContainsString( 'demo tinyint(1) NOT NULL DEFAULT 0', $sql );
 		$this->assertDoesNotMatchRegularExpression( '/user|ip\b|time|hora/i', $sql );
+	}
+
+	public function test_files_demo_deterministes_i_plausibles(): void {
+		$missions = array(
+			'b' => array( 'hash' => 'bbbbbbbbbbbb', 'opcions' => array( 'x', 'y', 'z' ) ),
+			'a' => array( 'hash' => 'aaaaaaaaaaaa', 'opcions' => array() ),
+		);
+		$f1 = nep_genera_files_demo( $missions, 200, 7, '2026-10-31' );
+		$this->assertSame( $f1, nep_genera_files_demo( $missions, 200, 7, '2026-10-31' ) );
+		$this->assertNotSame( $f1, nep_genera_files_demo( $missions, 200, 8, '2026-10-31' ) );
+
+		$per_missio = array();
+		$dies       = array();
+		foreach ( $f1 as $f ) {
+			$this->assertSame( 1, $f['demo'] );
+			$this->assertSame( $missions[ $f['missio'] ]['hash'], $f['versio_hash'] );
+			$this->assertContains( $f['estrelles'], array( 1, 2, 3 ) );
+			$this->assertGreaterThanOrEqual( '2026-10-02', $f['dia'] );
+			$this->assertLessThanOrEqual( '2026-10-31', $f['dia'] );
+			$this->assertTrue( '' === $f['decisio'] || in_array( $f['decisio'], $missions[ $f['missio'] ]['opcions'], true ) );
+			$per_missio[ $f['missio'] ] = ( $per_missio[ $f['missio'] ] ?? 0 ) + $f['n'];
+			$dies[ $f['dia'] ]          = true;
+		}
+		$this->assertSame( array( 'a' => 200, 'b' => 200 ), $per_missio );
+		$this->assertGreaterThan( 20, count( $dies ) );
+		// Sense opcions, cap decisió; amb opcions, hi surten totes.
+		$this->assertSame( array( '' ), array_values( array_unique( array_column( array_filter( $f1, static fn( $f ) => 'a' === $f['missio'] ), 'decisio' ) ) ) );
+		$decisions = array_unique( array_column( array_filter( $f1, static fn( $f ) => 'b' === $f['missio'] ), 'decisio' ) );
+		sort( $decisions );
+		$this->assertSame( array( '', 'x', 'y', 'z' ), $decisions );
+		// Claus úniques (missió, dia, estrelles, decisió): cap fila repetida.
+		$claus = array_map( static fn( $f ) => $f['missio'] . $f['dia'] . $f['estrelles'] . $f['decisio'], $f1 );
+		$this->assertSame( count( $claus ), count( array_unique( $claus ) ) );
 	}
 }

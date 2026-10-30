@@ -226,6 +226,57 @@ $nep_comprova( str_contains( $nep_fila, '<td>10-19</td>' ) && str_contains( $nep
 $nep_comprova( str_contains( $nep_fila, '«c»' ) && str_contains( $nep_fila, esc_html( $nep_c['text'] ) ) && str_contains( $nep_fila, '50-59 %' ) && ! str_contains( $nep_fila, 'esborrada' ), 'panell: decisió amb text i percentatge en franja (la decisió esborrada no surt)' );
 $nep_comprova( str_contains( $nep_html, 'partides de versions anteriors del guió no es compten' ), 'panell: nota de partides de versions anteriors' );
 
+// phpcs:disable WordPress.DB
+// Migració v2 → v3: la taula torna a la forma v2 (clau única sense `demo`) amb una fila; nep_actualitza() afegeix la columna i canvia la clau.
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) );
+$wpdb->query( "ALTER TABLE {$nep_taula} DROP INDEX resultat_demo, DROP COLUMN demo, ADD UNIQUE KEY resultat (missio,versio_hash,dia,estrelles,decisio)" );
+$nep_insereix( $nep_actual, 2, 'a', 3 );
+delete_option( 'nep_db_version' );
+nep_actualitza();
+$nep_index = static fn( string $nom ) => (bool) $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM {$nep_taula} WHERE Key_name = %s", $nom ) );
+$nep_comprova( '3' === get_option( 'nep_db_version' ) && $nep_index( 'resultat_demo' ) && ! $nep_index( 'resultat' ), 'migració: v3 amb la clau resultat_demo i sense la clau antiga' );
+$nep_comprova( '0' === (string) $wpdb->get_var( $wpdb->prepare( "SELECT demo FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ), 'migració: les files existents queden amb demo = 0' );
+
+// Demo: sembra, aïllament de l'endpoint real i esborra.
+$nep_reals  = static fn() => (int) $wpdb->get_var( "SELECT COALESCE(SUM(n), 0) FROM {$nep_taula} WHERE demo = 0" );
+$nep_demo_n = static fn( string $missio ) => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COALESCE(SUM(n), 0) FROM {$nep_taula} WHERE demo = 1 AND missio = %s", $missio ) );
+$nep_abans  = $nep_reals();
+$nep_comprova( 25 * count( nep_info_missions_jugables() ) === nep_sembra_demo( 25, 3 ), 'demo: sembra 25 partides per missió jugable' );
+$nep_comprova( 25 === $nep_demo_n( $nep_est['id'] ) && 25 === $nep_demo_n( $nep_inclosa['id'] ) && nep_hi_ha_demo(), 'demo: inclou les missions del panell i les incloses' );
+$nep_comprova( $nep_abans === $nep_reals(), 'demo: sembrar no toca les files reals' );
+$nep_comprova( 0 === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$nep_taula} WHERE demo = 1 AND versio_hash <> %s AND missio = %s", $nep_actual, $nep_est['id'] ) ), 'demo: amb el hash actual del guió' );
+nep_sembra_demo( 25, 3 );
+$nep_comprova( 25 === $nep_demo_n( $nep_est['id'] ), 'demo: tornar a sembrar substitueix (no duplica)' );
+// Un enviament real amb la mateixa clau que una fila demo d'avui: fila real a part.
+$nep_d = $wpdb->get_row( $wpdb->prepare( "SELECT estrelles, decisio, n FROM {$nep_taula} WHERE demo = 1 AND missio = %s AND dia = %s LIMIT 1", $nep_est['id'], gmdate( 'Y-m-d' ) ), ARRAY_A );
+if ( ! $nep_d ) {
+	$wpdb->insert( $nep_taula, array( 'missio' => $nep_est['id'], 'versio_hash' => $nep_actual, 'dia' => gmdate( 'Y-m-d' ), 'estrelles' => 3, 'decisio' => 'c', 'demo' => 1, 'n' => 1 ) );
+	$nep_d = array( 'estrelles' => 3, 'decisio' => 'c', 'n' => 1 );
+}
+delete_transient( $nep_clau );
+$nep_cos = array( 'missio' => $nep_est['id'], 'estrelles' => (int) $nep_d['estrelles'] );
+if ( '' !== $nep_d['decisio'] ) {
+	$nep_cos['decisio'] = $nep_d['decisio'];
+}
+$nep_demo_abans = $nep_demo_n( $nep_est['id'] );
+$nep_r          = $nep_envia( $nep_cos );
+$nep_comprova( 204 === $nep_r->get_status() && $nep_demo_abans === $nep_demo_n( $nep_est['id'] ) && $nep_abans + 1 === $nep_reals(), 'demo: l\'endpoint real escriu demo = 0 i no suma a la fila demo' );
+// Panell: amb demo, avís role="status" i xifres.
+wp_set_current_user( 1 );
+ob_start();
+nep_pinta_estadistiques();
+$nep_html = (string) ob_get_clean();
+wp_set_current_user( 0 );
+$nep_comprova( str_contains( $nep_html, 'role="status"' ) && str_contains( $nep_html, 'Dades de demostració incloses' ) && str_contains( $nep_html, '<code>wp nep demo-estadistiques esborra</code>' ), 'demo: el panell avisa de les dades de demostració' );
+$nep_comprova( false !== nep_esborra_demo() && ! nep_hi_ha_demo() && $nep_abans + 1 === $nep_reals(), 'demo: esborra només les files demo' );
+wp_set_current_user( 1 );
+ob_start();
+nep_pinta_estadistiques();
+$nep_html = (string) ob_get_clean();
+wp_set_current_user( 0 );
+$nep_comprova( ! str_contains( $nep_html, 'Dades de demostració incloses' ), 'demo: sense files demo no hi ha avís' );
+// phpcs:enable
+
 // Neteja.
 $wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ); // phpcs:ignore WordPress.DB
 delete_transient( $nep_clau );
