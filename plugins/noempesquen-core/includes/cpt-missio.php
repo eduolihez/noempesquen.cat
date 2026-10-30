@@ -118,20 +118,41 @@ function nep_ids_missions_existents( int $exclou ): array {
  * @return string[]
  */
 function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?string $personatge ): array {
-	$desat = static function ( string $clau, string $defecte ) use ( $post_id ): string {
-		$valor = $post_id ? get_post_meta( $post_id, $clau, true ) : '';
-		return is_string( $valor ) && '' !== $valor ? $valor : $defecte;
+	// `get_post_meta` torna el valor per defecte registrat encara que la meta no existeixi: cal `metadata_exists`.
+	$desat = static function ( string $clau ) use ( $post_id ): string {
+		if ( ! $post_id || ! metadata_exists( 'post', $post_id, $clau ) ) {
+			return '';
+		}
+		$valor = get_post_meta( $post_id, $clau, true );
+		return is_string( $valor ) ? $valor : '';
 	};
 
-	$json       = $json ?? $desat( 'nep_guio', '{}' );
-	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu', 'pc' ) );
-	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge', 'llissa' ) );
+	$json       = $json ?? $desat( 'nep_guio' );
+	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu' ) );
+	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge' ) );
 
-	$guio = nep_descodifica_guio( $json, $error );
-	if ( null === $guio ) {
-		return array( $error );
+	$errors = array();
+	if ( '' === $dispositiu ) {
+		$errors[] = 'Falta el dispositiu de la missió (nep_dispositiu).';
 	}
-	return nep_valida_guio( $guio, $dispositiu, $personatge, nep_ids_missions_existents( $post_id ) );
+	if ( '' === $personatge ) {
+		$errors[] = 'Falta el personatge de la missió (nep_personatge).';
+	}
+	$guio = nep_descodifica_guio( '' === $json ? '{}' : $json, $error );
+	if ( null === $guio ) {
+		$errors[] = $error;
+		return $errors;
+	}
+	// Sense meta, es compara amb el valor del guió per no repetir l'error com a «no coincideix».
+	return array_merge(
+		$errors,
+		nep_valida_guio(
+			$guio,
+			'' === $dispositiu ? (string) ( $guio['dispositiu'] ?? '' ) : $dispositiu,
+			'' === $personatge ? (string) ( $guio['personatge'] ?? '' ) : $personatge,
+			nep_ids_missions_existents( $post_id )
+		)
+	);
 }
 
 /**
@@ -160,6 +181,11 @@ function nep_valida_rest_missio( $prepared_post, $request ) {
 	// Un null esborraria la meta: el guió només es pot substituir per un text (en qualsevol estat).
 	if ( is_array( $meta ) && array_key_exists( 'nep_guio', $meta ) && ! is_string( $meta['nep_guio'] ) ) {
 		return new WP_Error( 'nep_guio_invalid', __( 'El guió ha de ser un text JSON.', 'noempesquen' ), array( 'status' => 400 ) );
+	}
+	// Un JSON il·legible es convertiria en '{}' i esborraria el guió: 400 també en esborrany
+	// (els esborranys poden tenir errors de regles, però no un JSON que no es pot llegir).
+	if ( is_array( $meta ) && isset( $meta['nep_guio'] ) && null === nep_descodifica_guio( $meta['nep_guio'], $error ) ) {
+		return new WP_Error( 'nep_guio_invalid', __( 'No es pot desar la missió:', 'noempesquen' ) . ' ' . $error, array( 'status' => 400 ) );
 	}
 	$post_id = isset( $prepared_post->ID ) ? (int) $prepared_post->ID : 0;
 	$estat   = $prepared_post->post_status ?? ( $post_id ? (string) get_post_status( $post_id ) : 'draft' );
@@ -226,20 +252,24 @@ add_filter( 'wp_insert_post_data', 'nep_valida_missio_classica', 10, 2 );
  *
  * @param string   $motiu  'esborrany' (publicació aturada) o 'guio-conservat' (guió no desat).
  * @param string[] $errors Errors en català.
+ * @return bool Cert si l'avís ha quedat desat.
  */
-function nep_desa_avis( string $motiu, array $errors ): void {
+function nep_desa_avis( string $motiu, array $errors ): bool {
 	$usuari = get_current_user_id();
 	if ( $usuari <= 0 ) {
-		return;
+		return false;
 	}
-	set_transient(
-		'nep_avis_' . $usuari,
-		array(
-			'motiu'  => $motiu,
-			'errors' => $errors,
-		),
-		60
+	$clau = 'nep_avis_' . $usuari;
+	$avis = array(
+		'motiu'  => $motiu,
+		'errors' => $errors,
 	);
+	// set_transient també torna fals si el valor no ha canviat: es comprova llegint-lo.
+	if ( ! set_transient( $clau, $avis, 60 ) && get_transient( $clau ) !== $avis ) {
+		error_log( 'noempesquen: no s\'ha pogut desar l\'avís de la missió.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Sense l'avís, l'usuari no sabria per què no s'ha publicat.
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -264,21 +294,29 @@ function nep_mostra_avis_missio(): void {
 add_action( 'admin_notices', 'nep_mostra_avis_missio' );
 
 /**
- * Amb avís pendent, WP no ha de dir «publicada» (message=6): si ha quedat en
- * esborrany diu «esborrany actualitzat» (10); si no, no diu res. El transient
- * no s'esborra aquí: el mostra `nep_mostra_avis_missio`.
+ * WP no ha de dir «publicada» (message=6) si la missió no s'ha publicat o el
+ * guió no s'ha desat:
+ * - en esborrany, si es va demanar publicar o l'avís és de publicació aturada
+ *   («esborrany»), diu «esborrany actualitzat» (10), encara que el transient
+ *   no s'hagi pogut desar;
+ * - amb qualsevol altre avís pendent (p. ex. «guio-conservat»), no diu res.
+ * El transient no s'esborra aquí: el mostra `nep_mostra_avis_missio`.
  *
  * @param string $location URL de redirecció.
  * @param int    $post_id  Id de l'entrada.
  * @return string
  */
 function nep_redireccio_avis_missio( $location, $post_id ) {
-	if ( 'nep_missio' !== get_post_type( (int) $post_id ) || ! is_array( get_transient( 'nep_avis_' . get_current_user_id() ) ) ) {
+	if ( 'nep_missio' !== get_post_type( (int) $post_id ) ) {
 		return $location;
 	}
-	return 'draft' === get_post_status( (int) $post_id )
-		? add_query_arg( 'message', 10, $location )
-		: remove_query_arg( 'message', $location );
+	$avis             = get_transient( 'nep_avis_' . get_current_user_id() );
+	$motiu            = is_array( $avis ) ? (string) ( $avis['motiu'] ?? '' ) : '';
+	$demanat_publicar = isset( $_POST['publish'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Només es mira quin botó s'ha premut; el nonce el comprova edit_post.
+	if ( 'draft' === get_post_status( (int) $post_id ) && ( $demanat_publicar || 'esborrany' === $motiu ) ) {
+		return add_query_arg( 'message', 10, $location );
+	}
+	return is_array( $avis ) ? remove_query_arg( 'message', $location ) : $location;
 }
 add_filter( 'redirect_post_location', 'nep_redireccio_avis_missio', 10, 2 );
 
@@ -386,7 +424,15 @@ function nep_protegeix_guio_publicat_per_mid( $check, $meta_id, $meta_value, $me
 		return $check;
 	}
 	$clau_nova = $meta_key ? (string) $meta_key : $meta->meta_key;
-	if ( ( 'nep_guio' !== $meta->meta_key && 'nep_guio' !== $clau_nova ) || ! nep_es_missio_publicada( (int) $meta->post_id ) ) {
+	if ( 'nep_guio' !== $meta->meta_key && 'nep_guio' !== $clau_nova ) {
+		return $check;
+	}
+	// En qualsevol estat: un JSON il·legible es desaria com a '{}' i es perdria el guió anterior.
+	if ( 'nep_guio' === $clau_nova && 'nep_missio' === get_post_type( (int) $meta->post_id ) && ( ! is_string( $meta_value ) || null === nep_descodifica_guio( $meta_value, $error ) ) ) {
+		nep_desa_avis( 'guio-conservat', array( $error ?? 'El guió no és un JSON vàlid.' ) );
+		return false;
+	}
+	if ( ! nep_es_missio_publicada( (int) $meta->post_id ) ) {
 		return $check;
 	}
 	$errors = 'nep_guio' === $clau_nova

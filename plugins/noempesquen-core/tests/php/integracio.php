@@ -92,6 +92,33 @@ $nep_r = $nep_publica( $nep_invalida, 'draft' );
 $nep_comprova( 201 === $nep_r->get_status(), 'REST esborrany invàlid → 201 (rebut ' . $nep_r->get_status() . ')' );
 $nep_esborrany = (int) ( $nep_r->get_data()['id'] ?? 0 );
 
+// REST: un JSON il·legible → 400 també en esborrany, i el guió desat es conserva.
+$nep_peticio = new WP_REST_Request( 'POST', "/wp/v2/nep_missio/$nep_esborrany" );
+$nep_peticio->set_body_params( array( 'meta' => array( 'nep_guio' => '{trencat' ) ) );
+$nep_r = rest_do_request( $nep_peticio );
+$nep_comprova( 400 === $nep_r->get_status() && str_contains( (string) ( $nep_r->get_data()['message'] ?? '' ), 'El guió no és un JSON vàlid' ) && $nep_guio_desat( $nep_esborrany ) === $nep_invalida, 'REST esborrany amb JSON il·legible → 400 i guió conservat' );
+
+// REST: publicar sense dispositiu ni personatge → error explícit.
+$nep_sense            = $nep_valida;
+$nep_sense['id']      = $nep_valida['id'] . '-sense';
+$nep_peticio          = new WP_REST_Request( 'POST', '/wp/v2/nep_missio' );
+$nep_peticio->set_body_params(
+	array(
+		'title'  => 'Prova sense metas',
+		'status' => 'publish',
+		'meta'   => array( 'nep_guio' => wp_json_encode( $nep_sense ) ),
+	)
+);
+$nep_r = rest_do_request( $nep_peticio );
+$nep_comprova( 400 === $nep_r->get_status() && str_contains( (string) ( $nep_r->get_data()['message'] ?? '' ), 'Falta el dispositiu' ), 'REST publicar sense nep_dispositiu → 400 explícit (rebut ' . $nep_r->get_status() . ')' );
+
+// Caixa «Camps personalitzats» en un esborrany: un JSON il·legible no esborra el guió i avisa.
+delete_transient( 'nep_avis_1' );
+update_meta( $nep_mid_guio( $nep_esborrany ), 'nep_guio', '{trencat' );
+$nep_avis = get_transient( 'nep_avis_1' );
+$nep_comprova( $nep_guio_desat( $nep_esborrany ) === $nep_invalida && is_array( $nep_avis ) && 'guio-conservat' === $nep_avis['motiu'], 'camps personalitzats en esborrany: JSON il·legible → guió conservat i avís' );
+delete_transient( 'nep_avis_1' );
+
 // REST: publicar l'esborrany sense tocar res més continua fallant.
 $nep_peticio = new WP_REST_Request( 'POST', "/wp/v2/nep_missio/$nep_esborrany" );
 $nep_peticio->set_body_params( array( 'status' => 'publish' ) );
@@ -196,21 +223,55 @@ $nep_classica = wp_insert_post(
 $nep_creades[] = (int) $nep_classica;
 $nep_comprova( 'draft' === get_post_status( $nep_classica ), 'clàssic programar invàlida → esborrany (rebut ' . get_post_status( $nep_classica ) . ')' );
 
-// Desament clàssic: una vàlida es publica (el guió ve de $postarr, amb barres).
+// Desament clàssic: una vàlida es publica (el guió, el dispositiu i el personatge vénen de $postarr, com al formulari).
 $nep_valida2       = $nep_valida;
 $nep_valida2['id'] = $nep_valida['id'] . '-b';
 $nep_classica      = wp_insert_post(
 	wp_slash(
 		array(
-			'post_type'   => 'nep_missio',
-			'post_status' => 'publish',
-			'post_title'  => 'Prova clàssica vàlida',
-			'nep_guio'    => wp_json_encode( $nep_valida2 ),
+			'post_type'      => 'nep_missio',
+			'post_status'    => 'publish',
+			'post_title'     => 'Prova clàssica vàlida',
+			'nep_dispositiu' => $nep_valida2['dispositiu'],
+			'nep_personatge' => $nep_valida2['personatge'],
+			'nep_guio'       => wp_json_encode( $nep_valida2 ),
 		)
 	)
 );
 $nep_creades[] = (int) $nep_classica;
 $nep_comprova( 'publish' === get_post_status( $nep_classica ), 'clàssic publicar vàlida → publicada' );
+$nep_classica_valida = (int) $nep_classica;
+
+// Desament clàssic sense dispositiu ni personatge: error explícit, no valor per defecte.
+$nep_valida4       = $nep_valida;
+$nep_valida4['id'] = $nep_valida['id'] . '-d';
+delete_transient( 'nep_avis_1' );
+$nep_classica = wp_insert_post(
+	wp_slash(
+		array(
+			'post_type'   => 'nep_missio',
+			'post_status' => 'publish',
+			'post_title'  => 'Prova clàssica sense metas',
+			'nep_guio'    => wp_json_encode( $nep_valida4 ),
+		)
+	)
+);
+$nep_creades[] = (int) $nep_classica;
+$nep_avis      = get_transient( 'nep_avis_1' );
+$nep_comprova( 'draft' === get_post_status( $nep_classica ) && is_array( $nep_avis ) && in_array( 'Falta el dispositiu de la missió (nep_dispositiu).', $nep_avis['errors'], true ) && in_array( 'Falta el personatge de la missió (nep_personatge).', $nep_avis['errors'], true ), 'clàssic sense dispositiu/personatge → esborrany amb error explícit' );
+
+// Redirecció: esborrany i s'havia demanat publicar → «esborrany actualitzat» encara que no hi hagi avís.
+delete_transient( 'nep_avis_1' );
+$_POST['publish'] = 'Publica';
+$nep_url          = nep_redireccio_avis_missio( 'https://exemple.test/wp-admin/post.php?post=1&message=6', $nep_classica );
+unset( $_POST['publish'] );
+$nep_comprova( str_contains( $nep_url, 'message=10' ) && ! str_contains( $nep_url, 'message=6' ), 'redirecció: esborrany + publicar sense transient → message=10' );
+// Publicada amb avís «guio-conservat» → sense missatge de WP.
+nep_desa_avis( 'guio-conservat', array( 'x' ) );
+$nep_url = nep_redireccio_avis_missio( 'https://exemple.test/wp-admin/post.php?post=1&message=1', $nep_classica_valida );
+$nep_comprova( ! str_contains( $nep_url, 'message=' ), 'redirecció: publicada amb guió conservat → sense «actualitzada»' );
+$nep_comprova( true === nep_desa_avis( 'guio-conservat', array( 'x' ) ), 'nep_desa_avis: desar el mateix avís dues vegades no és un error' );
+delete_transient( 'nep_avis_1' );
 
 // Pantalla d'edició clàssica (`edit_post`, dades amb barres com $_POST): publicar
 // des de la caixa «Camps personalitzats» amb un guió invàlid la deixa en esborrany.
