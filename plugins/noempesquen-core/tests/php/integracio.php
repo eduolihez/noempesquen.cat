@@ -14,6 +14,8 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	return;
 }
 
+require_once ABSPATH . 'wp-admin/includes/admin.php';
+
 $nep_creades = array();
 $nep_fallades = 0;
 
@@ -26,17 +28,20 @@ $nep_comprova = static function ( bool $ok, string $nom ) use ( &$nep_fallades )
 	}
 };
 
-$nep_publica = static function ( array $guio, string $estat, int $id = 0 ) use ( &$nep_creades ): WP_REST_Response {
+$nep_publica = static function ( array $guio, string $estat, int $id = 0, array $extra = array() ) use ( &$nep_creades ): WP_REST_Response {
 	$peticio = new WP_REST_Request( 'POST', '/wp/v2/nep_missio' . ( $id ? "/$id" : '' ) );
 	$peticio->set_body_params(
-		array(
-			'title'  => 'Prova validació',
-			'status' => $estat,
-			'meta'   => array(
-				'nep_dispositiu' => $guio['dispositiu'] ?? 'pc',
-				'nep_personatge' => $guio['personatge'] ?? 'llissa',
-				'nep_guio'       => wp_json_encode( $guio, JSON_UNESCAPED_UNICODE ),
+		array_merge(
+			array(
+				'title'  => 'Prova validació',
+				'status' => $estat,
+				'meta'   => array(
+					'nep_dispositiu' => $guio['dispositiu'] ?? 'pc',
+					'nep_personatge' => $guio['personatge'] ?? 'llissa',
+					'nep_guio'       => wp_json_encode( $guio, JSON_UNESCAPED_UNICODE ),
+				),
 			),
+			$extra
 		)
 	);
 	$resposta = rest_do_request( $peticio );
@@ -45,6 +50,19 @@ $nep_publica = static function ( array $guio, string $estat, int $id = 0 ) use (
 		$nep_creades[] = (int) $dades['id'];
 	}
 	return $resposta;
+};
+
+// Guió desat d'una entrada, descodificat.
+$nep_guio_desat = static fn( int $id ) => json_decode( (string) get_post_meta( $id, 'nep_guio', true ), true );
+
+// Meta_id del guió d'una entrada (0 si no en té).
+$nep_mid_guio = static function ( int $id ): int {
+	foreach ( has_meta( $id ) as $fila ) {
+		if ( 'nep_guio' === $fila['meta_key'] ) {
+			return (int) $fila['meta_id'];
+		}
+	}
+	return 0;
 };
 
 wp_set_current_user( 1 );
@@ -57,12 +75,17 @@ $nep_invalida        = $nep_valida;
 $nep_invalida['versio'] = 1;
 // Id propi: un esborrany amb el mateix id també compta com a duplicat.
 $nep_invalida['id'] = $nep_valida['id'] . '-invalida';
+$nep_futur          = gmdate( 'Y-m-d\TH:i:s', time() + 30 * DAY_IN_SECONDS );
 
 // REST: publicar una invàlida → 400 amb el missatge.
 $nep_r = $nep_publica( $nep_invalida, 'publish' );
 $nep_comprova( 400 === $nep_r->get_status(), 'REST publicar versio 1 → 400 (rebut ' . $nep_r->get_status() . ')' );
 $nep_comprova( 'nep_missio_invalida' === ( $nep_r->get_data()['code'] ?? '' ), 'REST codi nep_missio_invalida' );
 $nep_comprova( str_contains( (string) ( $nep_r->get_data()['message'] ?? '' ), 'La versió del guió ha de ser 2.' ), 'REST missatge amb l\'error' );
+
+// REST: programar (future) una invàlida → 400.
+$nep_r = $nep_publica( $nep_invalida, 'future', 0, array( 'date_gmt' => $nep_futur ) );
+$nep_comprova( 400 === $nep_r->get_status(), 'REST programar invàlida → 400 (rebut ' . $nep_r->get_status() . ')' );
 
 // REST: com a esborrany es desa.
 $nep_r = $nep_publica( $nep_invalida, 'draft' );
@@ -89,8 +112,19 @@ $nep_comprova( 400 === $nep_r->get_status() && str_contains( (string) $nep_r->ge
 $nep_r = $nep_publica( $nep_valida, 'publish' );
 $nep_comprova( 201 === $nep_r->get_status(), 'REST publicar vàlida → 201 (rebut ' . $nep_r->get_status() . ' ' . ( $nep_r->get_data()['message'] ?? '' ) . ')' );
 $nep_publicada = (int) ( $nep_r->get_data()['id'] ?? 0 );
-$nep_desat     = json_decode( (string) get_post_meta( $nep_publicada, 'nep_guio', true ), true );
-$nep_comprova( $nep_desat === $nep_valida, 'guió amb \\" i \\ intacte després de desar' );
+$nep_comprova( $nep_guio_desat( $nep_publicada ) === $nep_valida, 'REST guió amb \\" i \\ intacte després de desar' );
+
+// REST: un guió que no és text (null l'esborraria) → 400, també en esborrany.
+foreach ( array( null, 5 ) as $nep_valor ) {
+	foreach ( array( $nep_publicada, $nep_esborrany ) as $nep_id ) {
+		$nep_peticio = new WP_REST_Request( 'POST', "/wp/v2/nep_missio/$nep_id" );
+		$nep_peticio->set_body_params( array( 'meta' => array( 'nep_guio' => $nep_valor ) ) );
+		$nep_r = rest_do_request( $nep_peticio );
+		$nep_codi = (string) ( $nep_r->get_data()['code'] ?? '' );
+		$nep_comprova( 400 === $nep_r->get_status() && ( null !== $nep_valor || 'nep_guio_invalid' === $nep_codi ), 'REST nep_guio ' . var_export( $nep_valor, true ) . " a $nep_id → 400 (rebut " . $nep_r->get_status() . " $nep_codi)" );
+	}
+}
+$nep_comprova( $nep_guio_desat( $nep_publicada ) === $nep_valida, 'REST guió publicat intacte després del null' );
 
 // REST: una altra missió amb el mateix id no es pot publicar.
 $nep_r = $nep_publica( $nep_valida, 'publish' );
@@ -99,27 +133,33 @@ $nep_comprova( 400 === $nep_r->get_status() && str_contains( (string) $nep_r->ge
 // REST: actualitzar la publicada sense canviar res → 200 (no és duplicat d'ella mateixa).
 $nep_comprova( 200 === $nep_publica( $nep_valida, 'publish', $nep_publicada )->get_status(), 'REST actualitzar publicada vàlida → 200' );
 
-// Escriptura directa d'un guió invàlid a una publicada: es rebutja.
+// Escriptures directes a una publicada: JSON trencat, JSON vàlid però guió invàlid, afegir duplicat, esborrar.
 update_post_meta( $nep_publicada, 'nep_guio', '{trencat' );
-$nep_comprova( json_decode( (string) get_post_meta( $nep_publicada, 'nep_guio', true ), true ) === $nep_valida, 'guió publicat no es sobreescriu amb \'{}\'' );
+$nep_comprova( $nep_guio_desat( $nep_publicada ) === $nep_valida, 'update_post_meta JSON trencat: es conserva' );
+$nep_altre_dispositiu               = $nep_valida;
+$nep_altre_dispositiu['dispositiu'] = 'mobil';
+update_post_meta( $nep_publicada, 'nep_guio', wp_slash( wp_json_encode( $nep_altre_dispositiu ) ) );
+$nep_comprova( $nep_guio_desat( $nep_publicada ) === $nep_valida, 'update_post_meta guió amb un altre dispositiu: es conserva (validació completa)' );
+$nep_comprova( false === add_post_meta( $nep_publicada, 'nep_guio', '{}' ), 'add_post_meta duplicat invàlid: rebutjat' );
+$nep_comprova( 1 === count( get_post_meta( $nep_publicada, 'nep_guio' ) ), 'add_post_meta: només hi ha un guió' );
+$nep_comprova( false === delete_post_meta( $nep_publicada, 'nep_guio' ) && $nep_guio_desat( $nep_publicada ) === $nep_valida, 'delete_post_meta a una publicada: rebutjat' );
 
-// Caixa «Camps personalitzats» (update_meta per meta_id) amb JSON invàlid a una publicada: es rebutja i avisa.
-require_once ABSPATH . 'wp-admin/includes/post.php';
+// Caixa «Camps personalitzats» a una publicada: editar amb JSON invàlid, canviar la clau o esborrar es rebutja i avisa.
+$nep_mid = $nep_mid_guio( $nep_publicada );
 delete_transient( 'nep_avis_1' );
-$nep_mid = 0;
-foreach ( has_meta( $nep_publicada ) as $nep_fila ) {
-	if ( 'nep_guio' === $nep_fila['meta_key'] ) {
-		$nep_mid = (int) $nep_fila['meta_id'];
-	}
-}
 update_meta( $nep_mid, 'nep_guio', '{trencat' );
-$nep_comprova( $nep_mid && json_decode( (string) get_post_meta( $nep_publicada, 'nep_guio', true ), true ) === $nep_valida, 'camps personalitzats: guió publicat intacte' );
+$nep_comprova( $nep_mid && $nep_guio_desat( $nep_publicada ) === $nep_valida, 'camps personalitzats: guió publicat intacte' );
 $nep_avis = get_transient( 'nep_avis_1' );
 $nep_comprova( is_array( $nep_avis ) && 'guio-conservat' === $nep_avis['motiu'], 'camps personalitzats: avís de guió no desat' );
+update_meta( $nep_mid, 'nep_guio_vell', wp_slash( wp_json_encode( $nep_valida ) ) );
+$nep_comprova( $nep_guio_desat( $nep_publicada ) === $nep_valida, 'camps personalitzats: canviar la clau del guió es rebutja' );
+$nep_comprova( false === delete_meta( $nep_mid ) && $nep_guio_desat( $nep_publicada ) === $nep_valida, 'camps personalitzats: esborrar el guió es rebutja' );
 delete_transient( 'nep_avis_1' );
 
+// A partir d'aquí, el desament clàssic també es valida a WP-CLI.
+define( 'NEP_VALIDA_CLI', true );
+
 // Desament clàssic: publicar una invàlida la deixa en esborrany i desa l'avís.
-add_filter( 'nep_valida_missio_cli', '__return_true' );
 delete_transient( 'nep_avis_1' );
 $nep_classica = wp_insert_post(
 	wp_slash(
@@ -141,6 +181,21 @@ $nep_html = (string) ob_get_clean();
 $nep_comprova( str_contains( $nep_html, 'notice-error' ) && str_contains( $nep_html, 'La versió del guió ha de ser 2.' ), 'admin_notices mostra l\'avís' );
 $nep_comprova( false === get_transient( 'nep_avis_1' ), 'l\'avís s\'esborra un cop mostrat' );
 
+// Desament clàssic: programar (future) una invàlida la deixa en esborrany.
+$nep_classica = wp_insert_post(
+	wp_slash(
+		array(
+			'post_type'     => 'nep_missio',
+			'post_status'   => 'future',
+			'post_date_gmt' => str_replace( 'T', ' ', $nep_futur ),
+			'post_title'    => 'Prova clàssica programada',
+			'nep_guio'      => wp_json_encode( $nep_invalida ),
+		)
+	)
+);
+$nep_creades[] = (int) $nep_classica;
+$nep_comprova( 'draft' === get_post_status( $nep_classica ), 'clàssic programar invàlida → esborrany (rebut ' . get_post_status( $nep_classica ) . ')' );
+
 // Desament clàssic: una vàlida es publica (el guió ve de $postarr, amb barres).
 $nep_valida2       = $nep_valida;
 $nep_valida2['id'] = $nep_valida['id'] . '-b';
@@ -156,7 +211,44 @@ $nep_classica      = wp_insert_post(
 );
 $nep_creades[] = (int) $nep_classica;
 $nep_comprova( 'publish' === get_post_status( $nep_classica ), 'clàssic publicar vàlida → publicada' );
-remove_filter( 'nep_valida_missio_cli', '__return_true' );
+
+// Pantalla d'edició clàssica (`edit_post`, dades amb barres com $_POST): publicar
+// des de la caixa «Camps personalitzats» amb un guió invàlid la deixa en esborrany.
+// La caixa escriu la meta abans de canviar l'estat, amb l'entrada encara en esborrany.
+$nep_valida3       = $nep_valida;
+$nep_valida3['id'] = $nep_valida['id'] . '-c';
+$nep_r             = $nep_publica( $nep_valida3, 'draft' );
+$nep_caixa         = (int) ( $nep_r->get_data()['id'] ?? 0 );
+$nep_edita         = static function ( string $json ) use ( $nep_caixa, $nep_mid_guio ): void {
+	edit_post(
+		wp_slash(
+			array(
+				'post_ID'     => $nep_caixa,
+				'post_type'   => 'nep_missio',
+				'post_title'  => 'Prova caixa',
+				'post_status' => 'publish',
+				'publish'     => 'Publica',
+				'meta'        => array(
+					$nep_mid_guio( $nep_caixa ) => array(
+						'key'   => 'nep_guio',
+						'value' => $json,
+					),
+				),
+			)
+		)
+	);
+};
+$nep_edita( wp_json_encode( $nep_invalida ) );
+$nep_comprova( 'draft' === get_post_status( $nep_caixa ), 'caixa camps personalitzats: publicar invàlida → esborrany (rebut ' . get_post_status( $nep_caixa ) . ')' );
+// El mateix camí amb un guió vàlid amb \" i \: es publica i el guió sobreviu intacte.
+$nep_edita( wp_json_encode( $nep_valida3, JSON_UNESCAPED_UNICODE ) );
+$nep_comprova( 'publish' === get_post_status( $nep_caixa ), 'caixa camps personalitzats: publicar vàlida → publicada' );
+$nep_comprova( $nep_guio_desat( $nep_caixa ) === $nep_valida3, 'caixa camps personalitzats: guió amb \\" i \\ intacte' );
+
+// Esborrar del tot una publicada no deixa meta òrfena.
+$nep_mid = $nep_mid_guio( $nep_publicada );
+wp_delete_post( $nep_publicada, true );
+$nep_comprova( $nep_mid && false === get_metadata_by_mid( 'post', $nep_mid ), 'wp_delete_post esborra el guió d\'una publicada' );
 
 foreach ( array_unique( $nep_creades ) as $nep_id ) {
 	wp_delete_post( $nep_id, true );

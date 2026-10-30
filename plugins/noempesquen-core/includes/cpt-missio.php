@@ -79,22 +79,28 @@ function nep_estat_publica( string $estat ): bool {
 /**
  * Ids de guió de les altres entrades `nep_missio` (qualsevol estat excepte paperera).
  *
+ * Una sola consulta; els guions massa grans o mal formats s'ignoren.
+ *
  * @param int $exclou Id de l'entrada que s'està desant.
  * @return string[]
  */
 function nep_ids_missions_existents( int $exclou ): array {
-	$posts = get_posts(
-		array(
-			'post_type'      => 'nep_missio',
-			'post_status'    => 'any',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'exclude'        => $exclou ? array( $exclou ) : array(),
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Una sola consulta en lloc d'una per entrada; no es pot fer cau (ha de ser al dia en desar).
+	$guions = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			WHERE p.post_type = 'nep_missio'
+			AND p.post_status IN ( 'publish', 'future', 'draft', 'pending', 'private' )
+			AND pm.meta_key = 'nep_guio'
+			AND p.ID <> %d",
+			$exclou
 		)
 	);
-	$ids   = array();
-	foreach ( $posts as $post_id ) {
-		$guio = nep_descodifica_guio( (string) get_post_meta( (int) $post_id, 'nep_guio', true ) );
+	$ids    = array();
+	foreach ( $guions as $json ) {
+		$guio = nep_descodifica_guio( (string) $json );
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
 			$ids[] = $guio['id'];
 		}
@@ -121,9 +127,9 @@ function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?s
 	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu', 'pc' ) );
 	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge', 'llissa' ) );
 
-	$guio = nep_descodifica_guio( $json );
+	$guio = nep_descodifica_guio( $json, $error );
 	if ( null === $guio ) {
-		return array( 'El guió no és un JSON vàlid.' );
+		return array( $error );
 	}
 	return nep_valida_guio( $guio, $dispositiu, $personatge, nep_ids_missions_existents( $post_id ) );
 }
@@ -150,13 +156,17 @@ function nep_valida_rest_missio( $prepared_post, $request ) {
 	if ( is_wp_error( $prepared_post ) ) {
 		return $prepared_post;
 	}
+	$meta = $request['meta'] ?? null;
+	// Un null esborraria la meta: el guió només es pot substituir per un text (en qualsevol estat).
+	if ( is_array( $meta ) && array_key_exists( 'nep_guio', $meta ) && ! is_string( $meta['nep_guio'] ) ) {
+		return new WP_Error( 'nep_guio_invalid', __( 'El guió ha de ser un text JSON.', 'noempesquen' ), array( 'status' => 400 ) );
+	}
 	$post_id = isset( $prepared_post->ID ) ? (int) $prepared_post->ID : 0;
 	$estat   = $prepared_post->post_status ?? ( $post_id ? (string) get_post_status( $post_id ) : 'draft' );
 	if ( ! nep_estat_publica( (string) $estat ) ) {
 		return $prepared_post;
 	}
 
-	$meta   = $request['meta'] ?? null;
 	$errors = nep_errors_missio(
 		$post_id,
 		nep_valor_text( $meta, 'nep_guio' ),
@@ -182,6 +192,7 @@ add_filter( 'rest_pre_insert_nep_missio', 'nep_valida_rest_missio', 10, 2 );
  *
  * No actua en REST (ja ho fa `nep_valida_rest_missio`) ni a WP-CLI: `wp noempesquen
  * importa-missions` crea l'entrada abans d'escriure'n la meta i importa fitxers del plugin.
+ * La constant `NEP_VALIDA_CLI` (només per a proves) l'activa a WP-CLI.
  *
  * @param array $data    Dades de l'entrada (amb barres).
  * @param array $postarr Dades rebudes (amb barres).
@@ -191,7 +202,7 @@ function nep_valida_missio_classica( $data, $postarr ) {
 	if ( 'nep_missio' !== ( $data['post_type'] ?? '' ) || ! nep_estat_publica( (string) ( $data['post_status'] ?? '' ) ) ) {
 		return $data;
 	}
-	if ( wp_is_serving_rest_request() || ( defined( 'WP_CLI' ) && WP_CLI && ! apply_filters( 'nep_valida_missio_cli', false ) ) ) {
+	if ( wp_is_serving_rest_request() || ( defined( 'WP_CLI' ) && WP_CLI && ! ( defined( 'NEP_VALIDA_CLI' ) && NEP_VALIDA_CLI ) ) ) {
 		return $data;
 	}
 
@@ -217,8 +228,12 @@ add_filter( 'wp_insert_post_data', 'nep_valida_missio_classica', 10, 2 );
  * @param string[] $errors Errors en català.
  */
 function nep_desa_avis( string $motiu, array $errors ): void {
+	$usuari = get_current_user_id();
+	if ( $usuari <= 0 ) {
+		return;
+	}
 	set_transient(
-		'nep_avis_' . get_current_user_id(),
+		'nep_avis_' . $usuari,
 		array(
 			'motiu'  => $motiu,
 			'errors' => $errors,
@@ -249,7 +264,58 @@ function nep_mostra_avis_missio(): void {
 add_action( 'admin_notices', 'nep_mostra_avis_missio' );
 
 /**
- * Impedeix escriure un guió invàlid (p. ex. el '{}' de `nep_sanitize_guio`) a una missió publicada.
+ * Entrades que `wp_delete_post` està esborrant: n'esborra la meta per meta_id
+ * amb l'entrada encara publicada, i això no s'ha d'impedir.
+ *
+ * @param int         $post_id Id de l'entrada.
+ * @param string|null $accio   'afegeix', 'treu' o null (només consulta).
+ * @return bool Si l'entrada s'està esborrant.
+ */
+function nep_missio_esborrant( int $post_id, ?string $accio = null ): bool {
+	static $ids = array();
+	if ( 'afegeix' === $accio ) {
+		$ids[ $post_id ] = true;
+	} elseif ( 'treu' === $accio ) {
+		unset( $ids[ $post_id ] );
+	}
+	return isset( $ids[ $post_id ] );
+}
+add_action( 'before_delete_post', static fn( $post_id ) => nep_missio_esborrant( (int) $post_id, 'afegeix' ) );
+add_action( 'deleted_post', static fn( $post_id ) => nep_missio_esborrant( (int) $post_id, 'treu' ) );
+
+/**
+ * Si l'entrada és una missió publicada (o programada) que no s'està esborrant.
+ *
+ * @param int $post_id Id de l'entrada.
+ * @return bool
+ */
+function nep_es_missio_publicada( int $post_id ): bool {
+	return $post_id > 0
+		&& 'nep_missio' === get_post_type( $post_id )
+		&& nep_estat_publica( (string) get_post_status( $post_id ) )
+		&& ! nep_missio_esborrant( $post_id );
+}
+
+/**
+ * Errors d'un guió candidat per a una missió publicada, amb la resta de metas desades.
+ *
+ * @param int   $post_id Id de l'entrada.
+ * @param mixed $valor   Guió candidat.
+ * @return string[] Errors (buit = vàlid).
+ */
+function nep_errors_guio_publicat( int $post_id, $valor ): array {
+	if ( ! is_string( $valor ) ) {
+		return array( 'El guió no és un JSON vàlid.' );
+	}
+	return nep_errors_missio( $post_id, $valor, null, null );
+}
+
+/**
+ * Impedeix escriure o afegir un guió invàlid (p. ex. el '{}' de `nep_sanitize_guio`)
+ * a una missió publicada.
+ *
+ * Valida el guió sencer amb el dispositiu i el personatge desats (REST i
+ * l'importador els escriuen abans que el guió).
  *
  * @param null|bool $check      Valor de curtcircuit.
  * @param int       $object_id  Id de l'entrada.
@@ -258,19 +324,36 @@ add_action( 'admin_notices', 'nep_mostra_avis_missio' );
  * @return null|bool
  */
 function nep_protegeix_guio_publicat( $check, $object_id, $meta_key, $meta_value ) {
-	if ( 'nep_guio' !== $meta_key || 'nep_missio' !== get_post_type( (int) $object_id ) ) {
+	if ( 'nep_guio' !== $meta_key || ! nep_es_missio_publicada( (int) $object_id ) ) {
 		return $check;
 	}
-	if ( ! nep_estat_publica( (string) get_post_status( (int) $object_id ) ) ) {
-		return $check;
-	}
-	return null === nep_descodifica_guio( (string) $meta_value ) || '{}' === $meta_value ? false : $check;
+	return nep_errors_guio_publicat( (int) $object_id, $meta_value ) ? false : $check;
 }
 add_filter( 'update_post_metadata', 'nep_protegeix_guio_publicat', 10, 4 );
+add_filter( 'add_post_metadata', 'nep_protegeix_guio_publicat', 10, 4 );
+
+/**
+ * No deixa esborrar el guió d'una missió publicada.
+ *
+ * @param null|bool $check      Valor de curtcircuit.
+ * @param int       $object_id  Id de l'entrada.
+ * @param string    $meta_key   Clau.
+ * @param mixed     $meta_value Valor.
+ * @param bool      $delete_all Si esborra la clau de totes les entrades.
+ * @return null|bool
+ */
+function nep_protegeix_esborrat_guio( $check, $object_id, $meta_key, $meta_value, $delete_all ) {
+	if ( 'nep_guio' !== $meta_key || $delete_all || ! nep_es_missio_publicada( (int) $object_id ) ) {
+		return $check;
+	}
+	return false;
+}
+add_filter( 'delete_post_metadata', 'nep_protegeix_esborrat_guio', 10, 5 );
 
 /**
  * El mateix per a la caixa «Camps personalitzats» (actualitza per meta_id i no
  * passa per `update_post_metadata`). Aquí el valor encara no està sanejat.
+ * Canviar la clau del guió d'una missió publicada equival a esborrar-lo.
  *
  * @param null|bool    $check      Valor de curtcircuit.
  * @param int          $meta_id    Id de la meta.
@@ -280,17 +363,37 @@ add_filter( 'update_post_metadata', 'nep_protegeix_guio_publicat', 10, 4 );
  */
 function nep_protegeix_guio_publicat_per_mid( $check, $meta_id, $meta_value, $meta_key ) {
 	$meta = get_metadata_by_mid( 'post', (int) $meta_id );
-	if ( ! $meta || ( 'nep_guio' !== $meta->meta_key && 'nep_guio' !== $meta_key ) ) {
+	if ( ! $meta ) {
 		return $check;
 	}
-	$post_id = (int) $meta->post_id;
-	if ( 'nep_missio' !== get_post_type( $post_id ) || ! nep_estat_publica( (string) get_post_status( $post_id ) ) ) {
+	$clau_nova = $meta_key ? (string) $meta_key : $meta->meta_key;
+	if ( ( 'nep_guio' !== $meta->meta_key && 'nep_guio' !== $clau_nova ) || ! nep_es_missio_publicada( (int) $meta->post_id ) ) {
 		return $check;
 	}
-	if ( null !== nep_descodifica_guio( (string) $meta_value ) ) {
+	$errors = 'nep_guio' === $clau_nova
+		? nep_errors_guio_publicat( (int) $meta->post_id, $meta_value )
+		: array( 'No es pot canviar la clau del guió d\'una missió publicada.' );
+	if ( ! $errors ) {
 		return $check;
 	}
-	nep_desa_avis( 'guio-conservat', array( 'El guió no és un JSON vàlid.' ) );
+	nep_desa_avis( 'guio-conservat', $errors );
 	return false;
 }
 add_filter( 'update_post_metadata_by_mid', 'nep_protegeix_guio_publicat_per_mid', 10, 4 );
+
+/**
+ * No deixa esborrar el guió d'una missió publicada des de la caixa «Camps personalitzats».
+ *
+ * @param null|bool $check   Valor de curtcircuit.
+ * @param int       $meta_id Id de la meta.
+ * @return null|bool
+ */
+function nep_protegeix_esborrat_guio_per_mid( $check, $meta_id ) {
+	$meta = get_metadata_by_mid( 'post', (int) $meta_id );
+	if ( ! $meta || 'nep_guio' !== $meta->meta_key || ! nep_es_missio_publicada( (int) $meta->post_id ) ) {
+		return $check;
+	}
+	nep_desa_avis( 'guio-conservat', array( 'No es pot esborrar el guió d\'una missió publicada.' ) );
+	return false;
+}
+add_filter( 'delete_post_metadata_by_mid', 'nep_protegeix_esborrat_guio_per_mid', 10, 2 );
