@@ -17,6 +17,7 @@ import { horaDeJoc } from './hora';
 import { Pausa } from './Pausa';
 import { Consequencia } from './Consequencia';
 import { Resultat } from './Resultat';
+import { useSoNotificacions } from './useSoNotificacions';
 
 const MS_TICK = 1000;
 /* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
@@ -80,6 +81,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 	} );
 
 	useAillament( arrel );
+	useSoNotificacions( arrel, estat );
 
 	// El clic a la targeta és el gest d'usuari: demanem pantalla completa
 	// en muntar. Si el navegador la rebutja, s'activa la capa fixa.

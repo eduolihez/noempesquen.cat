@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Subpantalla } from './Subpantalla';
-import { desaSons, llegeixSons } from './preferencies.js';
+import { desaSons, llegeixSons } from '../../simulador/preferencies.js';
 import {
 	IconaAplicacions,
 	IconaApagar,
