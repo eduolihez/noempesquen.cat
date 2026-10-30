@@ -8,7 +8,7 @@ export const APPS_MOBIL = [ 'missatges', 'parla', 'navegador' ];
 // dispositiu: a l'ordinador, Posta és una web amb dades a `apps.posta`.
 export const APPS_MISSIO = {
 	pc: [ 'navegador', 'parla', 'posta' ],
-	mobil: [ 'missatges', 'parla', 'navegador', 'enviat' ],
+	mobil: [ 'missatges', 'parla', 'navegador', 'enviat', 'banc-solid' ],
 };
 export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
 // Fonts de notificació: apps del sistema i webs que també avisen.

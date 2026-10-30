@@ -140,6 +140,19 @@ describe( 'validaMissio v2', () => {
 		expect( validaMissio( m ) ).toEqual( [] );
 	} );
 
+	it( 'accepta banc-solid com a app de missió al mòbil', () => {
+		const m = copia();
+		m.dispositiu = 'mobil';
+		m.apps = { 'banc-solid': {} };
+		expect( validaMissio( m ) ).not.toContain(
+			'app inexistent al dispositiu mobil: banc-solid'
+		);
+		m.apps = { 'banc-fals': {} };
+		expect( validaMissio( m ) ).toContain(
+			'app inexistent al dispositiu mobil: banc-fals'
+		);
+	} );
+
 	it( 'rebutja un esdeveniment inexistent', () => {
 		const m = copia();
 		m.disparadors[ 0 ].quan.esdeveniment = 'missatge.vola';
