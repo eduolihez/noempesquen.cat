@@ -11,8 +11,8 @@ const MISSIONS = {
 
 /**
  * AudioContext espia: compta els osciladors creats (abans de carregar).
- * @param page
- * @param sons
+ * @param {import('@playwright/test').Page} page
+ * @param {boolean}                         sons Si el so està activat.
  */
 async function espiaAudio( page, sons ) {
 	await page.addInitScript( ( valor ) => {
@@ -66,53 +66,65 @@ async function entra( page, isMobile ) {
 	await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
 }
 
+const avis = ( page ) => page.locator( '.nep-so [aria-live="polite"]' );
+const TRAMPA = { escriptori: /URGENT/, mobil: /paquet/i };
+
 test.describe( 'So de les notificacions', () => {
-	test( 'sona amb una notificació nova després d’interactuar', async ( {
+	test( 'la benvinguda de la guia en desbloquejar no sona', async ( {
 		page,
 		isMobile,
 	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		// En desbloquejar ja arriba una primera notificació (so legítim).
-		await expect.poll( () => osciladors( page ) ).toBeGreaterThan( 0 );
+		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 2000 );
+		expect( await osciladors( page ) ).toBe( 0 );
+	} );
+
+	test( 'una notificació posterior sona (una nota de 2 tons)', async ( {
+		page,
+		isMobile,
+	} ) => {
+		await espiaAudio( page, true );
+		await entra( page, isMobile );
+		await expect( avis( page ) ).toContainText( /\S/ );
 		const abans = await osciladors( page );
 		await page.clock.runFor( 9000 );
-		await expect.poll( () => osciladors( page ) ).toBeGreaterThan( abans );
+		await expect( avis( page ) ).toContainText(
+			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
+		);
+		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
 	} );
 
 	test( 'no sona amb el so desactivat', async ( { page, isMobile } ) => {
 		await espiaAudio( page, false );
 		await entra( page, isMobile );
 		await page.clock.runFor( 9000 );
-		await page.waitForTimeout( 300 );
+		await expect( avis( page ) ).toContainText(
+			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
+		);
 		expect( await osciladors( page ) ).toBe( 0 );
 	} );
 
-	test( 'no sona en pausa', async ( { page, isMobile } ) => {
+	test( 'en pausa no sona i en continuar sí', async ( {
+		page,
+		isMobile,
+	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		await page.waitForTimeout( 300 );
+		await expect( avis( page ) ).toContainText( /\S/ );
 		const abans = await osciladors( page );
 		await page.keyboard.press( 'Escape' );
 		await expect(
 			page.getByRole( 'dialog', { name: /pausa/i } )
 		).toBeVisible();
 		await page.clock.runFor( 9000 );
-		await page.waitForTimeout( 300 );
 		expect( await osciladors( page ) ).toBe( abans );
-	} );
-
-	test( 'no sona abans de la primera interacció', async ( {
-		page,
-		isMobile,
-	} ) => {
-		await espiaAudio( page, true );
-		const { titol, bloqueig } =
-			MISSIONS[ isMobile ? 'mobil' : 'escriptori' ];
-		await iniciaMissio( page, titol, bloqueig );
-		// Encara al bloqueig i sense cap gest dins del simulador.
+		await page.getByRole( 'button', { name: /Continua/ } ).click();
 		await page.clock.runFor( 9000 );
-		await page.waitForTimeout( 300 );
-		expect( await osciladors( page ) ).toBe( 0 );
+		await expect( avis( page ) ).toContainText(
+			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
+		);
+		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
 	} );
 } );

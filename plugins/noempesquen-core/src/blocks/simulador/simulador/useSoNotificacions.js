@@ -36,12 +36,25 @@ export function useSoNotificacions( arrel, estat ) {
 		};
 	}, [ arrel ] );
 
+	const faseAnterior = useRef( estat.fase );
+
 	useEffect( () => {
+		const enJoc = estat.fase === FASE.JOC;
+		const veniaDeJoc = faseAnterior.current === FASE.JOC;
+		faseAnterior.current = estat.fase;
+		if ( ! estat.notificacions.length ) {
+			vistes.current = new Set();
+			return;
+		}
 		const noves = idsNous( vistes.current, estat.notificacions );
 		if ( ! noves.length ) {
 			return;
 		}
 		noves.forEach( ( id ) => vistes.current.add( id ) );
+		// El lot que crea desbloquejar (bloqueig -> joc) no sona.
+		if ( ! veniaDeJoc ) {
+			return;
+		}
 		let actiu = true;
 		try {
 			actiu = llegeixSons( window.localStorage );
@@ -53,7 +66,7 @@ export function useSoNotificacions( arrel, estat ) {
 				actiu,
 				interaccio: interaccio.current,
 				pausa: estat.pausa,
-				silenci: estat.fase === FASE.BLOQUEIG,
+				silenci: ! enJoc,
 				noves,
 			} )
 		) {
