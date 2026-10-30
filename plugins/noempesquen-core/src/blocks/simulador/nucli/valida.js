@@ -161,7 +161,76 @@ function recullIdsApps( apps ) {
 	return ids;
 }
 
-function validaEfecte( e, opcions, frases, idsApps, errors ) {
+/**
+ * Ids (text) dels contactes del món, o `null` si no hi ha món o no és vàlid.
+ *
+ * @param {?Object} mon Món compartit.
+ * @return {?Set<string>} Ids de contacte.
+ */
+function idsContactes( mon ) {
+	if ( ! Array.isArray( mon?.contactes ) ) {
+		return null;
+	}
+	return new Set(
+		mon.contactes
+			.map( ( c ) => c?.id )
+			.filter( ( id ) => typeof id === 'string' )
+	);
+}
+
+/**
+ * Ids dels xats d'una app (`apps.<app>.xats[].id`).
+ *
+ * @param {Object} m   Missió.
+ * @param {string} app Clau de l'app.
+ * @return {Set<string>} Ids de xat.
+ */
+function idsXats( m, app ) {
+	return new Set(
+		llista( m.apps?.[ app ]?.xats )
+			.map( ( x ) => x?.id )
+			.filter( ( id ) => typeof id === 'string' )
+	);
+}
+
+/**
+ * Comprova que cap id d'element o missatge es repeteixi entre apps diferents
+ * (`mostra` i `visible` els resolen sense saber de quina app són).
+ *
+ * @param {Object}   apps   Apps de la missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaIdsEntreApps( apps, errors ) {
+	const propietari = new Map();
+	const repetits = new Set();
+	const objectes = ( v ) =>
+		v && typeof v === 'object' ? Object.entries( v ) : [];
+	objectes( apps ).forEach( ( [ clau, app ] ) => {
+		const propis = new Set();
+		objectes( app ).forEach( ( [ , valors ] ) => {
+			llista( valors ).forEach( ( item ) => {
+				propis.add( item?.id );
+				llista( item?.missatges ).forEach( ( x ) =>
+					propis.add( x?.id )
+				);
+			} );
+		} );
+		propis.forEach( ( id ) => {
+			if ( typeof id !== 'string' ) {
+				return;
+			}
+			if ( propietari.has( id ) && propietari.get( id ) !== clau ) {
+				repetits.add( id );
+			}
+			propietari.set( id, clau );
+		} );
+	} );
+	repetits.forEach( ( id ) =>
+		errors.push( `id repetit entre apps: ${ id }` )
+	);
+}
+
+function validaEfecte( e, opcions, frases, idsApps, xats, errors ) {
 	if ( ! e || typeof e !== 'object' ) {
 		errors.push( 'efecte invàlid' );
 		return false;
@@ -181,6 +250,8 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 			( ! [ 'parla', 'revenda' ].includes( e.app ) || ! e.xat )
 		) {
 			errors.push( 'notifica: xat només amb app parla o revenda' );
+		} else if ( e.xat !== undefined && ! xats[ e.app ].has( e.xat ) ) {
+			errors.push( `notifica: xat inexistent a ${ e.app }: ${ e.xat }` );
 		}
 		const font = e.font === 'mobil' ? APPS_MISSIO.mobil : FONTS_NOTIFICACIO;
 		if ( e.font !== undefined && e.font !== 'mobil' ) {
@@ -209,13 +280,11 @@ function validaDisparadors( m, mon, errors ) {
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
-	const contactesMon = Array.isArray( mon?.contactes )
-		? new Set(
-				mon.contactes
-					.map( ( c ) => c?.id )
-					.filter( ( id ) => typeof id === 'string' )
-			)
-		: null;
+	const contactesMon = idsContactes( mon );
+	const xats = {
+		parla: idsXats( m, 'parla' ),
+		revenda: idsXats( m, 'revenda' ),
+	};
 	// Publicacions denunciables: Ullada (món i missió) i anuncis del Diari.
 	const idsDenunciables = new Set(
 		[
@@ -258,7 +327,7 @@ function validaDisparadors( m, mon, errors ) {
 			}
 		}
 		llista( d.efectes ).forEach( ( e ) => {
-			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
+			if ( validaEfecte( e, opcions, frases, idsApps, xats, errors ) ) {
 				hiHaPescat = true;
 			}
 		} );
@@ -277,9 +346,7 @@ function validaXatsParla( m, mon, errors ) {
 		errors.push( 'parla: xats ha de ser una llista' );
 		return;
 	}
-	const contactes = Array.isArray( mon?.contactes )
-		? new Set( mon.contactes.map( ( c ) => c.id ) )
-		: null;
+	const contactes = idsContactes( mon );
 	const idsXat = new Set();
 	const idsMsg = new Set();
 	xats.forEach( ( x ) => {
@@ -318,7 +385,19 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
-function validaSegmentCos( seg, r, errors ) {
+/**
+ * Valida un segment de cos (`{ t }` o `{ enllac: { text, url } }`).
+ *
+ * Les URL d'enllaç d'`apps.*` (admeten «cerca:») i de `webs.*` (només
+ * http/https) ja les revisa `validaMissio` de forma general; aquí només es
+ * comprova `patroUrl` quan el context és més estricte (p. ex. Revenda).
+ *
+ * @param {Object}   seg      Segment.
+ * @param {string}   r        Referència per als errors.
+ * @param {string[]} errors   Acumulador d'errors.
+ * @param {?RegExp}  patroUrl Patró que ha de complir `enllac.url` (opcional).
+ */
+function validaSegmentCos( seg, r, errors, patroUrl = null ) {
 	if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
 		errors.push( `${ r }: segment ha de ser un objecte` );
 	} else if ( seg.enllac !== undefined ) {
@@ -330,6 +409,8 @@ function validaSegmentCos( seg, r, errors ) {
 			typeof e.url !== 'string'
 		) {
 			errors.push( `${ r }: enllaç ha de tenir text i url` );
+		} else if ( patroUrl && ! patroUrl.test( e.url ) ) {
+			errors.push( `${ r }: url sense http(s) «${ e.url }»` );
 		}
 	} else if ( typeof seg.t !== 'string' ) {
 		errors.push( `${ r }: segment sense «t» ni «enllac»` );
@@ -461,13 +542,9 @@ function validaMissatgeRevenda( msg, ref, idsMsg, errors ) {
 	}
 	msg.cos.forEach( ( seg, k ) => {
 		const rs = `${ ref }.cos[${ k }]`;
-		validaSegmentCos( seg, rs, errors );
+		validaSegmentCos( seg, rs, errors, URL_HTTP );
 		if ( seg?.senyal !== undefined && typeof seg.senyal !== 'string' ) {
 			errors.push( `${ rs }: «senyal» ha de ser text` );
-		}
-		const url = seg?.enllac?.url;
-		if ( typeof url === 'string' && ! URL_HTTP.test( url ) ) {
-			errors.push( `${ rs }: url sense http(s) «${ url }»` );
 		}
 	} );
 }
@@ -490,9 +567,7 @@ function validaRevenda( m, mon, errors ) {
 		errors.push( 'revenda: xats ha de ser una llista' );
 	}
 	const idsAnunci = validaAnuncisRevenda( revenda.anuncis, text, errors );
-	const contactes = Array.isArray( mon?.contactes )
-		? new Set( mon.contactes.map( ( c ) => c?.id ) )
-		: null;
+	const contactes = idsContactes( mon );
 	const idsXat = new Set();
 	const idsMsg = new Set();
 	( Array.isArray( revenda.xats ) ? revenda.xats : [] ).forEach( ( x, i ) => {
@@ -607,6 +682,35 @@ function validaFormularis( domini, web, errors ) {
 	} );
 }
 
+// Camp de text obligatori de cada plantilla de pagament.
+const CAMP_PLANTILLA_PAGAMENT = { cobrament: 'import', inversio: 'promesa' };
+
+/**
+ * Les plantilles `cobrament` i `inversio` necessiten un formulari amb camps i
+ * esdeveniment, i el seu text principal (`import` o `promesa`).
+ *
+ * @param {string}   domini Domini de la web.
+ * @param {Object}   web    Web.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaPlantillaPagament( domini, web, errors ) {
+	const camp = CAMP_PLANTILLA_PAGAMENT[ web.plantilla ];
+	if ( ! camp ) {
+		return;
+	}
+	const ref = `${ web.plantilla } ${ domini }`;
+	const f = web.formulari;
+	if ( ! Array.isArray( f?.camps ) || ! f.camps.length ) {
+		errors.push( `${ ref }: formulari sense camps` );
+	}
+	if ( typeof f?.esdeveniment !== 'string' || ! f.esdeveniment ) {
+		errors.push( `${ ref }: formulari sense esdeveniment` );
+	}
+	if ( typeof web[ camp ] !== 'string' || ! web[ camp ].trim() ) {
+		errors.push( `${ ref }: camp «${ camp }» buit o absent` );
+	}
+}
+
 /**
  * Valida una missió v2.
  *
@@ -633,28 +737,39 @@ export function validaMissio( m, mon ) {
 	if ( ! Array.isArray( m.intro ) || ! m.intro.length ) {
 		errors.push( 'falta intro' );
 	}
+	if ( mon && ! Array.isArray( mon.contactes ) ) {
+		errors.push( 'mon.contactes invàlid' );
+	}
 
-	const ids = new Set( llista( m.senyals ).map( ( s ) => s?.id ) );
+	const idsSenyal = llista( m.senyals )
+		.map( ( s ) => s?.id )
+		.filter( ( id ) => id !== undefined );
+	const ids = new Set( idsSenyal );
 	const vistes = new Set();
-	llista( m.senyals ).forEach( ( s ) => {
-		if ( vistes.has( s?.id ) ) {
-			errors.push( `senyal duplicada: ${ s?.id }` );
+	idsSenyal.forEach( ( id ) => {
+		if ( vistes.has( id ) ) {
+			errors.push( `senyal duplicada: ${ id }` );
 		}
-		vistes.add( s?.id );
+		vistes.add( id );
 	} );
-	const usats = [ ...recullSenyals( m.apps ), ...recullSenyals( m.webs ) ];
+	const usats = [
+		...recullSenyals( m.apps ),
+		...recullSenyals( m.webs ),
+		...recullSenyals( m.frases ),
+		...recullSenyals( m.decisio ),
+	];
 	new Set( usats ).forEach( ( s ) => {
 		if ( ! ids.has( s ) ) {
 			errors.push( `senyal desconegut: ${ s }` );
 		}
 	} );
 
-	// Només compta el que recullen `recullSenyals` sobre `m.apps` i `m.webs`
-	// (camps de CAMPS_SENYAL); una senyal usada només en disparadors o en
-	// altres seccions es considera sense referència.
+	// Compta el que recullen `recullSenyals` (camps de CAMPS_SENYAL) sobre
+	// `m.apps`, `m.webs`, `m.frases` i `m.decisio`; una senyal usada només en
+	// disparadors o en altres seccions es considera sense referència.
 	const referenciats = new Set( usats );
 	ids.forEach( ( id ) => {
-		if ( id !== undefined && ! referenciats.has( id ) ) {
+		if ( ! referenciats.has( id ) ) {
 			errors.push( `senyal sense referència: ${ id }` );
 		}
 	} );
@@ -715,8 +830,10 @@ export function validaMissio( m, mon ) {
 			);
 		}
 		validaFormularis( domini, web, errors );
+		validaPlantillaPagament( domini, web, errors );
 	} );
 
+	validaIdsEntreApps( m.apps, errors );
 	validaXatsParla( m, mon, errors );
 	validaPublicacionsUllada( m, mon, errors );
 	validaRevenda( m, mon, errors );
