@@ -1,0 +1,288 @@
+/* Ullada: xarxa social de farciment del mòbil. */
+
+$ull-text: #1a1a1a;
+$ull-text-2: #555b63;
+$ull-vora: #8a9099;
+$ull-vora-suau: #e2e5ea;
+$ull-accent: #7a2fc0;
+
+.nep-so .nep-ullada {
+	background: #fff;
+	color: $ull-text;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	&__cap {
+		align-items: center;
+		border-bottom: 1px solid $ull-vora-suau;
+		display: flex;
+		justify-content: space-between;
+		min-height: 56px;
+		padding: 4px 8px 4px 16px;
+	}
+
+	&__logo {
+		line-height: 1;
+		margin: 0;
+	}
+
+	&__sr {
+		border: 0;
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
+
+	&__boto {
+		align-items: center;
+		background: none;
+		border: 0;
+		border-radius: 50%;
+		color: $ull-text;
+		cursor: default;
+		display: inline-flex;
+		height: 44px;
+		justify-content: center;
+		padding: 0;
+		width: 44px;
+	}
+
+	&__panell {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: auto;
+	}
+
+	&__pestanyes {
+		border-top: 1px solid $ull-vora;
+		display: flex;
+	}
+
+	&__pestanya {
+		align-items: center;
+		background: none;
+		border: 0;
+		color: $ull-text-2;
+		cursor: pointer;
+		display: flex;
+		flex: 1 1 0;
+		flex-direction: column;
+		font-size: 12px;
+		gap: 2px;
+		justify-content: center;
+		min-height: 52px;
+		padding: 4px;
+
+		&[aria-selected="true"] {
+			color: $ull-accent;
+			font-weight: 600;
+		}
+	}
+
+	&__boto:focus-visible,
+	&__pestanya:focus-visible,
+	&__panell:focus-visible,
+	.nep-ullada-pub__agrada:focus-visible {
+		outline: 3px solid var(--nep-focus, #1f5fd1);
+		outline-offset: -3px;
+	}
+}
+
+.nep-so .nep-ullada-histories {
+	display: flex;
+	gap: 12px;
+	list-style: none;
+	margin: 0;
+	overflow-x: auto;
+	padding: 12px;
+}
+
+.nep-so .nep-ullada-historia {
+	align-items: center;
+	display: flex;
+	flex: 0 0 auto;
+	flex-direction: column;
+	gap: 4px;
+	width: 64px;
+
+	&__cercle {
+		border: 3px solid $ull-accent;
+		border-radius: 50%;
+		display: block;
+		height: 60px;
+		overflow: hidden;
+		width: 60px;
+
+		svg {
+			display: block;
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	&__nom {
+		color: $ull-text-2;
+		font-size: 12px;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+.nep-so .nep-ullada-pub {
+	border-bottom: 1px solid $ull-vora-suau;
+	padding-bottom: 8px;
+
+	&__cap {
+		align-items: center;
+		display: flex;
+		gap: 10px;
+		padding: 8px 12px;
+	}
+
+	&__avatar {
+		border-radius: 50%;
+		display: block;
+		flex: 0 0 auto;
+		height: 36px;
+		overflow: hidden;
+		width: 36px;
+
+		svg {
+			display: block;
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	&__autor {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.2;
+		min-width: 0;
+	}
+
+	&__usuari {
+		color: $ull-text-2;
+		font-size: 12px;
+	}
+
+	&__imatge {
+		aspect-ratio: 1;
+		width: 100%;
+
+		svg {
+			display: block;
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	&__accions {
+		align-items: center;
+		display: flex;
+		gap: 8px;
+		padding: 2px 8px;
+	}
+
+	&__agrada {
+		align-items: center;
+		background: none;
+		border: 0;
+		border-radius: 22px;
+		color: $ull-text;
+		cursor: pointer;
+		display: inline-flex;
+		gap: 6px;
+		min-height: 44px;
+		padding: 0 10px;
+
+		&[aria-pressed="true"] {
+			color: #b42318;
+
+			svg {
+				fill: currentColor;
+			}
+		}
+	}
+
+	&__likes {
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	&__text {
+		margin: 0;
+		overflow-wrap: anywhere;
+		padding: 0 12px;
+	}
+}
+
+.nep-so .nep-ullada-graella {
+	display: grid;
+	gap: 2px;
+	grid-template-columns: repeat(3, 1fr);
+	list-style: none;
+	margin: 0;
+	padding: 2px;
+
+	&__cel {
+		aspect-ratio: 1;
+		background: #e8eaee;
+
+		svg {
+			display: block;
+			height: 100%;
+			width: 100%;
+		}
+
+		&.is-buida {
+			border: 1px dashed $ull-vora;
+			box-sizing: border-box;
+		}
+	}
+}
+
+.nep-so .nep-ullada-perfil {
+
+	&__cap {
+		align-items: center;
+		display: flex;
+		gap: 16px;
+		padding: 16px;
+	}
+
+	&__avatar {
+		align-items: center;
+		background: #ecdcfa;
+		border-radius: 50%;
+		color: #4b1a7c;
+		display: inline-flex;
+		font-size: 32px;
+		font-weight: 600;
+		height: 80px;
+		justify-content: center;
+		width: 80px;
+	}
+
+	&__nom {
+		font-size: 20px;
+		margin: 0;
+	}
+
+	&__usuari {
+		color: $ull-text-2;
+		margin: 0;
+	}
+
+	&__buit {
+		color: $ull-text-2;
+		padding: 16px;
+		text-align: center;
+	}
+}
