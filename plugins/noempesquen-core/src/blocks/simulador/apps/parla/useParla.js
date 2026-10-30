@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { respostesRapides } from '../../nucli/motor';
 import { menysMoviment } from '../../sistemes/pc/moviment';
 import { AvatarXat } from './LlistaXats';
 import { contacteDelXat } from './desconegut';
+import { xatEscriptible, xatsVisibles } from './xatsMissio';
 import {
 	agrupaPerDia,
 	filtraPerNom,
@@ -98,6 +99,10 @@ export function useParla( xatInicial = ID_GUIA ) {
 	// Contactes bloquejats: estat local de la UI; el motor només rep l'esdeveniment.
 	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
 	const [ avis, setAvis ] = useState( '' );
+	// Missatges escrits pel jugador: només estat local de la UI, mai al motor.
+	const [ enviats, setEnviats ] = useState( {} );
+	// Hora (del joc) en què es va veure cada missatge de missió sense `hora`.
+	const horesMissio = useRef( new Map() );
 
 	segella( estat.xat, hora );
 	const { visibles, escriu } = useRevelacio( estat.xat );
@@ -109,7 +114,23 @@ export function useParla( xatInicial = ID_GUIA ) {
 		( n ) =>
 			n.app === 'parla' && n.titol === missio.personatge && ! n.llegida
 	).length;
-	const farciment = useMemo( () => ordenaXats( mon?.parla?.xats ), [ mon ] );
+	const farciment = ordenaXats(
+		xatsVisibles( estat, mon, missio ).map( ( x ) => ( {
+			...x,
+			missatges: [
+				...x.missatges.map( ( m ) => {
+					if ( ! m.missio || m.hora ) {
+						return m;
+					}
+					if ( ! horesMissio.current.has( m.id ) ) {
+						horesMissio.current.set( m.id, hora );
+					}
+					return { ...m, hora: horesMissio.current.get( m.id ) };
+				} ),
+				...( enviats[ x.id ] ?? [] ),
+			],
+		} ) )
+	);
 
 	const marcaLlegits = () => {
 		if ( noLlegits ) {
@@ -168,6 +189,22 @@ export function useParla( xatInicial = ID_GUIA ) {
 		} ),
 	];
 
+	const envia = ( xat, text ) => {
+		const contacte = contacteDelXat( xat, contactes );
+		if ( ! contacte || ! text.trim() ) {
+			return;
+		}
+		setEnviats( ( e ) => ( {
+			...e,
+			[ xat.id ]: [
+				...( e[ xat.id ] ?? [] ),
+				{ de: 'jo', text: text.trim(), hora },
+			],
+		} ) );
+		// Només l'id del contacte: el text no surt de la UI.
+		emet( 'missatge.envia', { contacte: contacte.id } );
+	};
+
 	const dadesDesconegut = ( contacte ) => ( {
 		contacte,
 		bloquejat: bloquejats.has( contacte?.id ),
@@ -186,6 +223,9 @@ export function useParla( xatInicial = ID_GUIA ) {
 				),
 				respostes: [],
 				placeholder: __( 'Escriu un missatge', 'noempesquen' ),
+				onEnvia: xatEscriptible( xatObert, contactes, bloquejats )
+					? ( text ) => envia( xatObert, text )
+					: undefined,
 				...dadesDesconegut( contacteDelXat( xatObert, contactes ) ),
 			}
 		: {

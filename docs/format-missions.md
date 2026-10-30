@@ -75,6 +75,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 
 - `apps.posta.correus[]`: `id`, `objectiu`, `ocult` (no surt fins que un efecte `mostra` el mostra), `carpeta`, `llegit`, `data`, `remitent { nom, adreca, senyal? }`, `assumpte`, `assumpte_senyal?`, `cos` (segments com a la v1).
 - `apps.missatges.missatges[]` (SMS, només al mòbil): `id`, `objectiu`, `ocult`, `hora`, `remitent { nom, contacte?, senyal? }`, `cos` (segments com a la v1). `remitent.contacte` és l'id d'un contacte de `mon.json`; amb ell el missatge es pot bloquejar, esborrar, respondre o reenviar.
+- `apps.parla.xats[]` (xats de Parla afegits per la missió): `{ id, contacte?, nom?, missatges[] { id, de: "ells" o "jo", text, hora?, ocult? } }`. Un missatge `ocult` surt quan un efecte `mostra` (amb el `retard` del disparador) el fa visible; el xat apareix a la llista en tenir el primer missatge visible. `contacte` és l'id d'un contacte de `mon.json` (si és de rol `desconegut`, el xat ofereix bloquejar); sense `nom`, es fa servir el del contacte. Si l'`id` coincideix amb un xat de `mon.json` (p. ex. `pau`), els missatges s'hi afegeixen al final. Per avisar al mòbil, combina `mostra` amb `notifica` (`app: "parla"`). Als xats de contactes coneguts (no guia ni desconeguts) el camp de text és actiu: el text escrit només es veu a la interfície i s'emet `missatge.envia`.
 - `apps.navegador.inici`: URLs que s'obren en iniciar.
 - `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat` o `banc-solid`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
 - `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc. A `quan`, `visible: "<id>"` fa que el disparador només coincideixi si l'element (p. ex. un correu amb `ocult`) ja s'ha mostrat amb l'efecte `mostra`; si no, no es consumeix.
@@ -96,6 +97,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `missatge.esborra` | `app`, `id` |
 | `missatge.reenvia` | `app`, `id`, `a` (id del xat de destí, p. ex. `familia`) |
 | `missatge.respon` | `app`, `id` |
+| `missatge.envia` | `contacte` (id del contacte; mai el text escrit) |
 | `enllac.mantingut` | `url` (pulsació llarga o Maj+F10 sobre un enllaç) |
 
 Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloqueja` i després `missatge.esborra`.

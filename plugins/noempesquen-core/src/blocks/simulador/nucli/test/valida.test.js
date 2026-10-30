@@ -358,3 +358,52 @@ describe( 'validaMissio: webs banc-solid i formularis', () => {
 		expect( amb( { processant: 'Espera', nota: 'Segur' } ) ).toEqual( [] );
 	} );
 } );
+
+describe( 'validaMissio: apps.parla.xats', () => {
+	const mon = { contactes: [ { id: 'pau' } ] };
+	const xats = () => [
+		{
+			id: 'x1',
+			contacte: 'pau',
+			missatges: [
+				{ id: 'p1', de: 'ells', text: 'Hola', ocult: true },
+				{ id: 'p2', de: 'jo', text: 'Ei' },
+			],
+		},
+	];
+	const amb = ( llista ) => {
+		const m = copia();
+		m.apps = { ...m.apps, parla: { xats: llista } };
+		m.disparadors = [
+			...m.disparadors,
+			{
+				id: 'dp',
+				quan: { esdeveniment: 'missatge.envia', contacte: 'pau' },
+				efectes: [ { tipus: 'mostra', id: 'p1' } ],
+			},
+		];
+		return m;
+	};
+
+	it( 'accepta xats vàlids, missatge.envia i mostra cap a un missatge', () => {
+		expect( ESDEVENIMENTS ).toContain( 'missatge.envia' );
+		expect( validaMissio( amb( xats() ), mon ) ).toEqual( [] );
+	} );
+
+	it( 'detecta ids duplicats i contacte inexistent', () => {
+		const llista = xats();
+		llista.push( { ...llista[ 0 ], contacte: 'ningu' } );
+		const errors = validaMissio( amb( llista ), mon );
+		expect( errors ).toContain( 'parla: xat duplicat: x1' );
+		expect( errors ).toContain( 'parla: missatge duplicat: p1' );
+		expect( errors ).toContain( 'parla: contacte inexistent: ningu' );
+	} );
+
+	it( 'detecta mostra cap a un id inexistent', () => {
+		const m = amb( xats() );
+		m.disparadors[ m.disparadors.length - 1 ].efectes[ 0 ].id = 'zz';
+		expect( validaMissio( m, mon ) ).toContain(
+			'mostra: element inexistent: zz'
+		);
+	} );
+} );

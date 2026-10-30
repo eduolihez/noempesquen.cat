@@ -99,19 +99,20 @@ function Escrivint() {
  * ja els anuncia la regió de notificacions del sistema (Notificacions.js),
  * també quan Parla és en primer pla.
  *
- * @param {Object}            props
- * @param {string}            props.nom           Nom del contacte.
- * @param {string}            props.estatContacte Text sota el nom («en línia»…).
- * @param {Object}            props.avatar        Foto de perfil.
- * @param {Object[]}          props.grups         [{ dia, missatges: [{ id, propi, text, nota, hora }] }].
- * @param {boolean}           props.escriu        El contacte escriu.
- * @param {Object[]}          props.respostes     Respostes ràpides.
- * @param {(id:string)=>void} props.onResposta    Rep l'id de la resposta.
- * @param {string}            props.placeholder   Text del camp desactivat.
- * @param {()=>void}          props.onEnrere      Només al mòbil: botó per tornar a la llista.
- * @param {?Object}           props.contacte      Contacte de mon.json del xat (null: cap).
- * @param {boolean}           props.bloquejat     El número ja és bloquejat.
- * @param {()=>void}          props.onBloqueja    Bloqueja el número (desconeguts).
+ * @param {Object}               props
+ * @param {string}               props.nom           Nom del contacte.
+ * @param {string}               props.estatContacte Text sota el nom («en línia»…).
+ * @param {Object}               props.avatar        Foto de perfil.
+ * @param {Object[]}             props.grups         [{ dia, missatges: [{ id, propi, text, nota, hora }] }].
+ * @param {boolean}              props.escriu        El contacte escriu.
+ * @param {Object[]}             props.respostes     Respostes ràpides.
+ * @param {(id:string)=>void}    props.onResposta    Rep l'id de la resposta.
+ * @param {string}               props.placeholder   Text del camp desactivat.
+ * @param {?(text:string)=>void} props.onEnvia       Si hi és, el camp de text és actiu i rep el text escrit.
+ * @param {()=>void}             props.onEnrere      Només al mòbil: botó per tornar a la llista.
+ * @param {?Object}              props.contacte      Contacte de mon.json del xat (null: cap).
+ * @param {boolean}              props.bloquejat     El número ja és bloquejat.
+ * @param {()=>void}             props.onBloqueja    Bloqueja el número (desconeguts).
  */
 export function Conversa( {
 	nom,
@@ -123,11 +124,13 @@ export function Conversa( {
 	onResposta,
 	placeholder,
 	onEnrere,
+	onEnvia,
 	contacte = null,
 	bloquejat = false,
 	onBloqueja,
 } ) {
 	const [ descartat, setDescartat ] = useState( false );
+	const [ escrit, setEscrit ] = useState( '' );
 	const estat = estatAvis( { contacte, bloquejat, descartat } );
 	const estatBloq = useRef( null );
 	const registre = useRef( null );
@@ -173,6 +176,14 @@ export function Conversa( {
 			estatBloq.current?.focus();
 		}
 	}, [ estat ] );
+
+	const enviaText = ( e ) => {
+		e.preventDefault();
+		if ( escrit.trim() ) {
+			onEnvia( escrit );
+			setEscrit( '' );
+		}
+	};
 
 	const afegeix = () => {
 		setDescartat( true );
@@ -290,7 +301,11 @@ export function Conversa( {
 				) }
 			</div>
 			<Respostes respostes={ respostes } onResposta={ onResposta } />
-			<div className="nep-parla-compon">
+			<form
+				className="nep-parla-compon"
+				onSubmit={ enviaText }
+				autoComplete="off"
+			>
 				<span className="nep-parla-compon__eina" aria-hidden="true">
 					<IconaCara mida={ 22 } />
 				</span>
@@ -302,12 +317,20 @@ export function Conversa( {
 					className="nep-parla-compon__camp"
 					placeholder={ placeholder }
 					aria-label={ __( 'Missatge', 'noempesquen' ) }
-					disabled
+					disabled={ ! onEnvia }
+					value={ onEnvia ? escrit : '' }
+					onChange={ ( e ) => setEscrit( e.target.value ) }
 				/>
-				<span className="nep-parla-compon__eina" aria-hidden="true">
-					<IconaMicro mida={ 22 } />
-				</span>
-			</div>
+				{ onEnvia ? (
+					<button type="submit" className="nep-parla-compon__envia">
+						{ __( 'Envia', 'noempesquen' ) }
+					</button>
+				) : (
+					<span className="nep-parla-compon__eina" aria-hidden="true">
+						<IconaMicro mida={ 22 } />
+					</span>
+				) }
+			</form>
 		</div>
 	);
 }

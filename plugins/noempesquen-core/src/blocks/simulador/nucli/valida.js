@@ -40,6 +40,7 @@ export const ESDEVENIMENTS = [
 	'missatge.esborra',
 	'missatge.reenvia',
 	'missatge.respon',
+	'missatge.envia',
 	'enllac.mantingut',
 ];
 
@@ -113,6 +114,10 @@ function recullIdsApps( apps ) {
 					if ( item?.id !== undefined ) {
 						ids.add( item.id );
 					}
+					// Missatges d'un xat (apps.parla.xats[].missatges[]).
+					( Array.isArray( item?.missatges ) ? item.missatges : [] )
+						.filter( ( x ) => x?.id !== undefined )
+						.forEach( ( x ) => ids.add( x.id ) );
 				} );
 			}
 		} );
@@ -189,6 +194,56 @@ function validaDisparadors( m, errors ) {
 	}
 }
 
+function validaXatsParla( m, mon, errors ) {
+	const xats = m.apps?.parla?.xats;
+	if ( xats === undefined ) {
+		return;
+	}
+	if ( ! Array.isArray( xats ) ) {
+		errors.push( 'parla: xats ha de ser una llista' );
+		return;
+	}
+	const contactes = Array.isArray( mon?.contactes )
+		? new Set( mon.contactes.map( ( c ) => c.id ) )
+		: null;
+	const idsXat = new Set();
+	const idsMsg = new Set();
+	xats.forEach( ( x ) => {
+		if ( ! x || typeof x !== 'object' || ! x.id ) {
+			errors.push( 'parla: xat invàlid' );
+			return;
+		}
+		if ( idsXat.has( x.id ) ) {
+			errors.push( `parla: xat duplicat: ${ x.id }` );
+		}
+		idsXat.add( x.id );
+		if (
+			x.contacte !== undefined &&
+			contactes &&
+			! contactes.has( x.contacte )
+		) {
+			errors.push( `parla: contacte inexistent: ${ x.contacte }` );
+		}
+		if ( ! Array.isArray( x.missatges ) || ! x.missatges.length ) {
+			errors.push( `parla: xat sense missatges: ${ x.id }` );
+			return;
+		}
+		x.missatges.forEach( ( msg ) => {
+			if ( ! msg?.id || typeof msg.text !== 'string' || ! msg.text ) {
+				errors.push( `parla: missatge invàlid a ${ x.id }` );
+				return;
+			}
+			if ( ! [ 'ells', 'jo' ].includes( msg.de ) ) {
+				errors.push( `parla: remitent invàlid: ${ msg.id }` );
+			}
+			if ( idsMsg.has( msg.id ) ) {
+				errors.push( `parla: missatge duplicat: ${ msg.id }` );
+			}
+			idsMsg.add( msg.id );
+		} );
+	} );
+}
+
 function validaFormularis( domini, web, errors ) {
 	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
 		if ( ! f || typeof f !== 'object' ) {
@@ -213,10 +268,11 @@ function validaFormularis( domini, web, errors ) {
 /**
  * Valida una missió v2.
  *
- * @param {Object} m Missió a validar.
+ * @param {Object}  m   Missió a validar.
+ * @param {?Object} mon Món compartit (opcional): amb ell es comproven els contactes dels xats de Parla.
  * @return {string[]} Llista d'errors (buida si és vàlida).
  */
-export function validaMissio( m ) {
+export function validaMissio( m, mon ) {
 	if ( ! m || typeof m !== 'object' ) {
 		return [ 'no és un objecte' ];
 	}
@@ -288,6 +344,7 @@ export function validaMissio( m ) {
 		validaFormularis( domini, web, errors );
 	} );
 
+	validaXatsParla( m, mon, errors );
 	validaDisparadors( m, errors );
 
 	( m.decisio?.opcions ?? [] ).forEach( ( o ) => {
