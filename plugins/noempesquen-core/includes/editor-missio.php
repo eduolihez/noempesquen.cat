@@ -1,0 +1,196 @@
+<?php
+/**
+ * Editor del guió d'una missió al panell: caixa amb el dispositiu, el
+ * personatge i el guió JSON (wp.codeEditor), diagnòstic en viu i enllaç per
+ * provar-la al simulador. Només per a qui té `nep_gestiona_missions`.
+ *
+ * @package noempesquen-core
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Registra la caixa «Guió de la missió».
+ */
+function nep_afegeix_caixa_guio(): void {
+	if ( ! current_user_can( 'nep_gestiona_missions' ) ) {
+		return;
+	}
+	add_meta_box(
+		'nep-guio-missio',
+		__( 'Guió de la missió', 'noempesquen' ),
+		'nep_pinta_caixa_guio',
+		'nep_missio',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_nep_missio', 'nep_afegeix_caixa_guio' );
+
+/**
+ * URL de la pàgina que conté el bloc del simulador (o /simulador/ si no se'n troba cap).
+ *
+ * @return string
+ */
+function nep_url_simulador(): string {
+	$pagines = get_posts(
+		array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			's'              => 'wp:noempesquen/simulador',
+			'posts_per_page' => 5,
+			'no_found_rows'  => true,
+		)
+	);
+	foreach ( $pagines as $pagina ) {
+		if ( has_block( 'noempesquen/simulador', $pagina ) ) {
+			return (string) get_permalink( $pagina );
+		}
+	}
+	return home_url( '/simulador/' );
+}
+
+/**
+ * Pinta la caixa del guió.
+ *
+ * @param WP_Post $post Missió.
+ */
+function nep_pinta_caixa_guio( WP_Post $post ): void {
+	$dispositiu = (string) get_post_meta( $post->ID, 'nep_dispositiu', true );
+	$personatge = (string) get_post_meta( $post->ID, 'nep_personatge', true );
+	$guio       = (string) get_post_meta( $post->ID, 'nep_guio', true );
+	if ( '{}' !== $guio && '' !== $guio ) {
+		$descodificat = json_decode( $guio );
+		if ( null !== $descodificat ) {
+			$guio = (string) wp_json_encode( $descodificat, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		}
+	}
+	$dispositius = array(
+		'pc'    => __( 'Ordinador (pc)', 'noempesquen' ),
+		'mobil' => __( 'Mòbil (mobil)', 'noempesquen' ),
+	);
+	$personatges = array(
+		'llissa' => __( 'Llissa', 'noempesquen' ),
+		'remei'  => __( 'Remei', 'noempesquen' ),
+	);
+	wp_nonce_field( 'nep_desa_guio', 'nep_guio_nonce' );
+	?>
+	<div class="nep-guio-camps">
+		<p>
+			<label for="nep-dispositiu"><?php esc_html_e( 'Dispositiu', 'noempesquen' ); ?></label>
+			<select id="nep-dispositiu" name="nep_dispositiu">
+				<?php foreach ( $dispositius as $valor => $text ) : ?>
+					<option value="<?php echo esc_attr( $valor ); ?>" <?php selected( $dispositiu ?: 'pc', $valor ); ?>><?php echo esc_html( $text ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p>
+			<label for="nep-personatge"><?php esc_html_e( 'Personatge', 'noempesquen' ); ?></label>
+			<select id="nep-personatge" name="nep_personatge">
+				<?php foreach ( $personatges as $valor => $text ) : ?>
+					<option value="<?php echo esc_attr( $valor ); ?>" <?php selected( $personatge ?: 'llissa', $valor ); ?>><?php echo esc_html( $text ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+	</div>
+	<label id="nep-guio-etiqueta" class="nep-guio-etiqueta" for="nep-guio"><?php esc_html_e( 'Guió (JSON, format v2)', 'noempesquen' ); ?></label>
+	<textarea id="nep-guio" name="nep_guio" rows="20" spellcheck="false" aria-describedby="nep-guio-diagnostic"><?php echo esc_textarea( $guio ); ?></textarea>
+	<div id="nep-guio-diagnostic" class="nep-guio-diagnostic" role="status" aria-live="polite"></div>
+	<p class="nep-guio-prova">
+		<?php if ( 'auto-draft' === $post->post_status ) : ?>
+			<?php esc_html_e( 'Desa l\'esborrany per poder provar la missió al simulador.', 'noempesquen' ); ?>
+		<?php else : ?>
+			<a class="button" href="<?php echo esc_url( add_query_arg( 'previsualitza', $post->ID, nep_url_simulador() ) ); ?>"><?php esc_html_e( 'Prova-la al simulador', 'noempesquen' ); ?></a>
+			<span class="description"><?php esc_html_e( 'Prova el guió desat (també si és un esborrany). Desa abans els canvis.', 'noempesquen' ); ?></span>
+		<?php endif; ?>
+	</p>
+	<?php
+}
+
+/**
+ * Desa el dispositiu, el personatge i el guió de la caixa.
+ *
+ * Dispositiu i personatge primer: `nep_protegeix_guio_publicat` valida el guió
+ * amb els desats. La publicació d'un guió invàlid ja l'atura
+ * `nep_valida_missio_classica` (llegeix els mateixos camps del formulari).
+ *
+ * @param int $post_id Id de l'entrada.
+ */
+function nep_desa_caixa_guio( int $post_id ): void {
+	if ( ! isset( $_POST['nep_guio_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nep_guio_nonce'] ) ), 'nep_desa_guio' ) ) {
+		return;
+	}
+	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_post', $post_id ) || ! current_user_can( 'nep_gestiona_missions' ) ) {
+		return;
+	}
+
+	$valors = array(
+		'nep_dispositiu' => array( 'pc', 'mobil' ),
+		'nep_personatge' => array( 'llissa', 'remei' ),
+	);
+	foreach ( $valors as $clau => $permesos ) {
+		$valor = isset( $_POST[ $clau ] ) ? sanitize_key( wp_unslash( $_POST[ $clau ] ) ) : '';
+		if ( in_array( $valor, $permesos, true ) ) {
+			update_post_meta( $post_id, $clau, $valor );
+		}
+	}
+
+	if ( ! isset( $_POST['nep_guio'] ) || ! is_string( $_POST['nep_guio'] ) ) {
+		return;
+	}
+	// El sanejament (JSON normalitzat) el fa el sanitize_callback de la meta.
+	$json = wp_unslash( $_POST['nep_guio'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	// Un JSON que no es pot llegir es convertiria en '{}': es conserva el guió anterior.
+	if ( null === nep_descodifica_guio( $json, $error ) ) {
+		nep_desa_avis( 'guio-conservat', array( $error ) );
+		return;
+	}
+	update_post_meta( $post_id, 'nep_guio', wp_slash( $json ) );
+}
+add_action( 'save_post_nep_missio', 'nep_desa_caixa_guio' );
+
+/**
+ * Encua l'editor de codi i el diagnòstic només a la pantalla d'edició de `nep_missio`.
+ *
+ * @param string $hook Pantalla actual.
+ */
+function nep_encua_editor_missio( string $hook ): void {
+	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) || ! current_user_can( 'nep_gestiona_missions' ) ) {
+		return;
+	}
+	$pantalla = get_current_screen();
+	if ( ! $pantalla || 'nep_missio' !== $pantalla->post_type ) {
+		return;
+	}
+	$asset_file = NEP_PATH . 'build/editor-missio/index.asset.php';
+	if ( ! file_exists( $asset_file ) ) {
+		return;
+	}
+	$asset = require $asset_file;
+
+	$code_editor = wp_enqueue_code_editor( array( 'type' => 'application/json' ) );
+	$deps        = $asset['dependencies'];
+	if ( false !== $code_editor ) {
+		$deps[] = 'code-editor';
+	}
+
+	wp_enqueue_script( 'nep-editor-missio', NEP_URL . 'build/editor-missio/index.js', $deps, $asset['version'], true );
+	wp_set_script_translations( 'nep-editor-missio', 'noempesquen' );
+	wp_enqueue_style( 'nep-editor-missio', NEP_URL . 'build/editor-missio/style-index.css', array(), $asset['version'] );
+
+	$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Només llegeix l'id de la pantalla.
+	wp_add_inline_script(
+		'nep-editor-missio',
+		'window.nepEditorMissio = ' . wp_json_encode(
+			array(
+				'codeEditor'   => $code_editor,
+				'idsExistents' => nep_ids_missions_existents( $post_id ),
+			)
+		) . ';',
+		'before'
+	);
+}
+add_action( 'admin_enqueue_scripts', 'nep_encua_editor_missio' );
