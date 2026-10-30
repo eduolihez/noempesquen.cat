@@ -12,7 +12,7 @@ const MISSIO = /Em passes el codi\?/;
 const BLOQUEIG = /Llisca cap amunt/;
 const MARTA = [
 	'Ei! Em pots fer un favor?',
-	"M'ha arribat el teu número per error, passa'm el codi que t'acaba d'arribar, és urgent, el necessito ara!",
+	"T'ha arribat un codi per SMS? Me'l passes? És urgent, el necessito ara!",
 ];
 const SMS = [ "des d'un dispositiu nou", 'No el comparteixis amb ningú.' ];
 // El jugador escriu el codi de l'SMS amb un espai, com el veu.

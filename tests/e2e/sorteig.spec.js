@@ -12,7 +12,7 @@ const MISSIO = /Has guanyat un sorteig!/;
 const BLOQUEIG = /Llisca cap amunt/;
 const INDICIS_PUBLICACIO = [
 	'@cal.roig.botlga',
-	"Has estat triat/da i t'emportes un viatge de luxe per a dues persones, més un mòbil de gamma alta.",
+	"Has estat triat i t'emportes un viatge de luxe per a dues persones, més un mòbil de gamma alta.",
 	'Has guanyat el sorteig!',
 	'Només avui, o el premi passa a un altre.',
 ];

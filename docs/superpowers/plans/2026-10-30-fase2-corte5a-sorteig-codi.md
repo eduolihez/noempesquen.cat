@@ -1,6 +1,6 @@
 # Fase 2 · corte 5a: «Has guanyat un sorteig!» y «Em passes el codi?»
 
-Fecha: 2026-10-30 · Estado: pendiente de aprobación (puerta 2)
+Fecha: 2026-10-30 · Estado: aprobado y ejecutado
 
 ## Objetivo
 

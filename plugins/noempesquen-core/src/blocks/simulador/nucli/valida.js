@@ -73,6 +73,7 @@ const CAMPS_SENYAL = [
 	'assumpte_senyal',
 	'domini_senyal',
 	'senyal_avis',
+	'premi_senyal',
 ];
 
 /**
@@ -450,6 +451,9 @@ export function validaMissio( m, mon ) {
 		}
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
+		}
+		if ( web.plantilla === 'sorteig' && web.variant !== 'falsa' ) {
+			errors.push( `sorteig només admet variant falsa: ${ domini }` );
 		}
 		validaFormularis( domini, web, errors );
 	} );

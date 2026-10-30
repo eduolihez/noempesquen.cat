@@ -103,19 +103,19 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `publicacio.denuncia` | `id` (publicació d'Ullada denunciada) |
 | `codi.comparteix` | `contacte` (id del contacte a qui es dona el codi; mai el text escrit) |
 
-`codi.comparteix` s'emet sense text: només quan el que ha tecleat el jugador coincideix amb un codi d'un SMS visible de `apps.missatges.missatges`.
+`codi.comparteix` s'emet sense text: només quan el que ha tecleat el jugador coincideix amb un codi d'un SMS visible de `apps.missatges.missatges`. Limitació: no detecta codis trossejats (p. ex. «48 213 7») ni dits amb paraules («quatre-vuit…»); caldria una funció nova per detectar-los.
 
 Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloqueja` i després `missatge.esborra`.
 
 ## Publicacions d'Ullada
 
-`apps.ullada.publicacions[]`: `{ id, autor, text, il, likes, cos? }`.
+`apps.ullada.publicacions[]`: `{ id, autor, text, il, likes, cos? }` (`id` únic; `text`, `il` i `likes` obligatoris).
 
 - `autor`: id d'un perfil de `mon.ullada.perfils` (es valida quan es passa el món al validador).
 - `il`: il·lustració existent; `likes`: número.
 - `cos` (opcional): llista de paràgrafs, com als correus; cada segment és `{ "t": "...", "senyal"? }` o `{ "enllac": { "text", "url" } }` (url `http(s)://` o `cerca:`). Els senyals i les URL es validen igual que a la resta d'`apps`.
 
-La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa: dades opcionals `premi`, `premi_senyal`, `compte_enrere` i `formulari` (amb `esdeveniment: "pagament.fes"`).
+La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa (el validador rebutja qualsevol altra `variant`): dades opcionals `premi`, `premi_senyal`, `compte_enrere` i `formulari` (amb `esdeveniment: "pagament.fes"`).
 
 ## Efectes
 

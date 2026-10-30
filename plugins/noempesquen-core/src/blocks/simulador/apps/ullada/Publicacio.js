@@ -105,11 +105,11 @@ export function Publicacio( { publicacio } ) {
 					<span>{ __( 'Denuncia', 'noempesquen' ) }</span>
 				</button>
 			</div>
-			<p className="nep-ullada-pub__estat" role="status">
-				{ denunciada
-					? __( 'Denunciada. Gràcies.', 'noempesquen' )
-					: '' }
-			</p>
+			{ denunciada && (
+				<p className="nep-ullada-pub__estat" role="status">
+					{ __( 'Denunciada. Gràcies.', 'noempesquen' ) }
+				</p>
+			) }
 			{ Array.isArray( cos ) && cos.length ? (
 				<div className="nep-ullada-pub__text nep-ullada-pub__cos">
 					<strong>{ perfil.usuari || nom }</strong>

@@ -39,7 +39,7 @@
 							"de": "ells",
 							"ocult": true,
 							"hora": "21:14",
-							"text": "M'ha arribat el teu número per error, passa'm el codi que t'acaba d'arribar, és urgent, el necessito ara!",
+							"text": "T'ha arribat un codi per SMS? Me'l passes? És urgent, el necessito ara!",
 							"senyal": "demana_codi"
 						}
 					]
@@ -115,7 +115,7 @@
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "Marta",
-					"text": "M'ha arribat el teu número per error, passa'm el codi...",
+					"text": "T'ha arribat un codi per SMS? Me'l passes?...",
 					"xat": "marta",
 					"font": "mobil"
 				}
@@ -147,7 +147,7 @@
 			"id": "estil",
 			"requereix": "codi-1",
 			"titol": "No escriu com la Marta",
-			"explicacio": "«Ei! Em pots fer un favor?» sense explicar què, i amb un to estrany. La Marta té un altre estil, i mai et demana favors així, sense dir de què va.",
+			"explicacio": "«Ei! Em pots fer un favor?» sense explicar què ni per què, i amb un to estrany. La Marta sempre t'explica el motiu del favor i escriu de manera diferent; això sembla algú altre.",
 			"reaccio": "Compara-ho amb el xat de sempre de la Marta. Això no sona a ella."
 		},
 		{

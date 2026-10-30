@@ -555,3 +555,41 @@ describe( 'validaMissio: cos i autor de publicacions', () => {
 		expect( ESDEVENIMENTS ).toContain( 'codi.comparteix' );
 	} );
 } );
+
+describe( 'validaMissio: sorteig i premi_senyal', () => {
+	const sorteig = () =>
+		JSON.parse(
+			readFileSync(
+				new URL(
+					'../../../../../missions/remei-03-sorteig.json',
+					import.meta.url
+				),
+				'utf8'
+			)
+		);
+
+	it( 'detecta premi_senyal inexistent', () => {
+		const m = sorteig();
+		m.webs[ 'sorteig-calroig.top' ].premi_senyal = 'no_existeix';
+		expect( validaMissio( m ) ).toContain(
+			'senyal desconegut: no_existeix'
+		);
+	} );
+
+	it( 'rebutja variant diferent de falsa a la plantilla sorteig', () => {
+		const m = sorteig();
+		m.webs[ 'sorteig-calroig.top' ].variant = 'oficial';
+		expect( validaMissio( m ) ).toContain(
+			'sorteig només admet variant falsa: sorteig-calroig.top'
+		);
+	} );
+
+	it( 'amb mon.ullada.perfils buit, tot autor és inexistent', () => {
+		const m = sorteig();
+		const mon = { ullada: { perfils: [] } };
+		const errors = validaMissio( m, mon );
+		expect( errors.some( ( e ) => e.includes( 'autor inexistent' ) ) ).toBe(
+			true
+		);
+	} );
+} );

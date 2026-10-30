@@ -17,7 +17,8 @@ export default function Sorteig( { dades, url } ) {
 	const formulari = dades?.formulari ?? { id: 'formulari', camps: [] };
 	const premi = dades?.premi ?? __( 'Un telèfon mòbil nou', 'noempesquen' );
 	const compte =
-		dades?.compte_enrere ?? __( 'Només et queden 09:41', 'noempesquen' );
+		dades?.compte_enrere ??
+		__( 'Només et queden 09:41 minuts', 'noempesquen' );
 	const total = importDe( formulari.boto ) || __( '2,95 €', 'noempesquen' );
 
 	return (
@@ -40,7 +41,7 @@ export default function Sorteig( { dades, url } ) {
 					<h2>{ __( "Despeses d'enviament", 'noempesquen' ) }</h2>
 					<p>
 						{ __(
-							'Paga només les despeses d’enviament per rebre el teu premi:',
+							"Paga només les despeses d'enviament per rebre el teu premi:",
 							'noempesquen'
 						) }{ ' ' }
 						<strong>{ total }</strong>
