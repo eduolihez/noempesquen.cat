@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { nomJugador } from '../../nucli/jugador.js';
 import { useJoc } from '../../simulador/context';
 import { propsEnllac } from '../enllac';
 import { IconaCadenat } from '../comu/icones';
@@ -37,7 +38,7 @@ export default function BancSolid( { dades, url, navega, onHoverUrl } ) {
 	const base = origen( url );
 	const seccio = falsa ? null : seccioBanc( url );
 	const enllac = ( cami ) => propsEnllac( base + cami, navega, onHoverUrl );
-	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nom = nomJugador( mon );
 
 	return (
 		<div className={ `nep-bs${ falsa ? ' nep-bs--falsa' : '' }` }>

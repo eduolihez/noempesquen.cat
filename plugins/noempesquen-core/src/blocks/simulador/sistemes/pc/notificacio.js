@@ -3,6 +3,7 @@
  * de quin tipus és, quin títol i quin origen porta. Les icones i els
  * components els tria Notificacions.js a partir del resultat.
  */
+import { nomJugador as nomDelMon, nomPila } from '../../nucli/jugador.js';
 
 /**
  * Nom curt del propietari del mòbil vinculat («Àlex Puig» → «Àlex»).
@@ -11,7 +12,7 @@
  * @return {string} Primer nom.
  */
 export function nomCurt( nom ) {
-	return ( nom || 'Àlex Puig' ).trim().split( /\s+/ )[ 0 ];
+	return nomPila( { jugador: { nom } } );
 }
 
 /**
@@ -58,13 +59,15 @@ export function presenta(
 		const nomApp = nomsAppsMobil[ n.app ];
 		return {
 			tipus: 'mobil',
-			app: etiquetaMobil( mon?.jugador?.nom, nomApp ),
+			app: etiquetaMobil( nomDelMon( mon ), nomApp ),
 			titol: n.titol,
 			iconaApp: nomApp ? n.app : null,
 		};
 	}
 	if ( n.app === 'parla' ) {
-		const contacte = mon?.contactes?.find( ( c ) => c.id === n.titol );
+		const contacte = mon?.contactes?.find(
+			( c ) => c.id === n.titol || c.nom === n.titol
+		);
 		return {
 			tipus: 'parla',
 			app: 'Parla',

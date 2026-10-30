@@ -55,6 +55,17 @@ describe( 'presenta', () => {
 	} );
 } );
 
+describe( 'contacte a Parla', () => {
+	it( 'es troba per id o per nom visible', () => {
+		expect( presenta( { app: 'parla', titol: 'llissa' }, ctx ).titol ).toBe(
+			'Llissa'
+		);
+		expect( presenta( { app: 'parla', titol: 'Llissa' }, ctx ).titol ).toBe(
+			'Llissa'
+		);
+	} );
+} );
+
 describe( 'helpers', () => {
 	it( 'nomCurt i etiquetaMobil', () => {
 		expect( nomCurt( 'Àlex Puig' ) ).toBe( 'Àlex' );

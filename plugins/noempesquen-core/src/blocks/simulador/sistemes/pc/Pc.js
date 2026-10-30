@@ -84,7 +84,7 @@ export default function Pc() {
 	// Parla en primer pla: els seus missatges ja es veuen, queden llegits.
 	const parlaActiva = f.focus === 'parla';
 	const parlaPendent = estat.notificacions.some(
-		( n ) => n.app === 'parla' && ! n.llegida
+		( n ) => n.app === 'parla' && ! n.font && ! n.llegida
 	);
 	useEffect( () => {
 		if ( parlaActiva && parlaPendent ) {

@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { nomPila as nomPilaMon } from '../../nucli/jugador.js';
 import { useJoc } from '../../simulador/context';
 import { IconaCorrecte, IconaEscut, IconaMobil, IconaTargeta } from './Marca';
 
@@ -227,7 +228,7 @@ function AreaClients( { missatge, nomPila } ) {
  */
 export function Oficial( { seccio, dades, enllac } ) {
 	const { mon } = useJoc();
-	const nomPila = ( mon?.jugador?.nom ?? 'Àlex Puig' ).split( ' ' )[ 0 ];
+	const nomPila = nomPilaMon( mon );
 	const missatge =
 		typeof dades?.missatge === 'string' && dades.missatge.trim()
 			? dades.missatge

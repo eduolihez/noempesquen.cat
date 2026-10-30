@@ -1,4 +1,5 @@
 import { useEffect, useRef } from '@wordpress/element';
+import { nomJugador } from '../../nucli/jugador.js';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { IconaBateria, IconaWifi } from '../../ui/icones';
@@ -18,7 +19,7 @@ import { teclaDesbloqueig } from './tecles';
 export function Bloqueig( { sortint, onFi } ) {
 	const { hora, dispatch, estat, mon } = useJoc();
 	const boto = useRef( null );
-	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nom = nomJugador( mon );
 	const pausa = estat.pausa;
 
 	useEffect( () => {

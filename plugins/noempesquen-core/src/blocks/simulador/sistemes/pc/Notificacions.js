@@ -39,7 +39,7 @@ export function descriu( n, { mon, nomGuia, Avatar } ) {
 		nomsAppsMobil: mapaNoms( APPS_MOBIL ),
 	} );
 	if ( p.tipus === 'mobil' ) {
-		const IconaApp = p.iconaApp ? APPS_MOBIL[ p.iconaApp ].Icona : null;
+		const IconaApp = p.iconaApp ? APPS_MOBIL[ p.iconaApp ]?.Icona : null;
 		return {
 			app: p.app,
 			AppIcona: IconaMobil,
@@ -187,7 +187,9 @@ export function Toasts( { onObre, parlaActiva, amagats, silenci } ) {
 		setAnunci( `${ d.app }. ${ d.titol }: ${ darrera.text }` );
 		const mostra = noves
 			.filter(
-				( n ) => ! n.llegida && ! ( n.app === 'parla' && parlaActiva )
+				( n ) =>
+					! n.llegida &&
+					! ( n.app === 'parla' && ! n.font && parlaActiva )
 			)
 			.map( ( n ) => n.id );
 		if ( mostra.length && ! silenci ) {

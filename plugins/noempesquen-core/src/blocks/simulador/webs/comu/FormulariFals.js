@@ -1,4 +1,5 @@
 import { createRef, useMemo, useState } from '@wordpress/element';
+import { nomJugador } from '../../nucli/jugador.js';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Inspeccionable } from '../../ui/Inspeccionable';
@@ -68,7 +69,7 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 		processant: __( 'Processant el pagament…', 'noempesquen' ),
 		nota: __( 'Pagament segur i verificat', 'noempesquen' ),
 	} );
-	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nom = nomJugador( mon );
 	const numero = camps.find( ( c ) => c.id === 'numero' )?.autoompli;
 	const suggeriment = {
 		titol: numero

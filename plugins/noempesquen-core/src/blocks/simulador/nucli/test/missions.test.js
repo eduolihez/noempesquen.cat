@@ -22,15 +22,21 @@ const v2 = ( id, extra = {} ) => ( {
 } );
 it( 'totes les missions incloses validen amb mon', () => {
 	const dir = new URL( '../../../../../missions/', import.meta.url );
-	const mon = JSON.parse( readFileSync( new URL( 'mon.json', dir ), 'utf8' ) );
+	const mon = JSON.parse(
+		readFileSync( new URL( 'mon.json', dir ), 'utf8' )
+	);
 	const fitxers = readdirSync( dir ).filter(
 		( f ) => f.endsWith( '.json' ) && f !== 'mon.json'
 	);
 	expect( fitxers.length ).toBeGreaterThan( 0 );
+	const errors = [];
 	for ( const f of fitxers ) {
 		const m = JSON.parse( readFileSync( new URL( f, dir ), 'utf8' ) );
-		expect( validaMissio( m, mon ), f ).toEqual( [] );
+		errors.push(
+			...validaMissio( m, mon ).map( ( e ) => `${ f }: ${ e }` )
+		);
 	}
+	expect( errors ).toEqual( [] );
 } );
 const v1 = { id: 'antiga', versio: 1, titol: 'Antiga' };
 

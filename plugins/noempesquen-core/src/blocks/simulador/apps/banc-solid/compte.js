@@ -5,9 +5,11 @@
  * camp. Aquest mòdul només valida; no desa res.
  */
 
+import { nomPila, NOM_PER_DEFECTE } from '../../nucli/jugador.js';
+
+export { NOM_PER_DEFECTE };
 export const URL_APP = 'app://bancsolid';
 export const FORMULARI_TRANSFERENCIA = 'transferencia';
-export const NOM_PER_DEFECTE = 'Àlex Puig';
 export const IBAN_COMPTE = 'ES12 9999 1500 0512 3456 4821';
 export const SALDO = 2348.62;
 
@@ -17,11 +19,7 @@ export const SALDO = 2348.62;
  * @param {?Object} mon Món de la missió ({ jugador: { nom } }).
  * @return {string} Primer mot del nom, o el per defecte.
  */
-export function nomPilaJugador( mon ) {
-	const nom = mon?.jugador?.nom;
-	const net = typeof nom === 'string' && nom.trim() ? nom : NOM_PER_DEFECTE;
-	return net.trim().split( /\s+/ )[ 0 ];
-}
+export const nomPilaJugador = nomPila;
 
 /**
  * Import en format català: «2.348,62 €».

@@ -5,6 +5,7 @@ import {
 	useRef,
 	useState,
 } from '@wordpress/element';
+import { nomJugador as nomDelJugador } from '../../nucli/jugador.js';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { IconaCerca } from '../../ui/icones';
@@ -135,7 +136,7 @@ export default function Posta( { obrePestanya, onHoverUrl } ) {
 	const comptes = comptadors( correus, marques );
 	const mostrats = filtra( perCarpeta( correus, marques, carpeta ), cerca );
 	const obert = correus.find( ( c ) => c.id === obertId ) ?? null;
-	const nomJugador = mon?.jugador?.nom ?? 'Àlex Puig';
+	const nomJugador = nomDelJugador( mon );
 	const correuJugador = mon?.jugador?.correu ?? 'alex.puig@posta.cat';
 
 	// Un correu només entra amb animació la primera vegada que es veu.
