@@ -113,11 +113,11 @@ export function PeticioGirar( { mobil, pausa, onSurt } ) {
 				<p id="nep-so-girar-text" className="nep-so-girar__text">
 					{ tactil
 						? __(
-								'Aquesta missió passa en un ordinador i necessita la pantalla en horitzontal. La partida és en pausa: continuarà on l’has deixada.',
+								'Aquesta missió passa en un ordinador i necessita la pantalla en horitzontal. La partida queda en pausa i continuarà on l’has deixada.',
 								'noempesquen'
 							)
 						: __(
-								'Aquesta missió passa en un ordinador i necessita una finestra més ampla. La partida és en pausa: continuarà on l’has deixada.',
+								'Aquesta missió passa en un ordinador i necessita una finestra més ampla. La partida queda en pausa i continuarà on l’has deixada.',
 								'noempesquen'
 							) }
 				</p>
