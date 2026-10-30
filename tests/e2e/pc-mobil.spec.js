@@ -1,18 +1,10 @@
 const { test, expect } = require( '@playwright/test' );
-const { greusAxe, iniciaMissio, petits } = require( './ajudes' );
-
-/*
- * PC escalat (< 1280 px): el contingut de les apps (navegador, Posta) no
- * arriba a 24 px reals i axe marca target-size. Pendent de T7/D3 (mínim
- * lògic 1024×576 o retocs de les apps); les altres regles s'apliquen igual.
- *
- * @param {import('@playwright/test').Page} page
- */
-const greusAxePc = async ( page ) =>
-	( await greusAxe( page ) ).filter(
-		( v ) =>
-			! ( v.id === 'target-size' && page.viewportSize().width < 1280 )
-	);
+const {
+	greusAxePc,
+	iniciaMissio,
+	petits,
+	senseFullscreen,
+} = require( './ajudes' );
 
 const MISSIO = /La factura de la llum/;
 const BLOQUEIG = /Clica o prem/;
@@ -75,18 +67,6 @@ const barra = ( page ) =>
 /* CSS i no rol: en mode girar el PC és aria-hidden. */
 const hora = ( page ) =>
 	page.locator( '.nep-so-barra__hora > span' ).first().textContent();
-
-/**
- * Sense pantalla completa real (la capa fixa fa el mateix paper): amb
- * pantalla completa Playwright no pot canviar la mida de la finestra.
- *
- * @param {import('@playwright/test').Page} page
- */
-const senseFullscreen = ( page ) =>
-	page.addInitScript( () => {
-		Element.prototype.requestFullscreen = () =>
-			Promise.reject( new Error( 'test' ) );
-	} );
 
 /** Entra a l'escriptori de la factura i salta la presentació. */
 async function entra( page ) {
@@ -199,6 +179,45 @@ test.describe( 'PC en pantalles petites', () => {
 		).toBeVisible();
 		await page.clock.runFor( 120000 );
 		expect( await hora( page ) ).not.toBe( aturada );
+	} );
+
+	test( 'en vertical amb el PC bloquejat, cap tecla el desbloqueja i «Torna al selector» hi torna', async ( {
+		page,
+	}, testInfo ) => {
+		test.skip(
+			testInfo.project.name !== 'mobil-horitzontal',
+			'Només al projecte mòbil horitzontal'
+		);
+		await page.setViewportSize( HORITZONTAL );
+		await senseFullscreen( page );
+		await iniciaMissio( page, MISSIO, BLOQUEIG );
+
+		await page.setViewportSize( VERTICAL );
+		const peticio = page.getByRole( 'alertdialog', {
+			name: 'Gira el mòbil',
+		} );
+		const torna = peticio.getByRole( 'button', {
+			name: 'Torna al selector',
+		} );
+		await expect( torna ).toBeFocused();
+		// El bloqueig escolta qualsevol tecla: en mode girar no ha de fer res.
+		await page.keyboard.press( 'a' );
+		await page.keyboard.press( 'Shift' );
+		await page.clock.runFor( 1000 );
+		await page.setViewportSize( HORITZONTAL );
+		await expect(
+			page.getByRole( 'button', { name: BLOQUEIG } )
+		).toBeVisible();
+		await expect( parla( page ) ).toHaveCount( 0 );
+
+		// Torna al selector amb Enter: surt de la missió.
+		await page.setViewportSize( VERTICAL );
+		await expect( torna ).toBeFocused();
+		await page.keyboard.press( 'Enter' );
+		await expect( page.locator( '.nep-so' ) ).toHaveCount( 0 );
+		await expect(
+			page.getByRole( 'button', { name: MISSIO } )
+		).toBeVisible();
 	} );
 
 	test( 'a l’escriptori gran no s’escala; a 1024×768 sí', async ( {

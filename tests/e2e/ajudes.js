@@ -137,7 +137,59 @@ const esHoritzontal = ( page ) => {
 	return width > height;
 };
 
+/**
+ * Com `greusAxe`, però sense els `target-size` del contingut de les apps
+ * (cos de les finestres) quan el PC és escalat: a escala ~0,5 el navegador,
+ * Posta i Parla no arriben a 24 px reals. La resta del sistema PC sí que
+ * es comprova.
+ * T7: treure aquest filtre quan s'arreglin les apps o es baixi el mínim
+ * lògic (D3, 1024×576).
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+async function greusAxePc( page ) {
+	const greus = await greusAxe( page );
+	const resultat = [];
+	for ( const v of greus ) {
+		if ( v.id !== 'target-size' ) {
+			resultat.push( v );
+			continue;
+		}
+		const fora = await page.evaluate(
+			( selectors ) =>
+				selectors.filter(
+					( sel ) =>
+						! document
+							.querySelector( sel )
+							?.closest(
+								'.nep-so-pantalla.is-escalat .nep-so-finestra__cos'
+							)
+				),
+			v.targets
+		);
+		if ( fora.length ) {
+			resultat.push( { ...v, targets: fora } );
+		}
+	}
+	return resultat;
+}
+
+/**
+ * Sense pantalla completa real (la capa fixa fa el mateix paper): amb
+ * pantalla completa Playwright no pot canviar la mida de la finestra.
+ * Cal cridar-la abans de `page.goto`.
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+const senseFullscreen = ( page ) =>
+	page.addInitScript( () => {
+		window.Element.prototype.requestFullscreen = () =>
+			Promise.reject( new Error( 'test' ) );
+	} );
+
 module.exports = {
+	greusAxePc,
+	senseFullscreen,
 	esPcEnMobil,
 	esHoritzontal,
 	greusAxe,

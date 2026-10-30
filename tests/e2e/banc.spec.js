@@ -1,6 +1,7 @@
 const { test, expect } = require( '@playwright/test' );
 const {
-	greusAxe,
+	greusAxePc,
+	senseFullscreen,
 	inspecciona,
 	iniciaMissio,
 	escoltaFuites,
@@ -8,17 +9,6 @@ const {
 	esHoritzontal,
 } = require( './ajudes' );
 
-/*
- * PC escalat (< 1280 px): el contingut de les apps (navegador, Posta) no
- * arriba a 24 px reals i axe marca target-size. Pendent de T7/D3 (mínim
- * lògic 1024×576 o retocs de les apps); les altres regles s'apliquen igual.
- *
- * @param {import('@playwright/test').Page} page
- */
-const greusAxePc = async ( page ) =>
-	( await greusAxe( page ) ).filter(
-		( v ) => ! ( v.id === 'target-size' && page.viewportSize().width < 1280 )
-	);
 
 const MISSIO = /El banc et bloqueja el compte/;
 const BLOQUEIG = /Clica o prem/;
@@ -271,6 +261,34 @@ test.describe( 'El banc et bloqueja el compte', () => {
 		await expect( pausa ).toHaveCount( 0 );
 		await page.keyboard.press( 'Escape' );
 		await expect( pausa ).toBeVisible();
+	} );
+
+	test( 'en mode girar el toast no caduca i la partida continua', async ( {
+		page,
+	}, testInfo ) => {
+		test.skip(
+			testInfo.project.name !== 'mobil-horitzontal',
+			'Només al projecte mòbil horitzontal'
+		);
+		await page.setViewportSize( { width: 915, height: 412 } );
+		await senseFullscreen( page );
+		await mirantElCorreu( page );
+		await obreWebFalsa( page );
+		await enviaPas1( page );
+		await page.clock.runFor( 3500 );
+		const toast = page
+			.locator( '.nep-so-toasts li' )
+			.filter( { hasText: ORIGEN_MOBIL } );
+		await expect( toast ).toBeVisible();
+
+		// En vertical el joc s'atura: el toast (6 s) no es descarta.
+		await page.setViewportSize( { width: 412, height: 915 } );
+		await expect(
+			page.getByRole( 'alertdialog', { name: 'Gira el mòbil' } )
+		).toBeVisible();
+		await page.clock.runFor( 8000 );
+		await page.setViewportSize( { width: 915, height: 412 } );
+		await expect( toast ).toBeVisible();
 	} );
 
 	test.describe( 'accessibilitat', () => {

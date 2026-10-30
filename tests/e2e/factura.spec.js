@@ -1,17 +1,11 @@
 const { test, expect } = require( '@playwright/test' );
-const { esHoritzontal, greusAxe, inspecciona, iniciaMissio } = require( './ajudes' );
+const {
+	esHoritzontal,
+	greusAxePc,
+	inspecciona,
+	iniciaMissio,
+} = require( './ajudes' );
 
-/*
- * PC escalat (< 1280 px): el contingut de les apps (navegador, Posta) no
- * arriba a 24 px reals i axe marca target-size. Pendent de T7/D3 (mínim
- * lògic 1024×576 o retocs de les apps); les altres regles s'apliquen igual.
- *
- * @param {import('@playwright/test').Page} page
- */
-const greusAxePc = async ( page ) =>
-	( await greusAxe( page ) ).filter(
-		( v ) => ! ( v.id === 'target-size' && page.viewportSize().width < 1280 )
-	);
 
 const MISSIO = /La factura de la llum/;
 const BLOQUEIG = /Clica o prem/;
