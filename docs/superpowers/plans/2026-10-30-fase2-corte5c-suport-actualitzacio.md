@@ -1,6 +1,6 @@
 # Corte 5c · Pop-up de soporte técnico y falsa actualización del navegador
 
-Estado: **pendiente de aprobación**. Rama prevista: `feat/fase2-corte5c-suport-actualitzacio` (base: `master`, que ya incluye 5a y 5b).
+Estado: aprobado, en ejecución. Rama prevista: `feat/fase2-corte5c-suport-actualitzacio` (base: `master`, que ya incluye 5a y 5b).
 Spec vigente: `docs/superpowers/specs/2026-10-29-simulador-realista-design.md`. Plan anterior: `2026-10-30-fase2-corte5b-revenda-inversio.md`.
 
 ## Objetivo
@@ -56,3 +56,6 @@ Fase 3 (IA, cuentas, CPT), sonido de alarma real, fingir un bloqueo real del nav
 - Accesibilidad de un overlay "agresivo": nada que parpadee más de 3 veces/s, contador sin `aria-live` asertivo.
 - Cuenta de apps/misiones en `selector.spec.js` y en el inicio del PC a anchos pequeños.
 - Dominios `.top` inventados: comprobar que no sean de marcas reales.
+
+## Resultado T0
+lint:js 0 errores (134 warnings jsdoc), lint:css 0, unit 503/503, build OK (aviso de tamaño). Playwright: 234 pasados, 106 skipped, 1 fallo en `farcit.spec.js:143` (`mobil-horitzontal`, timeout de carga) que **pasa en aislamiento** (flaky, no de esta rama).

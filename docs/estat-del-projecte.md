@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`; 5a y 5b hechos en rama)
+Última actualización: 2026-10-30 (cortes 3, 4a, 4b, 5a y 5b mergeados a `master`; 5c en curso)
 
 ## Dónde estamos
 
@@ -13,8 +13,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
 | Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
 | Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
-| Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho en rama** `feat/fase2-corte5a-sorteig-codi`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
-| Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho en rama** `feat/fase2-corte5b-revenda-inversio`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
+| Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
+| Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
 | Fase 2 y 3       | Misiones 9-10 (corte 5c): pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
 
 ## Cómo retomar
