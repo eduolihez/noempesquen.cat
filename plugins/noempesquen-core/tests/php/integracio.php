@@ -257,6 +257,22 @@ foreach ( array_unique( $nep_creades ) as $nep_id ) {
 	wp_delete_post( $nep_id, true );
 }
 
+// Desinstal·lació (a l'entorn de proves): esborra transients propis, opcions i taula; després es restaura.
+set_transient( 'nep_rl_prova', array( 'n' => 1 ), 60 );
+set_transient( 'nep_avis_99999', array( 'errors' => array( 'x' ) ), 60 );
+set_transient( 'nepaltre_prova', 1, 60 );
+define( 'WP_UNINSTALL_PLUGIN', 'noempesquen-core/noempesquen-core.php' );
+require NEP_PATH . 'uninstall.php';
+wp_cache_flush();
+$nep_comprova(
+	false === get_transient( 'nep_rl_prova' ) && false === get_transient( 'nep_avis_99999' ) && 1 === (int) get_transient( 'nepaltre_prova' ),
+	'uninstall: esborra els transients nep_rl_* i nep_avis_* (i cap altre)'
+);
+$nep_comprova( false === get_option( 'nep_db_version' ) && null === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( nep_taula_resultats() ) ) ), 'uninstall: esborra la versió i la taula' ); // phpcs:ignore WordPress.DB
+delete_transient( 'nepaltre_prova' );
+nep_actualitza();
+$nep_comprova( NEP_DB_VERSION === get_option( 'nep_db_version' ), 'uninstall: restaurat amb nep_actualitza()' );
+
 if ( $nep_fallades ) {
 	WP_CLI::error( "$nep_fallades comprovacions fallades." );
 }

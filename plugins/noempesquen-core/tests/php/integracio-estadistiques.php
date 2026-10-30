@@ -139,6 +139,8 @@ $nep_reescriu(
 );
 $nep_comprova( false === get_option( 'nep_db_version' ) && get_transient( 'nep_avis_taula' ), 'taula: si no es pot crear, no es desa nep_db_version i hi ha avís' );
 wp_set_current_user( 1 );
+// Amb pantalla: els altres avisos del nucli la llegeixen.
+set_current_screen( 'edit-nep_missio' );
 ob_start();
 do_action( 'admin_notices' );
 $nep_html = (string) ob_get_clean();

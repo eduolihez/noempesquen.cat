@@ -1,6 +1,6 @@
 <?php
 /**
- * Desinstal·lació: neteja opcions, capacitats i taules pròpies.
+ * Desinstal·lació: neteja opcions, transients, capacitats i taules pròpies.
  *
  * Es conserva el contingut: no s'esborren usuaris ni les missions (posts `nep_missio`).
  */
@@ -8,12 +8,23 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 /**
- * Neteja opcions, capacitats i taules del lloc actual.
+ * Neteja opcions, transients, capacitats i taules del lloc actual.
  */
 function nep_neteja_lloc(): void {
+	global $wpdb;
+
 	// Llista explícita d'opcions conegudes (afegir-hi les noves).
 	foreach ( array( 'nep_db_version', 'nep_sal_dia' ) as $opcio ) {
 		delete_option( $opcio );
+	}
+
+	// Transients propis: límit d'enviaments (`nep_rl_*`), avisos (`nep_avis_*`) i cau de missions.
+	delete_transient( 'nep_cau_missions' );
+	foreach ( array( 'nep_rl_', 'nep_avis_' ) as $prefix ) {
+		foreach ( array( '_transient_', '_transient_timeout_' ) as $tipus ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Esborrar transients propis per prefix en desinstal·lar.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( $tipus . $prefix ) . '%' ) );
+		}
 	}
 
 	// Capacitats pròpies a tots els rols.
@@ -23,7 +34,6 @@ function nep_neteja_lloc(): void {
 	}
 
 	// Taula d'estadístiques agregades (una per lloc).
-	global $wpdb;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Esborrar la taula pròpia en desinstal·lar.
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nep_resultats" );
 }
@@ -31,8 +41,11 @@ function nep_neteja_lloc(): void {
 if ( is_multisite() ) {
 	foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $nep_lloc ) {
 		switch_to_blog( $nep_lloc );
-		nep_neteja_lloc();
-		restore_current_blog();
+		try {
+			nep_neteja_lloc();
+		} finally {
+			restore_current_blog();
+		}
 	}
 } else {
 	nep_neteja_lloc();

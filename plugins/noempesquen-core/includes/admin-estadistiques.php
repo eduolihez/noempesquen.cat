@@ -80,7 +80,7 @@ function nep_pinta_estadistiques(): void {
 			<div class="notice notice-error inline"><p><?php esc_html_e( 'No s\'ha pogut llegir la taula d\'estadístiques.', 'noempesquen' ); ?></p></div>
 		<?php endif; ?>
 		<p><strong><?php esc_html_e( 'Dades indicatives.', 'noempesquen' ); ?></strong>
-			<?php esc_html_e( 'Recompte anònim de partides acabades: no es desa cap dada de qui juga. Les missions amb menys de 10 partides en el període no mostren xifres.', 'noempesquen' ); ?></p>
+			<?php esc_html_e( 'Recompte anònim de partides acabades: amb els resultats no es desa cap dada de qui juga. Per limitar els enviaments es guarda, com a molt una hora, un seudònim de la IP que no es pot relacionar amb els resultats. Les missions amb menys de 10 partides en el període no mostren xifres.', 'noempesquen' ); ?></p>
 
 		<form method="get">
 			<input type="hidden" name="post_type" value="nep_missio">

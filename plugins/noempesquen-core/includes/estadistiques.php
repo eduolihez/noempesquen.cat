@@ -3,9 +3,12 @@
  * Estadístiques agregades i anònimes de les partides acabades.
  *
  * Cada partida suma 1 a un comptador per (missió, versió del guió, dia,
- * estrelles, decisió). No es desa res que identifiqui ningú: ni usuari, ni IP,
- * ni hora (només el dia). Les funcions pures (sense WordPress) es proven amb
- * PHPUnit; la resta necessita WordPress.
+ * estrelles, decisió). A la taula no hi ha res que identifiqui ningú: ni
+ * usuari, ni IP, ni hora (només el dia). El límit d'enviaments sí que fa
+ * servir la IP, seudonimitzada (HMAC amb sal diària) en un transient que
+ * caduca en una hora com a màxim i que no es relaciona amb les files.
+ * Les funcions pures (sense WordPress) es proven amb PHPUnit; la resta
+ * necessita WordPress.
  *
  * @package noempesquen-core
  */
@@ -252,13 +255,15 @@ function nep_sal_dia(): string {
 }
 
 /**
- * Nom del transient del límit per a una IP: només el hash salat, mai la IP.
+ * Nom del transient del límit per a una IP: un seudònim (HMAC amb la sal
+ * d'autenticació del lloc i la sal del dia), mai la IP. Sense les dues sals
+ * no es pot recalcular; el transient caduca en una hora com a màxim.
  *
- * @param string $ip Adreça (REMOTE_ADDR).
+ * @param string $ip Adreça del client.
  * @return string
  */
 function nep_clau_limit( string $ip ): string {
-	return 'nep_rl_' . substr( hash_hmac( 'sha256', $ip, nep_sal_dia() ), 0, 32 );
+	return 'nep_rl_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) . nep_sal_dia() ), 0, 32 );
 }
 
 /**
