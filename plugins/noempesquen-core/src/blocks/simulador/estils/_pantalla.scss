@@ -7,7 +7,7 @@
 	width: 100%;
 
 	/* Objectius tàctils: 44 px reals, en píxels lògics del PC escalat.
-	   El mig píxel evita quedar-se a 43,99 px per l'arrodoniment. */
+	   +0.5px compensa l'arrodoniment de l'escala (si no, queden 43,99 px). */
 	&.is-tactil {
 		--so-tactil: max(1px, calc(44px / var(--so-escala, 1) + 0.5px));
 	}

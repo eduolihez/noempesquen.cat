@@ -82,11 +82,18 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		}
 	} );
 
-	useAillament( arrel );
-	useSoNotificacions( arrel, estat );
 	const pantalla = usePantalla( missio.dispositiu ?? 'pc' );
-	// Amb la petició de girar el rellotge s'atura com en la pausa.
+	// Amb la petició de girar el joc s'atura com en la pausa: el sistema
+	// (bloqueig, toasts, rellotge, so) veu `pausa`, però el diàleg de pausa
+	// només surt amb la pausa real.
 	const girar = pantalla.mode === 'girar';
+	const estatJoc = useMemo(
+		() => ( girar && ! estat.pausa ? { ...estat, pausa: true } : estat ),
+		[ estat, girar ]
+	);
+
+	useAillament( arrel );
+	useSoNotificacions( arrel, estatJoc );
 
 	// El clic a la targeta és el gest d'usuari: demanem pantalla completa
 	// en muntar. Si el navegador la rebutja, s'activa la capa fixa.
@@ -169,7 +176,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		() => ( {
 			missio,
 			mon,
-			estat,
+			estat: estatJoc,
 			dispatch,
 			emet,
 			hora,
@@ -181,7 +188,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		[
 			missio,
 			mon,
-			estat,
+			estatJoc,
 			emet,
 			hora,
 			nomGuia,
@@ -235,6 +242,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 						<Pantalla
 							dispositiu={ missio.dispositiu ?? 'pc' }
 							pantalla={ pantalla }
+							pausa={ estat.pausa }
 							onSurt={ surtDelJoc }
 						>
 							<Suspense fallback={ <Carregant /> }>

@@ -64,18 +64,28 @@ function IconaGira() {
  * cap. La partida queda aturada al darrere fins que torna a cabre.
  *
  * @param {Object}   props
- * @param {boolean}  props.tactil Pantalla tàctil (mòbil o tauleta).
+ * @param {boolean}  props.mobil  Dispositiu tàctil (mòbil o tauleta).
+ * @param {boolean}  props.pausa  La pausa real és oberta a sobre.
  * @param {Function} props.onSurt Torna al selector.
  */
-export function PeticioGirar( { tactil, onSurt } ) {
+export function PeticioGirar( { mobil, pausa, onSurt } ) {
 	const boto = useRef( null );
+	const tactil = mobil;
 
+	// Focus al botó en aparèixer i en tancar-se la pausa de sobre.
 	useEffect( () => {
-		boto.current?.focus();
+		if ( ! pausa ) {
+			boto.current?.focus();
+		}
+	}, [ pausa ] );
+
+	// Opcional: només funciona en pantalla completa i en alguns mòbils. No
+	// es desbloqueja en desmuntar (tornaria a vertical): ho fa Pantalla en
+	// sortir del simulador.
+	useEffect( () => {
 		if ( ! tactil ) {
 			return;
 		}
-		// Opcional: només funciona en pantalla completa i en alguns mòbils.
 		try {
 			window.screen?.orientation
 				?.lock?.( 'landscape' )

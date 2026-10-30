@@ -1,16 +1,21 @@
 import { useEffect, useState } from '@wordpress/element';
 import { calculaPantalla } from './pantalla';
 
-const esTactil = () =>
-	!! window.matchMedia?.( '(pointer: coarse)' ).matches ||
-	( window.navigator?.maxTouchPoints ?? 0 ) > 0;
+/* Punter principal gruixut (dit): els portàtils tàctils amb ratolí no. */
+const esTactil = () => !! window.matchMedia?.( '(pointer: coarse)' ).matches;
+/* Només per triar el text («Gira el mòbil» o «Amplia la finestra»). */
+const teTactil = () => ( window.navigator?.maxTouchPoints ?? 0 ) > 0;
 
 function llegeix( dispositiu ) {
 	const vp = window.visualViewport ?? window;
 	const w = vp.width ?? vp.innerWidth;
 	const h = vp.height ?? vp.innerHeight;
 	const tactil = esTactil();
-	return { ...calculaPantalla( { w, h, tactil, dispositiu } ), tactil };
+	return {
+		...calculaPantalla( { w, h, tactil, dispositiu } ),
+		tactil,
+		mobil: tactil || teTactil(),
+	};
 }
 
 const iguals = ( a, b ) => Object.keys( a ).every( ( k ) => a[ k ] === b[ k ] );
@@ -20,7 +25,7 @@ const iguals = ( a, b ) => Object.keys( a ).every( ( k ) => a[ k ] === b[ k ] );
  * S'actualitza en redimensionar o girar.
  *
  * @param {string} dispositiu 'pc' o 'mobil'.
- * @return {{mode:string,escala:number,ample:number,alt:number,desplX:number,desplY:number,tactil:boolean}} Mode i geometria.
+ * @return {{mode:string,escala:number,ample:number,alt:number,desplX:number,desplY:number,tactil:boolean,mobil:boolean}} Mode i geometria.
  */
 export function usePantalla( dispositiu ) {
 	const [ pantalla, setPantalla ] = useState( () => llegeix( dispositiu ) );
