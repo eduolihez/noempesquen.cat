@@ -23,6 +23,31 @@
 		"posta": {
 			"correus": [
 				{
+					"id": "b1",
+					"objectiu": false,
+					"carpeta": "entrada",
+					"llegit": true,
+					"data": "ahir",
+					"remitent": {
+						"nom": "Banc Sòlid",
+						"adreca": "extractes@bancsolid.cat"
+					},
+					"assumpte": "El teu extracte d'aquest mes",
+					"cos": [
+						[ { "t": "Hola, Àlex:" } ],
+						[
+							{ "t": "Ja tens disponible l'extracte del mes a la teva àrea de clients: " },
+							{
+								"enllac": {
+									"text": "bancsolid.cat",
+									"url": "https://bancsolid.cat/area-clients"
+								}
+							}
+						],
+						[ { "t": "Banc Sòlid" } ]
+					]
+				},
+				{
 					"id": "m2",
 					"objectiu": true,
 					"ocult": true,
@@ -226,7 +251,8 @@
 			"id": "web-oficial",
 			"quan": {
 				"esdeveniment": "web.carrega",
-				"url": "bancsolid.cat"
+				"url": "bancsolid.cat",
+				"visible": "m2"
 			},
 			"efectes": [ { "tipus": "decideix", "opcio": "d" } ]
 		}

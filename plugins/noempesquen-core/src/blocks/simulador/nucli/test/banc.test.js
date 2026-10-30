@@ -68,6 +68,22 @@ describe( 'missió «El banc et bloqueja el compte» (v2)', () => {
 		expect( e.opcio ).toBe( 'b' );
 	} );
 
+	it( 'la web oficial abans del correu no tanca la missió', () => {
+		let e = aplica(
+			estatInicial( p ),
+			{ tipus: 'DESBLOQUEJA' },
+			{ tipus: 'RESPOSTA', id: 'intro:salta' },
+			evt( 'web.carrega', { url: 'https://bancsolid.cat/' } )
+		);
+		expect( e.fase ).toBe( FASE.JOC );
+		e = aplica( e, { tipus: 'TICK', segons: 10 } );
+		e = aplica(
+			e,
+			evt( 'web.carrega', { url: 'https://bancsolid.cat/' } )
+		);
+		expect( e.opcio ).toBe( 'd' );
+	} );
+
 	it( 'entrar a la web oficial és una via correcta equivalent', () => {
 		const e = aplica(
 			ambCorreu(),

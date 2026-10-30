@@ -171,6 +171,13 @@ function validaDisparadors( m, errors ) {
 		if ( ! ESDEVENIMENTS.includes( ev ) ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
 		}
+		if ( d.quan?.visible !== undefined ) {
+			if ( ! idsApps.has( d.quan.visible ) ) {
+				errors.push(
+					`visible: element inexistent: ${ d.quan.visible }`
+				);
+			}
+		}
 		( d.efectes ?? [] ).forEach( ( e ) => {
 			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
 				hiHaPescat = true;

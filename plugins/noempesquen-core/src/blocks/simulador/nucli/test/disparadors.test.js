@@ -277,3 +277,41 @@ describe( 'codi.envia i notificacions amb font', () => {
 		} );
 	} );
 } );
+
+describe( 'quan.visible', () => {
+	const quan = { esdeveniment: 'web.carrega', visible: 'm2' };
+	it( "coincideix només si l'element ja és visible", () => {
+		const dades = { url: 'https://x.cat/' };
+		expect(
+			coincideix( quan, 'web.carrega', dades, { visibles: {} } )
+		).toBe( false );
+		expect( coincideix( quan, 'web.carrega', dades ) ).toBe( false );
+		expect(
+			coincideix( quan, 'web.carrega', dades, { visibles: { m2: true } } )
+		).toBe( true );
+	} );
+
+	it( 'sense el correu no es dispara ni es consumeix; amb el correu sí', () => {
+		const mis = {
+			...m,
+			disparadors: [
+				{
+					id: 'oficial',
+					quan,
+					efectes: [ { tipus: 'decideix', opcio: 'c' } ],
+				},
+			],
+		};
+		const e0 = jocSenseIntro();
+		const e1 = processaEsdeveniment( mis, e0, 'web.carrega', {} );
+		expect( e1.fase ).toBe( FASE.JOC );
+		expect( e1.executats ).not.toContain( 'oficial' );
+		const e2 = processaEsdeveniment(
+			mis,
+			{ ...e1, visibles: { ...e1.visibles, m2: true } },
+			'web.carrega',
+			{}
+		);
+		expect( e2.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+} );

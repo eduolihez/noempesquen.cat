@@ -76,8 +76,8 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 - `apps.posta.correus[]`: `id`, `objectiu`, `ocult` (no surt fins que un efecte `mostra` el mostra), `carpeta`, `llegit`, `data`, `remitent { nom, adreca, senyal? }`, `assumpte`, `assumpte_senyal?`, `cos` (segments com a la v1).
 - `apps.missatges.missatges[]` (SMS, només al mòbil): `id`, `objectiu`, `ocult`, `hora`, `remitent { nom, contacte?, senyal? }`, `cos` (segments com a la v1). `remitent.contacte` és l'id d'un contacte de `mon.json`; amb ell el missatge es pot bloquejar, esborrar, respondre o reenviar.
 - `apps.navegador.inici`: URLs que s'obren en iniciar.
-- `webs.<domini>`: `plantilla` (`posta`, `llum-clara` o `enviat`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
-- `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc.
+- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat` o `banc-solid`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc. A `quan`, `visible: "<id>"` fa que el disparador només coincideixi si l'element (p. ex. un correu amb `ocult`) ja s'ha mostrat amb l'efecte `mostra`; si no, no es consumeix.
 
 ## Esdeveniments
 
@@ -89,6 +89,8 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `enllac.obre` | `url` |
 | `web.carrega` | `url` |
 | `formulari.envia` | `url`, `formulari` |
+| `codi.envia` | `url`, `formulari` (codi SMS d'un segon pas) |
+| `pagament.fes` | `url`, `formulari` |
 | `correu.marca` | `id`, `com`: `phishing`, `brossa` o `esborra` |
 | `contacte.bloqueja` | `id` (contacte) |
 | `missatge.esborra` | `app`, `id` |
@@ -103,7 +105,7 @@ Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloque
 | Efecte | Dades |
 | --- | --- |
 | `guia-diu` | `text` (literal) o `frase` (clau de `frases`, p. ex. `web_falsa`) |
-| `notifica` | `app` (`missatges`, `parla`, `navegador`, `posta` o `enviat`), `titol`, `text` |
+| `notifica` | `app` (`missatges`, `parla`, `navegador`, `posta` o `enviat`), `titol`, `text`; `font: "mobil"` (opcional) l'envia al mòbil vinculat i `app` ha de ser una app del mòbil |
 | `mostra` | `id` |
 | `pescat` | |
 | `decideix` | `opcio` (id d'una opció de `decisio`) |
