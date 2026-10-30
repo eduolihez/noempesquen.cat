@@ -1,6 +1,7 @@
 # Corte 5c · Pop-up de soporte técnico y falsa actualización del navegador
 
-Estado: aprobado, en ejecución. Rama prevista: `feat/fase2-corte5c-suport-actualitzacio` (base: `master`, que ya incluye 5a y 5b).
+Estado: hecho en rama, pendiente de merge. Rama: `feat/fase2-corte5c-suport-actualitzacio` (base: `master`, que ya incluye 5a y 5b).
+Desviaciones respecto al plan original (decididas durante la ejecución): una sola plantilla neutra `article` en lugar de `avis`/`descarrega`/`cuina` (ver «Piezas nuevas»), un tercer evento `avis.apareix` y el estado «cerrado» de avisos y barras guardado en el motor.
 Spec vigente: `docs/superpowers/specs/2026-10-29-simulador-realista-design.md`. Plan anterior: `2026-10-30-fase2-corte5b-revenda-inversio.md`.
 
 ## Objetivo
@@ -25,9 +26,10 @@ Dos misiones jugables de principio a fin en el PC, con la guía Llissa: **9 «Vi
 | Overlay de pop-up | Componente `webs/comu/AvisFals.js`: `role="alertdialog"`, foco atrapado dentro de la página simulada, `Esc` registrado con `useJoc().registraMenu` (cierra el overlay y lo reabre si la misión lo indica), sin sonido que no se pueda silenciar; el contador es texto estático (WCAG 2.2.2). |
 | Barra falsa de actualización | Componente `webs/comu/BarraActualitzacio.js`, `role="region"` con nombre, botón ≥ 24 px. |
 | Diálogo de descarga ficticio | `webs/comu/DescarregaFicticia.js`: no crea `Blob` ni `<a download>`; solo UI. |
-| Plantillas web | `avis` (solo falsa, `alerta-equip.top`), `descarrega` (solo falsa, `descarrega-navegador.top`) y web neutra de receptas (`cuina`) con `dades.avis` que dispara el overlay. Registro en `webs/registre.js` y `PLANTILLES_SOLO_FALSES`. |
-| Eventos de motor | `telefon.truca` `{ url }` (pulsar «Truca ara» o el teléfono) y `descarrega.fes` `{ url, fitxer }` (abrir/ejecutar). Ambos en `ESDEVENIMENTS` de `valida.js` y en `docs/format-missions.md`. Nunca llevan texto tecleado. |
-| Validador | Plantillas nuevas, campos de señal nuevos en `CAMPS_SENYAL`, regla «señal declarada y no referenciada falla», cruces `descarrega.fes`↔fichero declarado en la web. |
+| Plantilla web | **Una sola plantilla neutra `article`** (`webs/article/`): `nom_lloc`, `titol`, `entradeta`, `seccions[]` y, opcionalmente, `avis` (overlay con teléfono, contador, `reobre` y `instal_la`) o `barra` (barra de actualización con fichero y origen). Sustituye a las tres plantillas previstas (`avis`, `descarrega`, `cuina`): la web es legítima y la trampa vive en `avis`/`barra`, como en la realidad. Registro en `webs/registre.js`. |
+| Estado «cerrado» | `estat.tancats` (claves `host:avis` / `host:barra`), acción `TANCA_WEB`; solo `REINICIA` lo vacía. Lo cerrado se queda cerrado al volver a la pestaña. El diálogo de descarga no se guarda. |
+| Eventos de motor | `telefon.truca` `{ url }` (pulsar «Truca ara» o el teléfono), `descarrega.fes` `{ url, fitxer }` (abrir/ejecutar) y `avis.apareix` `{ url }` (el overlay se muestra; queda anotado en `estat.avisosVistos`). Los tres en `ESDEVENIMENTS` de `valida.js` y en `docs/format-missions.md`. Nunca llevan texto tecleado. |
+| Validador | Plantilla `article`, campos de señal nuevos en `CAMPS_SENYAL`, regla «señal declarada y no referenciada falla», cruce por web (host sin `www.`) de `descarrega.fes` con la pareja url+fitxer declarada, `fitxer` obligatorio, `enllac` prohibido en `llista` y `barra.text`. |
 
 ## Tareas (orquestar, estrictamente secuenciales: `valida.js` y `style.scss` los tocan varias)
 | Tarea | Contenido | Ficheros dueños | Dep. |
@@ -35,7 +37,7 @@ Dos misiones jugables de principio a fin en el PC, con la guía Llissa: **9 «Vi
 | T0 | Línea base: lint, unit, build y **Playwright completo**; nota «Resultado T0» aquí. Corregir además el estado desfasado de 5a/5b en `estat-del-projecte.md`. | este plan, `docs/estat-del-projecte.md` | — |
 | T1 | Eventos `telefon.truca` y `descarrega.fes` en `valida.js` + `docs/format-missions.md` + test unitario del validador. | `nucli/valida.js`, tests, doc | T0 |
 | T2 | Componentes comunes `AvisFals`, `BarraActualitzacio`, `DescarregaFicticia` + `_avis.scss` (+ `style.scss`), con `registraMenu` y aria-live. | `webs/comu/*`, estils | T1 |
-| T3 | Plantillas `avis`, `descarrega` y `cuina`, registro, `PLANTILLES_SOLO_FALSES`, `CAMPS_SENYAL`; «Quant a» del navegador. | `webs/*`, `apps/navegador/*`, `valida.js` | T2 |
+| T3 | Plantilla `article` (con `avis`/`barra`), registro, `CAMPS_SENYAL`; «Quant a» del navegador. | `webs/*`, `apps/navegador/*`, `valida.js` | T2 |
 | T4 | Misiones `llissa-04-suport` y `llissa-05-actualitzacio` + registro en `App.js` + `selector.spec.js` (PC 5, móvil 5). | misiones, `App.js`, `selector.spec.js` | T3 |
 | T5a | Tests misión 9: unit (3 estrellas por `a` sin pistas; `pescat` por llamar o instalar; negativos) + e2e PC (correcto, pescat, axe, `Esc`, foco, fugas). | `nucli/test/suport.test.js`, `tests/e2e/suport.spec.js` | T4 |
 | T5b | Tests misión 10: igual (descarga ficticia no crea archivo ni petición de red). | `nucli/test/actualitzacio.test.js`, `tests/e2e/actualitzacio.spec.js` | T5a |
@@ -59,3 +61,6 @@ Fase 3 (IA, cuentas, CPT), sonido de alarma real, fingir un bloqueo real del nav
 
 ## Resultado T0
 lint:js 0 errores (134 warnings jsdoc), lint:css 0, unit 503/503, build OK (aviso de tamaño). Playwright: 234 pasados, 106 skipped, 1 fallo en `farcit.spec.js:143` (`mobil-horitzontal`, timeout de carga) que **pasa en aislamiento** (flaky, no de esta rama).
+
+## Resultado T6 (final)
+lint:js 0 errores (151 warnings jsdoc), lint:css 0, unit 575/575, build OK (aviso de tamaño). Playwright completo: 259 pasados, 0 fallos, 130 saltados (proyectos escriptori/mobil según dispositivo de la misión). Revisiones: `security-reviewer` 0 bloqueantes; `silent-failure-hunter` 4 puntos arreglados, el resto en «Pendiente tras el corte 5c» de `docs/estat-del-projecte.md`.
