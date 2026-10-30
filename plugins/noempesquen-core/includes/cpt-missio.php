@@ -42,8 +42,8 @@ add_action(
 					'single'            => true,
 					'show_in_rest'      => true,
 					'sanitize_callback' => 'nep_guio' === $key ? 'nep_sanitize_guio' : 'sanitize_key',
-					// Decisio: capacitats per defecte del tipus post (l'admin hi accedeix); la capacitat propia nomes protegeix l'escriptura de la meta.
-					'auth_callback'     => static fn() => current_user_can( 'nep_gestiona_missions' ),
+					// Decisió: capacitats per defecte del tipus post; la capacitat pròpia només protegeix l'escriptura de la meta.
+					'auth_callback'     => static fn( $allowed, $meta_key, $post_id ) => current_user_can( 'edit_post', $post_id ) && current_user_can( 'nep_gestiona_missions' ),
 				)
 			);
 		}

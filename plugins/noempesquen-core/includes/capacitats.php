@@ -1,11 +1,24 @@
 <?php
 /**
  * Capacitats pròpies i versionat de la base de dades del plugin.
+ *
+ * @package noempesquen-core
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'NEP_DB_VERSION', '1' );
+// L'administrador (manage_options) té sempre les capacitats pròpies, encara que l'actualització no hagi corregut.
+add_filter(
+	'user_has_cap',
+	static function ( $allcaps ) {
+		if ( ! empty( $allcaps['manage_options'] ) ) {
+			foreach ( nep_capacitats() as $cap ) {
+				$allcaps[ $cap ] = true;
+			}
+		}
+		return $allcaps;
+	}
+);
 
 /**
  * Capacitats pròpies del plugin.
@@ -40,9 +53,7 @@ function nep_actualitza(): void {
 	update_option( 'nep_db_version', NEP_DB_VERSION );
 }
 
-/**
- * Executa l'actualització si la versió guardada no coincideix (també després d'un desplegament per FTP/zip).
- */
+// Executa l'actualització si la versió guardada no coincideix (també després d'un desplegament per FTP/zip).
 add_action(
 	'plugins_loaded',
 	static function () {
