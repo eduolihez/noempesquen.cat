@@ -10,11 +10,11 @@ const { defineConfig, devices } = require( '@playwright/test' );
  * - mobil-horitzontal: Pixel 7 en horitzontal, els specs de mòbil clau i les
  *   missions de PC escalades (la resta duplicaria la durada sense aportar
  *   cobertura).
- * - panell: Desktop Chrome, només el panell de missions. Publica missions de
+ * - panell: Desktop Chrome, només el panell de missions i les estadístiques. Publica missions de
  *   prova que surten a /simulador/, i per això corre quan els altres ja han
  *   acabat (`dependencies`) i cap dels altres l'inclou.
  */
-const SPEC_PANELL = /panel-missions\.spec\.js$/;
+const SPEC_PANELL = /(panel-missions|estadistiques)\.spec\.js$/;
 const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;
 
