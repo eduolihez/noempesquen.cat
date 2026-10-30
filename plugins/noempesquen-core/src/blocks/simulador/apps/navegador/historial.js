@@ -21,6 +21,7 @@ export const ESTAT_NAVEGADOR = {
 
 /* posta.cat és el correu de l'Àlex: hi és en totes les missions. */
 const POSTA = { plantilla: 'posta', https: true, titol: 'Posta' };
+const DIARI = { plantilla: 'diari', https: true, titol: 'El Diari del Barri' };
 
 /**
  * Hostname d'una URL http(s), o null si no n'és una.
@@ -99,6 +100,9 @@ export function resolWeb( url, missio ) {
 	}
 	if ( host === 'posta.cat' ) {
 		return { plantilla: 'posta', dades: POSTA };
+	}
+	if ( host === 'diaridelbarri.cat' || host === 'www.diaridelbarri.cat' ) {
+		return { plantilla: 'diari', dades: DIARI };
 	}
 	return null;
 }
