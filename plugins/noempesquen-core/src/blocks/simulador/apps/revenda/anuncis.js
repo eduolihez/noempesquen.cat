@@ -112,3 +112,15 @@ export function destiRevenda( notificacio ) {
 		},
 	];
 }
+
+/**
+ * Esdeveniment que Revenda emet en enviar un missatge. Només porta l'id del
+ * contacte: el text que escriu el jugador no surt mai del camp.
+ *
+ * @param {string} contacte Id del contacte del xat.
+ * @return {[string, {contacte: string}]} Nom i dades de l'esdeveniment.
+ */
+export const esdevenimentEnvia = ( contacte ) => [
+	'missatge.envia',
+	{ contacte },
+];

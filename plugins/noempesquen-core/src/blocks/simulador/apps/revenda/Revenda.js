@@ -22,6 +22,7 @@ import { AvatarXat } from '../parla/LlistaXats';
 import { IconaBloqueja, IconaEnrere } from '../missatges/icones';
 import {
 	esDesconegut,
+	esdevenimentEnvia,
 	formataPreu,
 	idsVisibles,
 	missatgesVisibles,
@@ -452,7 +453,7 @@ export default function Revenda( { dades } ) {
 
 	const envia = ( contacte ) => {
 		// Només l'id del contacte: el text no surt del camp.
-		emet( 'missatge.envia', { contacte } );
+		emet( ...esdevenimentEnvia( contacte ) );
 		setAvis( __( 'Missatge enviat', 'noempesquen' ) );
 	};
 
