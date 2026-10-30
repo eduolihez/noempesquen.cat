@@ -250,6 +250,9 @@ $nep_mid = $nep_mid_guio( $nep_publicada );
 wp_delete_post( $nep_publicada, true );
 $nep_comprova( $nep_mid && false === get_metadata_by_mid( 'post', $nep_mid ), 'wp_delete_post esborra el guió d\'una publicada' );
 
+// Estadístiques: endpoint /resultat (fa servir les mateixes ajudes).
+require __DIR__ . '/integracio-estadistiques.php';
+
 foreach ( array_unique( $nep_creades ) as $nep_id ) {
 	wp_delete_post( $nep_id, true );
 }
