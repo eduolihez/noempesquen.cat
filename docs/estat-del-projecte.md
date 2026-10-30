@@ -50,10 +50,14 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 ### Pendiente tras el corte 5c
 
 - `Esc` con el menú del navegador abierto y la ventana minimizada: revisar el orden de cierre.
-- Avís y diálogo de descarga apilados sin `inert` sobre la capa de debajo.
-- El cruce `descarrega.fes`↔`fitxer` solo se valida si alguna web declara fichero; sin fichero declarado no se comprueba nada.
 - Contraste de `#137333` en `_navegador-menu.scss` por verificar con axe.
+- `MenuNavegador` usa el `document` global para `pointerdown`, mientras `AvisFals` y `DescarregaFicticia` usan `ownerDocument`.
+- El `onBlur` del menú del navegador con `relatedTarget` null no lo cierra.
+- Avís y diálogo de descarga apilados sin `inert` sobre la capa de debajo.
+- `cuinaravui.cat` y `tempsavui.cat` son dominios `.cat` registrables (riesgo bajo, como `bancsolid.cat`).
 - Los campos `senyal_*` no se validan como string (un valor no textual se ignora en silencio).
+- El `retard` del avís se redondea hacia arriba a segundos de juego.
+- Elegir «a» sin indicios da 1★ en M9 y 2★ en M10 (coherente con M8).
 - Abrir el diálogo de descarga no emite ningún evento: las señales que solo se ven ahí (`origen_top`, `exe_top`) llevan `requereix` con el id del disparador `descarrega.fes`.
 
 ### Pendiente tras el corte 5b

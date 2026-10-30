@@ -109,9 +109,10 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `publicacio.denuncia` | `id` (publicació d'Ullada denunciada) |
 | `codi.comparteix` | `contacte` (id del contacte a qui es dona el codi; mai el text escrit) |
 | `telefon.truca` | `url` (el jugador prem «Truca ara» o el telèfon d'una web falsa) |
-| `descarrega.fes` | `url`, `fitxer` (obre o executa el fitxer descarregat fictici; `fitxer` és un text opcional al filtre `quan`) |
+| `descarrega.fes` | `url`, `fitxer` (obre o executa el fitxer descarregat fictici; al filtre `quan`, `fitxer` és obligatori) |
+| `avis.apareix` | `url` (l'avís d'una web `article` es mostra; un sol cop per web i partida) |
 
-`telefon.truca` i `descarrega.fes` no porten mai text escrit pel jugador.
+`telefon.truca`, `descarrega.fes` i `avis.apareix` no porten mai text escrit pel jugador. Al filtre `quan`, la seva `url` (host o URL, amb la mateixa normalització de `www.`) ha de ser una web `article` de la missió: amb `avis` per a `telefon.truca` i `avis.apareix`, i amb `avis.instal_la` o `barra` per a `descarrega.fes`.
 
 `codi.comparteix` s'emet sense text: només quan el que ha tecleat el jugador coincideix amb un codi d'un SMS visible de `apps.missatges.missatges`. Limitació: no detecta codis trossejats (p. ex. «48 213 7») ni dits amb paraules («quatre-vuit…»); caldria una funció nova per detectar-los.
 
@@ -145,16 +146,18 @@ La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa (el 
 
 ## Plantilla `article` (web de contingut amb avís o barra falsos)
 
-Web neutra de contingut (receptes, el temps...) amb un logotip propi. Obligatoris: `nom_lloc`, `titol` i `seccions[]` (llista no buida de `{ titol, cos }` o `{ titol, llista }`, només un dels dos; `cos` són paràgrafs de segments i `llista` és una llista de segments `{ "t", "senyal"? }`). Opcional: `entradeta` (paràgrafs). `avis` i `barra` van a l'arrel de `webs.<host>` i **només** s'admeten en aquesta plantilla.
+Web neutra de contingut (receptes, el temps...) amb un logotip propi. Obligatoris: `nom_lloc`, `titol` i `seccions[]` (llista no buida de `{ titol, cos }` o `{ titol, llista }`, només un dels dos; `cos` són paràgrafs de segments i `llista` és una llista de segments `{ "t", "senyal"? }`, sense `enllac`). Opcional: `entradeta` (paràgrafs). `avis` i `barra` van a l'arrel de `webs.<host>` i **només** s'admeten en aquesta plantilla.
 
 - `avis` (overlay fals a sobre de la pàgina, `role="alertdialog"`):
   - Obligatoris: `retard` (número ≥ 0, en **mil·lisegons**), `titol`, `cos` (segments o paràgrafs), `telefon`, `etiquetaTelefon` i `contador` (text estàtic, p. ex. «Temps restant: 04:59»; no compta enrere, WCAG 2.2.2).
   - Opcionals: `senyal_telefon` (senyal del número; amb la lupa es pot inspeccionar), `reobre` (booleà: el botó «Tanca» no tanca i mostra «No s'ha pogut tancar») i `instal_la { fitxer, origen, text_boto, senyal_fitxer?, senyal_origen? }` (afegeix un botó que obre el diàleg de descàrrega ficticia).
-  - `retard`: es converteix a segons de joc arrodonint amunt (`8000` → 8 s; `1` → 1 s) i només compta mentre la pestanya és l'activa i la partida no està en pausa. L'avís només es munta a la pestanya activa. `Esc` sempre el tanca (també amb `reobre`, perquè el jugador no quedi mai atrapat) i ja no torna a sortir en aquella vista de la pàgina.
+  - `retard`: es converteix a segons de joc arrodonint amunt (`8000` → 8 s; `1` → 1 s) i només compta mentre la pestanya és l'activa i la partida no està en pausa. L'avís només es munta a la pestanya activa. `Esc` sempre el tanca (també amb `reobre`, perquè el jugador no quedi mai atrapat) i ja no torna a sortir en aquella web.
+  - Quan l'avís es mostra, s'emet `avis.apareix { url }` un sol cop per web (és el moment de fer parlar la guia, no un retard des de l'`inici`). Si el jugador surt de la web abans que surti, el retard torna a començar; si ja havia sortit, en tornar-hi surt de seguida.
   - «Truca ara» o el número emeten `telefon.truca { url }`.
-- `barra` (barra falsa d'actualització a dalt de la pàgina): obligatoris `text` (llista no buida de segments, amb `senyal` opcional), `boto`, `fitxer` i `origen`; opcionals `senyal_fitxer` i `senyal_origen`. El botó obre el diàleg de descàrrega ficticia; «Tanca la barra» l'amaga.
+- `barra` (barra falsa d'actualització a dalt de la pàgina): obligatoris `text` (llista no buida de segments, amb `senyal` opcional i sense `enllac`), `boto`, `fitxer` i `origen`; opcionals `senyal_fitxer` i `senyal_origen`. El botó obre el diàleg de descàrrega ficticia; «Tanca la barra» l'amaga.
+- **Tancat es queda tancat**: l'avís i la barra tancats es guarden a l'estat del motor (`tancats`, claus `host:avis` i `host:barra`, amb el host sense `www.`; acció `TANCA_WEB`), igual que `avisosVistos` per a `avis.apareix`. Sobreviuen a canviar de pestanya, navegar a una altra web i tornar-hi o recarregar; només `REINICIA` els buida. El diàleg de descàrrega no es guarda: en tornar a la web sempre és tancat. Navegar a una altra URL a la mateixa pestanya torna a muntar la web (estat local nou).
 - Diàleg de descàrrega ficticia: mostra `fitxer` i `origen` (inspeccionables si porten senyal). «Obre» emet `descarrega.fes { url, fitxer }`; «Cancel·la» o `Esc` el tanquen sense emetre res. No es crea cap fitxer, `Blob` ni petició de xarxa.
-- Si alguna web `article` declara fitxers (`avis.instal_la.fitxer` o `barra.fitxer`), el `quan.fitxer` de cada disparador `descarrega.fes` ha de ser un d'aquests; sense cap fitxer declarat no es creua res.
+- Cada disparador `descarrega.fes` porta `quan.fitxer`, i la parella `url`+`fitxer` ha de ser un fitxer declarat d'aquella web (`avis.instal_la.fitxer` o `barra.fitxer`). A l'inrevés, cada fitxer declarat necessita almenys un disparador `descarrega.fes` amb la seva parella.
 - Els senyals que només es veuen al diàleg de descàrrega porten `requereix` amb l'id del disparador `descarrega.fes` (no hi ha cap esdeveniment en obrir el diàleg): així no compten al màxim si el jugador no l'obre.
 - Exemples: `llissa-04-suport.json` (Cuina Avui, avís de «suport tècnic» de Suport Segur Digital amb `reobre` i `instal_la`) i `llissa-05-actualitzacio.json` (Temps Avui, barra d'actualització; la comprovació bona és «Quant a Brúixola» al menú del navegador).
 
