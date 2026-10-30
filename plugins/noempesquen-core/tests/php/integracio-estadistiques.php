@@ -196,6 +196,34 @@ $nep_html = $nep_reescriu(
 $nep_comprova( str_contains( $nep_html, 'notice-error' ) && str_contains( $nep_html, 'pogut llegir la taula' ) && ! str_contains( $nep_html, 'Dades insuficients' ), 'panell: error de lectura → avís, no «Dades insuficients»' );
 wp_set_current_user( 0 );
 
+// Panell: només la versió actual, en franges, i les decisions sense text no surten.
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ); // phpcs:ignore WordPress.DB
+$nep_actual = nep_versio_hash( nep_missions_jugables()[ $nep_est['id'] ] );
+$nep_insereix = static fn( string $hash, int $estrelles, string $decisio, int $n ) => $wpdb->insert(
+	$nep_taula,
+	array(
+		'missio'      => $nep_est['id'],
+		'versio_hash' => $hash,
+		'dia'         => gmdate( 'Y-m-d' ),
+		'estrelles'   => $estrelles,
+		'decisio'     => $decisio,
+		'n'           => $n,
+	)
+);
+$nep_insereix( $nep_actual, 3, 'c', 7 );
+$nep_insereix( $nep_actual, 2, 'esborrada', 5 );
+$nep_insereix( 'aaaaaaaaaaaa', 1, 'a', 40 );
+wp_set_current_user( 1 );
+ob_start();
+nep_pinta_estadistiques();
+$nep_html = (string) ob_get_clean();
+wp_set_current_user( 0 );
+$nep_c    = array_values( array_filter( $nep_est['decisio']['opcions'], static fn( $o ) => 'c' === $o['id'] ) )[0];
+$nep_fila = (string) strstr( (string) strstr( $nep_html, $nep_est['id'] ), '</tr>', true );
+$nep_comprova( str_contains( $nep_fila, '<td>10-19</td>' ) && str_contains( $nep_fila, '<td>' . number_format_i18n( 2.6, 1 ) . '</td>' ), 'panell: 12 partides actuals en franja «10-19» i mitjana amb un decimal' );
+$nep_comprova( str_contains( $nep_fila, '«c»' ) && str_contains( $nep_fila, esc_html( $nep_c['text'] ) ) && str_contains( $nep_fila, '50-59 %' ) && ! str_contains( $nep_fila, 'esborrada' ), 'panell: decisió amb text i percentatge en franja (la decisió esborrada no surt)' );
+$nep_comprova( str_contains( $nep_html, 'partides de versions anteriors del guió no es compten' ), 'panell: nota de partides de versions anteriors' );
+
 // Neteja.
 $wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ); // phpcs:ignore WordPress.DB
 delete_transient( $nep_clau );

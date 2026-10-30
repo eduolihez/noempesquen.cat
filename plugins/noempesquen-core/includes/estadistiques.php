@@ -143,12 +143,15 @@ function nep_ids_opcions( array $guio ): array {
  *   partides de la missió (també les que no van arribar a decidir).
  * - Amb menys de `$k` partides, `suficient` és fals i no es torna cap xifra
  *   (ni el nombre de partides).
+ * - Amb `$opcions`, una decisió que no hi és (opció esborrada o sense text)
+ *   no compta per a la més triada; la partida sí.
  *
- * @param array $files Files `missio`, `estrelles`, `decisio`, `n` (de qualsevol període).
- * @param int   $k     Partides mínimes per mostrar xifres.
+ * @param array                        $files   Files `missio`, `estrelles`, `decisio`, `n` (de qualsevol període).
+ * @param int                          $k       Partides mínimes per mostrar xifres.
+ * @param array<string, string[]>|null $opcions Ids d'opció vàlids per missió (null = totes).
  * @return array<string, array{suficient: bool, partides: ?int, estrelles: ?float, decisio: ?string, percentatge: ?int}>
  */
-function nep_agrega_resultats( array $files, int $k ): array {
+function nep_agrega_resultats( array $files, int $k, ?array $opcions = null ): array {
 	$acumulat = array();
 	foreach ( $files as $fila ) {
 		$missio = (string) ( $fila['missio'] ?? '' );
@@ -164,7 +167,7 @@ function nep_agrega_resultats( array $files, int $k ): array {
 		$acumulat[ $missio ]['partides'] += $n;
 		$acumulat[ $missio ]['suma']     += $n * (int) ( $fila['estrelles'] ?? 0 );
 		$decisio                          = (string) ( $fila['decisio'] ?? '' );
-		if ( '' !== $decisio ) {
+		if ( '' !== $decisio && ( null === $opcions || in_array( $decisio, $opcions[ $missio ] ?? array(), true ) ) ) {
 			$acumulat[ $missio ]['decisions'][ $decisio ] = ( $acumulat[ $missio ]['decisions'][ $decisio ] ?? 0 ) + $n;
 		}
 	}
@@ -194,13 +197,66 @@ function nep_agrega_resultats( array $files, int $k ): array {
 		$resultat[ $missio ] = array(
 			'suficient'   => true,
 			'partides'    => $a['partides'],
-			'estrelles'   => round( $a['suma'] / $a['partides'], 2 ),
+			'estrelles'   => round( $a['suma'] / $a['partides'], 1 ),
 			'decisio'     => $decisio,
 			'percentatge' => null === $decisio ? null : (int) round( 100 * $vots / $a['partides'] ),
 		);
 	}
 	ksort( $resultat, SORT_STRING );
 	return $resultat;
+}
+
+/**
+ * Separa les files de la versió actual del guió de cada missió de la resta
+ * (versions anteriors o missions que ja no es juguen).
+ *
+ * @param array                 $files  Files amb `missio`, `versio_hash` i `n`.
+ * @param array<string, string> $hashes Hash actual per missió.
+ * @return array{actuals: array, antigues: int} Files actuals i partides que no compten.
+ */
+function nep_files_versio_actual( array $files, array $hashes ): array {
+	$actuals  = array();
+	$antigues = 0;
+	foreach ( $files as $fila ) {
+		$missio = (string) ( $fila['missio'] ?? '' );
+		if ( isset( $hashes[ $missio ] ) && $hashes[ $missio ] === (string) ( $fila['versio_hash'] ?? '' ) ) {
+			$actuals[] = $fila;
+		} else {
+			$antigues += max( 0, (int) ( $fila['n'] ?? 0 ) );
+		}
+	}
+	return array(
+		'actuals'  => $actuals,
+		'antigues' => $antigues,
+	);
+}
+
+/**
+ * Franja de partides per mostrar: «<10», «10-19», «20-49» o «50+».
+ *
+ * @param int $n Partides.
+ * @return string
+ */
+function nep_franja_partides( int $n ): string {
+	if ( $n < 10 ) {
+		return '<10';
+	}
+	if ( $n < 20 ) {
+		return '10-19';
+	}
+	return $n < 50 ? '20-49' : '50+';
+}
+
+/**
+ * Franja de 10 punts d'un percentatge: «0-9 %», …, «90-100 %».
+ *
+ * @param int $p Percentatge (0-100).
+ * @return string
+ */
+function nep_franja_percentatge( int $p ): string {
+	$p   = max( 0, min( 100, $p ) );
+	$des = min( 90, intdiv( $p, 10 ) * 10 );
+	return $des . '-' . ( 90 === $des ? 100 : $des + 9 ) . ' %';
 }
 
 /**

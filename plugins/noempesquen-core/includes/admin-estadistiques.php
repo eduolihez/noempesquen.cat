@@ -40,7 +40,7 @@ function nep_files_periode( int $dies ): ?array {
 	$files = $wpdb->get_results(
 		$wpdb->prepare(
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
-			"SELECT missio, estrelles, decisio, SUM(n) AS n FROM {$taula} WHERE dia >= %s GROUP BY missio, estrelles, decisio",
+			"SELECT missio, versio_hash, estrelles, decisio, SUM(n) AS n FROM {$taula} WHERE dia >= %s GROUP BY missio, versio_hash, estrelles, decisio",
 			$des_de
 		),
 		ARRAY_A
@@ -68,9 +68,27 @@ function nep_pinta_estadistiques(): void {
 	$missions = nep_missions_jugables();
 	$files    = nep_files_periode( $dies );
 	$error_bd = null === $files;
-	$agregats = nep_agrega_resultats( $files ?? array(), NEP_RESULTATS_K );
-	$ids      = array_unique( array_merge( array_keys( $missions ), array_keys( $agregats ) ) );
-	$insuf    = $error_bd
+	// Només compta la versió actual del guió de cada missió jugable, i només les decisions amb text.
+	$hashes  = array();
+	$opcions = array();
+	$textos  = array();
+	foreach ( $missions as $id => $guio ) {
+		try {
+			$hashes[ $id ] = nep_versio_hash( $guio );
+		} catch ( JsonException $e ) {
+			continue;
+		}
+		foreach ( (array) ( $guio['decisio']['opcions'] ?? array() ) as $o ) {
+			if ( is_array( $o ) && is_string( $o['id'] ?? null ) && is_string( $o['text'] ?? null ) && '' !== trim( $o['text'] ) ) {
+				$opcions[ $id ][]               = $o['id'];
+				$textos[ $id ][ $o['id'] ] = $o['text'];
+			}
+		}
+	}
+	$separades = nep_files_versio_actual( $files ?? array(), $hashes );
+	$agregats  = nep_agrega_resultats( $separades['actuals'], NEP_RESULTATS_K, $opcions );
+	$ids       = array_keys( $missions );
+	$insuf     = $error_bd
 		? __( 'No s\'ha pogut llegir la taula d\'estadístiques', 'noempesquen' )
 		: __( 'Dades insuficients (menys de 10 partides)', 'noempesquen' );
 	?>
@@ -80,7 +98,16 @@ function nep_pinta_estadistiques(): void {
 			<div class="notice notice-error inline"><p><?php esc_html_e( 'No s\'ha pogut llegir la taula d\'estadístiques.', 'noempesquen' ); ?></p></div>
 		<?php endif; ?>
 		<p><strong><?php esc_html_e( 'Dades indicatives.', 'noempesquen' ); ?></strong>
-			<?php esc_html_e( 'Recompte anònim de partides acabades: amb els resultats no es desa cap dada de qui juga. Per limitar els enviaments es guarda, com a molt una hora, un seudònim de la IP que no es pot relacionar amb els resultats. Les missions amb menys de 10 partides en el període no mostren xifres.', 'noempesquen' ); ?></p>
+			<?php esc_html_e( 'Recompte anònim de partides acabades: amb els resultats no es desa cap dada de qui juga. Per limitar els enviaments es guarda, com a molt una hora, un seudònim de la IP que no es pot relacionar amb els resultats.', 'noempesquen' ); ?></p>
+		<p><?php esc_html_e( 'Perquè no es pugui deduir què ha fet una persona concreta, les xifres són aproximades: les partides es mostren per franges (10-19, 20-49, 50+), el percentatge de la decisió de 10 en 10 punts i la mitjana d\'estrelles amb un decimal. En cada període, les missions amb menys de 10 partides no mostren cap xifra. Només compta la versió actual del guió de cada missió.', 'noempesquen' ); ?></p>
+		<?php if ( $separades['antigues'] > 0 ) : ?>
+			<p class="nep-estadistiques-antigues">
+				<?php
+				/* translators: %s: franja de partides (p. ex. «10-19»). */
+				echo esc_html( sprintf( __( '%s partides de versions anteriors del guió no es compten.', 'noempesquen' ), nep_franja_partides( $separades['antigues'] ) ) );
+				?>
+			</p>
+		<?php endif; ?>
 
 		<form method="get">
 			<input type="hidden" name="post_type" value="nep_missio">
@@ -129,20 +156,14 @@ function nep_pinta_estadistiques(): void {
 						<?php if ( ! $a || ! $a['suficient'] ) : ?>
 							<td colspan="3"><?php echo esc_html( $insuf ); ?></td>
 						<?php else : ?>
-							<td><?php echo esc_html( number_format_i18n( $a['partides'] ) ); ?></td>
-							<td><?php echo esc_html( number_format_i18n( $a['estrelles'], 2 ) ); ?></td>
+							<td><?php echo esc_html( nep_franja_partides( $a['partides'] ) ); ?></td>
+							<td><?php echo esc_html( number_format_i18n( $a['estrelles'], 1 ) ); ?></td>
 							<td>
 								<?php
 								if ( null === $a['decisio'] ) {
 									esc_html_e( 'Cap decisió', 'noempesquen' );
 								} else {
-									$text = '';
-									foreach ( (array) ( $guio['decisio']['opcions'] ?? array() ) as $o ) {
-										if ( is_array( $o ) && ( $o['id'] ?? null ) === $a['decisio'] && is_string( $o['text'] ?? null ) ) {
-											$text = $o['text'];
-										}
-									}
-									echo esc_html( sprintf( '«%s» %s (%d %%)', $a['decisio'], $text, $a['percentatge'] ) );
+									echo esc_html( sprintf( '«%s» %s (%s)', $a['decisio'], $textos[ $id ][ $a['decisio'] ] ?? '', nep_franja_percentatge( (int) $a['percentatge'] ) ) );
 								}
 								?>
 							</td>

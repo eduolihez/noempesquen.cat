@@ -108,6 +108,56 @@ final class EstadistiquesTest extends TestCase {
 		$this->assertNotSame( nep_versio_hash( $a ), nep_versio_hash( $d ) );
 	}
 
+	public function test_mitjana_amb_un_decimal(): void {
+		// (7·3 + 3·1) / 10 = 2,4; (2·2 + 1·1) / 3 = 1,67 → 1,7.
+		$r = nep_agrega_resultats( array( self::fila( 'm', 3, '', 7 ), self::fila( 'm', 1, '', 3 ) ), 10 );
+		$this->assertSame( 2.4, $r['m']['estrelles'] );
+		$r = nep_agrega_resultats( array( self::fila( 'm', 2, '', 2 ), self::fila( 'm', 1, '', 1 ) ), 1 );
+		$this->assertSame( 1.7, $r['m']['estrelles'] );
+	}
+
+	public function test_decisions_fora_de_les_opcions_no_compten(): void {
+		$r = nep_agrega_resultats(
+			array(
+				self::fila( 'm', 3, 'vella', 8 ),
+				self::fila( 'm', 3, 'a', 2 ),
+			),
+			10,
+			array( 'm' => array( 'a' ) )
+		);
+		$this->assertSame( 10, $r['m']['partides'] );
+		$this->assertSame( 'a', $r['m']['decisio'] );
+		$this->assertSame( 20, $r['m']['percentatge'] );
+		// Sense cap opció vàlida: cap decisió.
+		$r = nep_agrega_resultats( array( self::fila( 'x', 3, 'vella', 10 ) ), 10, array() );
+		$this->assertNull( $r['x']['decisio'] );
+	}
+
+	public function test_files_versio_actual(): void {
+		$files = array(
+			array( 'missio' => 'm', 'versio_hash' => 'nou', 'n' => 4 ),
+			array( 'missio' => 'm', 'versio_hash' => 'vell', 'n' => 3 ),
+			array( 'missio' => 'retirada', 'versio_hash' => 'x', 'n' => 2 ),
+		);
+		$r     = nep_files_versio_actual( $files, array( 'm' => 'nou' ) );
+		$this->assertSame( array( $files[0] ), $r['actuals'] );
+		$this->assertSame( 5, $r['antigues'] );
+	}
+
+	public function test_franges(): void {
+		$this->assertSame( '<10', nep_franja_partides( 9 ) );
+		$this->assertSame( '10-19', nep_franja_partides( 10 ) );
+		$this->assertSame( '10-19', nep_franja_partides( 19 ) );
+		$this->assertSame( '20-49', nep_franja_partides( 20 ) );
+		$this->assertSame( '20-49', nep_franja_partides( 49 ) );
+		$this->assertSame( '50+', nep_franja_partides( 50 ) );
+		$this->assertSame( '0-9 %', nep_franja_percentatge( 0 ) );
+		$this->assertSame( '60-69 %', nep_franja_percentatge( 60 ) );
+		$this->assertSame( '60-69 %', nep_franja_percentatge( 69 ) );
+		$this->assertSame( '90-100 %', nep_franja_percentatge( 90 ) );
+		$this->assertSame( '90-100 %', nep_franja_percentatge( 100 ) );
+	}
+
 	public function test_hash_llanca_si_no_es_pot_codificar(): void {
 		$this->expectException( JsonException::class );
 		nep_versio_hash( array( 'x' => INF ) );
