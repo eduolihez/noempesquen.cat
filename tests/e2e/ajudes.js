@@ -11,11 +11,11 @@ const RESULTAT = /\/noempesquen\/v1\/resultat/;
  * propi del spec (p. ex. `estadistiques.spec.js`) hi té preferència.
  */
 const test = base.extend( {
-	context: async ( { context }, use ) => {
+	context: async ( { context }, usa ) => {
 		await context.route( RESULTAT, ( route ) =>
 			route.fulfill( { status: 204 } )
 		);
-		await use( context );
+		await usa( context );
 	},
 } );
 
