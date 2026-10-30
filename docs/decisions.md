@@ -15,6 +15,23 @@
 - **Per talls:** cada tall s'entrega jugable de principi a fi.
 - **Roboto local (corte 4a):** empaquetada en `assets/fonts/` (woff2 latin 400/500/700), licencia Apache-2.0 (`LICENSE-Roboto.txt`); sin CDN.
 - **Apps de relleno no emiten eventos:** no afectan al motor ni a la puntuación; solo dan sensación de libertad.
-- **Sons:** Ajustos solo guarda la preferencia `noempesquen-sons`; los sonidos reales llegan en 4b.
+- **Sons (corte 4b):** Web Audio sintetizado, sin ficheros; suena solo tras una interacción, nunca en pausa ni en la petición de girar, y la preferencia `noempesquen-sons` se cambia desde Ajustos y desde la Pausa. Lo que llega durante pausa/girar se marca visto y no suena al reanudar (en la práctica no llega nada: el TICK está parado).
 - **`apps/claus.js`** es la fuente de verdad de los ids de app por dispositivo; el validador de misiones la importa.
 - **`diaridelbarri.cat`** se resuelve por defecto a la plantilla `diari`; una misión puede sobrescribirlo declarando la web.
+
+## Corte 4b · pulido (2026-10-30)
+
+- **D3 · tamaño de diseño del PC: 1280×720.** Bajar a 1024×576 solo sube la escala a 0,63-0,75 en móviles de 360-430 px de alto y no llega a 24 px de target-size.
+- **PC en pantalla pequeña:** modo `normal` (≥1280×720), `escalat` (transform sobre un contenedor 1280×720) y `girar` (petición de girar el móvil o ampliar la ventana; el PC queda `inert` y el TICK parado). Se mide con `window.innerWidth/innerHeight` (layout viewport), no con `visualViewport`: el teclado o el zoom no deben reescalar.
+- **Táctil:** `--so-tactil` y `--so-objectiu` solo bajo `.is-escalat.is-tactil`; el modo normal no cambia aunque la pantalla sea táctil.
+- **Selector** agrupado por dispositivo, con «recomanada», estrellas y orden por progreso; `PantallaSistema.js` (no `Pantalla.js`, colisiona con `pantalla.js` en Windows).
+- **Playwright:** tercer proyecto `mobil-horitzontal` (Pixel 7 en landscape). Capturas visuales sin baseline en `test-results/visual/`.
+- **`.claude/`** va a `.gitignore` (orquestación y registros locales).
+
+### Deudas aceptadas
+
+- target-size en el contenido de las apps a escala ~0,57 (cerrar pestaña 13,7 px, nueva pestaña 16 px, barra de Posta 20,6 px): sigue el filtro `greusAxePc` en `tests/e2e/ajudes.js`. Propuesta: objetivos ≥42 px lógicos con `.is-tactil`.
+- Texto del PC ~8 px reales a 768×1024 (escala 0,6); toast de Posta tapa una respuesta de Parla ~6 s en 915×412.
+- Borde de botones del sistema ~1,3:1 (WCAG 1.4.11, global).
+- Estrellas del selector (`role="img"` dentro de button) solo llegan por `aria-describedby`: verificar con lector de pantalla.
+- CSS 128 KiB / entrypoint 251 KiB (aviso de webpack > 244 KiB): recortar CSS.
