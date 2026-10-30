@@ -10,7 +10,8 @@ const { defineConfig, devices } = require( '@playwright/test' );
  * - mobil-horitzontal: Pixel 7 en horitzontal, els specs de mòbil clau i les
  *   missions de PC escalades (la resta duplicaria la durada sense aportar
  *   cobertura).
- * - panell: Desktop Chrome, només el panell de missions i les estadístiques. Publica missions de
+ * - panell: Desktop Chrome, només el panell de missions; panell-estadistiques,
+ *   després, la pantalla d'estadístiques. Publiquen missions de
  *   prova que surten a /simulador/, i per això corre quan els altres ja han
  *   acabat (`dependencies`) i cap dels altres l'inclou.
  */
@@ -43,8 +44,16 @@ module.exports = defineConfig( {
 		{
 			name: 'panell',
 			use: { ...devices[ 'Desktop Chrome' ] },
-			testMatch: SPEC_PANELL,
+			testMatch: /panel-missions\.spec\.js$/,
 			dependencies: [ 'escriptori', 'mobil', 'mobil-horitzontal' ],
+		},
+		// Després del panell, no en paral·lel: la pantalla d'estadístiques (mateix
+		// usuari admin) mostraria i esborraria l'avís `nep_avis_1` que espera panel-missions.
+		{
+			name: 'panell-estadistiques',
+			use: { ...devices[ 'Desktop Chrome' ] },
+			testMatch: /estadistiques\.spec\.js$/,
+			dependencies: [ 'panell' ],
 		},
 	],
 } );

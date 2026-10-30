@@ -5,7 +5,7 @@ const { iniciaMissio, senseFullscreen } = require( './ajudes' );
 
 /**
  * Estadístiques anònimes: un sol POST /resultat per partida acabada (amb
- * només tres claus) i la pantalla del panell. Al projecte `panell`: publica
+ * només tres claus) i la pantalla del panell. Al projecte `panell-estadistiques`: publica
  * una missió de prova. El POST s'intercepta (no escriu files a la base de
  * dades ni consumeix el límit d'enviaments).
  */
@@ -15,7 +15,7 @@ const RESULTAT = /\/noempesquen\/v1\/resultat/;
 const escapa = ( text ) => text.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
 
 test.beforeEach( ( {}, testInfo ) => {
-	test.skip( testInfo.project.name !== 'panell', 'Només al projecte panell' );
+	test.skip( testInfo.project.name !== 'panell-estadistiques', 'Només al projecte panell-estadistiques' );
 } );
 
 const barraTasques = ( page ) =>
