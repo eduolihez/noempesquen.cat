@@ -77,8 +77,14 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 - `apps.missatges.missatges[]` (SMS, només al mòbil): `id`, `objectiu`, `ocult`, `hora`, `remitent { nom, contacte?, senyal? }`, `cos` (segments com a la v1). `remitent.contacte` és l'id d'un contacte de `mon.json`; amb ell el missatge es pot bloquejar, esborrar, respondre o reenviar.
 - `apps.parla.xats[]` (xats de Parla afegits per la missió): `{ id, contacte?, nom?, missatges[] { id, de: "ells" o "jo", text, hora?, ocult? } }`. Un missatge `ocult` surt quan un efecte `mostra` (amb el `retard` del disparador) el fa visible; el xat apareix a la llista en tenir el primer missatge visible. `contacte` és l'id d'un contacte de `mon.json` (si és de rol `desconegut`, el xat ofereix bloquejar); sense `nom`, es fa servir el del contacte. Si l'`id` coincideix amb un xat de `mon.json` (p. ex. `pau`), els missatges s'hi afegeixen al final. Un missatge pot tenir `senyal` (id d'un senyal de la missió): amb la lupa activa es pot inspeccionar com a Posta o Missatges. El xat pot tenir `senyal_avis` (senyal del banner «Aquest número no és als teus contactes»). Per avisar al mòbil, combina `mostra` amb `notifica` (`app: "parla"`). Als xats de contactes coneguts (no guia ni desconeguts) el camp de text és actiu: el text escrit només es veu a la interfície i s'emet `missatge.envia`.
 - `senyals[]` poden dur `requereix: "<id>"` (id d'un element `ocult` o d'un disparador, p. ex. `web-falsa`). **Puntuació:** el màxim és `(senyals disponibles × 10) + 50`; un senyal amb `requereix` només hi compta si el jugador l'ha trobat o l'element ja s'ha mostrat (`mostra`) o el disparador ja s'ha executat. Així, qui decideix bé pel camí segur sense pistes ni pescat arriba a 3 estrelles sense haver d'entrar a la trampa; sense `requereix` (llissa-01, remei-01, paquet) res no canvia.
+- `apps.revenda` (només mòbil; app de compravenda inventada): `{ anuncis[], xats[] }`, amb `xats` obligatori (llista).
+  - `anuncis[]`: `{ id, titol, preu, il, descripcio }`. `id` únic; `titol` i `descripcio` són text; `preu` és un número >= 0; `il` és una il·lustració existent.
+  - `xats[]`: `{ id, contacte, anunci, missatges[] }`. `id` únic; `contacte` és l'id d'un contacte de `mon.json` (de rol `desconegut`, el xat ofereix bloquejar); `anunci` és l'id d'un anunci d'`anuncis`; cal almenys un missatge.
+  - `missatges[]`: `{ id, de: "ells" o "jo", ocult?, hora?, cos[] }`. `id` únic a tota l'app; `ocult` (booleà) surt quan un efecte `mostra` el fa visible, i el xat apareix en tenir el primer missatge visible. `cos` és una llista no buida de segments: `{ "t", "senyal"? }` o `{ "enllac": { "text", "url" } }` (aquí la url ha de ser `http(s)://`, no s'admet `cerca:`).
+  - El text que escriu el jugador no surt del component: al motor només li arriben `contacte.bloqueja`, `missatge.envia { contacte }` i `enllac.obre`. Per avisar, combina `mostra` amb `notifica` (`app: "revenda"`, `xat`, `font: "mobil"`).
 - `apps.navegador.inici`: URLs que s'obren en iniciar.
-- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat`, `banc-solid`, `diari` o `sorteig`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- `webs.<domini>`: `plantilla` (`posta`, `llum-clara`, `enviat`, `banc-solid`, `diari`, `sorteig`, `cobrament` o `inversio`), `variant` (`oficial` o `falsa`), `https`, `titol`, `domini_senyal?` i, si cal, `formulari { id, boto, camps[] { id, etiqueta, autoompli, senyal? } }`.
+- Normalització de `www.`: el navegador cerca primer la web amb el host exacte i, si no hi és, la mateixa entrada sense `www.` (així `www.exemple.cat` obre la web declarada com `exemple.cat`; una missió pot declarar un `www.` a propòsit). Al filtre `url` d'un disparador passa igual: coincideix si és idèntica o si els hosts coincideixen un cop tret el `www.` (en aquest cas `url` és el host).
 - `disparadors[]`: `{ id, quan: { esdeveniment, ...filtres }, retard?, efectes[] }`. `retard` són segons de joc. A `quan`, `visible: "<id>"` fa que el disparador només coincideixi si l'element (p. ex. un correu amb `ocult`) ja s'ha mostrat amb l'efecte `mostra`; si no, no es consumeix.
 
 ## Esdeveniments
@@ -117,12 +123,29 @@ Si es bloqueja amb la casella «i esborra la conversa», s'emet `contacte.bloque
 
 La plantilla web `sorteig` («Sorteig del Barri») només té variant falsa (el validador rebutja qualsevol altra `variant`): dades opcionals `premi`, `premi_senyal`, `compte_enrere` i `formulari` (amb `esdeveniment: "pagament.fes"`).
 
+## Plantilles només falses
+
+`sorteig`, `cobrament` i `inversio` només tenen variant falsa (`PLANTILLES_SOLO_FALSES` a `valida.js`; el validador rebutja qualsevol altra `variant`). Cap lletra d'aquests formularis no surt del component.
+
+- `cobrament` («Revenda Cobra»): obligatoris `import` (text, p. ex. `"120 €"`) i `formulari` amb `camps` (almenys un) i `esdeveniment` (habitualment `pagament.fes`). Opcionals: `concepte` (text sota l'import) i `ingres_senyal` (senyal del text «Introdueix les dades de la targeta per rebre l'ingrés»: cobrar no demana targeta). Exemple: `plugins/noempesquen-core/missions/remei-05-comprador.json`.
+- `inversio` («Invest Rapid»): obligatoris `promesa` (títol) i `formulari` com a `cobrament`. Opcionals: `promesa_senyal`, `avatar { nom, inicials }`, `compte_enrere { text, senyal? }` (text fix, sense temporitzador viu), `testimonis[] { nom, text, senyal? }` i `domini_senyal`. Exemple: `plugins/noempesquen-core/missions/llissa-03-inversio.json`.
+- `sorteig`: vegeu més amunt.
+
+## Anunci patrocinat a El Diari del Barri
+
+`webs.<host>.anunci` només és vàlid a la plantilla `diari` (en una altra, el validador dóna error). La portada hi pinta un anunci que el jugador pot denunciar.
+
+- `id` (únic, també respecte de les publicacions d'Ullada), `etiqueta` (p. ex. «Contingut patrocinat»), `titol` i `avatar { nom, inicials }` són obligatoris. L'avatar són inicials, mai una foto.
+- Opcionals: `etiqueta_senyal` (senyal de l'etiqueta), `boto_denuncia` (text del botó; per defecte «Informa d'aquest anunci») i `cos` (paràgrafs com a les publicacions d'Ullada, amb `senyal` i enllaços `http(s)://`).
+- Denunciar-lo emet `publicacio.denuncia` amb l'`id` de l'anunci; el validador l'accepta com a publicació denunciable.
+
+
 ## Efectes
 
 | Efecte | Dades |
 | --- | --- |
 | `guia-diu` | `text` (literal) o `frase` (clau de `frases`, p. ex. `web_falsa`) |
-| `notifica` | `app` (`missatges`, `parla`, `navegador`, `posta` o `enviat`), `titol`, `text`; `xat` (opcional, només amb `app: "parla"`: id del xat que s'obre en tocar l'avís al mòbil; per defecte el del guia); `font: "mobil"` (opcional) l'envia al mòbil vinculat i `app` ha de ser una app del mòbil |
+| `notifica` | `app` (`missatges`, `parla`, `navegador`, `posta`, `enviat` o `revenda`), `titol`, `text`; `xat` (opcional, només amb `app: "parla"` o `"revenda"`: id d'un xat d'aquella app, que s'obre en tocar l'avís al mòbil; a Parla, per defecte el del guia); `font: "mobil"` (opcional) l'envia al mòbil vinculat i `app` ha de ser una app del mòbil |
 | `mostra` | `id` |
 | `pescat` | |
 | `decideix` | `opcio` (id d'una opció de `decisio`) |

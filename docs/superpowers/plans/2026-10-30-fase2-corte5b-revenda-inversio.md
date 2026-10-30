@@ -1,6 +1,6 @@
 # Corte 5b · Comprador falso (Revenda) e inversión con famoso
 
-Estado: revisado por `critico` e incorporado; pendiente de aprobación (puerta 2). Rama: `feat/fase2-corte5b-revenda-inversio` (base: `master` tras el corte 5a).
+Estado: aprobado y ejecutado. Rama: `feat/fase2-corte5b-revenda-inversio` (base: `master` tras el corte 5a).
 Spec vigente: `docs/superpowers/specs/2026-10-29-simulador-realista-design.md`. Plan anterior: `2026-10-30-fase2-corte5a-sorteig-codi.md`.
 
 ## Objetivo
