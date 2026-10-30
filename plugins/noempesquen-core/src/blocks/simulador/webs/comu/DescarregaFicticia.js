@@ -62,6 +62,7 @@ export function DescarregaFicticia( {
 				ref={ arrel }
 				className="nep-descarrega__finestra"
 				role="dialog"
+				aria-modal="true"
 				aria-labelledby={ idTitol }
 				aria-describedby={ idCos }
 				onKeyDown={ ( e ) => atrapaFocus( e, arrel.current ) }

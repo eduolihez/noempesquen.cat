@@ -94,6 +94,7 @@ export function AvisFals( {
 				ref={ arrel }
 				className="nep-avis__finestra"
 				role="alertdialog"
+				aria-modal="true"
 				aria-labelledby={ idTitol }
 				aria-describedby={ idCos }
 				onKeyDown={ ( e ) => atrapaFocus( e, arrel.current ) }
