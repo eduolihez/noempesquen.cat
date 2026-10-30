@@ -8,6 +8,7 @@ import {
 	ESDEVENIMENTS_FORMULARI,
 	importDe,
 	opcionsCamp,
+	textosFormulari,
 	referencia,
 	seccioOficial,
 } from '../comu/formulari.js';
@@ -236,5 +237,44 @@ describe( 'formulari fals: esdeveniment', () => {
 			formulari: 'codi-sms',
 		} );
 		expect( JSON.stringify( dades ) ).not.toContain( '482913' );
+	} );
+} );
+
+describe( 'formulari fals: textos', () => {
+	const defectes = {
+		processant: 'Processant el pagament…',
+		nota: 'Pagament segur i verificat',
+	};
+
+	it( 'sense res declarat, manté els textos de pagament', () => {
+		expect( textosFormulari( formulari, defectes ) ).toEqual( defectes );
+		expect( textosFormulari( {}, defectes ) ).toEqual( defectes );
+		expect( textosFormulari( undefined, defectes ) ).toEqual( defectes );
+	} );
+
+	it( 'el JSON pot declarar processant i nota', () => {
+		expect(
+			textosFormulari(
+				{
+					processant: 'Verificant el codi…',
+					nota: 'Connexió segura amb Banc Sòlid',
+				},
+				defectes
+			)
+		).toEqual( {
+			processant: 'Verificant el codi…',
+			nota: 'Connexió segura amb Banc Sòlid',
+		} );
+		expect( textosFormulari( { nota: 'Accés segur' }, defectes ) ).toEqual(
+			{ processant: defectes.processant, nota: 'Accés segur' }
+		);
+	} );
+
+	it( 'valors buits o que no són text tornen al per defecte', () => {
+		[ '', '   ', 42, null, {} ].forEach( ( v ) =>
+			expect(
+				textosFormulari( { processant: v, nota: v }, defectes )
+			).toEqual( defectes )
+		);
 	} );
 } );

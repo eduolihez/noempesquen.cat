@@ -73,6 +73,22 @@ export function opcionsCamp( camp ) {
 	};
 }
 
+/**
+ * Textos del formulari que pot declarar el JSON de la web (`processant`,
+ * `nota`). Si no hi són o no són text, els per defecte (els de pagament).
+ *
+ * @param {Object} formulari Definició del formulari.
+ * @param {Object} defectes  { processant, nota } per defecte.
+ * @return {{processant:string, nota:string}} Textos.
+ */
+export function textosFormulari( formulari, defectes ) {
+	const tria = ( clau ) => {
+		const v = formulari?.[ clau ];
+		return typeof v === 'string' && v.trim() ? v : defectes[ clau ];
+	};
+	return { processant: tria( 'processant' ), nota: tria( 'nota' ) };
+}
+
 const dos = ( n ) => String( n ).padStart( 2, '0' );
 
 /**

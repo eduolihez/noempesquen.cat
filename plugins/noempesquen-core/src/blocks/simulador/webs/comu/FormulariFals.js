@@ -3,10 +3,21 @@ import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { Inspeccionable } from '../../ui/Inspeccionable';
 import { CampSuggerit } from './CampSuggerit';
-import { datesEnviades, esdevenimentDe, opcionsCamp } from './formulari';
+import {
+	datesEnviades,
+	esdevenimentDe,
+	opcionsCamp,
+	textosFormulari,
+} from './formulari';
 import { IconaCadenat } from './icones';
 
-function Processant() {
+/**
+ * Pantalla d'espera després d'enviar.
+ *
+ * @param {Object} props
+ * @param {string} props.titol Text principal.
+ */
+function Processant( { titol } ) {
 	return (
 		<div className="nep-lc-processa" role="status">
 			<svg
@@ -18,9 +29,7 @@ function Processant() {
 			>
 				<circle cx="24" cy="24" r="19" />
 			</svg>
-			<p className="nep-lc-processa__titol">
-				{ __( 'Processant el pagament…', 'noempesquen' ) }
-			</p>
+			<p className="nep-lc-processa__titol">{ titol }</p>
 			<p>
 				{ __(
 					'No tanquis ni actualitzis aquesta pàgina.',
@@ -39,7 +48,8 @@ function Processant() {
  * buiden i es desmunten.
  *
  * @param {Object}    props
- * @param {Object}    props.formulari Definició (id, boto, camps, esdeveniment).
+ * @param {Object}    props.formulari Definició (id, boto, camps, esdeveniment,
+ *                                    processant, nota).
  * @param {string}    props.url       URL de la pàgina.
  * @param {?Function} props.onEnvia   Avisa que s'ha enviat.
  */
@@ -54,6 +64,10 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 	);
 
 	const opcions = camps.map( opcionsCamp );
+	const textos = textosFormulari( formulari, {
+		processant: __( 'Processant el pagament…', 'noempesquen' ),
+		nota: __( 'Pagament segur i verificat', 'noempesquen' ),
+	} );
 	const nom = mon?.jugador?.nom ?? 'Àlex Puig';
 	const numero = camps.find( ( c ) => c.id === 'numero' )?.autoompli;
 	const suggeriment = {
@@ -108,7 +122,7 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 	};
 
 	if ( processant ) {
-		return <Processant />;
+		return <Processant titol={ textos.processant } />;
 	}
 
 	return (
@@ -155,7 +169,7 @@ export function FormulariFals( { formulari, url, onEnvia } ) {
 			</button>
 			<p className="nep-lc-form__segell">
 				<IconaCadenat mida={ 16 } />
-				{ __( 'Pagament segur i verificat', 'noempesquen' ) }
+				{ textos.nota }
 			</p>
 		</form>
 	);
