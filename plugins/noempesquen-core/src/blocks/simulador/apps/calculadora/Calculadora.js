@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { calcula, estatInicial, mostra } from './calc.js';
+import { calcula, classeMida, estatInicial, mostra } from './calc.js';
 
 const FILES = [
 	[ 'C', '⌫', '%', '÷' ],
@@ -46,8 +46,37 @@ export default function Calculadora() {
 	const arrel = useRef( null );
 	const noms = etiquetes();
 
+	// L'app queda muntada (hidden + inert) en segon pla: en tornar a primer
+	// pla recupera el focus si s'ha perdut (body, arrel del simulador o part
+	// inert), sense robar-lo si ja és dins seu o és en un menú o diàleg.
 	useEffect( () => {
-		arrel.current?.focus( { preventScroll: true } );
+		const el = arrel.current;
+		const pantalla = el?.closest( 'section' );
+		const recupera = () => {
+			if ( pantalla?.hidden || pantalla?.hasAttribute( 'inert' ) ) {
+				return;
+			}
+			const actiu = el.ownerDocument.activeElement;
+			const perdut =
+				! actiu ||
+				actiu === el.ownerDocument.body ||
+				actiu.classList?.contains( 'nep-so' ) ||
+				!! actiu.closest?.( '[inert], [hidden]' );
+			if ( perdut && ! el.contains( actiu ) ) {
+				el.focus( { preventScroll: true } );
+			}
+		};
+		recupera();
+		const Observador = el?.ownerDocument.defaultView?.MutationObserver;
+		if ( ! pantalla || ! Observador ) {
+			return undefined;
+		}
+		const obs = new Observador( recupera );
+		obs.observe( pantalla, {
+			attributes: true,
+			attributeFilter: [ 'hidden', 'inert' ],
+		} );
+		return () => obs.disconnect();
 	}, [] );
 
 	const prem = ( tecla ) => setEstat( ( e ) => calcula( e, tecla ) );
@@ -81,8 +110,8 @@ export default function Calculadora() {
 			onKeyDown={ onKeyDown }
 		>
 			<div
-				className={ `nep-calculadora__pantalla${
-					estat.error ? ' is-error' : ''
+				className={ `nep-calculadora__pantalla ${
+					estat.error ? 'is-error' : classeMida( mostra( estat ) )
 				}` }
 				role="status"
 				aria-live="polite"

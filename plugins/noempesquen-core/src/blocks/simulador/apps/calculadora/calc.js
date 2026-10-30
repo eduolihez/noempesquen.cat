@@ -4,6 +4,7 @@
  */
 export const MAX_DIGITS = 12;
 export const ERROR_ZERO = 'No es pot dividir per zero';
+export const ERROR_GRAN = 'Número massa gran';
 
 const OPERADORS = [ '+', '−', '×', '÷' ];
 
@@ -44,9 +45,12 @@ function opera( a, op, b ) {
 /* Resol `anterior op actual`; torna estat amb el resultat a `actual`. */
 function resol( estat ) {
 	const res = opera( estat.anterior, estat.op, Number( estat.actual ) );
-	const text = res === null ? null : formata( res );
-	if ( text === null ) {
+	if ( res === null ) {
 		return { ...estatInicial(), error: ERROR_ZERO };
+	}
+	const text = formata( res );
+	if ( text === null ) {
+		return { ...estatInicial(), error: ERROR_GRAN };
 	}
 	return { ...estat, actual: text, anterior: null, op: null, nou: true };
 }
@@ -124,10 +128,26 @@ export function calcula( estat, tecla ) {
 		};
 	}
 	if ( tecla === '%' ) {
+		// Simple: només divideix entre 100 (no és "percentatge de" l'anterior).
 		const text = formata( Number( estat.actual ) / 100 );
 		return { ...estat, actual: text, nou: true };
 	}
 	return estat;
+}
+
+/* Classe de mida de la pantalla segons la longitud del text mostrat. */
+export function classeMida( text ) {
+	const n = text.length;
+	if ( n <= 7 ) {
+		return 'is-mida-1';
+	}
+	if ( n <= 10 ) {
+		return 'is-mida-2';
+	}
+	if ( n <= 12 ) {
+		return 'is-mida-3';
+	}
+	return 'is-mida-4';
 }
 
 export function mostra( estat ) {

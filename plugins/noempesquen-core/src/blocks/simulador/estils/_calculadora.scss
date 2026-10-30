@@ -33,6 +33,18 @@ $calc-text: #fff;
 		padding: 8px 8px 4px;
 		text-align: right;
 
+		&.is-mida-2 {
+			font-size: 34px;
+		}
+
+		&.is-mida-3 {
+			font-size: 28px;
+		}
+
+		&.is-mida-4 {
+			font-size: 22px;
+		}
+
 		&.is-error {
 			font-size: 20px;
 		}

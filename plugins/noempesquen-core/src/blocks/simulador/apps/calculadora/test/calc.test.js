@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { estatInicial, calcula, mostra, ERROR_ZERO } from '../calc.js';
+import {
+	estatInicial,
+	calcula,
+	mostra,
+	classeMida,
+	ERROR_ZERO,
+	ERROR_GRAN,
+} from '../calc.js';
 
 const prem = ( teclas, inicial = estatInicial() ) =>
 	[ ...teclas ].reduce( calcula, inicial );
@@ -67,8 +74,34 @@ describe( 'calc', () => {
 		expect( mostra( prem( '007' ) ) ).toBe( '7' );
 	} );
 
-	it( 'resultat enorme no supera 12 dígits', () => {
-		const t = mostra( prem( '999999999999×999999999999=' ) );
-		expect( t.replace( /[-,]/g, '' ).length ).toBeLessThanOrEqual( 13 );
+	it( 'resultat enorme passa a exponencial', () => {
+		expect( mostra( prem( '999999999999×999999999999=' ) ) ).toBe(
+			'1e+24'
+		);
+	} );
+
+	it( 'desbordament dona error propi i es recupera', () => {
+		let e = prem( '999999999999' );
+		for ( let i = 0; i < 30 && ! e.error; i++ ) {
+			e = prem( '×999999999999=', e );
+		}
+		expect( mostra( e ) ).toBe( ERROR_GRAN );
+		expect( mostra( calcula( e, '+' ) ) ).toBe( ERROR_GRAN );
+		expect( mostra( calcula( e, 'C' ) ) ).toBe( '0' );
+		expect( mostra( calcula( e, '4' ) ) ).toBe( '4' );
+	} );
+
+	it( '1 ÷ 3 arrodoneix a 10 xifres', () => {
+		expect( mostra( prem( '1÷3=' ) ) ).toBe( '0,3333333333' );
+	} );
+
+	it( '0,5 ⌫ deixa 0,', () => {
+		expect( mostra( prem( '0,5⌫' ) ) ).toBe( '0,' );
+	} );
+
+	it( 'classeMida redueix segons la longitud', () => {
+		expect( classeMida( '42' ) ).toBe( 'is-mida-1' );
+		expect( classeMida( '0,3333333333' ) ).toBe( 'is-mida-3' );
+		expect( classeMida( '-123456789012' ) ).toBe( 'is-mida-4' );
 	} );
 } );
