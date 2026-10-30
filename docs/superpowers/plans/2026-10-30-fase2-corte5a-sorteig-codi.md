@@ -69,3 +69,33 @@ Los globales del flujo más: `npm run lint:js`, `lint:css`, `test:unit`, `build`
 ## Fuera de alcance del corte
 
 Revenda, inversión, pop-up, falsa actualización (cortes 5b y 5c); `Cos` con `ocult` en Ullada; deudas menores anteriores.
+
+## Resultado T0
+
+### Línea base (rama `feat/fase2-corte5a-sorteig-codi`, sin tocar código)
+
+| Comando | Resultado |
+|---|---|
+| `npm run lint:js` | pasa: 0 errores, 131 warnings (jsdoc `reject-function-type`, previos) |
+| `npm run lint:css` | pasa, sin salida |
+| `npm run test:unit` | pasa: 38 ficheros, 378 tests |
+| `npm run build` | compila (1 warning de webpack por tamaño, previo) |
+
+Playwright no se ha ejecutado en T0 (solo se pedía lint, unit y build).
+
+### Texto de daño por misión
+
+No hay campo de «daño» dedicado. El texto de la pantalla de consecuencia sale de un único campo, `frases.pescat`, que es una cadena por misión (no por vía). Lo que se muestra al ser pescado:
+
+- `frases.pescat` se vuelca al chat de la guía al ejecutar el efecto `pescat` (`SIM/nucli/disparadors.js:39-52`, `efectePescat`).
+- Se renderiza en el modal de consecuencia: `SIM/simulador/desenllac.js:22-29` toma `missio.frases?.pescat`, y `SIM/simulador/Consequencia.js:97-98` lo pinta en `.nep-cons__text`. El título fijo «T'han pescat!» está en `Consequencia.js:12-16`.
+- `tancament` (`aprenentatges[]` y `consell`) solo se pinta en el informe: `SIM/simulador/Resultat.js:209-218`. No es específico del pescat: se muestra siempre.
+- Si la misión usa `decisio`, el texto sale de `opcio.resposta` (`desenllac.js:33-40`); la opción `valor: "incorrecta"` cuenta como pescada (`caigut`).
+- `valida.js` no exige `frases.pescat` por sí mismo; solo exige un camino de pescat (`efectes: [{tipus:"pescat"}]` o `incorrecta`) y que cualquier `frase` referenciada exista en `frases`.
+
+### Campos exactos para los JSON de T4
+
+- Daño de la vía de pago (remei-03-sorteig: cargo recurrente tras pagar): `frases.pescat` con el cargo recurrente («si fos de veritat, cada mes et cobrarien...») y/o `decisio.opcions[].resposta` de la opción `incorrecta`, como en remei-01-paquet (`frases.pescat` l.201, `resposta` l.211) y remei-02-canviat (l.264, l.273).
+- Daño de compartir el código (remei-04-codi: cuenta secuestrada): igual, en `frases.pescat` (un solo texto; no hay variante por vía) y en `resposta` de la opción incorrecta.
+- Si T4 necesita dos daños distintos según la vía en una misma misión, no se puede sin tocar código: habría que repartir los efectos con `guia-diu` + `frase` (`docs/format-missions.md:110`) antes del `pescat`, o ampliar `efectePescat` (fuera de alcance de 5a).
+- Cierre: `tancament.aprenentatges` (text[]) y `tancament.consell` (text), obligatorios (`Resultat.js` los lee sin `?.`). Ejemplos: remei-01 l.233, remei-02 l.295.
