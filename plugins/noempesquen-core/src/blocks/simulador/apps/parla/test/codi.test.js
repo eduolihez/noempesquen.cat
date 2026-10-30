@@ -84,6 +84,13 @@ describe( 'extreuCodis', () => {
 		expect( extreuCodis( [ { text: 'Ref 12a0a34' } ] ) ).toEqual( [] );
 	} );
 
+	it( 'accepta guions a les vores («-482913-»)', () => {
+		expect( extreuCodis( [ { text: 'Codi -482913-' } ] ) ).toEqual( [
+			'482913',
+		] );
+		expect( coincideixCodi( '-482913-', '482913' ) ).toBe( true );
+	} );
+
 	it( 'tolera entrades buides', () => {
 		expect( extreuCodis( undefined ) ).toEqual( [] );
 		expect( extreuCodis( [ null, {} ] ) ).toEqual( [] );

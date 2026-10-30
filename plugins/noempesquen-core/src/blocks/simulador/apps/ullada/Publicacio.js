@@ -4,13 +4,17 @@ import { useJoc } from '../../simulador/context';
 import { useSistema } from '../../sistemes/pc/context';
 import { Cos } from '../../ui/Cos';
 import { Ilustracio } from '../../ui/ilustracions';
+import { esUrlNavegable } from '../../webs/enllac';
+import { PREFIX_CERCA } from '../navegador/historial';
 import { formataLikes } from './feed.js';
 import { IconaCor, IconaDenuncia } from './icones';
 
 /**
  * Una publicació del feed. El «m'agrada» i la denúncia són estat local; al
  * motor li arriben `publicacio.denuncia` i, si el `cos` té enllaços,
- * `enllac.obre`. El mòbil també proveeix `useSistema()` (obreApp).
+ * `enllac.obre`. `useSistema()` ve de `sistemes/pc/context`: és un context
+ * compartit que el mòbil també proveeix (obreApp). En passar o enfocar un
+ * enllaç es mostra la URL de destí a baix, com la barra d'estat del navegador.
  *
  * @param {Object} props
  * @param {Object} props.publicacio Publicació amb el perfil resolt.
@@ -20,11 +24,18 @@ export function Publicacio( { publicacio } ) {
 	const { obreApp } = useSistema();
 	const [ agrada, setAgrada ] = useState( false );
 	const [ denunciada, setDenunciada ] = useState( false );
+	const [ hover, setHover ] = useState( null );
 	const { id, perfil, text, cos, il, likes } = publicacio;
 	const nom = perfil.nom || perfil.usuari || __( 'Usuari', 'noempesquen' );
 	const total = likes + ( agrada ? 1 : 0 );
 
 	const obreEnllac = ( url ) => {
+		const valida =
+			esUrlNavegable( url ) ||
+			( typeof url === 'string' && url.startsWith( PREFIX_CERCA ) );
+		if ( ! valida ) {
+			return;
+		}
 		emet( 'enllac.obre', { url } );
 		obreApp( 'navegador', { url } );
 	};
@@ -102,12 +113,21 @@ export function Publicacio( { publicacio } ) {
 			{ Array.isArray( cos ) && cos.length ? (
 				<div className="nep-ullada-pub__text nep-ullada-pub__cos">
 					<strong>{ perfil.usuari || nom }</strong>
-					<Cos paragrafs={ cos } onEnllac={ obreEnllac } />
+					<Cos
+						paragrafs={ cos }
+						onEnllac={ obreEnllac }
+						onHoverUrl={ setHover }
+					/>
 				</div>
 			) : (
 				<p className="nep-ullada-pub__text">
 					<strong>{ perfil.usuari || nom }</strong> { text }
 				</p>
+			) }
+			{ hover && (
+				<div className="nep-ullada-pub__url" aria-hidden="true">
+					{ hover }
+				</div>
 			) }
 		</article>
 	);

@@ -9,12 +9,12 @@ const MIN_DIGITS = 4;
 /*
  * Seqüència de 4 a 8 xifres, agrupables amb espais o guions («482 913»,
  * «48-29-13»), que no forma part d'un número més llarg (p. ex. un telèfon).
+ * Sense lookbehind (Safari < 16.4): es capturen les seqüències senceres de
+ * xifres encadenades i després es filtra per llargada.
  */
+const MAX_DIGITS = 8;
 const SEP = `[ \t${ String.fromCharCode( 160 ) }-]`;
-const RE_CODI = new RegExp(
-	`(?<!\\d${ SEP }?)\\d(?:${ SEP }?\\d){3,7}(?!${ SEP }?\\d)`,
-	'g'
-);
+const RE_SEQUENCIA = new RegExp( `\\d(?:${ SEP }?\\d)*`, 'g' );
 
 /**
  * Text pla d'un SMS: `text` o els segments del `cos` (text i enllaços).
@@ -44,9 +44,12 @@ function textDe( sms ) {
 export function extreuCodis( missatges ) {
 	const codis = new Set();
 	( Array.isArray( missatges ) ? missatges : [] ).forEach( ( sms ) => {
-		( textDe( sms ).match( RE_CODI ) ?? [] ).forEach( ( m ) =>
-			codis.add( m.replace( /\D/g, '' ) )
-		);
+		( textDe( sms ).match( RE_SEQUENCIA ) ?? [] ).forEach( ( m ) => {
+			const xifres = m.replace( /\D/g, '' );
+			if ( xifres.length >= MIN_DIGITS && xifres.length <= MAX_DIGITS ) {
+				codis.add( xifres );
+			}
+		} );
 	} );
 	return [ ...codis ];
 }

@@ -254,6 +254,26 @@ $ull-accent: #7a2fc0;
 		padding: 0 12px;
 	}
 
+	/* URL de destí d'un enllaç del cos, com la barra d'estat del navegador. */
+	&__url {
+		background: #fff;
+		border: 1px solid $ull-vora;
+		border-radius: 4px;
+		bottom: 4px;
+		box-shadow: 0 0 4px rgb(0 0 0 / 8%);
+		color: $ull-text;
+		font-size: 12px;
+		margin: 4px 12px 0;
+		max-width: calc(100% - 24px);
+		overflow: hidden;
+		padding: 3px 8px;
+		pointer-events: none;
+		position: sticky;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: fit-content;
+	}
+
 	&__cos p {
 		margin: 0 0 4px;
 	}
