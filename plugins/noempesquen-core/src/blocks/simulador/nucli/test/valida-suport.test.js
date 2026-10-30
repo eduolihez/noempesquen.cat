@@ -111,6 +111,38 @@ describe( 'validaMissio: telefon.truca i descarrega.fes', () => {
 		);
 	} );
 
+	it( 'avis.apareix exigeix una web article amb avís', () => {
+		const m = fixture();
+		const w = web();
+		delete w.avis;
+		m.webs[ 'sense-avis.cat' ] = w;
+		m.disparadors.push(
+			{
+				quan: { esdeveniment: 'avis.apareix', url: URL_WEB },
+				efectes: [ { tipus: 'guia-diu', text: 'Ha sortit.' } ],
+			},
+			{
+				quan: { esdeveniment: 'avis.apareix', url: 'sense-avis.cat' },
+				efectes: [],
+			},
+			{
+				quan: {
+					esdeveniment: 'avis.apareix',
+					url: 'llumclara-pagaments.com',
+				},
+				efectes: [],
+			}
+		);
+		const e = errors( m );
+		expect( e ).toContain(
+			'avis.apareix: la web sense-avis.cat no té avís'
+		);
+		expect( e ).toContain(
+			'avis.apareix: url sense web article: llumclara-pagaments.com'
+		);
+		expect( e ).toHaveLength( 2 );
+	} );
+
 	it( 'descarrega.fes exigeix una web amb fitxers', () => {
 		const m = fixture();
 		const w = web();

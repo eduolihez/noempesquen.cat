@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { FASE, estatInicial, reductor, puntuacio } from '../motor.js';
+import {
+	FASE,
+	estatInicial,
+	reductor,
+	puntuacio,
+	clauWeb,
+	clauTancat,
+} from '../motor.js';
 import { validaMissio } from '../valida.js';
 
 const carrega = ( nom ) =>
@@ -160,23 +167,75 @@ describe( 'missió «Virus detectat!» (v2)', () => {
 		expect( e.pescat ).toBe( false );
 	} );
 
-	it( 'la guia avisa de l’avís al cap de 9 segons de joc', () => {
-		const abans = joc();
-		const quasi = aplica(
-			abans,
-			...Array.from( { length: 8 }, () => ( { tipus: 'TICK' } ) )
-		);
+	it( 'la guia només parla de l’avís quan l’avís surt', () => {
 		const frase = expect.objectContaining( {
 			de: 'guia',
 			text: p.frases.avis_surt,
 		} );
-		expect( quasi.pendents.map( ( x ) => x.id ) ).toContain( 'avis-surt' );
-		expect( quasi.xat ).not.toContainEqual( frase );
-		const e = aplica( quasi, { tipus: 'TICK' } );
-		expect( e.pendents ).toEqual( [] );
-		expect( e.xat.slice( abans.xat.length ) ).toContainEqual( frase );
-		expect( e.xat.slice( abans.xat.length ) ).toContainEqual(
-			expect.objectContaining( { de: 'guia', text: p.frases.avis_surt } )
+		const quiet = aplica(
+			joc(),
+			...Array.from( { length: 30 }, () => ( { tipus: 'TICK' } ) )
 		);
+		expect( quiet.xat ).not.toContainEqual( frase );
+		expect( quiet.pendents ).toEqual( [] );
+		const altra = aplica(
+			quiet,
+			evt( 'avis.apareix', { url: 'https://diaridelbarri.cat/' } )
+		);
+		expect( altra.xat ).not.toContainEqual( frase );
+		const e = aplica(
+			quiet,
+			evt( 'avis.apareix', { url: 'https://www.cuinaravui.cat/' } )
+		);
+		const noves = e.xat.slice( quiet.xat.length );
+		expect( noves ).toContainEqual( frase );
+		expect( e.avisosVistos ).toEqual( [ 'cuinaravui.cat' ] );
+		const dos = aplica( e, evt( 'avis.apareix', { url: URL_WEB } ) );
+		expect(
+			dos.xat.filter( ( x ) => x.text === p.frases.avis_surt )
+		).toHaveLength( 1 );
+		expect( dos.avisosVistos ).toEqual( [ 'cuinaravui.cat' ] );
+	} );
+} );
+
+describe( 'motor: el que es tanca en una web article', () => {
+	const p = carrega( 'llissa-04-suport' );
+	const joc = () =>
+		reductor( p, estatInicial( p ), { tipus: 'DESBLOQUEJA' } );
+	const tanca = ( e, url, element ) =>
+		reductor( p, e, { tipus: 'TANCA_WEB', url, element } );
+
+	it( 'la clau és el host sense www. (o el valor si no és URL)', () => {
+		expect( clauWeb( 'https://www.cuinaravui.cat/recepta?x=1' ) ).toBe(
+			'cuinaravui.cat'
+		);
+		expect( clauWeb( 'cuinaravui.cat' ) ).toBe( 'cuinaravui.cat' );
+		expect( clauWeb( undefined ) ).toBeNull();
+		expect( clauTancat( 'https://cuinaravui.cat/', 'avis' ) ).toBe(
+			'cuinaravui.cat:avis'
+		);
+	} );
+
+	it( 'TANCA_WEB anota l’avís i la barra un sol cop per web', () => {
+		let e = tanca( joc(), 'https://cuinaravui.cat/', 'avis' );
+		e = tanca( e, 'https://www.cuinaravui.cat/una-altra', 'avis' );
+		e = tanca( e, 'https://tempsavui.cat/', 'barra' );
+		expect( e.tancats ).toEqual( [
+			'cuinaravui.cat:avis',
+			'tempsavui.cat:barra',
+		] );
+	} );
+
+	it( 'TANCA_WEB ignora elements desconeguts i URL buides', () => {
+		const e = joc();
+		expect( tanca( e, 'https://cuinaravui.cat/', 'baixada' ) ).toBe( e );
+		expect( tanca( e, '', 'avis' ) ).toBe( e );
+	} );
+
+	it( 'REINICIA ho buida', () => {
+		const e = tanca( joc(), 'https://cuinaravui.cat/', 'avis' );
+		const r = reductor( p, e, { tipus: 'REINICIA' } );
+		expect( r.tancats ).toEqual( [] );
+		expect( r.avisosVistos ).toEqual( [] );
 	} );
 } );

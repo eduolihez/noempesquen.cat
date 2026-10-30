@@ -13,6 +13,7 @@ const BLOQUEIG = /Clica o prem/;
 const AVIS = MISSIO_JSON.webs[ 'cuinaravui.cat' ].avis;
 const TELEFON = AVIS.telefon;
 const INSTALA = AVIS.instal_la.text_boto;
+const AVIS_SURT = MISSIO_JSON.frases.avis_surt;
 // Text escrit a mà amb l'avís obert: no ha de quedar enlloc.
 const ESCRIT = 'Zqxprovasuport7731';
 // Rastres d'una baixada o d'un fitxer real.
@@ -171,6 +172,8 @@ test.describe( 'Virus detectat!', () => {
 		await page.getByRole( 'button', { name: 'Pestanya nova' } ).click();
 		await page.clock.runFor( 10000 );
 		await expect( avis( page ) ).toHaveCount( 0 );
+		// La guia no parla de l'avís si encara no ha sortit.
+		await expect( parla( page ) ).not.toContainText( AVIS_SURT );
 		await page.keyboard.press( 'Escape' );
 		await expect( pausa( page ) ).toBeVisible();
 		await pausa( page ).getByRole( 'button', { name: 'Continua' } ).click();
@@ -182,6 +185,35 @@ test.describe( 'Virus detectat!', () => {
 		await expect( avis( page ) ).toHaveCount( 0 );
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toBeVisible();
+		await page.clock.runFor( 5000 );
+		await expect( parla( page ) ).toContainText( AVIS_SURT );
+	} );
+
+	test( 'l’avís tancat no torna en sortir de la web i tornar-hi', async ( {
+		page,
+	} ) => {
+		await ambAvis( page );
+		await page.clock.runFor( 5000 );
+		await expect( parla( page ) ).toContainText( AVIS_SURT );
+		const cops = async () =>
+			( await parla( page ).innerText() ).split( AVIS_SURT ).length - 1;
+		const abans = await cops();
+		await page.keyboard.press( 'Escape' );
+		await expect( avis( page ) ).toHaveCount( 0 );
+		const barra = page.getByRole( 'textbox', { name: "Barra d'adreces" } );
+		await barra.fill( 'diaridelbarri.cat' );
+		await barra.press( 'Enter' );
+		await expect(
+			page.getByRole( 'heading', { name: 'Crema de carbassa en 20 minuts' } )
+		).toHaveCount( 0 );
+		await page.getByRole( 'button', { name: 'Enrere' } ).click();
+		await expect(
+			page.getByRole( 'heading', { name: 'Crema de carbassa en 20 minuts' } )
+		).toBeVisible();
+		await page.clock.runFor( 12000 );
+		await expect( avis( page ) ).toHaveCount( 0 );
+		// La guia no repeteix la frase en tornar a la web.
+		expect( await cops() ).toBe( abans );
 	} );
 
 	test( 'camí correcte: indicis amb la lupa i triar «a» donen 3 estrelles', async ( {

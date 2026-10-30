@@ -122,8 +122,7 @@
 	"disparadors": [
 		{
 			"id": "avis-surt",
-			"quan": { "esdeveniment": "inici" },
-			"retard": 9,
+			"quan": { "esdeveniment": "avis.apareix", "url": "cuinaravui.cat" },
 			"efectes": [ { "tipus": "guia-diu", "frase": "avis_surt" } ]
 		},
 		{

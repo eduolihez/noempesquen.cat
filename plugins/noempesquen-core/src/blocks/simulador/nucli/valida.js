@@ -64,6 +64,7 @@ export const ESDEVENIMENTS = [
 	'codi.comparteix',
 	'telefon.truca',
 	'descarrega.fes',
+	'avis.apareix',
 ];
 
 /**
@@ -926,7 +927,7 @@ const fitxersWeb = ( web ) =>
  * sense `www.`).
  *
  * @param {Object} m   Missió.
- * @param {*}      url `quan.url`.
+ * @param {string} url `quan.url` (pot no ser text).
  * @return {?string} Domini de la web o null.
  */
 function dominiDeUrl( m, url ) {
@@ -953,6 +954,10 @@ const REQUISITS_ARTICLE = {
 	'descarrega.fes': {
 		compleix: ( w ) => fitxersWeb( w ).length > 0,
 		falta: 'no té cap fitxer',
+	},
+	'avis.apareix': {
+		compleix: ( w ) => esObjecte( w.avis ),
+		falta: 'no té avís',
 	},
 };
 

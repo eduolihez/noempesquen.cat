@@ -118,6 +118,29 @@ test.describe( 'Actualitza el navegador', () => {
 		await expect( consequencia( page ) ).toHaveCount( 0 );
 	} );
 
+	test( 'la barra tancada no torna en sortir de la web i tornar-hi', async ( {
+		page,
+	} ) => {
+		await entra( page );
+		await barra( page )
+			.getByRole( 'button', { name: 'Tanca la barra' } )
+			.click();
+		await expect( barra( page ) ).toHaveCount( 0 );
+		const adreces = page.getByRole( 'textbox', {
+			name: "Barra d'adreces",
+		} );
+		await adreces.fill( 'diaridelbarri.cat' );
+		await adreces.press( 'Enter' );
+		await expect(
+			page.getByRole( 'heading', { name: 'El temps al barri per a avui' } )
+		).toHaveCount( 0 );
+		await page.getByRole( 'button', { name: 'Enrere' } ).click();
+		await expect(
+			page.getByRole( 'heading', { name: 'El temps al barri per a avui' } )
+		).toBeVisible();
+		await expect( barra( page ) ).toHaveCount( 0 );
+	} );
+
 	test( '«Cancel·la» tanca la baixada sense pescar', async ( { page } ) => {
 		await entra( page );
 		await barra( page ).getByRole( 'button', { name: BARRA.boto } ).click();

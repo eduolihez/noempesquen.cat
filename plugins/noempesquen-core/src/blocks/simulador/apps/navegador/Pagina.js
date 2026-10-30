@@ -41,6 +41,7 @@ export function Pagina( {
 	return (
 		<Suspense fallback={ <div className="nep-nav-carregant" /> }>
 			<Web
+				key={ url }
 				dades={ info.web.dades }
 				url={ url }
 				navega={ navega }

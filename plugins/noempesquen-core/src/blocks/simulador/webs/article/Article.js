@@ -1,4 +1,5 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { clauTancat, clauWeb } from '../../nucli/motor';
 import { useJoc } from '../../simulador/context';
 import { Cos } from '../../ui/Cos';
 import { Inspeccionable } from '../../ui/Inspeccionable';
@@ -90,7 +91,7 @@ export default function Article( {
 	onHoverUrl,
 	visible = true,
 } ) {
-	const { estat, emet } = useJoc();
+	const { estat, emet, dispatch } = useJoc();
 	const ara = estat.temps ?? 0;
 	const [ comptador, setComptador ] = useState( () => ( {
 		ultim: ara,
@@ -100,17 +101,32 @@ export default function Article( {
 	useEffect( () => {
 		setComptador( ( c ) => avancaVisible( c, ara, visible ) );
 	}, [ ara, visible ] );
-	const [ avisTancat, setAvisTancat ] = useState( false );
-	const [ barraTancada, setBarraTancada ] = useState( false );
+	// El que es tanca viu al motor: en tornar a la web es queda tancat.
+	const tancats = estat.tancats ?? [];
+	const avisTancat = tancats.includes( clauTancat( url, 'avis' ) );
+	const barraTancada = tancats.includes( clauTancat( url, 'barra' ) );
+	const tanca = ( element ) =>
+		dispatch( { tipus: 'TANCA_WEB', url, element } );
 	const [ baixada, setBaixada ] = useState( null );
 	const avis = dades?.avis ?? null;
 	const barra = dades?.barra ?? null;
 	const seccions = Array.isArray( dades?.seccions ) ? dades.seccions : [];
+	const clau = clauWeb( url );
+	// Si l'avís ja havia sortit en aquesta web, no es torna a esperar el retard.
+	const avisVist = ( estat.avisosVistos ?? [] ).includes( clau );
 	const mostraAvis =
 		visible &&
 		!! avis &&
 		! avisTancat &&
-		avisToca( avis.retard, 0, comptador.visible );
+		( avisVist || avisToca( avis.retard, 0, comptador.visible ) );
+	// `avis.apareix` surt un sol cop per web: el motor en guarda el rastre.
+	const emes = useRef( false );
+	useEffect( () => {
+		if ( mostraAvis && ! avisVist && ! emes.current ) {
+			emes.current = true;
+			emet( 'avis.apareix', { url } );
+		}
+	}, [ mostraAvis, avisVist, emet, url ] );
 	const instala = avis?.instal_la ?? null;
 
 	return (
@@ -120,7 +136,7 @@ export default function Article( {
 					text={ barra.text }
 					boto={ barra.boto }
 					onDescarrega={ () => setBaixada( barra ) }
-					onTanca={ () => setBarraTancada( true ) }
+					onTanca={ () => tanca( 'barra' ) }
 				/>
 			) }
 			{ /* Desplaçament propi: els avisos (absolute) cobreixen sempre la
@@ -175,7 +191,7 @@ export default function Article( {
 					contador={ avis.contador }
 					reobre={ !! avis.reobre }
 					onTruca={ () => emet( 'telefon.truca', { url } ) }
-					onTanca={ () => setAvisTancat( true ) }
+					onTanca={ () => tanca( 'avis' ) }
 				>
 					{ instala && (
 						<button

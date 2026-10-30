@@ -4,6 +4,7 @@
  */
 
 import { processaEsdeveniment, avancaTemps } from './disparadors.js';
+import { senseWww } from '../apps/navegador/historial.js';
 
 export const FASE = {
 	BLOQUEIG: 'bloqueig',
@@ -29,15 +30,35 @@ const TEXT_SALTA = 'Salta la presentació';
 const TEXT_DECIDIR = 'Ja ho tinc clar';
 const TEXT_TORNAR = 'Encara vull mirar';
 
-// Esdeveniments que deixen rastre a l'estat (només l'id).
+/**
+ * Clau d'una web per a l'estat: el host sense `www.` (com `resolWeb`), o el
+ * valor tal qual si no és una URL.
+ *
+ * @param {string} url URL de la pàgina.
+ * @return {?string} Clau o null si no és text.
+ */
+export function clauWeb( url ) {
+	if ( typeof url !== 'string' || ! url ) {
+		return null;
+	}
+	try {
+		return senseWww( new URL( url ).hostname );
+	} catch {
+		return senseWww( url );
+	}
+}
+
+// Esdeveniments que deixen rastre a l'estat (només l'id o la clau de la web).
 const RASTRE = {
 	'contacte.bloqueja': 'bloquejats',
 	'publicacio.denuncia': 'denunciats',
+	'avis.apareix': 'avisosVistos',
 };
 
 /**
- * Anota l'id d'un bloqueig o d'una denúncia (sense duplicats) abans de
- * processar els disparadors, que poden tancar el joc.
+ * Anota l'id d'un bloqueig o d'una denúncia, o la web on ha sortit un avís
+ * (sense duplicats), abans de processar els disparadors, que poden tancar el
+ * joc.
  *
  * @param {Object} estat Estat actual.
  * @param {string} nom   Nom de l'esdeveniment.
@@ -46,7 +67,7 @@ const RASTRE = {
  */
 function anotaEsdeveniment( estat, nom, dades ) {
 	const camp = RASTRE[ nom ];
-	const id = dades?.id;
+	const id = nom === 'avis.apareix' ? clauWeb( dades?.url ) : dades?.id;
 	if (
 		! camp ||
 		typeof id !== 'string' ||
@@ -84,6 +105,10 @@ export function estatInicial( missio ) {
 		// la UI els llegeix d'aquí perquè sobrevisquin en tancar l'app o la web.
 		bloquejats: [],
 		denunciats: [],
+		// Webs `article` (clauWeb) on ja ha sortit l'avís, i el que el jugador
+		// hi ha tancat (`clau:avis`, `clau:barra`): tancat es queda tancat.
+		avisosVistos: [],
+		tancats: [],
 		ultimAvanc: 0,
 		seq: 0,
 	};
@@ -223,6 +248,39 @@ function inspecciona( missio, estat, idSenyal ) {
 	);
 }
 
+// Elements d'una web `article` que el jugador pot tancar.
+const TANCABLES = [ 'avis', 'barra' ];
+
+/**
+ * Clau de l'estat per a un element tancat d'una web.
+ *
+ * @param {string} url     URL de la pàgina.
+ * @param {string} element `avis` o `barra`.
+ * @return {string} Clau (`host:element`).
+ */
+export const clauTancat = ( url, element ) =>
+	`${ clauWeb( url ) }:${ element }`;
+
+/**
+ * Anota que el jugador ha tancat l'avís o la barra d'una web.
+ *
+ * @param {Object} estat   Estat actual.
+ * @param {string} url     URL de la pàgina.
+ * @param {string} element `avis` o `barra`.
+ * @return {Object} Nou estat.
+ */
+function tancaWeb( estat, url, element ) {
+	// Sense mirar la fase: Esc ha de poder tancar l'avís també amb la
+	// conseqüència a sobre (si no, el menú quedaria registrat i obert).
+	if ( ! clauWeb( url ) || ! TANCABLES.includes( element ) ) {
+		return estat;
+	}
+	const clau = clauTancat( url, element );
+	return estat.tancats.includes( clau )
+		? estat
+		: { ...estat, tancats: [ ...estat.tancats, clau ] };
+}
+
 export function reductor( missio, estat, accio ) {
 	switch ( accio.tipus ) {
 		case 'DESBLOQUEJA':
@@ -278,6 +336,9 @@ export function reductor( missio, estat, accio ) {
 						: n
 				),
 			};
+
+		case 'TANCA_WEB':
+			return tancaWeb( estat, accio.url, accio.element );
 
 		case 'VEURE_RESULTAT':
 			return estat.fase === FASE.CONSEQUENCIA
