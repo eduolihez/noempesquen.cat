@@ -74,6 +74,8 @@ export const ESDEVENIMENTS = [
  * @return {Array} Llista.
  */
 const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
+const esObjecte = ( v ) =>
+	!! v && typeof v === 'object' && ! Array.isArray( v );
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
 const URL_HTTP = /^https?:\/\/\S+/i;
@@ -764,8 +766,6 @@ function validaCosArticle( cos, ref, errors ) {
 	);
 }
 
-const esObjecte = ( x ) =>
-	!! x && typeof x === 'object' && ! Array.isArray( x );
 const esText = ( x ) => typeof x === 'string' && x.trim() !== '';
 
 /**
@@ -1042,6 +1042,11 @@ export function validaMissio( m, mon ) {
 	if ( mon && ! Array.isArray( mon.contactes ) ) {
 		errors.push( 'mon.contactes invàlid' );
 	}
+	[ 'apps', 'webs' ].forEach( ( c ) => {
+		if ( m[ c ] !== undefined && ! esObjecte( m[ c ] ) ) {
+			errors.push( `${ c } invàlid` );
+		}
+	} );
 
 	const idsSenyal = llista( m.senyals )
 		.map( ( s ) => s?.id )

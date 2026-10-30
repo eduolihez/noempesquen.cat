@@ -21,6 +21,19 @@ const trenca = {
 };
 
 describe( 'progres', () => {
+	it( 'descarta les entrades que no són números', () => {
+		const s = memoria( {
+			'noempesquen-progres-v2': JSON.stringify( {
+				a: 3,
+				b: 'x',
+				c: null,
+				d: [ 1 ],
+				e: 0,
+			} ),
+		} );
+		expect( llegeixProgres( s ) ).toEqual( { a: 3, e: 0 } );
+	} );
+
 	it( 'torna {} si el que hi ha guardat no és un objecte', () => {
 		[ 'null', '5', '"x"', '[1]', 'true' ].forEach( ( v ) => {
 			const s = memoria( { 'noempesquen-progres-v2': v } );

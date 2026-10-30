@@ -8,12 +8,20 @@ const CLAU_V2 = 'noempesquen-progres-v2';
 const esObjecte = ( v ) =>
 	!! v && typeof v === 'object' && ! Array.isArray( v );
 
+// Només es conserven les entrades amb estrelles numèriques.
+const netejaProgres = ( progres ) =>
+	Object.fromEntries(
+		Object.entries( progres ).filter(
+			( [ , v ] ) => typeof v === 'number' && Number.isFinite( v )
+		)
+	);
+
 export function llegeixProgres( storage ) {
 	try {
 		const actual = storage.getItem( CLAU_V2 );
 		if ( actual !== null && actual !== undefined ) {
 			const llegit = JSON.parse( actual );
-			return esObjecte( llegit ) ? llegit : {};
+			return esObjecte( llegit ) ? netejaProgres( llegit ) : {};
 		}
 		const antic = storage.getItem( CLAU_V1 );
 		if ( antic === null || antic === undefined ) {
@@ -24,7 +32,7 @@ export function llegeixProgres( storage ) {
 			return {};
 		}
 		storage.setItem( CLAU_V2, antic );
-		return progres;
+		return netejaProgres( progres );
 	} catch {
 		return {};
 	}
