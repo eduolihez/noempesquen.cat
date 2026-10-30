@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { avisToca, segonsRetard } from '../retard.js';
+import { avancaVisible, avisToca, segonsRetard } from '../retard.js';
 
 describe( 'segonsRetard', () => {
 	it( 'arrodoneix amunt a segons sencers', () => {
@@ -28,5 +28,24 @@ describe( 'avisToca', () => {
 
 	it( 'si el temps no avança (pausa), no surt', () => {
 		expect( avisToca( 2000, 5, 5 ) ).toBe( false );
+	} );
+} );
+
+describe( 'avancaVisible', () => {
+	it( 'només compta el temps amb la pestanya visible', () => {
+		let c = { ultim: 0, visible: 0 };
+		c = avancaVisible( c, 2, true );
+		expect( c ).toEqual( { ultim: 2, visible: 2 } );
+		c = avancaVisible( c, 10, false );
+		expect( c ).toEqual( { ultim: 10, visible: 2 } );
+		c = avancaVisible( c, 11, true );
+		expect( c ).toEqual( { ultim: 11, visible: 3 } );
+	} );
+
+	it( 'el temps que recula no resta', () => {
+		expect( avancaVisible( { ultim: 5, visible: 1 }, 3, true ) ).toEqual( {
+			ultim: 3,
+			visible: 1,
+		} );
 	} );
 } );

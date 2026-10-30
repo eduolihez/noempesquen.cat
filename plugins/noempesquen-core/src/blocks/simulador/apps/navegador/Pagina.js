@@ -13,6 +13,7 @@ import { PaginaError } from './PaginaError';
  * @param {Function} props.obrePestanya Obre un enllaç en una pestanya nova.
  * @param {Function} props.onHoverUrl   Barra d'estat.
  * @param {Function} props.onRecarrega  Torna a carregar.
+ * @param {boolean}  props.visible      Si la pestanya és l'activa.
  */
 export function Pagina( {
 	url,
@@ -21,6 +22,7 @@ export function Pagina( {
 	obrePestanya,
 	onHoverUrl,
 	onRecarrega,
+	visible = true,
 } ) {
 	if ( info.tipus === 'nova' ) {
 		return <NovaPestanya navega={ navega } onHoverUrl={ onHoverUrl } />;
@@ -44,6 +46,7 @@ export function Pagina( {
 				navega={ navega }
 				obrePestanya={ obrePestanya }
 				onHoverUrl={ onHoverUrl }
+				visible={ visible }
 			/>
 		</Suspense>
 	);

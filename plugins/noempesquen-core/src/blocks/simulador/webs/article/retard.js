@@ -19,6 +19,24 @@ export function segonsRetard( retard ) {
 }
 
 /**
+ * Avança el comptador de temps visible: només suma els segons de joc que han
+ * passat mentre la pestanya era l'activa.
+ *
+ * @param {{ultim:number, visible:number}} comptador Estat anterior.
+ * @param {number}                         ara       Segons de joc actuals.
+ * @param {boolean}                        activa    Si la pestanya és visible.
+ * @return {{ultim:number, visible:number}} Estat nou.
+ */
+export function avancaVisible( comptador, ara, activa ) {
+	const t = Number( ara ) || 0;
+	const delta = Math.max( 0, t - ( Number( comptador?.ultim ) || 0 ) );
+	return {
+		ultim: t,
+		visible: ( Number( comptador?.visible ) || 0 ) + ( activa ? delta : 0 ),
+	};
+}
+
+/**
  * Si ja toca mostrar l'avís.
  *
  * @param {*}      retard Retard en ms de joc.

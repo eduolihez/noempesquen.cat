@@ -1,4 +1,4 @@
-import { useRef, useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { Cos } from '../../ui/Cos';
 import { Inspeccionable } from '../../ui/Inspeccionable';
@@ -6,7 +6,7 @@ import { AvisFals } from '../comu/AvisFals';
 import { BarraActualitzacio } from '../comu/BarraActualitzacio';
 import { DescarregaFicticia } from '../comu/DescarregaFicticia';
 import { normalitzaParagrafs } from '../comu/avis';
-import { avisToca } from './retard';
+import { avancaVisible, avisToca } from './retard';
 
 /**
  * Logotip neutre del lloc: una fulla dins d'un cercle (SVG propi).
@@ -80,10 +80,26 @@ function Seccio( { seccio, navega, onHoverUrl } ) {
  * @param {string}   props.url        URL de la pàgina.
  * @param {Function} props.navega     Navega dins la pestanya.
  * @param {Function} props.onHoverUrl Barra d'estat.
+ * @param {boolean}  props.visible    Si la pestanya és l'activa: si no, no
+ *                                    es munta cap avís ni compta el retard.
  */
-export default function Article( { dades, url, navega, onHoverUrl } ) {
+export default function Article( {
+	dades,
+	url,
+	navega,
+	onHoverUrl,
+	visible = true,
+} ) {
 	const { estat, emet } = useJoc();
-	const inici = useRef( estat.temps ?? 0 );
+	const ara = estat.temps ?? 0;
+	const [ comptador, setComptador ] = useState( () => ( {
+		ultim: ara,
+		visible: 0,
+	} ) );
+	// El retard només compta mentre la pestanya és visible.
+	useEffect( () => {
+		setComptador( ( c ) => avancaVisible( c, ara, visible ) );
+	}, [ ara, visible ] );
 	const [ avisTancat, setAvisTancat ] = useState( false );
 	const [ barraTancada, setBarraTancada ] = useState( false );
 	const [ baixada, setBaixada ] = useState( null );
@@ -91,14 +107,15 @@ export default function Article( { dades, url, navega, onHoverUrl } ) {
 	const barra = dades?.barra ?? null;
 	const seccions = Array.isArray( dades?.seccions ) ? dades.seccions : [];
 	const mostraAvis =
+		visible &&
 		!! avis &&
 		! avisTancat &&
-		avisToca( avis.retard, inici.current, estat.temps );
+		avisToca( avis.retard, 0, comptador.visible );
 	const instala = avis?.instal_la ?? null;
 
 	return (
 		<div className="nep-ar">
-			{ barra && ! barraTancada && (
+			{ visible && barra && ! barraTancada && (
 				<BarraActualitzacio
 					text={ barra.text }
 					boto={ barra.boto }
@@ -171,7 +188,7 @@ export default function Article( { dades, url, navega, onHoverUrl } ) {
 					) }
 				</AvisFals>
 			) }
-			{ baixada && (
+			{ visible && baixada && (
 				<DescarregaFicticia
 					fitxer={ baixada.fitxer }
 					origen={ baixada.origen }
