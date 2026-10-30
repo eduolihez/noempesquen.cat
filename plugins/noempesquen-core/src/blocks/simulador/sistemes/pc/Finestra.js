@@ -15,7 +15,8 @@ import {
 	IconaTanca,
 } from '../../ui/icones';
 import { FinestraContext } from './context';
-import { menysMoviment } from './moviment';
+import { delta, menysMoviment } from './moviment';
+import { useEscala } from '../../simulador/PantallaSistema';
 
 const CASCADA = 36;
 const MARGE = 8;
@@ -87,6 +88,7 @@ export function Finestra( {
 	const arrel = useRef( null );
 	const cos = useRef( null );
 	const arrossega = useRef( null );
+	const escala = useEscala();
 	const [ pos, setPos ] = useState( null );
 	const [ titol, setTitol ] = useState( nom );
 	const [ tancant, setTancant ] = useState( false );
@@ -128,10 +130,15 @@ export function Finestra( {
 	const mou = ( e ) => {
 		const d = arrossega.current;
 		if ( d ) {
+			const { dx, dy } = delta(
+				e.clientX - d.px,
+				e.clientY - d.py,
+				escala
+			);
 			setPos(
 				limita( arrel.current, {
-					x: d.x + e.clientX - d.px,
-					y: d.y + e.clientY - d.py,
+					x: d.x + dx,
+					y: d.y + dy,
 				} )
 			);
 		}

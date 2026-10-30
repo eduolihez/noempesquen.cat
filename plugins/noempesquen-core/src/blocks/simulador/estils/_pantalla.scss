@@ -1,0 +1,86 @@
+/* Embolcall del PC: escalat a 1280×720 i petició de girar. Tot sota .nep-so. */
+
+.nep-so-pantalla {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+
+	/* Objectius tàctils: 44 px reals, en píxels lògics del PC escalat. */
+	&.is-tactil {
+		--so-tactil: max(1px, calc(44px / var(--so-escala, 1)));
+	}
+
+	&__contingut {
+		height: 100%;
+		width: 100%;
+	}
+
+	&.is-escalat &__contingut {
+		position: absolute;
+		transform: scale(var(--so-escala));
+		transform-origin: 0 0;
+	}
+}
+
+/* ---------- Petició de girar ---------- */
+.nep-so-girar {
+	align-items: center;
+	background: #0d1b2a;
+	color: #fff;
+	display: flex;
+	inset: 0;
+	justify-content: center;
+	overflow-y: auto;
+	padding: 24px;
+	position: absolute;
+	z-index: 900;
+
+	&__panell {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 340px;
+		text-align: center;
+	}
+
+	&__icona {
+		color: #9fd3e6;
+	}
+
+	&__titol {
+		font-size: 24px;
+		font-weight: 600;
+		line-height: 32px;
+	}
+
+	&__text {
+		color: #dfe7ee;
+		font-size: 16px;
+		line-height: 24px;
+	}
+
+	.nep-so &__surt {
+		background: #fff;
+		border: 2px solid #fff;
+		border-radius: 8px;
+		color: #0d1b2a;
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 600;
+		margin-top: 8px;
+		min-height: 48px;
+		min-width: 44px;
+		padding: 10px 24px;
+
+		&:hover {
+			background: #ddeff2;
+		}
+
+		&:focus-visible {
+			outline: 3px solid #f2b705;
+			outline-offset: 3px;
+		}
+	}
+}

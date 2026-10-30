@@ -18,6 +18,8 @@ import { Pausa } from './Pausa';
 import { Consequencia } from './Consequencia';
 import { Resultat } from './Resultat';
 import { useSoNotificacions } from './useSoNotificacions';
+import { usePantalla } from './usePantalla';
+import { Pantalla } from './PantallaSistema';
 
 const MS_TICK = 1000;
 /* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
@@ -82,6 +84,9 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 
 	useAillament( arrel );
 	useSoNotificacions( arrel, estat );
+	const pantalla = usePantalla( missio.dispositiu ?? 'pc' );
+	// Amb la petició de girar el rellotge s'atura com en la pausa.
+	const girar = pantalla.mode === 'girar';
 
 	// El clic a la targeta és el gest d'usuari: demanem pantalla completa
 	// en muntar. Si el navegador la rebutja, s'activa la capa fixa.
@@ -101,7 +106,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 	} );
 
 	useEffect( () => {
-		if ( estat.fase !== FASE.JOC || estat.pausa ) {
+		if ( estat.fase !== FASE.JOC || estat.pausa || girar ) {
 			return undefined;
 		}
 		const id = setInterval(
@@ -109,7 +114,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 			MS_TICK
 		);
 		return () => clearInterval( id );
-	}, [ estat.fase, estat.pausa ] );
+	}, [ estat.fase, estat.pausa, girar ] );
 
 	useEffect( () => {
 		if ( estat.fase === FASE.RESULTAT ) {
@@ -227,9 +232,15 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 						className="nep-so__sistema"
 						inert={ estat.pausa || enConsequencia ? '' : undefined }
 					>
-						<Suspense fallback={ <Carregant /> }>
-							<Sistema />
-						</Suspense>
+						<Pantalla
+							dispositiu={ missio.dispositiu ?? 'pc' }
+							pantalla={ pantalla }
+							onSurt={ surtDelJoc }
+						>
+							<Suspense fallback={ <Carregant /> }>
+								<Sistema />
+							</Suspense>
+						</Pantalla>
 					</div>
 				) }
 				{ enConsequencia && (

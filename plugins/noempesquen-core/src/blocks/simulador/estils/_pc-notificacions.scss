@@ -5,7 +5,7 @@
 /* ---------- Centre de notificacions ---------- */
 .nep-so-centre {
 	animation: nep-so-panell-llisca 0.24s $corba-entrada both;
-	bottom: 60px;
+	bottom: calc(var(--so-alt-barra, 48px) + 12px);
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
@@ -39,7 +39,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 14px;
-		max-height: min(360px, 40vh);
+		max-height: min(360px, calc(40vh / var(--so-escala, 1)));
 		overflow-y: auto;
 	}
 
@@ -119,7 +119,7 @@
 
 /* ---------- Notificacions (toast i centre) ---------- */
 .nep-so-toasts {
-	bottom: 60px;
+	bottom: calc(var(--so-alt-barra, 48px) + 12px);
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -144,7 +144,7 @@
 		display: flex;
 		font-size: 12px;
 		gap: 8px;
-		height: 36px;
+		height: max(36px, var(--so-tactil, 0px));
 		padding: 2px 6px 0 14px;
 	}
 
@@ -155,11 +155,11 @@
 		border-radius: 4px;
 		color: #3b3b3b;
 		display: flex;
-		height: 28px;
+		height: max(28px, var(--so-tactil, 0px));
 		justify-content: center;
 		margin-left: auto;
 		opacity: 0;
-		width: 28px;
+		width: max(28px, var(--so-tactil, 0px));
 
 		&:hover {
 			background: rgb(0 0 0 / 6%);
@@ -168,6 +168,11 @@
 
 	&:hover &__descarta,
 	&:focus-within &__descarta {
+		opacity: 1;
+	}
+
+	/* En tàctil no hi ha hover: el botó de descartar sempre es veu. */
+	.is-tactil & .nep-so-notif__descarta {
 		opacity: 1;
 	}
 
