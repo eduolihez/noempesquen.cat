@@ -364,3 +364,127 @@
 		animation: none;
 	}
 }
+
+/* ---------- Número desconegut: banner, menú i estat bloquejat ---------- */
+.nep-so .nep-parla-conversa__accions {
+	align-items: center;
+}
+
+.nep-so .nep-parla-avis {
+	background: #fff8e6;
+	border-bottom: 1px solid #e6d3a3;
+	color: $parla-text;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 12px;
+	padding: 8px 14px;
+
+	&__text {
+		flex: 1 1 200px;
+		font-size: 0.8125rem;
+		margin: 0;
+	}
+
+	&__accions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	&__boto {
+		background: transparent;
+		border: 1px solid $parla-verd;
+		border-radius: 6px;
+		color: $parla-verd;
+		font: inherit;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		min-height: 28px;
+		padding: 2px 12px;
+
+		&.is-perill {
+			border-color: #b42318;
+			color: #b42318;
+		}
+
+		&:focus-visible {
+			outline: 3px solid $parla-verd;
+			outline-offset: 2px;
+		}
+	}
+}
+
+.nep-so .nep-parla-bloquejat {
+	background: $parla-capcalera;
+	border-bottom: 1px solid $parla-vora;
+	color: $parla-text;
+	font-size: 0.8125rem;
+	margin: 0;
+	padding: 8px 14px;
+
+	&:focus-visible {
+		outline: 3px solid $parla-verd;
+		outline-offset: -3px;
+	}
+}
+
+.nep-so .nep-parla-menu {
+	position: relative;
+
+	&__boto {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 50%;
+		color: $parla-text-2;
+		display: inline-flex;
+		height: 28px;
+		justify-content: center;
+		width: 28px;
+
+		&:focus-visible {
+			outline: 3px solid $parla-verd;
+			outline-offset: 2px;
+		}
+	}
+
+	&__llista {
+		background: #fff;
+		border: 1px solid $parla-vora;
+		border-radius: 8px;
+		box-shadow: 0 6px 18px rgba(17, 27, 23, 0.18);
+		list-style: none;
+		margin: 4px 0 0;
+		min-width: 190px;
+		padding: 4px;
+		position: absolute;
+		right: 0;
+		top: 100%;
+		z-index: 5;
+	}
+
+	&__opcio {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 6px;
+		color: #b42318;
+		display: flex;
+		font: inherit;
+		font-size: 0.875rem;
+		gap: 8px;
+		min-height: 32px;
+		padding: 4px 10px;
+		text-align: left;
+		width: 100%;
+
+		&:hover {
+			background: $parla-verd-clar;
+		}
+
+		&:focus-visible {
+			outline: 3px solid $parla-verd;
+			outline-offset: -2px;
+		}
+	}
+}

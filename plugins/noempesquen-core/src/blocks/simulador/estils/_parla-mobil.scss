@@ -47,3 +47,16 @@
 	outline: 3px solid $parla-verd;
 	outline-offset: 2px;
 }
+
+.nep-so .nep-parla-mobil {
+
+	.nep-parla-menu__boto {
+		height: 44px;
+		width: 44px;
+	}
+
+	.nep-parla-menu__opcio,
+	.nep-parla-avis__boto {
+		min-height: 44px;
+	}
+}

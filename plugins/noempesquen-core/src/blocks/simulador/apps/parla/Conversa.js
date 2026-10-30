@@ -8,6 +8,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { IconaCerca, IconaLupa } from '../../ui/icones';
 import { IconaEnrere } from '../missatges/icones';
 import { Respostes } from './Respostes';
+import { AvisDesconegut, MenuXat } from './AvisDesconegut';
+import { esDesconegut, estatAvis } from './desconegut';
 import { parteixHora } from './xats';
 import {
 	IconaAvall,
@@ -107,6 +109,9 @@ function Escrivint() {
  * @param {(id:string)=>void} props.onResposta    Rep l'id de la resposta.
  * @param {string}            props.placeholder   Text del camp desactivat.
  * @param {()=>void}          props.onEnrere      Només al mòbil: botó per tornar a la llista.
+ * @param {?Object}           props.contacte      Contacte de mon.json del xat (null: cap).
+ * @param {boolean}           props.bloquejat     El número ja és bloquejat.
+ * @param {()=>void}          props.onBloqueja    Bloqueja el número (desconeguts).
  */
 export function Conversa( {
 	nom,
@@ -118,7 +123,13 @@ export function Conversa( {
 	onResposta,
 	placeholder,
 	onEnrere,
+	contacte = null,
+	bloquejat = false,
+	onBloqueja,
 } ) {
+	const [ descartat, setDescartat ] = useState( false );
+	const estat = estatAvis( { contacte, bloquejat, descartat } );
+	const estatBloq = useRef( null );
 	const registre = useRef( null );
 	const alFinal = useRef( true );
 	const [ nous, setNous ] = useState( false );
@@ -150,6 +161,23 @@ export function Conversa( {
 			baixa();
 		}
 	}, [ respostes.length ] );
+
+	// Al mòbil, bloquejar torna a la llista (el focus el gestiona ParlaMobil);
+	// a l'escriptori el focus passa a l'avís d'estat.
+	const bloqueja = () => {
+		onBloqueja();
+		onEnrere?.();
+	};
+	useLayoutEffect( () => {
+		if ( estat === 'bloquejat' ) {
+			estatBloq.current?.focus();
+		}
+	}, [ estat ] );
+
+	const afegeix = () => {
+		setDescartat( true );
+		registre.current?.focus();
+	};
 
 	const enDesplacar = () => {
 		const el = registre.current;
@@ -186,14 +214,32 @@ export function Conversa( {
 						</p>
 					) }
 				</div>
-				<span
-					className="nep-parla-conversa__accions"
-					aria-hidden="true"
-				>
-					<IconaCerca mida={ 18 } />
-					<IconaMes mida={ 18 } />
+				<span className="nep-parla-conversa__accions">
+					<span aria-hidden="true">
+						<IconaCerca mida={ 18 } />
+					</span>
+					{ esDesconegut( contacte ) && ! bloquejat ? (
+						<MenuXat onBloqueja={ bloqueja } />
+					) : (
+						<span aria-hidden="true">
+							<IconaMes mida={ 18 } />
+						</span>
+					) }
 				</span>
 			</div>
+			{ estat === 'avis' && (
+				<AvisDesconegut onBloqueja={ bloqueja } onAfegeix={ afegeix } />
+			) }
+			{ estat === 'bloquejat' && (
+				<p
+					ref={ estatBloq }
+					className="nep-parla-bloquejat"
+					role="status"
+					tabIndex={ -1 }
+				>
+					{ __( 'Has bloquejat aquest número', 'noempesquen' ) }
+				</p>
+			) }
 			<div className="nep-parla-conversa__fil">
 				{ /* Focusable per poder-lo desplaçar amb el teclat. */ }
 				<div

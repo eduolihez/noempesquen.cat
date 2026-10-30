@@ -94,6 +94,9 @@ export default function ParlaMobil( { dades } ) {
 					onEnrere={ tanca }
 				/>
 			) }
+			<p className="nep-so-sr" role="status">
+				{ parla.avis }
+			</p>
 		</div>
 	);
 }

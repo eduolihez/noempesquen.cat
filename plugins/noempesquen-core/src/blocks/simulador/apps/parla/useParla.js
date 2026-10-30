@@ -4,6 +4,7 @@ import { useJoc } from '../../simulador/context';
 import { respostesRapides } from '../../nucli/motor';
 import { menysMoviment } from '../../sistemes/pc/moviment';
 import { AvatarXat } from './LlistaXats';
+import { contacteDelXat } from './desconegut';
 import {
 	agrupaPerDia,
 	filtraPerNom,
@@ -90,9 +91,13 @@ function horaLlista( text ) {
  * @return {Object} Llista filtrada, xat actiu, conversa i accions.
  */
 export function useParla( xatInicial = ID_GUIA ) {
-	const { missio, mon, estat, dispatch, hora, nomGuia, Avatar } = useJoc();
+	const { missio, mon, estat, dispatch, emet, hora, nomGuia, Avatar } =
+		useJoc();
 	const [ actiu, setActiu ] = useState( xatInicial );
 	const [ cerca, setCerca ] = useState( '' );
+	// Contactes bloquejats: estat local de la UI; el motor només rep l'esdeveniment.
+	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
+	const [ avis, setAvis ] = useState( '' );
 
 	segella( estat.xat, hora );
 	const { visibles, escriu } = useRevelacio( estat.xat );
@@ -118,9 +123,19 @@ export function useParla( xatInicial = ID_GUIA ) {
 		}
 	};
 
+	const contactes = mon?.contactes;
+	const contacteGuia =
+		contactes?.find( ( c ) => c.id === missio.personatge ) ?? null;
+	const bloqueja = ( contacte ) => {
+		setBloquejats( ( s ) => new Set( [ ...s, contacte.id ] ) );
+		emet( 'contacte.bloqueja', { id: contacte.id } );
+		setAvis( __( 'Has bloquejat aquest número', 'noempesquen' ) );
+	};
+
 	const avatarGuia = ( mida ) => (
 		<AvatarXat nom={ nom } mida={ mida } Avatar={ Avatar } />
 	);
+	const avisBloquejat = __( 'Has bloquejat aquest número', 'noempesquen' );
 	const darrerGuia = visibles[ visibles.length - 1 ];
 	const elements = [
 		{
@@ -128,25 +143,36 @@ export function useParla( xatInicial = ID_GUIA ) {
 			nom,
 			avatar: avatarGuia( 48 ),
 			hora: darrerGuia ? segells.get( darrerGuia ) : '',
-			darrer: darrerGuia && {
-				text: darrerGuia.text,
-				propi: darrerGuia.de === 'jo',
-			},
+			darrer: bloquejats.has( contacteGuia?.id )
+				? { text: avisBloquejat, propi: false }
+				: darrerGuia && {
+						text: darrerGuia.text,
+						propi: darrerGuia.de === 'jo',
+					},
 			escriu,
 			noLlegits,
 			fixat: true,
 		},
 		...farciment.map( ( x ) => {
 			const m = x.missatges?.[ x.missatges.length - 1 ];
+			const bloq = bloquejats.has( contacteDelXat( x, contactes )?.id );
 			return {
 				id: x.id,
 				nom: x.nom,
 				avatar: <AvatarXat nom={ x.nom } mida={ 48 } />,
 				hora: m ? horaLlista( m.hora ) : '',
-				darrer: m && { text: m.text, propi: m.de === 'jo' },
+				darrer: bloq
+					? { text: avisBloquejat, propi: false }
+					: m && { text: m.text, propi: m.de === 'jo' },
 			};
 		} ),
 	];
+
+	const dadesDesconegut = ( contacte ) => ( {
+		contacte,
+		bloquejat: bloquejats.has( contacte?.id ),
+		onBloqueja: () => bloqueja( contacte ),
+	} );
 
 	const xatObert = farciment.find( ( x ) => x.id === actiu );
 	const conversa = xatObert
@@ -160,6 +186,7 @@ export function useParla( xatInicial = ID_GUIA ) {
 				),
 				respostes: [],
 				placeholder: __( 'Escriu un missatge', 'noempesquen' ),
+				...dadesDesconegut( contacteDelXat( xatObert, contactes ) ),
 			}
 		: {
 				nom,
@@ -169,8 +196,12 @@ export function useParla( xatInicial = ID_GUIA ) {
 				avatar: avatarGuia( 40 ),
 				grups: [ { dia: '', missatges: visibles.map( missatgeGuia ) } ],
 				escriu,
-				respostes: escriu ? [] : respostesRapides( missio, estat ),
+				respostes:
+					escriu || bloquejats.has( contacteGuia?.id )
+						? []
+						: respostesRapides( missio, estat ),
 				placeholder: __( 'Tria una resposta', 'noempesquen' ),
+				...dadesDesconegut( contacteGuia ),
 			};
 
 	return {
@@ -183,6 +214,7 @@ export function useParla( xatInicial = ID_GUIA ) {
 		cerca,
 		setCerca,
 		conversa,
+		avis,
 		onResposta: ( id ) => dispatch( { tipus: 'RESPOSTA', id } ),
 	};
 }
