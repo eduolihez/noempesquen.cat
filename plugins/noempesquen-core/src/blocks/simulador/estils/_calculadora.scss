@@ -1,0 +1,89 @@
+/* Calculadora del mòbil. */
+
+$calc-fons: #14171c;
+$calc-tecla: #2b3039;
+$calc-funcio: #4a525e;
+$calc-op: #b45309;
+$calc-op-actiu: #fff;
+$calc-text: #fff;
+
+.nep-so .nep-calculadora {
+	background: $calc-fons;
+	box-sizing: border-box;
+	color: $calc-text;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	height: 100%;
+	padding: 12px;
+
+	&:focus {
+		outline: none;
+	}
+
+	&__pantalla {
+		align-items: flex-end;
+		display: flex;
+		flex: 1 1 auto;
+		font-size: 44px;
+		font-variant-numeric: tabular-nums;
+		justify-content: flex-end;
+		min-height: 84px;
+		overflow-wrap: anywhere;
+		padding: 8px 8px 4px;
+		text-align: right;
+
+		&.is-error {
+			font-size: 20px;
+		}
+	}
+
+	&__teclat {
+		display: grid;
+		gap: 8px;
+		grid-template-columns: repeat(4, 1fr);
+		grid-auto-rows: minmax(48px, 1fr);
+		flex: 0 0 auto;
+	}
+
+	&__tecla {
+		background: $calc-tecla;
+		border: 0;
+		border-radius: 14px;
+		color: $calc-text;
+		cursor: pointer;
+		font: inherit;
+		font-size: 22px;
+		min-height: 48px;
+		min-width: 48px;
+
+		&.is-funcio {
+			background: $calc-funcio;
+		}
+
+		&.is-operador {
+			background: $calc-op;
+		}
+
+		&.is-actiu {
+			background: $calc-op-actiu;
+			color: $calc-op;
+		}
+
+		&:active {
+			filter: brightness(1.2);
+		}
+
+		&:focus-visible {
+			box-shadow: var(--nep-focus-halo);
+			outline: var(--nep-focus);
+			outline-offset: 2px;
+		}
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		&__tecla {
+			transition: filter 0.12s;
+		}
+	}
+}
