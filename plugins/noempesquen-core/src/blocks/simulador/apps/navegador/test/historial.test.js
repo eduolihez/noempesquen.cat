@@ -196,3 +196,20 @@ describe( 'resolWeb', () => {
 		);
 	} );
 } );
+
+describe( 'navegar a la URL actual', () => {
+	it( 'no duplica l’historial però compta una càrrega', () => {
+		const abans = aplica( [
+			{ tipus: 'OBRE_PESTANYA', url: 'https://a.cat/' },
+			{ tipus: 'NAVEGA', url: 'https://b.cat/' },
+		] );
+		const despres = aplica(
+			[ { tipus: 'NAVEGA', url: 'https://b.cat/' } ],
+			abans
+		);
+		const p = pestanyaActiva( despres );
+		expect( p.historial ).toEqual( [ 'https://a.cat/', 'https://b.cat/' ] );
+		expect( p.index ).toBe( 1 );
+		expect( despres.carregues ).toBe( abans.carregues + 1 );
+	} );
+} );
