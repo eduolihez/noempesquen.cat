@@ -10,4 +10,5 @@ export const WEBS = {
 	'llum-clara': lazy( () => import( './llum-clara/LlumClara' ) ),
 	enviat: lazy( () => import( './enviat/Enviat' ) ),
 	'banc-solid': lazy( () => import( './banc-solid/BancSolid' ) ),
+	diari: lazy( () => import( './diari/Diari' ) ),
 };

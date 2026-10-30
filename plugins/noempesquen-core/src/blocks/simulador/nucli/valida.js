@@ -2,20 +2,28 @@
  * Validador de missions en format v2. Sense dependències d'interfície.
  */
 
-export const APPS_PC = [ 'navegador', 'parla' ];
-export const APPS_MOBIL = [ 'missatges', 'parla', 'navegador' ];
+import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
+
+export const APPS_PC = CLAUS_APPS_PC;
+export const APPS_MOBIL = CLAUS_APPS_MOBIL;
 // Apps (o webs que avisen com a app) que una missió pot fer servir, per
 // dispositiu: a l'ordinador, Posta és una web amb dades a `apps.posta`.
 export const APPS_MISSIO = {
 	pc: [ 'navegador', 'parla', 'posta' ],
-	mobil: [ 'missatges', 'parla', 'navegador', 'enviat', 'banc-solid' ],
+	mobil: [ ...CLAUS_APPS_MOBIL, 'enviat' ],
 };
 export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
 // Fonts de notificació: apps del sistema i webs que també avisen.
 export const FONTS_NOTIFICACIO = [
 	...new Set( [ ...APPS, ...APPS_MISSIO.pc, ...APPS_MISSIO.mobil ] ),
 ];
-export const PLANTILLES_WEB = [ 'posta', 'llum-clara', 'enviat', 'banc-solid' ];
+export const PLANTILLES_WEB = [
+	'posta',
+	'llum-clara',
+	'enviat',
+	'banc-solid',
+	'diari',
+];
 export const ESDEVENIMENTS_FORMULARI = [
 	'formulari.envia',
 	'codi.envia',

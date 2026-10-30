@@ -111,12 +111,21 @@ describe( 'validaMissio v2', () => {
 
 	it( 'exporta els vocabularis de dispositiu', () => {
 		expect( APPS_PC ).toEqual( [ 'navegador', 'parla' ] );
-		expect( APPS_MOBIL ).toEqual( [ 'missatges', 'parla', 'navegador' ] );
-		expect( [ ...APPS ].sort() ).toEqual( [
+		expect( APPS_MOBIL ).toEqual( [
 			'missatges',
-			'navegador',
 			'parla',
+			'navegador',
+			'banc-solid',
+			'galeria',
+			'camera',
+			'ullada',
+			'calculadora',
+			'rellotge',
+			'ajustos',
 		] );
+		expect( [ ...APPS ].sort() ).toEqual(
+			[ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ].sort()
+		);
 	} );
 
 	it( 'accepta la plantilla enviat i els esdeveniments mòbils', () => {

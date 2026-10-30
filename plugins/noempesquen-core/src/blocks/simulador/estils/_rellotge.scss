@@ -55,6 +55,7 @@ $rlg-accent: #ff9f43;
 	}
 
 	&__panell {
+
 		&[hidden] {
 			display: none;
 		}
@@ -158,6 +159,7 @@ $rlg-accent: #ff9f43;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+
 		* {
 			transition: none;
 		}
