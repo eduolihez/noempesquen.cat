@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Subpantalla } from './Subpantalla';
@@ -54,31 +54,44 @@ export default function Ajustos() {
 	const titol = useRef( null );
 	const vistaRef = useRef( null );
 	vistaRef.current = vista;
+	const movFoc = useRef( false );
+	const origen = useRef( null );
+	const focDins = useCallback(
+		() =>
+			!! arrel.current?.contains(
+				arrel.current.ownerDocument.activeElement
+			),
+		[]
+	);
 
 	useEffect(
 		() =>
 			registraEnrere( () => {
 				if ( vistaRef.current ) {
+					/* Es decideix abans del canvi: en desmuntar-se el botó
+					 * el foc cau a body. */
+					movFoc.current = focDins();
 					setVista( null );
 					return true;
 				}
 				return false;
 			} ),
-		[ registraEnrere ]
+		[ registraEnrere, focDins ]
 	);
 
-	/* Mou el foc al títol només si el foc ja és dins l'app (no el robem
-	 * quan l'app és en segon pla). */
+	/* Retorna el foc només si ja era dins l'app (no el robem en segon pla):
+	 * al títol en entrar a una subpantalla, a l'entrada d'origen en tornar. */
 	useEffect( () => {
-		if (
-			vista &&
-			arrel.current &&
-			arrel.current.contains(
-				arrel.current.ownerDocument.activeElement
-			) &&
-			titol.current
-		) {
-			titol.current.focus();
+		if ( ! movFoc.current ) {
+			return;
+		}
+		movFoc.current = false;
+		if ( vista ) {
+			titol.current?.focus();
+		} else if ( origen.current ) {
+			arrel.current
+				?.querySelector( `[data-entrada="${ origen.current }"]` )
+				?.focus();
 		}
 	}, [ vista ] );
 
@@ -125,7 +138,12 @@ export default function Ajustos() {
 											? ' nep-ajustos__entrada--perill'
 											: ''
 									}` }
-									onClick={ () => setVista( id ) }
+									data-entrada={ id }
+									onClick={ () => {
+										origen.current = id;
+										movFoc.current = focDins();
+										setVista( id );
+									} }
 								>
 									<Icona mida={ 22 } />
 									<span className="nep-ajustos__entrada-text">

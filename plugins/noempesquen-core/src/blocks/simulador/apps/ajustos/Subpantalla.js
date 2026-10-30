@@ -15,10 +15,13 @@ const APPS_INSTALLADES = [
 /* Conmutador local (role=switch); l'estat és del component pare o local. */
 function Commutador( { etiqueta, descripcio, marcat, onCanvia, desactivat } ) {
 	const idDesc = useId();
+	const idEtiqueta = useId();
 	return (
 		<div className="nep-ajustos__fila">
 			<div className="nep-ajustos__fila-text">
-				<span className="nep-ajustos__fila-titol">{ etiqueta }</span>
+				<span id={ idEtiqueta } className="nep-ajustos__fila-titol">
+					{ etiqueta }
+				</span>
 				{ descripcio && (
 					<span id={ idDesc } className="nep-ajustos__fila-desc">
 						{ descripcio }
@@ -29,7 +32,7 @@ function Commutador( { etiqueta, descripcio, marcat, onCanvia, desactivat } ) {
 				type="button"
 				role="switch"
 				aria-checked={ marcat }
-				aria-label={ etiqueta }
+				aria-labelledby={ idEtiqueta }
 				aria-describedby={ descripcio ? idDesc : undefined }
 				disabled={ desactivat }
 				className="nep-ajustos__commutador"
