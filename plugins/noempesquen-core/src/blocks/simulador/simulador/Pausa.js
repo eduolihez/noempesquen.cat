@@ -1,5 +1,6 @@
-import { useEffect, useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { desaSons, llegeixSons, EVENT_SONS } from './preferencies.js';
 
 const FOCALITZABLES = 'button:not([disabled])';
 
@@ -14,6 +15,17 @@ const FOCALITZABLES = 'button:not([disabled])';
 export function Pausa( { onContinua, onReinicia, onSurt } ) {
 	const dialeg = useRef( null );
 	const continua = useRef( null );
+	// Es llegeix en obrir la pausa; no es desa res del jugador.
+	const [ sons, setSons ] = useState( () =>
+		llegeixSons( window.localStorage )
+	);
+
+	const canviaSons = () => {
+		const valor = ! sons;
+		setSons( valor );
+		desaSons( window.localStorage, valor );
+		window.dispatchEvent( new Event( EVENT_SONS ) );
+	};
 
 	useEffect( () => {
 		const anterior = dialeg.current.ownerDocument.activeElement;
@@ -78,6 +90,22 @@ export function Pausa( { onContinua, onReinicia, onSurt } ) {
 						'noempesquen'
 					) }
 				</p>
+				<button
+					type="button"
+					role="switch"
+					aria-checked={ sons }
+					className="nep-so-pausa__so"
+					onClick={ canviaSons }
+				>
+					<span>
+						{ __( 'So de les notificacions', 'noempesquen' ) }
+					</span>
+					<span className="nep-so-pausa__estat" aria-hidden="true">
+						{ sons
+							? __( 'Sí', 'noempesquen' )
+							: __( 'No', 'noempesquen' ) }
+					</span>
+				</button>
 				<div className="nep-so-pausa__botons">
 					<button
 						ref={ continua }

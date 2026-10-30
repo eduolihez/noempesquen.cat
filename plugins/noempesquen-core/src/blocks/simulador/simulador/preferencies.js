@@ -3,6 +3,8 @@
  * (a l'app, window.localStorage) i qualsevol error s'empassa.
  */
 export const CLAU_SONS = 'noempesquen-sons';
+/* Esdeveniment de window que avisa que la preferència ha canviat. */
+export const EVENT_SONS = 'noempesquen-sons-canvi';
 
 /* Retorna true per defecte si no hi ha valor, és corrupte o falla l'accés. */
 export function llegeixSons( emmagatzem ) {

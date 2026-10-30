@@ -1,5 +1,5 @@
 const { test, expect } = require( '@playwright/test' );
-const { iniciaMissio } = require( './ajudes' );
+const { greusAxe, iniciaMissio, petits } = require( './ajudes' );
 
 const MISSIONS = {
 	escriptori: {
@@ -126,5 +126,48 @@ test.describe( 'So de les notificacions', () => {
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
 		);
 		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
+	} );
+
+	test( "l'interruptor de la pausa apaga el so i ho recorda", async ( {
+		page,
+		isMobile,
+	} ) => {
+		await espiaAudio( page, true );
+		await entra( page, isMobile );
+		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.keyboard.press( 'Escape' );
+		const pausa = page.getByRole( 'dialog', { name: /pausa/i } );
+		await expect( pausa ).toBeVisible();
+		const so = pausa.getByRole( 'switch', {
+			name: /So de les notificacions/,
+		} );
+		await expect( so ).toHaveAttribute( 'aria-checked', 'true' );
+		expect( await greusAxe( page ) ).toEqual( [] );
+		expect( await petits( page ) ).toEqual( [] );
+		await so.click();
+		await expect( so ).toHaveAttribute( 'aria-checked', 'false' );
+		expect(
+			await page.evaluate( () =>
+				window.localStorage.getItem( 'noempesquen-sons' )
+			)
+		).toBe( 'false' );
+		await pausa.getByRole( 'button', { name: /Continua/ } ).click();
+		await expect( pausa ).toBeHidden();
+		await page.clock.runFor( 9000 );
+		await expect( avis( page ) ).toContainText(
+			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
+		);
+		expect( await osciladors( page ) ).toBe( 0 );
+		if ( isMobile ) {
+			await page
+				.getByRole( 'list', { name: 'Apps', exact: true } )
+				.getByRole( 'button', { name: 'Ajustos' } )
+				.click();
+			const a = page.getByRole( 'region', { name: 'Ajustos' } );
+			await a.getByRole( 'button', { name: 'So', exact: true } ).click();
+			await expect(
+				a.getByRole( 'switch', { name: 'Sons de notificació' } )
+			).toHaveAttribute( 'aria-checked', 'false' );
+		}
 	} );
 } );

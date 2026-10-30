@@ -2,7 +2,11 @@ import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Subpantalla } from './Subpantalla';
-import { desaSons, llegeixSons } from '../../simulador/preferencies.js';
+import {
+	desaSons,
+	llegeixSons,
+	EVENT_SONS,
+} from '../../simulador/preferencies.js';
 import {
 	IconaAplicacions,
 	IconaApagar,
@@ -51,6 +55,13 @@ export default function Ajustos() {
 	const [ vista, setVista ] = useState( null );
 	const [ sons, setSons ] = useState( () => llegeixSons( emmagatzem() ) );
 	const arrel = useRef( null );
+
+	// La pausa pot canviar el so mentre Ajustos és obert.
+	useEffect( () => {
+		const relegeix = () => setSons( llegeixSons( emmagatzem() ) );
+		window.addEventListener( EVENT_SONS, relegeix );
+		return () => window.removeEventListener( EVENT_SONS, relegeix );
+	}, [] );
 	const titol = useRef( null );
 	const vistaRef = useRef( null );
 	vistaRef.current = vista;
