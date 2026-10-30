@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (corte 4a hecho en rama)
+Última actualización: 2026-10-30 (cortes 3 y 4a mergeados a `master`; 4b en curso)
 
 ## Dónde estamos
 
@@ -10,9 +10,9 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Fase 1 · corte 1 | Núcleo v2, PC simulado, Navegador, Parla, Posta, Llum Clara, misión «La factura de la llum»                                                                                                         | **Hecho** (merge a `master` el 2026-10-29, plan `docs/superpowers/plans/2026-10-29-fase1-corte1-pc-factura.md`) |
 | Fase 1 · corte 2 | Sistema móvil (bloqueo, inicio, centro de control, banners), Missatges, Parla móvil, Navegador móvil, webs de Envia't; reescribir «El paquet retingut» a v2; **eliminar el legado v1** (`SIM/app/`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-29-fase1-corte2-mobil-paquet.md`) |
-| Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho en la rama `feat/fase1-corte3-banc`** (pendiente de merge a `master`, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
-| Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho en la rama `feat/fase1-corte4a-farcit`** (pendiente de merge a `master`, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
-| Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | Pendiente |
+| Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
+| Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
+| Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **En curso** en `feat/fase1-corte4b-pulido` (plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
 | Fase 2 y 3       | Misiones 5-10: sorteo falso en Ullada, robo del código de Parla, comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
 
 ## Cómo retomar
