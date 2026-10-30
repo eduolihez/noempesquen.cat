@@ -29,6 +29,36 @@ const TEXT_SALTA = 'Salta la presentació';
 const TEXT_DECIDIR = 'Ja ho tinc clar';
 const TEXT_TORNAR = 'Encara vull mirar';
 
+// Esdeveniments que deixen rastre a l'estat (només l'id).
+const RASTRE = {
+	'contacte.bloqueja': 'bloquejats',
+	'publicacio.denuncia': 'denunciats',
+};
+
+/**
+ * Anota l'id d'un bloqueig o d'una denúncia (sense duplicats) abans de
+ * processar els disparadors, que poden tancar el joc.
+ *
+ * @param {Object} estat Estat actual.
+ * @param {string} nom   Nom de l'esdeveniment.
+ * @param {Object} dades Dades de l'esdeveniment.
+ * @return {Object} Nou estat.
+ */
+function anotaEsdeveniment( estat, nom, dades ) {
+	const camp = RASTRE[ nom ];
+	const id = dades?.id;
+	if (
+		! camp ||
+		typeof id !== 'string' ||
+		estat.fase !== FASE.JOC ||
+		estat.pausa ||
+		estat[ camp ].includes( id )
+	) {
+		return estat;
+	}
+	return { ...estat, [ camp ]: [ ...estat[ camp ], id ] };
+}
+
 export function estatInicial( missio ) {
 	return {
 		missioId: missio?.id ?? null,
@@ -50,6 +80,10 @@ export function estatInicial( missio ) {
 		executats: [],
 		pendents: [],
 		pistesDonades: 0,
+		// Ids (mai text) de contactes bloquejats i publicacions denunciades:
+		// la UI els llegeix d'aquí perquè sobrevisquin en tancar l'app o la web.
+		bloquejats: [],
+		denunciats: [],
 		ultimAvanc: 0,
 		seq: 0,
 	};
@@ -205,7 +239,7 @@ export function reductor( missio, estat, accio ) {
 		case 'ESDEVENIMENT':
 			return processaEsdeveniment(
 				missio,
-				estat,
+				anotaEsdeveniment( estat, accio.nom, accio.dades ),
 				accio.nom,
 				accio.dades
 			);

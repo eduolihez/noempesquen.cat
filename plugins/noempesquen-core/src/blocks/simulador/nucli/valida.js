@@ -25,7 +25,11 @@ export const PLANTILLES_WEB = [
 	'banc-solid',
 	'sorteig',
 	'diari',
+	'cobrament',
+	'inversio',
 ];
+// Plantilles que només tenen variant falsa (no hi ha versió oficial).
+export const PLANTILLES_SOLO_FALSES = [ 'sorteig', 'cobrament', 'inversio' ];
 export const ESDEVENIMENTS_FORMULARI = [
 	'formulari.envia',
 	'codi.envia',
@@ -67,6 +71,7 @@ export const ESDEVENIMENTS = [
 const llista = ( v ) => ( Array.isArray( v ) ? v : [] );
 
 const URL_VALIDA = /^(https?:\/\/|cerca:)/i;
+const URL_HTTP = /^https?:\/\/\S+/i;
 
 const CAMPS_SENYAL = [
 	'senyal',
@@ -74,6 +79,10 @@ const CAMPS_SENYAL = [
 	'domini_senyal',
 	'senyal_avis',
 	'premi_senyal',
+	'compte_senyal',
+	'promesa_senyal',
+	'etiqueta_senyal',
+	'ingres_senyal',
 ];
 
 /**
@@ -153,7 +162,76 @@ function recullIdsApps( apps ) {
 	return ids;
 }
 
-function validaEfecte( e, opcions, frases, idsApps, errors ) {
+/**
+ * Ids (text) dels contactes del món, o `null` si no hi ha món o no és vàlid.
+ *
+ * @param {?Object} mon Món compartit.
+ * @return {?Set<string>} Ids de contacte.
+ */
+function idsContactes( mon ) {
+	if ( ! Array.isArray( mon?.contactes ) ) {
+		return null;
+	}
+	return new Set(
+		mon.contactes
+			.map( ( c ) => c?.id )
+			.filter( ( id ) => typeof id === 'string' )
+	);
+}
+
+/**
+ * Ids dels xats d'una app (`apps.<app>.xats[].id`).
+ *
+ * @param {Object} m   Missió.
+ * @param {string} app Clau de l'app.
+ * @return {Set<string>} Ids de xat.
+ */
+function idsXats( m, app ) {
+	return new Set(
+		llista( m.apps?.[ app ]?.xats )
+			.map( ( x ) => x?.id )
+			.filter( ( id ) => typeof id === 'string' )
+	);
+}
+
+/**
+ * Comprova que cap id d'element o missatge es repeteixi entre apps diferents
+ * (`mostra` i `visible` els resolen sense saber de quina app són).
+ *
+ * @param {Object}   apps   Apps de la missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaIdsEntreApps( apps, errors ) {
+	const propietari = new Map();
+	const repetits = new Set();
+	const objectes = ( v ) =>
+		v && typeof v === 'object' ? Object.entries( v ) : [];
+	objectes( apps ).forEach( ( [ clau, app ] ) => {
+		const propis = new Set();
+		objectes( app ).forEach( ( [ , valors ] ) => {
+			llista( valors ).forEach( ( item ) => {
+				propis.add( item?.id );
+				llista( item?.missatges ).forEach( ( x ) =>
+					propis.add( x?.id )
+				);
+			} );
+		} );
+		propis.forEach( ( id ) => {
+			if ( typeof id !== 'string' ) {
+				return;
+			}
+			if ( propietari.has( id ) && propietari.get( id ) !== clau ) {
+				repetits.add( id );
+			}
+			propietari.set( id, clau );
+		} );
+	} );
+	repetits.forEach( ( id ) =>
+		errors.push( `id repetit entre apps: ${ id }` )
+	);
+}
+
+function validaEfecte( e, opcions, frases, idsApps, xats, errors ) {
 	if ( ! e || typeof e !== 'object' ) {
 		errors.push( 'efecte invàlid' );
 		return false;
@@ -168,8 +246,13 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 		errors.push( `mostra: element inexistent: ${ e.id }` );
 	}
 	if ( e.tipus === 'notifica' ) {
-		if ( e.xat !== undefined && ( e.app !== 'parla' || ! e.xat ) ) {
-			errors.push( 'notifica: xat només amb app parla' );
+		if (
+			e.xat !== undefined &&
+			( ! [ 'parla', 'revenda' ].includes( e.app ) || ! e.xat )
+		) {
+			errors.push( 'notifica: xat només amb app parla o revenda' );
+		} else if ( e.xat !== undefined && ! xats[ e.app ].has( e.xat ) ) {
+			errors.push( `notifica: xat inexistent a ${ e.app }: ${ e.xat }` );
 		}
 		const font = e.font === 'mobil' ? APPS_MISSIO.mobil : FONTS_NOTIFICACIO;
 		if ( e.font !== undefined && e.font !== 'mobil' ) {
@@ -190,7 +273,7 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 	return e.tipus === 'pescat';
 }
 
-function validaDisparadors( m, errors ) {
+function validaDisparadors( m, mon, errors ) {
 	const opcions = new Set(
 		llista( m.decisio?.opcions )
 			.filter( ( o ) => o && typeof o === 'object' )
@@ -198,6 +281,21 @@ function validaDisparadors( m, errors ) {
 	);
 	const frases = m.frases && typeof m.frases === 'object' ? m.frases : {};
 	const idsApps = recullIdsApps( m.apps );
+	const contactesMon = idsContactes( mon );
+	const xats = {
+		parla: idsXats( m, 'parla' ),
+		revenda: idsXats( m, 'revenda' ),
+	};
+	// Publicacions denunciables: Ullada (món i missió) i anuncis del Diari.
+	const idsDenunciables = new Set(
+		[
+			...llista( mon?.ullada?.publicacions ).map( ( p ) => p?.id ),
+			...llista( m.apps?.ullada?.publicacions ).map( ( p ) => p?.id ),
+			...Object.values( m.webs ?? {} )
+				.filter( ( w ) => w?.plantilla === 'diari' )
+				.map( ( w ) => w?.anunci?.id ),
+		].filter( ( id ) => typeof id === 'string' )
+	);
 	let hiHaPescat = false;
 	llista( m.disparadors ).forEach( ( d ) => {
 		if ( ! d || typeof d !== 'object' ) {
@@ -208,6 +306,20 @@ function validaDisparadors( m, errors ) {
 		if ( ! ESDEVENIMENTS.includes( ev ) ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
 		}
+		if (
+			ev === 'contacte.bloqueja' &&
+			contactesMon &&
+			! contactesMon.has( d.quan?.id )
+		) {
+			errors.push( `bloqueja: contacte inexistent: ${ d.quan?.id }` );
+		}
+		if (
+			ev === 'publicacio.denuncia' &&
+			mon &&
+			! idsDenunciables.has( d.quan?.id )
+		) {
+			errors.push( `denuncia: publicació inexistent: ${ d.quan?.id }` );
+		}
 		if ( d.quan?.visible !== undefined ) {
 			if ( ! idsApps.has( d.quan.visible ) ) {
 				errors.push(
@@ -216,7 +328,7 @@ function validaDisparadors( m, errors ) {
 			}
 		}
 		llista( d.efectes ).forEach( ( e ) => {
-			if ( validaEfecte( e, opcions, frases, idsApps, errors ) ) {
+			if ( validaEfecte( e, opcions, frases, idsApps, xats, errors ) ) {
 				hiHaPescat = true;
 			}
 		} );
@@ -235,9 +347,7 @@ function validaXatsParla( m, mon, errors ) {
 		errors.push( 'parla: xats ha de ser una llista' );
 		return;
 	}
-	const contactes = Array.isArray( mon?.contactes )
-		? new Set( mon.contactes.map( ( c ) => c.id ) )
-		: null;
+	const contactes = idsContactes( mon );
 	const idsXat = new Set();
 	const idsMsg = new Set();
 	xats.forEach( ( x ) => {
@@ -276,6 +386,38 @@ function validaXatsParla( m, mon, errors ) {
 	} );
 }
 
+/**
+ * Valida un segment de cos (`{ t }` o `{ enllac: { text, url } }`).
+ *
+ * Les URL d'enllaç d'`apps.*` (admeten «cerca:») i de `webs.*` (només
+ * http/https) ja les revisa `validaMissio` de forma general; aquí només es
+ * comprova `patroUrl` quan el context és més estricte (p. ex. Revenda).
+ *
+ * @param {Object}   seg      Segment.
+ * @param {string}   r        Referència per als errors.
+ * @param {string[]} errors   Acumulador d'errors.
+ * @param {?RegExp}  patroUrl Patró que ha de complir `enllac.url` (opcional).
+ */
+function validaSegmentCos( seg, r, errors, patroUrl = null ) {
+	if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
+		errors.push( `${ r }: segment ha de ser un objecte` );
+	} else if ( seg.enllac !== undefined ) {
+		const e = seg.enllac;
+		if (
+			! e ||
+			typeof e !== 'object' ||
+			typeof e.text !== 'string' ||
+			typeof e.url !== 'string'
+		) {
+			errors.push( `${ r }: enllaç ha de tenir text i url` );
+		} else if ( patroUrl && ! patroUrl.test( e.url ) ) {
+			errors.push( `${ r }: url sense http(s) «${ e.url }»` );
+		}
+	} else if ( typeof seg.t !== 'string' ) {
+		errors.push( `${ r }: segment sense «t» ni «enllac»` );
+	}
+}
+
 function validaCosPublicacio( cos, ref, errors ) {
 	if ( ! Array.isArray( cos ) ) {
 		errors.push( `${ ref }: «cos» ha de ser una llista de paràgrafs` );
@@ -288,24 +430,9 @@ function validaCosPublicacio( cos, ref, errors ) {
 			);
 			return;
 		}
-		par.forEach( ( seg, k ) => {
-			const r = `${ ref }.cos[${ j }][${ k }]`;
-			if ( ! seg || typeof seg !== 'object' || Array.isArray( seg ) ) {
-				errors.push( `${ r }: segment ha de ser un objecte` );
-			} else if ( seg.enllac !== undefined ) {
-				const e = seg.enllac;
-				if (
-					! e ||
-					typeof e !== 'object' ||
-					typeof e.text !== 'string' ||
-					typeof e.url !== 'string'
-				) {
-					errors.push( `${ r }: enllaç ha de tenir text i url` );
-				}
-			} else if ( typeof seg.t !== 'string' ) {
-				errors.push( `${ r }: segment sense «t» ni «enllac»` );
-			}
-		} );
+		par.forEach( ( seg, k ) =>
+			validaSegmentCos( seg, `${ ref }.cos[${ j }][${ k }]`, errors )
+		);
 	} );
 }
 
@@ -355,6 +482,186 @@ function validaPublicacionsUllada( m, mon, errors ) {
 	} );
 }
 
+function validaAnuncisRevenda( anuncis, text, errors ) {
+	const ids = new Set();
+	if ( ! Array.isArray( anuncis ) ) {
+		errors.push( 'revenda: anuncis ha de ser una llista' );
+		return ids;
+	}
+	anuncis.forEach( ( a, i ) => {
+		const ref = `revenda.anuncis[${ i }]`;
+		if ( ! a || typeof a !== 'object' || Array.isArray( a ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'titol', 'descripcio' ].forEach( ( c ) => {
+			if ( ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if (
+			typeof a.preu !== 'number' ||
+			! Number.isFinite( a.preu ) ||
+			a.preu < 0
+		) {
+			errors.push( `${ ref }: «preu» ha de ser un número >= 0` );
+		}
+		if ( ! text( a.il ) || ! existeixIlustracio( a.il ) ) {
+			errors.push( `${ ref }: il·lustració inexistent «${ a.il }»` );
+		}
+		if ( text( a.id ) ) {
+			if ( ids.has( a.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ a.id }»` );
+			}
+			ids.add( a.id );
+		}
+	} );
+	return ids;
+}
+
+function validaMissatgeRevenda( msg, ref, idsMsg, errors ) {
+	if ( ! msg || typeof msg !== 'object' || ! msg.id ) {
+		errors.push( `${ ref }: missatge invàlid` );
+		return;
+	}
+	if ( idsMsg.has( msg.id ) ) {
+		errors.push( `${ ref }: id duplicat «${ msg.id }»` );
+	}
+	idsMsg.add( msg.id );
+	if ( ! [ 'ells', 'jo' ].includes( msg.de ) ) {
+		errors.push( `${ ref }: remitent invàlid «${ msg.de }»` );
+	}
+	if ( msg.ocult !== undefined && typeof msg.ocult !== 'boolean' ) {
+		errors.push( `${ ref }: «ocult» ha de ser booleà` );
+	}
+	if ( msg.hora !== undefined && typeof msg.hora !== 'string' ) {
+		errors.push( `${ ref }: «hora» ha de ser text` );
+	}
+	if ( ! Array.isArray( msg.cos ) || ! msg.cos.length ) {
+		errors.push( `${ ref }: «cos» ha de ser una llista de segments` );
+		return;
+	}
+	msg.cos.forEach( ( seg, k ) => {
+		const rs = `${ ref }.cos[${ k }]`;
+		validaSegmentCos( seg, rs, errors, URL_HTTP );
+		if ( seg?.senyal !== undefined && typeof seg.senyal !== 'string' ) {
+			errors.push( `${ rs }: «senyal» ha de ser text` );
+		}
+	} );
+}
+
+function validaRevenda( m, mon, errors ) {
+	const revenda = m.apps?.revenda;
+	if ( revenda === undefined ) {
+		return;
+	}
+	if (
+		! revenda ||
+		typeof revenda !== 'object' ||
+		Array.isArray( revenda )
+	) {
+		errors.push( 'revenda: ha de ser un objecte' );
+		return;
+	}
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	if ( ! Array.isArray( revenda.xats ) ) {
+		errors.push( 'revenda: xats ha de ser una llista' );
+	}
+	const idsAnunci = validaAnuncisRevenda( revenda.anuncis, text, errors );
+	const contactes = idsContactes( mon );
+	const idsXat = new Set();
+	const idsMsg = new Set();
+	( Array.isArray( revenda.xats ) ? revenda.xats : [] ).forEach( ( x, i ) => {
+		const ref = `revenda.xats[${ i }]`;
+		if ( ! x || typeof x !== 'object' || Array.isArray( x ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		if ( ! text( x.id ) ) {
+			errors.push( `${ ref }: camp «id» buit o absent` );
+		} else {
+			if ( idsXat.has( x.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ x.id }»` );
+			}
+			idsXat.add( x.id );
+		}
+		if ( ! text( x.contacte ) ) {
+			errors.push( `${ ref }: camp «contacte» buit o absent` );
+		} else if ( contactes && ! contactes.has( x.contacte ) ) {
+			errors.push( `${ ref }: contacte inexistent «${ x.contacte }»` );
+		}
+		if ( ! text( x.anunci ) || ! idsAnunci.has( x.anunci ) ) {
+			errors.push( `${ ref }: anunci inexistent «${ x.anunci }»` );
+		}
+		if ( ! Array.isArray( x.missatges ) || ! x.missatges.length ) {
+			errors.push( `${ ref }: xat sense missatges` );
+			return;
+		}
+		x.missatges.forEach( ( msg, j ) =>
+			validaMissatgeRevenda(
+				msg,
+				`${ ref }.missatges[${ j }]`,
+				idsMsg,
+				errors
+			)
+		);
+	} );
+}
+
+/**
+ * Valida els anuncis patrocinats (`webs.<host>.anunci`): només a la plantilla
+ * `diari`, amb id únic (també respecte de les publicacions d'Ullada). Les
+ * senyals i les URL dels enllaços ja les revisen les regles generals.
+ *
+ * @param {Object}   m      Missió.
+ * @param {?Object}  mon    Món compartit.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaAnuncisDiari( m, mon, errors ) {
+	const text = ( x ) => typeof x === 'string' && x.trim() !== '';
+	const ids = new Set(
+		[
+			...llista( mon?.ullada?.publicacions ),
+			...llista( m.apps?.ullada?.publicacions ),
+		].map( ( p ) => p?.id )
+	);
+	Object.entries( m.webs ?? {} ).forEach( ( [ domini, web ] ) => {
+		const a = web?.anunci;
+		if ( a === undefined ) {
+			return;
+		}
+		const ref = `${ domini }.anunci`;
+		if ( web.plantilla !== 'diari' ) {
+			errors.push( `${ ref }: només admès a la plantilla diari` );
+			return;
+		}
+		if ( ! a || typeof a !== 'object' || Array.isArray( a ) ) {
+			errors.push( `${ ref }: ha de ser un objecte` );
+			return;
+		}
+		[ 'id', 'etiqueta', 'titol' ].forEach( ( c ) => {
+			if ( ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: camp «${ c }» buit o absent` );
+			}
+		} );
+		if ( text( a.id ) ) {
+			if ( ids.has( a.id ) ) {
+				errors.push( `${ ref }: id duplicat «${ a.id }»` );
+			}
+			ids.add( a.id );
+		}
+		if ( ! text( a.avatar?.nom ) || ! text( a.avatar?.inicials ) ) {
+			errors.push( `${ ref }: «avatar» ha de tenir nom i inicials` );
+		}
+		[ 'etiqueta_senyal', 'boto_denuncia' ].forEach( ( c ) => {
+			if ( a[ c ] !== undefined && ! text( a[ c ] ) ) {
+				errors.push( `${ ref }: «${ c }» ha de ser text` );
+			}
+		} );
+		validaCosPublicacio( a.cos, ref, errors );
+	} );
+}
+
 function validaFormularis( domini, web, errors ) {
 	[ web.formulari, web.formulari_codi ].forEach( ( f ) => {
 		if ( ! f || typeof f !== 'object' ) {
@@ -374,6 +681,35 @@ function validaFormularis( domini, web, errors ) {
 			}
 		} );
 	} );
+}
+
+// Camp de text obligatori de cada plantilla de pagament.
+const CAMP_PLANTILLA_PAGAMENT = { cobrament: 'import', inversio: 'promesa' };
+
+/**
+ * Les plantilles `cobrament` i `inversio` necessiten un formulari amb camps i
+ * esdeveniment, i el seu text principal (`import` o `promesa`).
+ *
+ * @param {string}   domini Domini de la web.
+ * @param {Object}   web    Web.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaPlantillaPagament( domini, web, errors ) {
+	const camp = CAMP_PLANTILLA_PAGAMENT[ web.plantilla ];
+	if ( ! camp ) {
+		return;
+	}
+	const ref = `${ web.plantilla } ${ domini }`;
+	const f = web.formulari;
+	if ( ! Array.isArray( f?.camps ) || ! f.camps.length ) {
+		errors.push( `${ ref }: formulari sense camps` );
+	}
+	if ( typeof f?.esdeveniment !== 'string' || ! f.esdeveniment ) {
+		errors.push( `${ ref }: formulari sense esdeveniment` );
+	}
+	if ( typeof web[ camp ] !== 'string' || ! web[ camp ].trim() ) {
+		errors.push( `${ ref }: camp «${ camp }» buit o absent` );
+	}
 }
 
 /**
@@ -402,17 +738,51 @@ export function validaMissio( m, mon ) {
 	if ( ! Array.isArray( m.intro ) || ! m.intro.length ) {
 		errors.push( 'falta intro' );
 	}
+	if ( mon && ! Array.isArray( mon.contactes ) ) {
+		errors.push( 'mon.contactes invàlid' );
+	}
 
-	const ids = new Set( llista( m.senyals ).map( ( s ) => s?.id ) );
-	const usats = [ ...recullSenyals( m.apps ), ...recullSenyals( m.webs ) ];
+	const idsSenyal = llista( m.senyals )
+		.map( ( s ) => s?.id )
+		.filter( ( id ) => id !== undefined );
+	const ids = new Set( idsSenyal );
+	const vistes = new Set();
+	idsSenyal.forEach( ( id ) => {
+		if ( vistes.has( id ) ) {
+			errors.push( `senyal duplicada: ${ id }` );
+		}
+		vistes.add( id );
+	} );
+	const usats = [
+		...recullSenyals( m.apps ),
+		...recullSenyals( m.webs ),
+		...recullSenyals( m.frases ),
+		...recullSenyals( m.decisio ),
+	];
 	new Set( usats ).forEach( ( s ) => {
 		if ( ! ids.has( s ) ) {
 			errors.push( `senyal desconegut: ${ s }` );
 		}
 	} );
 
+	// Compta el que recullen `recullSenyals` (camps de CAMPS_SENYAL) sobre
+	// `m.apps`, `m.webs`, `m.frases` i `m.decisio`; una senyal usada només en
+	// disparadors o en altres seccions es considera sense referència.
+	const referenciats = new Set( usats );
+	ids.forEach( ( id ) => {
+		if ( ! referenciats.has( id ) ) {
+			errors.push( `senyal sense referència: ${ id }` );
+		}
+	} );
+
 	recullUrlsEnllac( m.apps ).forEach( ( url ) => {
 		if ( typeof url !== 'string' || ! URL_VALIDA.test( url ) ) {
+			errors.push( `url d'enllaç no permesa: ${ url }` );
+		}
+	} );
+	// Les webs no admeten l'esquema intern «cerca:».
+	recullUrlsEnllac( m.webs ).forEach( ( url ) => {
+		if ( typeof url !== 'string' || ! URL_HTTP.test( url ) ) {
 			errors.push( `url d'enllaç no permesa: ${ url }` );
 		}
 	} );
@@ -452,15 +822,24 @@ export function validaMissio( m, mon ) {
 		if ( ! PLANTILLES_WEB.includes( web.plantilla ) ) {
 			errors.push( `plantilla desconeguda: ${ web.plantilla }` );
 		}
-		if ( web.plantilla === 'sorteig' && web.variant !== 'falsa' ) {
-			errors.push( `sorteig només admet variant falsa: ${ domini }` );
+		if (
+			PLANTILLES_SOLO_FALSES.includes( web.plantilla ) &&
+			web.variant !== 'falsa'
+		) {
+			errors.push(
+				`${ web.plantilla } només admet variant falsa: ${ domini }`
+			);
 		}
 		validaFormularis( domini, web, errors );
+		validaPlantillaPagament( domini, web, errors );
 	} );
 
+	validaIdsEntreApps( m.apps, errors );
 	validaXatsParla( m, mon, errors );
 	validaPublicacionsUllada( m, mon, errors );
-	validaDisparadors( m, errors );
+	validaRevenda( m, mon, errors );
+	validaAnuncisDiari( m, mon, errors );
+	validaDisparadors( m, mon, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {

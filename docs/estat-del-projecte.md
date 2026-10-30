@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`; 5a hecho en rama)
+Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`; 5a y 5b hechos en rama)
 
 ## Dónde estamos
 
@@ -14,7 +14,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
 | Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
 | Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho en rama** `feat/fase2-corte5a-sorteig-codi`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
-| Fase 2 y 3       | Misiones 7-10: comprador falso en Revenda, inversión con famoso, pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
+| Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho en rama** `feat/fase2-corte5b-revenda-inversio`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
+| Fase 2 y 3       | Misiones 9-10 (corte 5c): pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
 
 ## Cómo retomar
 
@@ -44,6 +45,18 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 - Dominios `bancsolid.cat` y `bancsolid-acces.top` son registrables por terceros (riesgo bajo; opción: subdominio propio de noempesquen.cat).
 - Borrar el correo del banco cierra la misión como parcial y ya no se puede marcar phishing (decisión de diseño, fijada en test).
 - Menores: error genérico «Omple aquest camp.» en formularios comunes, `h1` fijo en la web del banco, `Object.freeze` de `ESDEVENIMENTS_FORMULARI`, falta test de `codi.envia` con url no coincidente, reutilizar `formulari.js` en la transferencia de la app.
+
+### Pendiente tras el corte 5b
+
+- Unicidad de ids ya validada (anuncios de Revenda, xats, mensajes y anuncios del Diari frente a Ullada); no queda nada por hacer.
+- M3: exigir señales encontradas para que la decisión «correcta» puntúe completa.
+- M7: extraer una `Conversa` compartida entre Parla y Revenda.
+- Funciones nuevas propuestas: comprador honesto / anuncio legítimo (contraste), búsqueda con aviso de estafa en el navegador y variante «reembolso al revés» (te pagan de más y piden devolver).
+- Revisar las horas de los mensajes de `remei-04` y `remei-05` frente al reloj del juego.
+- `.nep-lc-boto` hereda los colores de Llum Clara en las webs nuevas (`cobrament`, `inversio`).
+- `revenda-cobra.com` no carga en el navegador del PC desde `llissa-03`.
+- Bloqueo compartido por id entre apps: hoy no está unificado.
+- La opción «c» de `remei-05` no marca `pescat` en el motor.
 
 ### Pendiente tras el corte 5a
 

@@ -10,6 +10,7 @@
 		{ "id": "farmacia", "nom": "Farmàcia del Barri", "rol": "servei" },
 		{ "id": "banc", "nom": "Banc Sòlid", "rol": "servei" },
 		{ "id": "botiga", "nom": "Botiga Verda", "rol": "servei" },
+		{ "id": "comprador", "nom": "Jordi M.", "rol": "desconegut" },
 		{
 			"id": "numero_desconegut",
 			"nom": "+44 7700 900461",

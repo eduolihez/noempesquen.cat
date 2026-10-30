@@ -1,0 +1,267 @@
+{
+	"id": "llissa-03-inversio",
+	"versio": 2,
+	"titol": "El truc d'inversió",
+	"resum": "Un anunci al diari diu que una presentadora famosa ha multiplicat els seus diners amb un truc. N'hi posaries 250 €?",
+	"dispositiu": "pc",
+	"personatge": "llissa",
+	"nivell": 3,
+	"durada_minuts": 5,
+	"rellotge": "17:40",
+	"intro": [
+		"Hola, Àlex! Llissa de nou. Avui l'esquer no et ve per correu: t'espera on menys t'ho esperes, enmig de les notícies del barri.",
+		"Hi ha anuncis que fan servir la cara d'algú famós per vendre't un truc per fer-te ric de pressa. Promeses grosses, poc temps i una targeta al final.",
+		"Obre el navegador i entra a El Diari del Barri: el tens a les dreceres de la pestanya nova. Llegeix amb calma, que jo hi tinc l'ull posat."
+	],
+	"instruccions": "Obre el navegador, entra a El Diari del Barri des de les dreceres de la pestanya nova, busca els indicis amb la lupa i decideix què en fas.",
+	"pistes": [
+		"Obre el navegador i, a la pestanya nova, toca la drecera d'El Diari del Barri. Mira bé què hi ha a la portada.",
+		"Fixa't en l'anunci de la Carla Montsant: qui el paga, què et promet i quant de temps et dona per decidir.",
+		"Si dubtes, no hi entris. Informa de l'anunci amb el botó que té a sota i no toquis l'enllaç."
+	],
+	"webs": {
+		"diaridelbarri.cat": {
+			"plantilla": "diari",
+			"https": true,
+			"titol": "El Diari del Barri",
+			"anunci": {
+				"id": "anunci-carla",
+				"etiqueta": "Contingut patrocinat",
+				"etiqueta_senyal": "sense_font",
+				"avatar": { "nom": "Carla Montsant", "inicials": "CM" },
+				"titol": "Carla Montsant revela el truc per multiplicar 250 €",
+				"cos": [
+					[
+						{
+							"t": "La presentadora ho explica sense embuts: «Jo ho faig cada mes i us el recomano a tots.»",
+							"senyal": "famosa_recomana"
+						}
+					],
+					[
+						{
+							"t": "Mira el vídeo: la Carla ho explica amb la seva pròpia veu.",
+							"senyal": "video_manipulat"
+						}
+					],
+					[
+						{ "t": "Amb el seu mètode, 250 € es converteixen en 2.500 €: " },
+						{
+							"t": "×10 en 24 h, garantit.",
+							"senyal": "rendiment_garantit"
+						}
+					],
+					[
+						{
+							"t": "Només avui, places limitades.",
+							"senyal": "pressa"
+						}
+					],
+					[
+						{
+							"enllac": {
+								"text": "Descobreix el truc",
+								"url": "https://invest-rapid.top/carla"
+							}
+						}
+					]
+				]
+			}
+		},
+		"invest-rapid.top": {
+			"plantilla": "inversio",
+			"variant": "falsa",
+			"https": true,
+			"titol": "Invest Rapid · El mètode de la Carla",
+			"domini_senyal": "domini",
+			"avatar": { "nom": "Carla Montsant", "inicials": "CM" },
+			"promesa": "Multiplica per 10 els teus 250 € en 24 h",
+			"promesa_senyal": "promesa_web",
+			"compte_enrere": {
+				"text": "L'oferta s'acaba en 09:59 minuts",
+				"senyal": "pressa_web"
+			},
+			"testimonis": [
+				{
+					"nom": "Marc R.",
+					"text": "Vaig posar 250 € i l'endemà en tenia 2.500. Increïble!",
+					"senyal": "testimonis_falsos"
+				},
+				{
+					"nom": "Núria P.",
+					"text": "Al principi no m'ho creia, però funciona."
+				},
+				{
+					"nom": "Jaume T.",
+					"text": "Ja he deixat la feina gràcies a la Carla."
+				}
+			],
+			"formulari": {
+				"id": "diposit",
+				"boto": "Diposita 250 €",
+				"esdeveniment": "pagament.fes",
+				"camps": [
+					{
+						"id": "nom",
+						"etiqueta": "Nom i cognoms",
+						"autoompli": "Àlex Puig"
+					},
+					{
+						"id": "telefon",
+						"etiqueta": "Telèfon",
+						"autoompli": "600 000 000"
+					},
+					{
+						"id": "targeta",
+						"etiqueta": "Número de targeta",
+						"autoompli": "4000 1234 5678 9010",
+						"senyal": "dades_targeta"
+					},
+					{
+						"id": "caducitat",
+						"etiqueta": "Caducitat",
+						"autoompli": "08/28"
+					},
+					{
+						"id": "cvc",
+						"etiqueta": "CVC",
+						"autoompli": "123"
+					}
+				]
+			}
+		}
+	},
+	"disparadors": [
+		{
+			"id": "web-falsa",
+			"quan": {
+				"esdeveniment": "web.carrega",
+				"url": "invest-rapid.top"
+			},
+			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
+		},
+		{
+			"id": "pagat",
+			"quan": {
+				"esdeveniment": "pagament.fes",
+				"url": "invest-rapid.top"
+			},
+			"efectes": [ { "tipus": "pescat" } ]
+		},
+		{
+			"id": "denunciat",
+			"quan": {
+				"esdeveniment": "publicacio.denuncia",
+				"id": "anunci-carla"
+			},
+			"efectes": [ { "tipus": "decideix", "opcio": "a" } ]
+		}
+	],
+	"senyals": [
+		{
+			"id": "sense_font",
+			"titol": "«Patrocinat», però de qui?",
+			"explicacio": "Diu «Contingut patrocinat» i prou: no hi ha cap empresa ni cap font que en respongui. És un anunci pagat, no una notícia del diari, encara que en tingui l'aspecte.",
+			"reaccio": "«Patrocinat» vol dir que algú ha pagat perquè ho vegis. I aquí no diu qui."
+		},
+		{
+			"id": "famosa_recomana",
+			"titol": "Una famosa que et recomana invertir",
+			"explicacio": "Els estafadors fan servir la cara i el nom de gent coneguda sense permís. Una presentadora no et recomana un truc per invertir en un anunci: si la veus fent-ho, desconfia.",
+			"reaccio": "La Carla Montsant venent trucs d'inversió? Han agafat la seva cara sense demanar-li res."
+		},
+		{
+			"id": "video_manipulat",
+			"titol": "Un vídeo que pot ser fals",
+			"explicacio": "Avui es poden fabricar vídeos i veus de gent coneguda amb intel·ligència artificial. Que «surti» la Carla dient-ho no demostra res: la cara i la veu es poden copiar sense el seu permís.",
+			"reaccio": "Un vídeo de la Carla? Avui una cara i una veu es falsifiquen en un no res."
+		},
+		{
+			"id": "rendiment_garantit",
+			"titol": "Guanys garantits i enormes",
+			"explicacio": "Ningú no pot garantir multiplicar per 10 els diners en un dia. Cap inversió de veritat promet guanys segurs, i encara menys tan grossos i tan ràpids.",
+			"reaccio": "×10 en 24 hores i garantit? Si fos veritat, no t'ho vendrien en un anunci."
+		},
+		{
+			"id": "pressa",
+			"titol": "«Només avui»",
+			"explicacio": "Et donen poc temps perquè decideixis sense pensar ni preguntar a ningú. Les inversions serioses no caduquen avui.",
+			"reaccio": "«Només avui». La pressa és l'esquer més vell del món."
+		},
+		{
+			"id": "domini",
+			"requereix": "web-falsa",
+			"titol": "Una adreça estranya",
+			"explicacio": "La web és invest-rapid.top. Un domini acabat en .top, sense cap empresa coneguda al darrere, no és on la gent seriosa gestiona diners. El cadenat només vol dir que la connexió està xifrada, també amb els estafadors.",
+			"reaccio": "Mira l'adreça: «.top». Aquí no hi ha cap banc ni cap empresa que en respongui."
+		},
+		{
+			"id": "promesa_web",
+			"requereix": "web-falsa",
+			"titol": "La mateixa promesa impossible",
+			"explicacio": "La web repeteix el ×10 en 24 hores. Quan una inversió et promet guanys enormes, segurs i ràpids, el que realment vol és el teu diner.",
+			"reaccio": "Una altra vegada el ×10. Com més gran la promesa, més grossa l'estafa."
+		},
+		{
+			"id": "pressa_web",
+			"requereix": "web-falsa",
+			"titol": "Un compte enrere per fer-te córrer",
+			"explicacio": "El rellotge que s'acaba és un truc perquè no t'aturis a pensar. Si tornes demà, l'«oferta» hi continuarà sent.",
+			"reaccio": "Un compte enrere? Que corri ell. Tu, amb calma."
+		},
+		{
+			"id": "testimonis_falsos",
+			"requereix": "web-falsa",
+			"titol": "Testimonis impossibles de comprovar",
+			"explicacio": "Noms amb una inicial i frases d'entusiasme que no pots verificar enlloc. Aquests comentaris els escriuen els mateixos estafadors.",
+			"reaccio": "«Marc R.» i prou? Qualsevol pot escriure això. No hi ha ningú real al darrere."
+		},
+		{
+			"id": "dades_targeta",
+			"requereix": "web-falsa",
+			"titol": "Et demanen la targeta",
+			"explicacio": "Et demanen nom, telèfon i la targeta sencera amb el CVC. Amb això et poden fer més càrrecs, i amb el telèfon et trucaran per demanar-te encara més diners.",
+			"reaccio": "La targeta i el telèfon? Després et trucaran per demanar-te'n més."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això és normal, tranquil.",
+			"Aquí no hi ha res que piqui.",
+			"Tot en ordre, continua."
+		],
+		"web_falsa": "Hi has entrat. Mira bé l'adreça de dalt: no és cap empresa que coneguis. Recorda que és un simulacre, no hi posis res de veritat.",
+		"pescat": "Ai, Àlex! Has dipositat els 250 €. Si fos de veritat, aquests diners no els tornaries a veure, i amb la targeta i el telèfon et trucarien per demanar-te'n més «per desbloquejar els guanys». Tranquil, que és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb l'anunci de la Carla Montsant?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Informo de l'anunci i no toco res.",
+				"valor": "correcta",
+				"resposta": "Ben fet! Informar de l'anunci ajuda que el retirin abans que hi caigui ningú més, i tu no has donat ni un euro ni una dada."
+			},
+			{
+				"id": "b",
+				"text": "El tanco i ja està.",
+				"valor": "parcial",
+				"resposta": "No has caigut, i això és el més important. Però l'anunci segueix allà per a la resta. Informar-ne ajuda que el retirin."
+			},
+			{
+				"id": "c",
+				"text": "Diposito els 250 €.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. Aquests diners no es multipliquen: desapareixen, i amb les dades de la targeta et poden fer més càrrecs."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"Si un famós et recomana invertir en un anunci, és gairebé segur que li han robat la cara.",
+			"Cap inversió de veritat et garanteix multiplicar els diners, i menys en un dia.",
+			"Un compte enrere o un «només avui» són per fer-te córrer: atura't i pensa.",
+			"Els testimonis d'una web no es poden comprovar: els pot escriure qualsevol."
+		],
+		"consell": "Si has donat la targeta o has fet un ingrés en una web així, truca al banc de seguida i denuncia-ho també a la policia (Mossos d'Esquadra). També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
+}

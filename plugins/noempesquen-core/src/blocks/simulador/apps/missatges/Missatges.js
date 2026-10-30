@@ -98,7 +98,7 @@ function BotoCancella( { onTanca } ) {
 /**
  * Missatges (SMS) del mòbil: llista de converses, conversa, contactes i
  * fitxa, amb fulls per al menú del missatge, l'enllaç, el bloqueig i el
- * reenviament. Esborrats i bloquejats són estat local; al motor li arriben
+ * reenviament. Els esborrats són estat local i els bloquejats surten del motor; al motor li arriben
  * `missatge.obre`, `missatge.esborra`, `contacte.bloqueja`,
  * `missatge.reenvia`, `missatge.respon`, `enllac.mantingut` i `enllac.obre`.
  */
@@ -108,7 +108,11 @@ export default function Missatges() {
 	const { registraEnrere, appActiva } = useMobil();
 	const [ vistes, setVistes ] = useState( [ { tipus: 'llista' } ] );
 	const [ esborrats, setEsborrats ] = useState( () => new Set() );
-	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
+	// Bloquejats: només ids, al motor (sobreviuen en tancar l'app).
+	const bloquejats = useMemo(
+		() => new Set( estat.bloquejats ?? [] ),
+		[ estat.bloquejats ]
+	);
 	const [ full, setFull ] = useState( null );
 	const [ avis, setAvis ] = useState( null );
 	const arrel = useRef( null );
@@ -270,7 +274,6 @@ export default function Missatges() {
 	};
 
 	const bloqueja = ( contacte, iEsborra ) => {
-		setBloquejats( ( s ) => new Set( [ ...s, contacte.id ] ) );
 		// Primer el bloqueig: és la decisió; l'esborrat ve després.
 		emet( 'contacte.bloqueja', { id: contacte.id } );
 		if ( iEsborra ) {

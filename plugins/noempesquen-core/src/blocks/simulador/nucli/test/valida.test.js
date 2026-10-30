@@ -140,6 +140,7 @@ describe( 'validaMissio v2', () => {
 			'calculadora',
 			'rellotge',
 			'ajustos',
+			'revenda',
 		] );
 		expect( [ ...APPS ].sort() ).toEqual(
 			[ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ].sort()
@@ -453,7 +454,9 @@ describe( 'validaMissio: apps.parla.xats', () => {
 		const errors = validaMissio( m, mon );
 		expect( errors ).toContain( 'senyal desconegut: inexistent' );
 		expect( errors ).toContain( 'senyal desconegut: altre' );
-		expect( errors ).toContain( 'notifica: xat només amb app parla' );
+		expect( errors ).toContain(
+			'notifica: xat només amb app parla o revenda'
+		);
 	} );
 } );
 

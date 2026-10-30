@@ -14,6 +14,7 @@ import { FinestraContext, SistemaContext } from '../pc/context';
 import { MobilContext } from './context';
 import { ESTAT_PILA, appActiva, pilaReductor } from './pila';
 import { destiParla } from '../../apps/parla/xatsMissio';
+import { destiRevenda } from '../../apps/revenda/anuncis.js';
 import { Bloqueig } from './Bloqueig';
 import { BarraEstat } from './BarraEstat';
 import { Inici } from './Inici';
@@ -26,6 +27,7 @@ const URL_POSTA = 'https://posta.cat/';
 /* On porta tocar una notificació, segons l'app que l'envia. */
 const DESTINS = {
 	// Parla: vegeu destiParla (el xat de la notificació o el del guia).
+	// Revenda: vegeu destiRevenda (pestanya «Xats» i el xat, si n'hi ha).
 	// T4: les notificacions de Missatges obren l'app (ja present quan existeixi).
 	missatges: [ 'missatges' ],
 	// Mentre no hi hagi app de Posta al mòbil, s'obre la web.
@@ -133,8 +135,12 @@ export default function Mobil() {
 
 	const obreNotificacio = useCallback(
 		( n ) => {
-			const [ app, dades ] = ( n.app === 'parla'
-				? destiParla( n )
+			const desti = {
+				parla: destiParla,
+				revenda: destiRevenda,
+			}[ n.app ];
+			const [ app, dades ] = ( desti
+				? desti( n )
 				: DESTINS[ n.app ] ) ?? [ n.app ];
 			// Còpia nova: cada obertura compta com a dades noves per a l'app.
 			obreApp( app, dades && { ...dades } );

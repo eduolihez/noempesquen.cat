@@ -14,6 +14,7 @@ import { IconaUllada } from './ullada/icones';
 import { IconaCalculadora } from './calculadora/icones';
 import { IconaRellotge } from './rellotge/icones';
 import { IconaAjustos } from './ajustos/icones';
+import { IconaRevenda } from './revenda/icones';
 
 const navegador = {
 	nom: __( 'Navegador', 'noempesquen' ),
@@ -87,6 +88,12 @@ const ajustos = {
 	Component: lazy( () => import( './ajustos/Ajustos' ) ),
 };
 
+const revenda = {
+	nom: __( 'Revenda', 'noempesquen' ),
+	Icona: IconaRevenda,
+	Component: lazy( () => import( './revenda/Revenda' ) ),
+};
+
 export const APPS_PC = { navegador, parla };
 
 export const APPS_MOBIL = {
@@ -100,6 +107,7 @@ export const APPS_MOBIL = {
 	calculadora,
 	rellotge,
 	ajustos,
+	revenda,
 };
 
 /* Àlies per al codi del PC que encara importa `APPS`. */

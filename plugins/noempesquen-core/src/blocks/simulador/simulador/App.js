@@ -5,13 +5,24 @@ import { Selector } from './Selector';
 import { Simulador } from './Simulador';
 import llissa01 from '../../../../missions/llissa-01-factura.json';
 import llissa02 from '../../../../missions/llissa-02-banc.json';
+import llissa03 from '../../../../missions/llissa-03-inversio.json';
 import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 import remei02 from '../../../../missions/remei-02-canviat.json';
 import remei03 from '../../../../missions/remei-03-sorteig.json';
 import remei04 from '../../../../missions/remei-04-codi.json';
+import remei05 from '../../../../missions/remei-05-comprador.json';
 
-const INCLOSES = [ llissa01, llissa02, remei01, remei02, remei03, remei04 ];
+const INCLOSES = [
+	llissa01,
+	llissa02,
+	llissa03,
+	remei01,
+	remei02,
+	remei03,
+	remei04,
+	remei05,
+];
 function emmagatzematge() {
 	try {
 		return window.localStorage;

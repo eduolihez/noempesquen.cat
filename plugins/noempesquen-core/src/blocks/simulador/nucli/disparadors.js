@@ -3,6 +3,7 @@
  * Funcions pures sobre l'estat del motor.
  */
 import { FASE, afegeixGuia } from './motor.js';
+import { senseWww } from '../apps/navegador/historial.js';
 
 function hostname( valor ) {
 	try {
@@ -30,7 +31,15 @@ export function coincideix( quan, nom, dades = {}, estat ) {
 			return !! estat?.visibles?.[ valor ];
 		}
 		if ( clau === 'url' ) {
-			return dades.url === valor || hostname( dades.url ) === valor;
+			if ( dades.url === valor ) {
+				return true;
+			}
+			const host = hostname( dades.url );
+			return (
+				typeof host === 'string' &&
+				typeof valor === 'string' &&
+				senseWww( host ) === senseWww( valor )
+			);
 		}
 		return dades[ clau ] === valor;
 	} );

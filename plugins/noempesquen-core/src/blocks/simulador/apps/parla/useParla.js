@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import { respostesRapides, visible } from '../../nucli/motor';
@@ -99,8 +99,11 @@ export function useParla( xatInicial = ID_GUIA ) {
 		useJoc();
 	const [ actiu, setActiu ] = useState( xatInicial );
 	const [ cerca, setCerca ] = useState( '' );
-	// Contactes bloquejats: estat local de la UI; el motor només rep l'esdeveniment.
-	const [ bloquejats, setBloquejats ] = useState( () => new Set() );
+	// Contactes bloquejats: només ids, al motor (sobreviuen en tancar l'app).
+	const bloquejats = useMemo(
+		() => new Set( estat.bloquejats ?? [] ),
+		[ estat.bloquejats ]
+	);
 	const [ avis, setAvis ] = useState( '' );
 	// L'avís s'esborra en canviar de xat o passat un temps, perquè un segon
 	// bloqueig es torni a anunciar.
@@ -164,7 +167,6 @@ export function useParla( xatInicial = ID_GUIA ) {
 		if ( ! contacte ) {
 			return;
 		}
-		setBloquejats( ( s ) => new Set( [ ...s, contacte.id ] ) );
 		emet( 'contacte.bloqueja', { id: contacte.id } );
 		setAvis( __( 'Has bloquejat aquest número', 'noempesquen' ) );
 	};

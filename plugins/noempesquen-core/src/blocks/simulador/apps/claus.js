@@ -14,4 +14,5 @@ export const CLAUS_APPS_MOBIL = [
 	'calculadora',
 	'rellotge',
 	'ajustos',
+	'revenda',
 ];

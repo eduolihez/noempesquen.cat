@@ -136,6 +136,38 @@ describe( 'disparadors', () => {
 } );
 
 describe( 'coincideix', () => {
+	it( 'normalitza «www.» al domini (remei-05: revenda-cobra.com)', () => {
+		const m5 = JSON.parse(
+			readFileSync(
+				new URL(
+					'../../../../../missions/remei-05-comprador.json',
+					import.meta.url
+				),
+				'utf8'
+			)
+		);
+		const quan = ( id ) => m5.disparadors.find( ( d ) => d.id === id ).quan;
+		const url = 'https://www.revenda-cobra.com/cobrament';
+		expect(
+			coincideix( quan( 'web-falsa' ), 'web.carrega', { url } )
+		).toBe( true );
+		expect( coincideix( quan( 'pagat' ), 'pagament.fes', { url } ) ).toBe(
+			true
+		);
+		expect(
+			coincideix(
+				{ esdeveniment: 'web.carrega', url: 'www.revenda-cobra.com' },
+				'web.carrega',
+				{ url: 'https://revenda-cobra.com/' }
+			)
+		).toBe( true );
+		expect(
+			coincideix( quan( 'pagat' ), 'pagament.fes', {
+				url: 'https://wwwrevenda-cobra.com/',
+			} )
+		).toBe( false );
+	} );
+
 	it( 'coincideix per domini i per url exacta', () => {
 		const url = 'http://llumclara-pagaments.com/pagament?ref=1';
 		expect(
@@ -344,5 +376,29 @@ describe( 'coincideix: esdeveniments de Ullada i codi', () => {
 				{ id: 'pub2' }
 			)
 		).toBe( false );
+	} );
+} );
+
+describe( 'rastre de bloquejos i denúncies', () => {
+	it( 'anota només ids, sense duplicats, i es reinicia', () => {
+		let e = joc();
+		e = aplica(
+			e,
+			esdev( 'contacte.bloqueja', { id: 'x' } ),
+			esdev( 'contacte.bloqueja', { id: 'x' } ),
+			esdev( 'publicacio.denuncia', { id: 'a' } )
+		);
+		expect( e.bloquejats ).toEqual( [ 'x' ] );
+		expect( e.denunciats ).toEqual( [ 'a' ] );
+		expect( aplica( e, { tipus: 'REINICIA' } ).bloquejats ).toEqual( [] );
+	} );
+
+	it( 'no anota res amb el joc en pausa', () => {
+		const e = aplica(
+			joc(),
+			{ tipus: 'PAUSA' },
+			esdev( 'contacte.bloqueja', { id: 'x' } )
+		);
+		expect( e.bloquejats ).toEqual( [] );
 	} );
 } );
