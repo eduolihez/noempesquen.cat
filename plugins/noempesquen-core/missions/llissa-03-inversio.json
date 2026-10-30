@@ -38,6 +38,12 @@
 						}
 					],
 					[
+						{
+							"t": "Mira el vídeo: la Carla ho explica amb la seva pròpia veu.",
+							"senyal": "video_manipulat"
+						}
+					],
+					[
 						{ "t": "Amb el seu mètode, 250 € es converteixen en 2.500 €: " },
 						{
 							"t": "×10 en 24 h, garantit.",
@@ -164,6 +170,12 @@
 			"reaccio": "La Carla Montsant venent trucs d'inversió? Han agafat la seva cara sense demanar-li res."
 		},
 		{
+			"id": "video_manipulat",
+			"titol": "Un vídeo que pot ser fals",
+			"explicacio": "Avui es poden fabricar vídeos i veus de gent coneguda amb intel·ligència artificial. Que «surti» la Carla dient-ho no demostra res: la cara i la veu es poden copiar sense el seu permís.",
+			"reaccio": "Un vídeo de la Carla? Avui una cara i una veu es falsifiquen en un no res."
+		},
+		{
 			"id": "rendiment_garantit",
 			"titol": "Guanys garantits i enormes",
 			"explicacio": "Ningú no pot garantir multiplicar per 10 els diners en un dia. Cap inversió de veritat promet guanys segurs, i encara menys tan grossos i tan ràpids.",
@@ -250,6 +262,6 @@
 			"Un compte enrere o un «només avui» són per fer-te córrer: atura't i pensa.",
 			"Els testimonis d'una web no es poden comprovar: els pot escriure qualsevol."
 		],
-		"consell": "Si has donat la targeta o has fet un ingrés en una web així, truca al banc de seguida i denuncia-ho. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si has donat la targeta o has fet un ingrés en una web així, truca al banc de seguida i denuncia-ho també a la policia (Mossos d'Esquadra). També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
 	}
 }

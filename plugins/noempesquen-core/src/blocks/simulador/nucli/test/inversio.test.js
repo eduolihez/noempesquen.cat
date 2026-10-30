@@ -30,6 +30,7 @@ describe( 'missió «El truc d’inversió» (v2)', () => {
 	const delAnunci = [
 		'sense_font',
 		'famosa_recomana',
+		'video_manipulat',
 		'rendiment_garantit',
 		'pressa',
 	];
