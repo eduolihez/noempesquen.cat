@@ -264,6 +264,25 @@ function nep_mostra_avis_missio(): void {
 add_action( 'admin_notices', 'nep_mostra_avis_missio' );
 
 /**
+ * Amb avís pendent, WP no ha de dir «publicada» (message=6): si ha quedat en
+ * esborrany diu «esborrany actualitzat» (10); si no, no diu res. El transient
+ * no s'esborra aquí: el mostra `nep_mostra_avis_missio`.
+ *
+ * @param string $location URL de redirecció.
+ * @param int    $post_id  Id de l'entrada.
+ * @return string
+ */
+function nep_redireccio_avis_missio( $location, $post_id ) {
+	if ( 'nep_missio' !== get_post_type( (int) $post_id ) || ! is_array( get_transient( 'nep_avis_' . get_current_user_id() ) ) ) {
+		return $location;
+	}
+	return 'draft' === get_post_status( (int) $post_id )
+		? add_query_arg( 'message', 10, $location )
+		: remove_query_arg( 'message', $location );
+}
+add_filter( 'redirect_post_location', 'nep_redireccio_avis_missio', 10, 2 );
+
+/**
  * Entrades que `wp_delete_post` està esborrant: n'esborra la meta per meta_id
  * amb l'entrada encara publicada, i això no s'ha d'impedir.
  *
