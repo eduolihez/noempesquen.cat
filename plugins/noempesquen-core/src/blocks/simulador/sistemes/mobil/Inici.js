@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { APPS_MOBIL } from '../../apps/registre';
 import { DATA_LLARGA } from '../pc/calendari';
 
-/* Apps del dock, en ordre; les que encara no existeixen no surten (T4: missatges). */
+/* Apps del dock, en ordre; la resta va a la quadrícula en l'ordre del registre. */
 const DOCK = [ 'missatges', 'navegador' ];
 
 function BotoApp( { id, onObre } ) {

@@ -13,3 +13,8 @@
 - **El dispositiu és de l'Àlex Puig** (nom neutre); la Llissa i la Remei són contactes.
 - **Missions v2:** només es juguen missions `versio: 2`; les remotes del CPT es combinen per `id` amb les incloses.
 - **Per talls:** cada tall s'entrega jugable de principi a fi.
+- **Roboto local (corte 4a):** empaquetada en `assets/fonts/` (woff2 latin 400/500/700), licencia Apache-2.0 (`LICENSE-Roboto.txt`); sin CDN.
+- **Apps de relleno no emiten eventos:** no afectan al motor ni a la puntuación; solo dan sensación de libertad.
+- **Sons:** Ajustos solo guarda la preferencia `noempesquen-sons`; los sonidos reales llegan en 4b.
+- **`apps/claus.js`** es la fuente de verdad de los ids de app por dispositivo; el validador de misiones la importa.
+- **`diaridelbarri.cat`** se resuelve por defecto a la plantilla `diari`; una misión puede sobrescribirlo declarando la web.

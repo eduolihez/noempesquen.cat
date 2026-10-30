@@ -179,7 +179,7 @@ describe( 'resolWeb', () => {
 		expect( resolWeb( 'https://posta.cat/', {} ).plantilla ).toBe(
 			'posta'
 		);
-		expect( resolWeb( 'https://diaridelbarri.cat/', MISSIO ) ).toBeNull();
+		expect( resolWeb( 'https://desconegut.example/', MISSIO ) ).toBeNull();
 		expect( resolWeb( 'cerca:hola', MISSIO ) ).toBeNull();
 		expect( resolWeb( NOVA_PESTANYA, MISSIO ) ).toBeNull();
 	} );

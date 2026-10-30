@@ -1,0 +1,217 @@
+/* Ajustos del mòbil: llista i subpantalles. */
+
+$ajt-accent: #1f5fd1;
+$ajt-text: #1a1a1a;
+$ajt-text-2: #555b63;
+$ajt-vora: #e2e5ea;
+$ajt-perill: #b42318;
+$ajt-lim: #6b7280; // límit de components, >= 3:1 sobre blanc
+
+.nep-so .nep-ajustos {
+	background: #f4f5f7;
+	color: $ajt-text;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	&__cap {
+		align-items: center;
+		background: #fff;
+		border-bottom: 1px solid $ajt-vora;
+		display: flex;
+		min-height: 56px;
+		padding: 6px 16px;
+	}
+
+	&__titol {
+		font-size: 20px;
+		font-weight: 600;
+		margin: 0;
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #1f5fd1);
+			outline-offset: 2px;
+		}
+	}
+
+	&__cos {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+	}
+
+	&__llista,
+	&__llista-apps {
+		list-style: none;
+		margin: 12px;
+		padding: 0;
+	}
+
+	&__llista {
+		background: #fff;
+		border-radius: 12px;
+		overflow: hidden;
+
+		li + li {
+			border-top: 1px solid $ajt-vora;
+		}
+	}
+
+	&__entrada {
+		align-items: center;
+		background: none;
+		border: 0;
+		color: $ajt-text;
+		cursor: pointer;
+		display: flex;
+		font: inherit;
+		gap: 14px;
+		min-height: 52px;
+		padding: 8px 14px;
+		text-align: left;
+		width: 100%;
+
+		&:hover {
+			background: #eef1f5;
+		}
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #1f5fd1);
+			outline-offset: -3px;
+		}
+
+		&--perill {
+			color: $ajt-perill;
+		}
+	}
+
+	&__entrada-text {
+		flex: 1 1 auto;
+	}
+
+	&__fila {
+		align-items: center;
+		background: #fff;
+		display: flex;
+		gap: 12px;
+		justify-content: space-between;
+		min-height: 52px;
+		padding: 8px 16px;
+
+		& + & {
+			border-top: 1px solid $ajt-vora;
+		}
+
+		&--bloc {
+			align-items: stretch;
+			flex-direction: column;
+			gap: 6px;
+		}
+	}
+
+	&__fila-text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
+
+	&__fila-titol {
+		font-size: 16px;
+	}
+
+	&__fila-desc {
+		color: $ajt-text-2;
+		font-size: 14px;
+	}
+
+	&__llista-apps {
+		background: #fff;
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	&__commutador {
+		background: #fff;
+		border: 2px solid $ajt-lim;
+		border-radius: 14px;
+		cursor: pointer;
+		flex: 0 0 auto;
+		height: 28px;
+		padding: 0;
+		position: relative;
+		width: 52px;
+
+		&[aria-checked="true"] {
+			background: $ajt-accent;
+			border-color: $ajt-accent;
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.7;
+		}
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #1f5fd1);
+			outline-offset: 2px;
+		}
+
+		/* Àrea tàctil >= 44 px sense canviar l'aspecte. */
+		&::after {
+			content: "";
+			inset: -10px -4px;
+			position: absolute;
+		}
+	}
+
+	&__commutador-pom {
+		background: $ajt-lim;
+		border-radius: 50%;
+		height: 18px;
+		left: 3px;
+		position: absolute;
+		top: 3px;
+		transition: transform 0.15s;
+		width: 18px;
+
+		[aria-checked="true"] > & {
+			background: #fff;
+			transform: translateX(24px);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+		}
+	}
+
+	&__rang {
+		accent-color: $ajt-accent;
+		min-height: 44px;
+		width: 100%;
+	}
+
+	&__apagar {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		padding: 20px 16px;
+	}
+
+	&__perill {
+		background: $ajt-perill;
+		border: 0;
+		border-radius: 10px;
+		color: #fff;
+		cursor: pointer;
+		font: inherit;
+		font-weight: 600;
+		min-height: 48px;
+		padding: 8px 16px;
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-focus, #1f5fd1);
+			outline-offset: 2px;
+		}
+	}
+}
