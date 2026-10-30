@@ -4,6 +4,7 @@
 
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
 import { existeixIlustracio } from '../ui/ilustracions-ids';
+import { senseWww } from '../apps/navegador/historial';
 
 export const APPS_PC = CLAUS_APPS_PC;
 export const APPS_MOBIL = CLAUS_APPS_MOBIL;
@@ -27,6 +28,7 @@ export const PLANTILLES_WEB = [
 	'diari',
 	'cobrament',
 	'inversio',
+	'article',
 ];
 // Plantilles que només tenen variant falsa (no hi ha versió oficial).
 export const PLANTILLES_SOLO_FALSES = [ 'sorteig', 'cobrament', 'inversio' ];
@@ -60,6 +62,9 @@ export const ESDEVENIMENTS = [
 	'enllac.mantingut',
 	'publicacio.denuncia',
 	'codi.comparteix',
+	'telefon.truca',
+	'descarrega.fes',
+	'avis.apareix',
 ];
 
 /**
@@ -83,6 +88,9 @@ const CAMPS_SENYAL = [
 	'promesa_senyal',
 	'etiqueta_senyal',
 	'ingres_senyal',
+	'senyal_telefon',
+	'senyal_fitxer',
+	'senyal_origen',
 ];
 
 /**
@@ -320,6 +328,12 @@ function validaDisparadors( m, mon, errors ) {
 		) {
 			errors.push( `denuncia: publicació inexistent: ${ d.quan?.id }` );
 		}
+		if (
+			d.quan?.fitxer !== undefined &&
+			typeof d.quan.fitxer !== 'string'
+		) {
+			errors.push( 'fitxer ha de ser text' );
+		}
 		if ( d.quan?.visible !== undefined ) {
 			if ( ! idsApps.has( d.quan.visible ) ) {
 				errors.push(
@@ -416,6 +430,22 @@ function validaSegmentCos( seg, r, errors, patroUrl = null ) {
 	} else if ( typeof seg.t !== 'string' ) {
 		errors.push( `${ r }: segment sense «t» ni «enllac»` );
 	}
+}
+
+/**
+ * Com `validaSegmentCos`, però sense enllaços: la llista d'un article i el
+ * text de la barra no els pinten com a enllaç.
+ *
+ * @param {Object}   seg    Segment.
+ * @param {string}   r      Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaSegmentSenseEnllac( seg, r, errors ) {
+	if ( esObjecte( seg ) && seg.enllac !== undefined ) {
+		errors.push( `${ r }: «enllac» no admès aquí` );
+		return;
+	}
+	validaSegmentCos( seg, r, errors );
 }
 
 function validaCosPublicacio( cos, ref, errors ) {
@@ -713,6 +743,277 @@ function validaPlantillaPagament( domini, web, errors ) {
 }
 
 /**
+ * Valida un cos de la plantilla `article`: llista de segments (un paràgraf)
+ * o llista de paràgrafs (com accepta `normalitzaParagrafs`).
+ *
+ * @param {*}        cos    Cos.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaCosArticle( cos, ref, errors ) {
+	if ( ! Array.isArray( cos ) || ! cos.length ) {
+		errors.push( `${ ref }: ha de ser una llista no buida` );
+		return;
+	}
+	if ( cos.every( Array.isArray ) ) {
+		validaCosPublicacio( cos, ref, errors );
+		return;
+	}
+	cos.forEach( ( seg, i ) =>
+		validaSegmentCos( seg, `${ ref }[${ i }]`, errors )
+	);
+}
+
+const esObjecte = ( x ) =>
+	!! x && typeof x === 'object' && ! Array.isArray( x );
+const esText = ( x ) => typeof x === 'string' && x.trim() !== '';
+
+/**
+ * Comprova que els camps indicats siguin text no buit.
+ *
+ * @param {Object}   obj    Objecte.
+ * @param {string[]} camps  Camps obligatoris.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function campsText( obj, camps, ref, errors ) {
+	camps.forEach( ( c ) => {
+		if ( ! esText( obj[ c ] ) ) {
+			errors.push( `${ ref }: camp «${ c }» buit o absent` );
+		}
+	} );
+}
+
+/**
+ * Valida l'avís fals (`avis`) d'una web `article`.
+ *
+ * @param {*}        avis   Avís.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaAvisArticle( avis, ref, errors ) {
+	if ( ! esObjecte( avis ) ) {
+		errors.push( `${ ref }: ha de ser un objecte` );
+		return;
+	}
+	if (
+		typeof avis.retard !== 'number' ||
+		! Number.isFinite( avis.retard ) ||
+		avis.retard < 0
+	) {
+		errors.push( `${ ref }: «retard» ha de ser un nombre ≥ 0` );
+	}
+	campsText(
+		avis,
+		[ 'titol', 'telefon', 'etiquetaTelefon', 'contador' ],
+		ref,
+		errors
+	);
+	validaCosArticle( avis.cos, `${ ref }.cos`, errors );
+	if ( avis.reobre !== undefined && typeof avis.reobre !== 'boolean' ) {
+		errors.push( `${ ref }: «reobre» ha de ser booleà` );
+	}
+	const inst = avis.instal_la;
+	if ( inst === undefined ) {
+		return;
+	}
+	if ( ! esObjecte( inst ) ) {
+		errors.push( `${ ref }.instal_la: ha de ser un objecte` );
+		return;
+	}
+	campsText(
+		inst,
+		[ 'fitxer', 'origen', 'text_boto' ],
+		`${ ref }.instal_la`,
+		errors
+	);
+}
+
+/**
+ * Valida la barra falsa d'actualització (`barra`) d'una web `article`.
+ *
+ * @param {*}        barra  Barra.
+ * @param {string}   ref    Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaBarraArticle( barra, ref, errors ) {
+	if ( ! esObjecte( barra ) ) {
+		errors.push( `${ ref }: ha de ser un objecte` );
+		return;
+	}
+	campsText( barra, [ 'boto', 'fitxer', 'origen' ], ref, errors );
+	if ( ! Array.isArray( barra.text ) || ! barra.text.length ) {
+		errors.push( `${ ref }: «text» ha de ser una llista no buida` );
+		return;
+	}
+	barra.text.forEach( ( seg, i ) =>
+		validaSegmentSenseEnllac( seg, `${ ref }.text[${ i }]`, errors )
+	);
+}
+
+/**
+ * Valida una web amb la plantilla `article` (nom del lloc, títol, seccions i,
+ * opcionalment, `entradeta`, `avis` i `barra`). Fora d'`article`, `avis` i
+ * `barra` no s'admeten.
+ *
+ * @param {string}   domini Domini de la web.
+ * @param {Object}   web    Web.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaArticle( domini, web, errors ) {
+	const ref = `article ${ domini }`;
+	if ( web.plantilla !== 'article' ) {
+		[ 'avis', 'barra' ].forEach( ( c ) => {
+			if ( web[ c ] !== undefined ) {
+				errors.push(
+					`${ domini }.${ c }: només admès a la plantilla article`
+				);
+			}
+		} );
+		return;
+	}
+	campsText( web, [ 'nom_lloc', 'titol' ], ref, errors );
+	if ( web.entradeta !== undefined ) {
+		validaCosArticle( web.entradeta, `${ ref }.entradeta`, errors );
+	}
+	if ( ! Array.isArray( web.seccions ) || ! web.seccions.length ) {
+		errors.push( `${ ref }: «seccions» ha de ser una llista no buida` );
+	} else {
+		web.seccions.forEach( ( s, i ) => {
+			const r = `${ ref }.seccions[${ i }]`;
+			if ( ! esObjecte( s ) ) {
+				errors.push( `${ r }: ha de ser un objecte` );
+				return;
+			}
+			campsText( s, [ 'titol' ], r, errors );
+			if ( ( s.cos === undefined ) === ( s.llista === undefined ) ) {
+				errors.push( `${ r }: cal «cos» o «llista» (només un)` );
+			} else if ( s.cos !== undefined ) {
+				validaCosArticle( s.cos, `${ r }.cos`, errors );
+			} else if ( ! Array.isArray( s.llista ) || ! s.llista.length ) {
+				errors.push( `${ r }: «llista» ha de ser una llista no buida` );
+			} else {
+				s.llista.forEach( ( seg, j ) =>
+					validaSegmentSenseEnllac(
+						seg,
+						`${ r }.llista[${ j }]`,
+						errors
+					)
+				);
+			}
+		} );
+	}
+	if ( web.avis !== undefined ) {
+		validaAvisArticle( web.avis, `${ ref }.avis`, errors );
+	}
+	if ( web.barra !== undefined ) {
+		validaBarraArticle( web.barra, `${ ref }.barra`, errors );
+	}
+}
+
+/**
+ * Fitxers de baixada que declara una web `article` (`avis.instal_la.fitxer`
+ * i `barra.fitxer`).
+ *
+ * @param {Object} web Web.
+ * @return {string[]} Fitxers declarats.
+ */
+const fitxersWeb = ( web ) =>
+	[ web?.avis?.instal_la?.fitxer, web?.barra?.fitxer ].filter( esText );
+
+/**
+ * Domini de `m.webs` al qual apunta el `quan.url` d'un disparador, amb la
+ * mateixa normalització que `coincideix` (host de la URL o el valor tal qual,
+ * sense `www.`).
+ *
+ * @param {Object} m   Missió.
+ * @param {string} url `quan.url` (pot no ser text).
+ * @return {?string} Domini de la web o null.
+ */
+function dominiDeUrl( m, url ) {
+	if ( ! esText( url ) ) {
+		return null;
+	}
+	let host = url;
+	try {
+		host = new URL( url ).hostname;
+	} catch {}
+	const net = senseWww( host );
+	return (
+		Object.keys( m.webs ?? {} ).find( ( d ) => senseWww( d ) === net ) ??
+		null
+	);
+}
+
+// Què ha de tenir la web `article` d'un disparador segons l'esdeveniment.
+const REQUISITS_ARTICLE = {
+	'telefon.truca': {
+		compleix: ( w ) => esObjecte( w.avis ),
+		falta: 'no té avís',
+	},
+	'descarrega.fes': {
+		compleix: ( w ) => fitxersWeb( w ).length > 0,
+		falta: 'no té cap fitxer',
+	},
+	'avis.apareix': {
+		compleix: ( w ) => esObjecte( w.avis ),
+		falta: 'no té avís',
+	},
+};
+
+/**
+ * Creua els disparadors de les webs `article` amb el món de la missió:
+ * `quan.url` ha de ser una web `article` amb l'element que dispara l'esdeveniment;
+ * `descarrega.fes` exigeix `quan.fitxer` i que sigui un fitxer d'aquesta web;
+ * i cada fitxer declarat necessita un disparador `descarrega.fes` amb la
+ * parella web+fitxer.
+ *
+ * @param {Object}   m      Missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaDisparadorsArticle( m, errors ) {
+	const parelles = new Set();
+	llista( m.disparadors )
+		.map( ( d ) => d?.quan )
+		.filter( ( q ) => REQUISITS_ARTICLE[ q?.esdeveniment ] )
+		.forEach( ( q ) => {
+			const ev = q.esdeveniment;
+			const domini = dominiDeUrl( m, q.url );
+			const web = domini && m.webs[ domini ];
+			if ( web?.plantilla !== 'article' ) {
+				errors.push( `${ ev }: url sense web article: ${ q.url }` );
+				return;
+			}
+			const req = REQUISITS_ARTICLE[ ev ];
+			if ( ! req.compleix( web ) ) {
+				errors.push( `${ ev }: la web ${ domini } ${ req.falta }` );
+				return;
+			}
+			if ( ev !== 'descarrega.fes' ) {
+				return;
+			}
+			if ( q.fitxer === undefined ) {
+				errors.push( `${ ev }: falta fitxer (${ domini })` );
+			} else if ( ! fitxersWeb( web ).includes( q.fitxer ) ) {
+				errors.push( `descarrega: fitxer no declarat: ${ q.fitxer }` );
+			} else {
+				parelles.add( `${ domini } ${ q.fitxer }` );
+			}
+		} );
+	Object.entries( m.webs ?? {} )
+		.filter( ( [ , w ] ) => w?.plantilla === 'article' )
+		.forEach( ( [ domini, w ] ) =>
+			fitxersWeb( w ).forEach( ( f ) => {
+				if ( ! parelles.has( `${ domini } ${ f }` ) ) {
+					errors.push(
+						`descarrega: fitxer sense disparador: ${ domini } ${ f }`
+					);
+				}
+			} )
+		);
+}
+
+/**
  * Valida una missió v2.
  *
  * @param {Object}  m   Missió a validar.
@@ -832,6 +1133,7 @@ export function validaMissio( m, mon ) {
 		}
 		validaFormularis( domini, web, errors );
 		validaPlantillaPagament( domini, web, errors );
+		validaArticle( domini, web, errors );
 	} );
 
 	validaIdsEntreApps( m.apps, errors );
@@ -840,6 +1142,7 @@ export function validaMissio( m, mon ) {
 	validaRevenda( m, mon, errors );
 	validaAnuncisDiari( m, mon, errors );
 	validaDisparadors( m, mon, errors );
+	validaDisparadorsArticle( m, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {

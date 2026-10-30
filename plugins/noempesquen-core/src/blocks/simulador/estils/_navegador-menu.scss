@@ -1,0 +1,89 @@
+/* Navegador del PC: menú amb l'apartat «Quant a» (només informatiu). */
+
+@use "navegador-tokens" as *;
+
+.nep-so .nep-nav-menu {
+	margin-left: 4px;
+	position: relative;
+
+	&__panell {
+		background: #fff;
+		border-radius: $nav-radi;
+		box-shadow: 0 2px 6px rgb(0 0 0 / 15%), 0 1px 2px rgb(0 0 0 / 30%);
+		color: $nav-text;
+		padding: 8px;
+		position: absolute;
+		right: 0;
+		top: calc(100% + 6px);
+		width: 280px;
+		z-index: 5;
+
+		&[hidden] {
+			display: none;
+		}
+
+		p {
+			margin: 0 0 6px;
+		}
+	}
+
+	&__opcio,
+	&__boto {
+		align-items: center;
+		border-radius: 6px;
+		color: $nav-text;
+		cursor: pointer;
+		display: flex;
+		gap: 10px;
+		min-height: 44px;
+		padding: 8px 12px;
+	}
+
+	&__opcio {
+		background: none;
+		border: 0;
+		text-align: left;
+		width: 100%;
+
+		&:hover {
+			background: $nav-pindola;
+		}
+	}
+
+	&__boto {
+		background: #fff;
+		border: 1px solid $nav-text-2;
+		justify-content: center;
+		margin-left: auto;
+		margin-top: 8px;
+	}
+
+	&__opcio:focus-visible,
+	&__boto:focus-visible {
+		box-shadow: var(--nep-focus-halo);
+		outline: var(--nep-focus);
+		outline-offset: 2px;
+	}
+
+	&__quant {
+		display: flex;
+		flex-direction: column;
+		padding: 8px;
+	}
+
+	&__nom {
+		align-items: center;
+		display: flex;
+		font-size: 17px;
+		font-weight: 700;
+		gap: 10px;
+	}
+
+	&__estat {
+		align-items: center;
+		color: #137333;
+		display: flex;
+		font-weight: 600;
+		gap: 8px;
+	}
+}

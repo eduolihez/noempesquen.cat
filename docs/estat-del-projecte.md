@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (cortes 3, 4a y 4b mergeados a `master`; 5a y 5b hechos en rama)
+Última actualización: 2026-10-30 (cortes 3, 4a, 4b, 5a y 5b mergeados a `master`; 5c hecho en rama, pendiente de merge)
 
 ## Dónde estamos
 
@@ -13,9 +13,10 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 1 · corte 3 | Banc Sòlid (web real, web falsa, app, móvil vinculado en el PC) → «El banc et bloqueja el compte»; «Hola, he canviat de mòbil» en Parla | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte3-banc.md`) |
 | Fase 1 · corte 4a | Móvil: Galeria, Ajustos (con «Apagar»), Càmera, Calculadora, Rellotge, Ullada; web El Diari del Barri (`diaridelbarri.cat`); Roboto empaquetada; el validador comprueba apps por dispositivo (`apps/claus.js`) | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4a-farcit.md`) |
 | Fase 1 · corte 4b | PC en móvil horizontal, selector rediseñado, sonidos reales, revisión visual a 4 anchos, `Esc` real manual, deudas menores | **Hecho** (merge a `master` el 2026-10-30, plan `docs/superpowers/plans/2026-10-30-fase1-corte4b-pulido.md`) |
-| Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho en rama** `feat/fase2-corte5a-sorteig-codi`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
-| Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho en rama** `feat/fase2-corte5b-revenda-inversio`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
-| Fase 2 y 3       | Misiones 9-10 (corte 5c): pop-up de soporte técnico, falsa actualización del navegador                     | Pendiente                                                                                                       |
+| Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
+| Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
+| Fase 2 · corte 5c | Misiones «Virus detectat!» (pop-up de soporte técnico falso de Suport Segur Digital en la web Cuina Avui) y «Actualitza el navegador» (barra falsa de actualización en Temps Avui; comprobación en «Quant a Brúixola»); plantilla `article` con `avis`/`barra` y descarga ficticia | **Hecho en rama** `feat/fase2-corte5c-suport-actualitzacio`, pendiente de merge (plan `docs/superpowers/plans/2026-10-30-fase2-corte5c-suport-actualitzacio.md`) |
+| Fase 3 | IA, cuentas, CPT | Pendiente |
 
 ## Cómo retomar
 
@@ -45,6 +46,19 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 - Dominios `bancsolid.cat` y `bancsolid-acces.top` son registrables por terceros (riesgo bajo; opción: subdominio propio de noempesquen.cat).
 - Borrar el correo del banco cierra la misión como parcial y ya no se puede marcar phishing (decisión de diseño, fijada en test).
 - Menores: error genérico «Omple aquest camp.» en formularios comunes, `h1` fijo en la web del banco, `Object.freeze` de `ESDEVENIMENTS_FORMULARI`, falta test de `codi.envia` con url no coincidente, reutilizar `formulari.js` en la transferencia de la app.
+
+### Pendiente tras el corte 5c
+
+- `Esc` con el menú del navegador abierto y la ventana minimizada: revisar el orden de cierre.
+- Contraste de `#137333` en `_navegador-menu.scss` por verificar con axe.
+- `MenuNavegador` usa el `document` global para `pointerdown`, mientras `AvisFals` y `DescarregaFicticia` usan `ownerDocument`.
+- El `onBlur` del menú del navegador con `relatedTarget` null no lo cierra.
+- Avís y diálogo de descarga apilados sin `inert` sobre la capa de debajo.
+- `cuinaravui.cat` y `tempsavui.cat` son dominios `.cat` registrables (riesgo bajo, como `bancsolid.cat`).
+- Los campos `senyal_*` no se validan como string (un valor no textual se ignora en silencio).
+- El `retard` del avís se redondea hacia arriba a segundos de juego.
+- Elegir «a» sin indicios da 1★ en M9 y 2★ en M10 (coherente con M8).
+- Abrir el diálogo de descarga no emite ningún evento: las señales que solo se ven ahí (`origen_top`, `exe_top`) llevan `requereix` con el id del disparador `descarrega.fes`.
 
 ### Pendiente tras el corte 5b
 

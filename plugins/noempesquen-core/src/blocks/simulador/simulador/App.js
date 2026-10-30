@@ -6,6 +6,8 @@ import { Simulador } from './Simulador';
 import llissa01 from '../../../../missions/llissa-01-factura.json';
 import llissa02 from '../../../../missions/llissa-02-banc.json';
 import llissa03 from '../../../../missions/llissa-03-inversio.json';
+import llissa04 from '../../../../missions/llissa-04-suport.json';
+import llissa05 from '../../../../missions/llissa-05-actualitzacio.json';
 import mon from '../../../../missions/mon.json';
 import remei01 from '../../../../missions/remei-01-paquet.json';
 import remei02 from '../../../../missions/remei-02-canviat.json';
@@ -17,6 +19,8 @@ const INCLOSES = [
 	llissa01,
 	llissa02,
 	llissa03,
+	llissa04,
+	llissa05,
 	remei01,
 	remei02,
 	remei03,

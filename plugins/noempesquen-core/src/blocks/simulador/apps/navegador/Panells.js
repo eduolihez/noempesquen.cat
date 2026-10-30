@@ -42,6 +42,7 @@ export function Panells( {
 			<Pagina
 				key={ p.carrega }
 				url={ urlActual( p ) }
+				visible={ p.id === activa }
 				info={ infos[ p.id ] }
 				navega={ navega }
 				obrePestanya={ obrePestanya }
