@@ -6,6 +6,7 @@ import {
 	preparaPrevisualitzacio,
 	registraResultat,
 } from '../nucli/previsualitzacio';
+import { construeixResultat, enviaResultat } from './estadistiques';
 import { Selector } from './Selector';
 import { Simulador } from './Simulador';
 import llissa01 from '../../../../missions/llissa-01-factura.json';
@@ -130,13 +131,21 @@ export function App( { config } ) {
 	const index = missio ? missions.indexOf( missio ) : -1;
 	const seguentMissio = index >= 0 ? missions[ index + 1 ] : null;
 
-	// Una previsualització no desa progrés (ni, a T7, estadístiques).
-	const onAcaba = useCallback( ( id, estrelles ) => {
-		const acabada = darreres.current.find( ( m ) => m.id === id );
-		setProgres( ( p ) =>
-			registraResultat( emmagatzematge(), p, acabada, estrelles )
-		);
-	}, [] );
+	// Una previsualització no desa progrés ni envia estadístiques.
+	const { api } = config;
+	const onAcaba = useCallback(
+		( id, estrelles, estat ) => {
+			const acabada = darreres.current.find( ( m ) => m.id === id );
+			setProgres( ( p ) =>
+				registraResultat( emmagatzematge(), p, acabada, estrelles )
+			);
+			enviaResultat(
+				api,
+				construeixResultat( acabada, estat, { estrelles } )
+			);
+		},
+		[ api ]
+	);
 
 	const tria = ( id ) => {
 		jugada.current = id;

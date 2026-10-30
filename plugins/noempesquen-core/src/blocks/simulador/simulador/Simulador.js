@@ -58,7 +58,7 @@ function Carregant() {
  * @param {Object}    props.missio  Missió v2.
  * @param {Object}    props.mon     Dades del món (contactes, webs, correus).
  * @param {Function}  props.onSurt  Torna al selector.
- * @param {Function}  props.onAcaba (id, estrelles) en arribar al resultat.
+ * @param {Function}  props.onAcaba (id, estrelles, estat) en arribar al resultat (un cop per partida).
  * @param {?Function} props.seguent Passa a la missió següent, si n'hi ha.
  */
 export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
@@ -123,9 +123,13 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		return () => clearInterval( id );
 	}, [ estat.fase, estat.pausa, girar ] );
 
+	// Un sol avís per partida: re-renderitzar o tornar a muntar l'efecte no
+	// el repeteix; només «Torna a jugar» (REINICIA) obre una partida nova.
+	const avisada = useRef( false );
 	useEffect( () => {
-		if ( estat.fase === FASE.RESULTAT ) {
-			onAcaba( missio.id, puntuacio( missio, estat ).estrelles );
+		if ( estat.fase === FASE.RESULTAT && ! avisada.current ) {
+			avisada.current = true;
+			onAcaba( missio.id, puntuacio( missio, estat ).estrelles, estat );
 		}
 	}, [ estat.fase ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -205,6 +209,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		entra();
 	};
 	const reinicia = () => {
+		avisada.current = false;
 		dispatch( { tipus: 'REINICIA' } );
 		entra();
 	};
