@@ -82,6 +82,7 @@ const CAMPS_SENYAL = [
 	'compte_senyal',
 	'promesa_senyal',
 	'etiqueta_senyal',
+	'ingres_senyal',
 ];
 
 /**

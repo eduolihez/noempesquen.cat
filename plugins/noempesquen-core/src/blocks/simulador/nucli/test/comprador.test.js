@@ -127,7 +127,7 @@ describe( 'missió «Compro la teva bici» (v2)', () => {
 	} );
 
 	it( 'visitar la web i inspeccionar-ho tot dona 3 estrelles', () => {
-		expect( deWeb ).toHaveLength( 2 );
+		expect( deWeb ).toHaveLength( 3 );
 		const e = aplica(
 			ambTot(),
 			evt( 'web.carrega', { url: URL_FALSA } ),

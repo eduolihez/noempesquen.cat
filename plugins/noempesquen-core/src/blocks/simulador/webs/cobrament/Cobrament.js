@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { FormulariFals } from '../comu/FormulariFals';
+import { Inspeccionable } from '../../ui/Inspeccionable';
 
 /**
  * Logotip inventat de Revenda Cobra: una moneda dins d'un cercle (SVG propi).
@@ -57,10 +58,13 @@ export default function Cobrament( { dades, url } ) {
 				<section className="nep-cb-pagament">
 					<h2>{ __( 'Dades de la targeta', 'noempesquen' ) }</h2>
 					<p>
-						{ __(
-							"Introdueix les dades de la targeta per rebre l'ingrés.",
-							'noempesquen'
-						) }
+						<Inspeccionable
+							text={ __(
+								"Introdueix les dades de la targeta per rebre l'ingrés.",
+								'noempesquen'
+							) }
+							senyal={ dades?.ingres_senyal }
+						/>
 					</p>
 					<div className="nep-lc nep-cb-forma">
 						<FormulariFals formulari={ formulari } url={ url } />

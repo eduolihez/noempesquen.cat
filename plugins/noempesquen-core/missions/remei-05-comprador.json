@@ -102,6 +102,7 @@
 			"import": "120 €",
 			"concepte": "Venda: Bici de muntanya",
 			"domini_senyal": "domini",
+			"ingres_senyal": "cobrar_no_demana_targeta",
 			"formulari": {
 				"id": "cobrament",
 				"boto": "Cobra 120 €",
@@ -257,6 +258,13 @@
 			"titol": "Et demanen la targeta per cobrar",
 			"explicacio": "Per rebre diners no cal donar el número de la targeta, ni la caducitat, ni el CVC. Amb aquestes dades no t'ingressen res: et poden fer càrrecs a tu.",
 			"reaccio": "El CVC per cobrar? Això serveix per pagar, no per cobrar. Et volen buidar el compte."
+		},
+		{
+			"id": "cobrar_no_demana_targeta",
+			"requereix": "web-falsa",
+			"titol": "Per cobrar no cal la targeta",
+			"explicacio": "Quan algú et paga, els diners arriben al teu compte amb el número de compte (IBAN), sense tocar la teva targeta. Una web que et demana la targeta «per rebre l'ingrés» no et vol pagar: vol cobrar-te a tu.",
+			"reaccio": "«Per rebre l'ingrés», diu. Ningú no t'ingressa res amb la teva targeta, rei."
 		}
 	],
 	"frases": {
