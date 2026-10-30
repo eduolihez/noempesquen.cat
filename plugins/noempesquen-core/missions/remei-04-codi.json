@@ -154,7 +154,7 @@
 			"id": "demana_codi",
 			"requereix": "codi-2",
 			"titol": "Et demana un codi que has rebut tu",
-			"explicacio": "Un codi per SMS és la clau del teu compte, i només el pots saber tu. I si a sobre te'l demanen amb pressa («urgent», «ara»), és perquè no vulguis pensar-hi. Qui te'l demana no és un amic: vol entrar-hi.",
+			"explicacio": "Un codi per SMS és la clau del teu compte, i només el pots saber tu. I si a sobre te'l demanen amb pressa («urgent», «ara»), és perquè no hi pensis. Qui te'l demana no és un amic: vol entrar-hi.",
 			"reaccio": "Un codi que t'ha arribat a tu, i ella el vol? Aquest codi és la clau de casa teva."
 		},
 		{
@@ -169,7 +169,7 @@
 			"requereix": "sms-codi",
 			"titol": "L'SMS diu que no el comparteixis",
 			"explicacio": "El missatge ho diu ben clar: «No el comparteixis amb ningú». Cap empresa et demanarà aquest codi, ni per xat ni per telèfon.",
-			"reaccio": "Ho posa a l'SMS mateix: «No el comparteixis amb ningú». Fes-los cas."
+			"reaccio": "Ho posa a l'SMS mateix: «No el comparteixis amb ningú». Fes-ne cas."
 		}
 	],
 	"frases": {
@@ -193,7 +193,7 @@
 				"id": "b",
 				"text": "Li dic que no m'ha arribat res.",
 				"valor": "parcial",
-				"resposta": "No has passat el codi, i això és el més important. Però no n'hi ha prou: algú intenta entrar al teu compte i la Marta potser té el seu perdut. Avisa-la per un altre mitjà."
+				"resposta": "No has passat el codi, i això és el més important. Però no n'hi ha prou: algú intenta entrar al teu compte i potser la Marta ja ha perdut el seu. Avisa-la per un altre mitjà."
 			},
 			{
 				"id": "c",
@@ -207,7 +207,7 @@
 		"aprenentatges": [
 			"Un codi que et ve per SMS és només per a tu: no el passis a ningú, ni a un amic.",
 			"Si un contacte et demana un favor estrany, verifica'l per un altre mitjà, com trucar-li.",
-			"Una petició urgent és part de l'estafa.",
+			"La pressa forma part de l'estafa: com més corre, menys penses.",
 			"Activa la verificació en dos passos als comptes importants."
 		],
 		"consell": "Si has passat un codi, canvia la contrasenya del compte i tanca les sessions obertes de seguida. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
