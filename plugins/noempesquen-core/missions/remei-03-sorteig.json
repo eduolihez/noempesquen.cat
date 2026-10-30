@@ -175,7 +175,7 @@
 			"requereix": "web-falsa",
 			"titol": "Cal pagar per cobrar un premi",
 			"explicacio": "Un premi de veritat no costa res. Si et demanen diners, encara que siguin pocs, per enviar-lo o alliberar-lo, és una estafa.",
-			"reaccio": "Pagar per cobrar un premi? Això ja és un cobrament amb disfressa."
+			"reaccio": "Pagar per cobrar un premi? Això ja fa pudor d'estafa."
 		},
 		{
 			"id": "dades_targeta",

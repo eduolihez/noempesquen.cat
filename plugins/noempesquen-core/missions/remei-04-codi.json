@@ -11,7 +11,7 @@
 	"intro": [
 		"Ei, Àlex! Remei. Avui, una estafa que sembla un favor entre amics: la del codi que «t'ha arribat per error».",
 		"Un contacte et demana un codi del mòbil. Sona innocent, però aquest codi és la clau del teu compte.",
-		"Ves a Parla i mira què passa. Llegeix amb calma abans de contestar. Jo em quedo per aquí."
+		"Vés a Parla i mira què passa. Llegeix amb calma abans de contestar. Jo em quedo per aquí."
 	],
 	"instruccions": "Espera un missatge de la Marta a Parla, mira també els SMS que et van arribant, busca'n els indicis amb la lupa i decideix què en fas.",
 	"pistes": [
@@ -38,7 +38,7 @@
 							"id": "codi-2",
 							"de": "ells",
 							"ocult": true,
-							"hora": "21:13",
+							"hora": "21:14",
 							"text": "M'ha arribat el teu número per error, passa'm el codi que t'acaba d'arribar, és urgent, el necessito ara!",
 							"senyal": "demana_codi"
 						}
