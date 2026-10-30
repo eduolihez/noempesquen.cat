@@ -45,11 +45,11 @@ function nep_assigna_capacitats(): void {
 }
 
 /**
- * Rutina d'activació i d'actualització. T7 hi afegirà aquí el dbDelta de les taules.
+ * Rutina d'activació i d'actualització: capacitats i taules pròpies (dbDelta).
  */
 function nep_actualitza(): void {
 	nep_assigna_capacitats();
-	// Punt d'extensió: crear/actualitzar taules pròpies (dbDelta) aquí.
+	nep_crea_taula_resultats();
 	update_option( 'nep_db_version', NEP_DB_VERSION );
 }
 

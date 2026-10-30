@@ -8,11 +8,11 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 /**
- * Neteja opcions i capacitats del lloc actual.
+ * Neteja opcions, capacitats i taules del lloc actual.
  */
 function nep_neteja_lloc(): void {
 	// Llista explícita d'opcions conegudes (afegir-hi les noves).
-	foreach ( array( 'nep_db_version' ) as $opcio ) {
+	foreach ( array( 'nep_db_version', 'nep_sal_dia' ) as $opcio ) {
 		delete_option( $opcio );
 	}
 
@@ -21,6 +21,11 @@ function nep_neteja_lloc(): void {
 		$rol->remove_cap( 'nep_gestiona_missions' );
 		$rol->remove_cap( 'nep_veu_estadistiques' );
 	}
+
+	// Taula d'estadístiques agregades (una per lloc).
+	global $wpdb;
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Esborrar la taula pròpia en desinstal·lar.
+	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nep_resultats" );
 }
 
 if ( is_multisite() ) {
@@ -32,6 +37,3 @@ if ( is_multisite() ) {
 } else {
 	nep_neteja_lloc();
 }
-
-// Taules pròpies (cap de moment; T7 hi afegirà nep_resultats).
-// $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nep_resultats" );
