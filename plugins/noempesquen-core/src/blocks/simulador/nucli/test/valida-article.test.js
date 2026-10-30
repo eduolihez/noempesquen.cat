@@ -142,6 +142,26 @@ describe( 'validaMissio: plantilla article', () => {
 		);
 	} );
 
+	it( 'rebutja enllaços a la llista d’una secció', () => {
+		const m = fixture();
+		w( m ).seccions[ 0 ].llista.push( {
+			enllac: { text: 'Botiga', url: 'https://cuinaravui.cat/botiga' },
+		} );
+		expect( errors( m ) ).toContain(
+			`article ${ DOMINI }.seccions[0].llista[2]: «enllac» no admès aquí`
+		);
+	} );
+
+	it( 'rebutja enllaços al text de la barra', () => {
+		const m = fixture();
+		w( m ).barra.text.push( {
+			enllac: { text: 'Més', url: 'https://cuinaravui.cat/mes' },
+		} );
+		expect( errors( m ) ).toContain(
+			`article ${ DOMINI }.barra.text[1]: «enllac» no admès aquí`
+		);
+	} );
+
 	it( 'retard ha de ser un nombre ≥ 0', () => {
 		[ -1, '4000', undefined, Infinity ].forEach( ( retard ) => {
 			const m = fixture();

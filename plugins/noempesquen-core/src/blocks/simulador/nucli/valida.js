@@ -430,6 +430,22 @@ function validaSegmentCos( seg, r, errors, patroUrl = null ) {
 	}
 }
 
+/**
+ * Com `validaSegmentCos`, però sense enllaços: la llista d'un article i el
+ * text de la barra no els pinten com a enllaç.
+ *
+ * @param {Object}   seg    Segment.
+ * @param {string}   r      Referència per als errors.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaSegmentSenseEnllac( seg, r, errors ) {
+	if ( esObjecte( seg ) && seg.enllac !== undefined ) {
+		errors.push( `${ r }: «enllac» no admès aquí` );
+		return;
+	}
+	validaSegmentCos( seg, r, errors );
+}
+
 function validaCosPublicacio( cos, ref, errors ) {
 	if ( ! Array.isArray( cos ) ) {
 		errors.push( `${ ref }: «cos» ha de ser una llista de paràgrafs` );
@@ -829,7 +845,7 @@ function validaBarraArticle( barra, ref, errors ) {
 		return;
 	}
 	barra.text.forEach( ( seg, i ) =>
-		validaSegmentCos( seg, `${ ref }.text[${ i }]`, errors )
+		validaSegmentSenseEnllac( seg, `${ ref }.text[${ i }]`, errors )
 	);
 }
 
@@ -876,7 +892,11 @@ function validaArticle( domini, web, errors ) {
 				errors.push( `${ r }: «llista» ha de ser una llista no buida` );
 			} else {
 				s.llista.forEach( ( seg, j ) =>
-					validaSegmentCos( seg, `${ r }.llista[${ j }]`, errors )
+					validaSegmentSenseEnllac(
+						seg,
+						`${ r }.llista[${ j }]`,
+						errors
+					)
 				);
 			}
 		} );
