@@ -4,7 +4,7 @@
 - **Simulador:** bloc de Gutenberg amb React de WordPress; missions com a tipus de contingut amb guió JSON.
 - **Personatges:** la Llissa (ordinador) i la Pirata Remei (mòbil).
 - **Sense IA de moment:** el comprovador funcionarà amb regles i plantilles en català.
-- **Sense comptes d'usuari:** el progrés es desa al navegador; només estadístiques agregades i anònimes al servidor.
+- **Comptes d'usuari (revisat 2026-10-30):** opcionals i només a l'entrega 3B de la Fase 3 (comptes natius de WordPress, rol `nep_jugador`, formulari fora de la carcassa del simulador, consentiment explícit amb casella de 14 anys). Fins llavors el progrés es desa al navegador; al servidor només hi ha estadístiques agregades i anònimes (sense `user_id` ni IP).
 - **Entorn local:** wp-env (Docker). Sense staging a Dinahosting.
 - **Seguretat del servidor:** capçaleres a `.htaccess`, XML-RPC bloquejat, CSP en mode informe fins que el simulador sigui estable.
 - **Simulador realista (2026-10-29):** ordinador i mòbil simulats a pantalla completa, amb apps de marques inventades i llibertat aparent. Disseny a `docs/superpowers/specs/2026-10-29-simulador-realista-design.md`; estat a `docs/estat-del-projecte.md`.
