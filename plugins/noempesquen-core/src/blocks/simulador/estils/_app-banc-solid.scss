@@ -48,7 +48,8 @@ $bsm-error: #b3261e;
 		padding: 16px 16px 8px;
 
 		&:focus-visible {
-			outline: var(--nep-focus, 3px solid #f2b705);
+			outline: var(--nep-focus);
+			box-shadow: var(--nep-focus-halo);
 			outline-offset: -3px;
 		}
 	}
@@ -85,7 +86,8 @@ $bsm-error: #b3261e;
 
 	button:focus-visible,
 	input:focus-visible {
-		outline: var(--nep-focus, 3px solid #f2b705);
+		outline: var(--nep-focus);
+			box-shadow: var(--nep-focus-halo);
 		outline-offset: 2px;
 	}
 }
@@ -242,7 +244,8 @@ $bsm-error: #b3261e;
 		font-weight: 600;
 
 		&:focus-visible {
-			outline: var(--nep-focus, 3px solid #f2b705);
+			outline: var(--nep-focus);
+			box-shadow: var(--nep-focus-halo);
 			outline-offset: 4px;
 		}
 	}

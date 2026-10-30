@@ -285,6 +285,10 @@ describe( 'validaMissio v2', () => {
 			expect( amb( { app: 'missatges', font: 'mobil' } ) ).toEqual( [] );
 		} );
 
+		it( 'accepta font mobil amb banc-solid', () => {
+			expect( amb( { app: 'banc-solid', font: 'mobil' } ) ).toEqual( [] );
+		} );
+
 		it( 'rebutja font diferent de mobil', () => {
 			expect( amb( { app: 'posta', font: 'pc' } ) ).toContain(
 				'notifica: font invàlida: pc'

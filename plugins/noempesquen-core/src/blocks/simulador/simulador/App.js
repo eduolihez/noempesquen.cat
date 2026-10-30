@@ -51,7 +51,8 @@ function useMissions( api ) {
 				setMissions(
 					combinaMissions(
 						INCLOSES,
-						( remotes || [] ).map( ( r ) => r.guio )
+						( remotes || [] ).map( ( r ) => r.guio ),
+						mon
 					)
 				);
 			} )

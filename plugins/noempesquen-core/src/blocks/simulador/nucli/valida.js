@@ -12,7 +12,9 @@ export const APPS_MISSIO = {
 };
 export const APPS = [ ...new Set( [ ...APPS_PC, ...APPS_MOBIL ] ) ];
 // Fonts de notificació: apps del sistema i webs que també avisen.
-export const FONTS_NOTIFICACIO = [ ...APPS, 'posta', 'enviat' ];
+export const FONTS_NOTIFICACIO = [
+	...new Set( [ ...APPS, ...APPS_MISSIO.pc, ...APPS_MISSIO.mobil ] ),
+];
 export const PLANTILLES_WEB = [ 'posta', 'llum-clara', 'enviat', 'banc-solid' ];
 export const ESDEVENIMENTS_FORMULARI = [
 	'formulari.envia',
@@ -148,9 +150,10 @@ function validaEfecte( e, opcions, frases, idsApps, errors ) {
 		if ( e.xat !== undefined && ( e.app !== 'parla' || ! e.xat ) ) {
 			errors.push( 'notifica: xat només amb app parla' );
 		}
+		const font = e.font === 'mobil' ? APPS_MISSIO.mobil : FONTS_NOTIFICACIO;
 		if ( e.font !== undefined && e.font !== 'mobil' ) {
 			errors.push( `notifica: font invàlida: ${ e.font }` );
-		} else if ( ! FONTS_NOTIFICACIO.includes( e.app ) ) {
+		} else if ( ! font.includes( e.app ) ) {
 			errors.push( `notifica: font desconeguda: ${ e.app }` );
 		}
 	}

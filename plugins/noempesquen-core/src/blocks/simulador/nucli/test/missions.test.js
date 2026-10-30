@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { combinaMissions } from '../missions.js';
 import { validaMissio } from '../valida.js';
 import {
@@ -19,6 +19,18 @@ const v2 = ( id, extra = {} ) => ( {
 	...structuredClone( factura ),
 	id,
 	...extra,
+} );
+it( 'totes les missions incloses validen amb mon', () => {
+	const dir = new URL( '../../../../../missions/', import.meta.url );
+	const mon = JSON.parse( readFileSync( new URL( 'mon.json', dir ), 'utf8' ) );
+	const fitxers = readdirSync( dir ).filter(
+		( f ) => f.endsWith( '.json' ) && f !== 'mon.json'
+	);
+	expect( fitxers.length ).toBeGreaterThan( 0 );
+	for ( const f of fitxers ) {
+		const m = JSON.parse( readFileSync( new URL( f, dir ), 'utf8' ) );
+		expect( validaMissio( m, mon ), f ).toEqual( [] );
+	}
 } );
 const v1 = { id: 'antiga', versio: 1, titol: 'Antiga' };
 

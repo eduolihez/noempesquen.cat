@@ -8,7 +8,7 @@
 export const URL_APP = 'app://bancsolid';
 export const FORMULARI_TRANSFERENCIA = 'transferencia';
 export const NOM_PER_DEFECTE = 'Àlex Puig';
-export const IBAN_COMPTE = 'ES12 0049 1500 0512 3456 4821';
+export const IBAN_COMPTE = 'ES12 9999 1500 0512 3456 4821';
 export const SALDO = 2348.62;
 
 /**

@@ -3,6 +3,12 @@ import { readFileSync } from 'node:fs';
 import { validaMissio } from '../valida.js';
 import { FASE, estatInicial, reductor, puntuacio } from '../motor.js';
 
+const mon = JSON.parse(
+	readFileSync(
+		new URL( '../../../../../missions/mon.json', import.meta.url ),
+		'utf8'
+	)
+);
 const carrega = ( nom ) =>
 	JSON.parse(
 		readFileSync(
@@ -30,7 +36,7 @@ describe( 'missió «El banc et bloqueja el compte» (v2)', () => {
 		);
 
 	it( 'és vàlida i té com a mínim 6 indicis', () => {
-		expect( validaMissio( p ) ).toEqual( [] );
+		expect( validaMissio( p, mon ) ).toEqual( [] );
 		expect( p.dispositiu ).toBe( 'pc' );
 		expect( p.senyals.length ).toBeGreaterThanOrEqual( 6 );
 	} );
