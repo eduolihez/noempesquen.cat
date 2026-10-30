@@ -136,6 +136,38 @@ describe( 'disparadors', () => {
 } );
 
 describe( 'coincideix', () => {
+	it( 'normalitza «www.» al domini (remei-05: revenda-cobra.com)', () => {
+		const m5 = JSON.parse(
+			readFileSync(
+				new URL(
+					'../../../../../missions/remei-05-comprador.json',
+					import.meta.url
+				),
+				'utf8'
+			)
+		);
+		const quan = ( id ) => m5.disparadors.find( ( d ) => d.id === id ).quan;
+		const url = 'https://www.revenda-cobra.com/cobrament';
+		expect(
+			coincideix( quan( 'web-falsa' ), 'web.carrega', { url } )
+		).toBe( true );
+		expect( coincideix( quan( 'pagat' ), 'pagament.fes', { url } ) ).toBe(
+			true
+		);
+		expect(
+			coincideix(
+				{ esdeveniment: 'web.carrega', url: 'www.revenda-cobra.com' },
+				'web.carrega',
+				{ url: 'https://revenda-cobra.com/' }
+			)
+		).toBe( true );
+		expect(
+			coincideix( quan( 'pagat' ), 'pagament.fes', {
+				url: 'https://wwwrevenda-cobra.com/',
+			} )
+		).toBe( false );
+	} );
+
 	it( 'coincideix per domini i per url exacta', () => {
 		const url = 'http://llumclara-pagaments.com/pagament?ref=1';
 		expect(
