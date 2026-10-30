@@ -1,0 +1,442 @@
+/* Banc Sòlid: web oficial i còpia falsa (dins del navegador simulat).
+   Tot sota .nep-so .nep-bs per guanyar al reset del navegador. */
+
+$bs-blau: #12355b;
+$bs-blau-2: #1d4a7a;
+$bs-verd: #1f7a5a;
+$bs-text: #1b2733;
+$bs-text-2: #4a5568;
+$bs-fons: #f3f6f9;
+$bs-vora: #d6dde5;
+$bs-vermell: #b3261e;
+$bs-titol: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+
+.nep-so .nep-bs {
+	background: #fff;
+	color: $bs-text;
+	display: flex;
+	flex: 1 0 auto;
+	flex-direction: column;
+	font-family: "Segoe UI", system-ui, sans-serif;
+	font-size: 15px;
+	line-height: 1.5;
+	min-height: 100%;
+
+	h1,
+	h2,
+	h3 {
+		color: $bs-blau;
+		font-family: $bs-titol;
+		font-weight: 600;
+		line-height: 1.2;
+		margin: 0 0 8px;
+	}
+
+	h1 {
+		font-size: 30px;
+	}
+
+	h2 {
+		font-size: 20px;
+	}
+
+	h3 {
+		font-size: 17px;
+	}
+
+	p {
+		margin: 0 0 8px;
+	}
+
+	a {
+		color: $bs-blau-2;
+	}
+
+	a:focus-visible,
+	h2:focus-visible {
+		outline: 3px solid $bs-verd;
+		outline-offset: 2px;
+	}
+
+	.nep-bs-amplada {
+		margin: 0 auto;
+		max-width: 1040px;
+		padding: 0 24px;
+		width: 100%;
+	}
+
+	/* ---------- Capçalera ---------- */
+	.nep-bs-cap {
+		background: #fff;
+		border-bottom: 1px solid $bs-vora;
+		border-top: 4px solid $bs-verd;
+	}
+
+	.nep-bs-cap__dins {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 28px;
+		min-height: 64px;
+	}
+
+	.nep-bs-cap__inici {
+		align-items: center;
+		display: inline-flex;
+		min-height: 44px;
+		text-decoration: none;
+	}
+
+	.nep-bs-marca {
+		align-items: center;
+		display: inline-flex;
+		gap: 10px;
+	}
+
+	.nep-bs-marca__nom {
+		color: $bs-blau;
+		font-family: $bs-titol;
+		font-size: 21px;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+	}
+
+	.nep-bs-marca.is-falsa .nep-bs-marca__nom {
+		font-weight: 700;
+		letter-spacing: 0;
+	}
+
+	.nep-bs-cap__menu {
+		display: flex;
+		gap: 4px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+
+		a {
+			align-items: center;
+			border-bottom: 3px solid transparent;
+			color: $bs-text;
+			display: inline-flex;
+			font-weight: 600;
+			min-height: 44px;
+			padding: 0 10px;
+			text-decoration: none;
+
+			&:hover,
+			&[aria-current="page"] {
+				border-bottom-color: $bs-verd;
+				color: $bs-blau;
+			}
+		}
+	}
+
+	.nep-bs-cap__sessio {
+		color: $bs-text-2;
+		font-size: 14px;
+		margin: 0 0 0 auto;
+	}
+
+	.nep-bs-cos {
+		flex: 1 0 auto;
+	}
+
+	.nep-bs-boto {
+		align-items: center;
+		background: $bs-blau;
+		border-radius: 6px;
+		color: #fff;
+		display: inline-flex;
+		font-weight: 600;
+		min-height: 46px;
+		padding: 0 22px;
+		text-decoration: none;
+
+		&:hover {
+			background: $bs-blau-2;
+		}
+	}
+
+	/* ---------- Inici públic ---------- */
+	.nep-bs-hero {
+		background: $bs-fons;
+		border-bottom: 1px solid $bs-vora;
+		padding: 48px 0;
+
+		h1 {
+			font-size: 34px;
+			max-width: 20ch;
+		}
+
+		p {
+			color: $bs-text-2;
+			font-size: 17px;
+			margin-bottom: 24px;
+			max-width: 52ch;
+		}
+	}
+
+	.nep-bs-consells {
+		padding-bottom: 40px;
+		padding-top: 32px;
+
+		ul {
+			display: grid;
+			gap: 20px;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			list-style: none;
+			margin: 16px 0 0;
+			padding: 0;
+		}
+	}
+
+	.nep-bs-consell {
+		border: 1px solid $bs-vora;
+		border-radius: 8px;
+		padding: 20px;
+
+		svg {
+			color: $bs-verd;
+			margin-bottom: 8px;
+		}
+
+		p {
+			color: $bs-text-2;
+			margin: 0;
+		}
+	}
+
+	/* ---------- Àrea de clients ---------- */
+	.nep-bs-area {
+		padding-bottom: 40px;
+		padding-top: 32px;
+	}
+
+	.nep-bs-avisos {
+		align-items: center;
+		background: #e8f5ef;
+		border: 1px solid #b4dcc8;
+		border-radius: 8px;
+		display: flex;
+		gap: 18px;
+		margin: 16px 0 24px;
+		padding: 20px 24px;
+
+		svg {
+			color: $bs-verd;
+			flex: 0 0 auto;
+		}
+
+		h2 {
+			color: #14513b;
+			font-size: 15px;
+			margin-bottom: 2px;
+		}
+
+		p {
+			color: #23493a;
+			margin: 0;
+		}
+	}
+
+	.nep-bs-avisos__text {
+		font-family: $bs-titol;
+		font-size: 19px;
+		font-weight: 600;
+	}
+
+	.nep-bs-resum {
+		display: grid;
+		gap: 20px;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		margin-bottom: 28px;
+	}
+
+	.nep-bs-targeta-info {
+		border: 1px solid $bs-vora;
+		border-radius: 8px;
+		padding: 20px 24px;
+
+		h2 {
+			font-size: 16px;
+		}
+	}
+
+	.nep-bs-xifra {
+		color: $bs-blau;
+		font-family: $bs-titol;
+		font-size: 30px;
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		margin: 4px 0;
+	}
+
+	.nep-bs-suau {
+		color: $bs-text-2;
+		font-size: 14px;
+		margin: 0;
+	}
+
+	.nep-bs-estat {
+		align-items: center;
+		color: $bs-verd;
+		display: flex;
+		font-weight: 600;
+		gap: 6px;
+		margin: 8px 0 4px;
+	}
+
+	.nep-bs-taula {
+		border-collapse: collapse;
+		font-variant-numeric: tabular-nums;
+		margin-top: 8px;
+		width: 100%;
+
+		th,
+		td {
+			border-bottom: 1px solid $bs-vora;
+			padding: 10px 8px;
+			text-align: left;
+		}
+
+		th {
+			color: $bs-text-2;
+			font-size: 13px;
+			font-weight: 600;
+		}
+	}
+
+	.nep-bs-taula__import {
+		text-align: right !important;
+		white-space: nowrap;
+
+		&.is-entrada {
+			color: $bs-verd;
+			font-weight: 600;
+		}
+	}
+
+	.nep-bs-nota {
+		color: $bs-text-2;
+		font-size: 14px;
+		margin-top: 24px;
+	}
+
+	/* ---------- Còpia falsa ---------- */
+	.nep-bs-urgent {
+		background: #fdecea;
+		border-bottom: 2px solid $bs-vermell;
+		color: #5c120d;
+		padding: 14px 0;
+
+		strong {
+			color: $bs-vermell;
+		}
+	}
+
+	.nep-bs-urgent__dins {
+		align-items: flex-start;
+		display: flex;
+		gap: 12px;
+
+		svg {
+			color: $bs-vermell;
+			flex: 0 0 auto;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+
+	.nep-bs-acces {
+		max-width: 560px;
+		padding-bottom: 40px;
+		padding-top: 32px;
+	}
+
+	.nep-bs-acces__intro {
+		color: $bs-text-2;
+		margin-bottom: 20px;
+	}
+
+	.nep-bs-caixa {
+		border: 1px solid $bs-vora;
+		border-radius: 8px;
+		box-shadow: 0 8px 24px rgb(18 53 91 / 8%);
+		padding: 28px;
+	}
+
+	.nep-bs-pas {
+		color: $bs-text-2;
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		margin: 0 0 4px;
+		text-transform: uppercase;
+	}
+
+	.nep-bs-sms {
+		align-items: center;
+		background: $bs-fons;
+		border-radius: 6px;
+		display: flex;
+		gap: 8px;
+		margin: 8px 0 16px;
+		padding: 10px 12px;
+
+		svg {
+			color: $bs-blau;
+			flex: 0 0 auto;
+		}
+	}
+
+	/* El formulari comú duu els seus estils sota .nep-lc: aquí se'n
+	   neutralitza el contenidor i es pinta el botó amb els colors del banc. */
+	.nep-bs-forma.nep-lc {
+		container-type: normal;
+		display: block;
+		font-family: inherit;
+		min-height: 0;
+
+		.nep-lc-boto {
+			background: $bs-blau;
+			border-color: $bs-blau;
+			color: #fff;
+			width: 100%;
+
+			&:hover {
+				background: $bs-blau-2;
+			}
+		}
+	}
+
+	/* ---------- Peu ---------- */
+	.nep-bs-peu {
+		background: $bs-blau;
+		color: #e6edf5;
+		font-size: 14px;
+		padding: 20px 0;
+
+		.nep-bs-marca__nom {
+			color: #fff;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+
+	.nep-bs-peu__dins {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 24px;
+	}
+
+	.nep-bs-peu__segur {
+		align-items: center;
+		display: inline-flex;
+		gap: 6px;
+	}
+}
