@@ -4,6 +4,7 @@
 
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
 import { existeixIlustracio } from '../ui/ilustracions-ids';
+import { senseWww } from '../apps/navegador/historial';
 
 export const APPS_PC = CLAUS_APPS_PC;
 export const APPS_MOBIL = CLAUS_APPS_MOBIL;
@@ -910,37 +911,101 @@ function validaArticle( domini, web, errors ) {
 }
 
 /**
- * Si alguna web `article` declara fitxers de baixada (`avis.instal_la.fitxer`
- * o `barra.fitxer`), el `quan.fitxer` de cada disparador `descarrega.fes` ha
- * de ser un d'aquests. Sense cap fitxer declarat no es creua res.
+ * Fitxers de baixada que declara una web `article` (`avis.instal_la.fitxer`
+ * i `barra.fitxer`).
+ *
+ * @param {Object} web Web.
+ * @return {string[]} Fitxers declarats.
+ */
+const fitxersWeb = ( web ) =>
+	[ web?.avis?.instal_la?.fitxer, web?.barra?.fitxer ].filter( esText );
+
+/**
+ * Domini de `m.webs` al qual apunta el `quan.url` d'un disparador, amb la
+ * mateixa normalització que `coincideix` (host de la URL o el valor tal qual,
+ * sense `www.`).
+ *
+ * @param {Object} m   Missió.
+ * @param {*}      url `quan.url`.
+ * @return {?string} Domini de la web o null.
+ */
+function dominiDeUrl( m, url ) {
+	if ( ! esText( url ) ) {
+		return null;
+	}
+	let host = url;
+	try {
+		host = new URL( url ).hostname;
+	} catch {}
+	const net = senseWww( host );
+	return (
+		Object.keys( m.webs ?? {} ).find( ( d ) => senseWww( d ) === net ) ??
+		null
+	);
+}
+
+// Què ha de tenir la web `article` d'un disparador segons l'esdeveniment.
+const REQUISITS_ARTICLE = {
+	'telefon.truca': {
+		compleix: ( w ) => esObjecte( w.avis ),
+		falta: 'no té avís',
+	},
+	'descarrega.fes': {
+		compleix: ( w ) => fitxersWeb( w ).length > 0,
+		falta: 'no té cap fitxer',
+	},
+};
+
+/**
+ * Creua els disparadors de les webs `article` amb el món de la missió:
+ * `quan.url` ha de ser una web `article` amb l'element que dispara l'esdeveniment;
+ * `descarrega.fes` exigeix `quan.fitxer` i que sigui un fitxer d'aquesta web;
+ * i cada fitxer declarat necessita un disparador `descarrega.fes` amb la
+ * parella web+fitxer.
  *
  * @param {Object}   m      Missió.
  * @param {string[]} errors Acumulador d'errors.
  */
-function validaFitxersDescarrega( m, errors ) {
-	const fitxers = new Set();
-	Object.values( m.webs ?? {} )
-		.filter( ( w ) => w?.plantilla === 'article' )
-		.forEach( ( w ) => {
-			[ w.avis?.instal_la?.fitxer, w.barra?.fitxer ]
-				.filter( esText )
-				.forEach( ( f ) => fitxers.add( f ) );
-		} );
-	if ( ! fitxers.size ) {
-		return;
-	}
+function validaDisparadorsArticle( m, errors ) {
+	const parelles = new Set();
 	llista( m.disparadors )
 		.map( ( d ) => d?.quan )
-		.filter(
-			( q ) =>
-				q?.esdeveniment === 'descarrega.fes' &&
-				typeof q.fitxer === 'string'
-		)
+		.filter( ( q ) => REQUISITS_ARTICLE[ q?.esdeveniment ] )
 		.forEach( ( q ) => {
-			if ( ! fitxers.has( q.fitxer ) ) {
+			const ev = q.esdeveniment;
+			const domini = dominiDeUrl( m, q.url );
+			const web = domini && m.webs[ domini ];
+			if ( web?.plantilla !== 'article' ) {
+				errors.push( `${ ev }: url sense web article: ${ q.url }` );
+				return;
+			}
+			const req = REQUISITS_ARTICLE[ ev ];
+			if ( ! req.compleix( web ) ) {
+				errors.push( `${ ev }: la web ${ domini } ${ req.falta }` );
+				return;
+			}
+			if ( ev !== 'descarrega.fes' ) {
+				return;
+			}
+			if ( q.fitxer === undefined ) {
+				errors.push( `${ ev }: falta fitxer (${ domini })` );
+			} else if ( ! fitxersWeb( web ).includes( q.fitxer ) ) {
 				errors.push( `descarrega: fitxer no declarat: ${ q.fitxer }` );
+			} else {
+				parelles.add( `${ domini } ${ q.fitxer }` );
 			}
 		} );
+	Object.entries( m.webs ?? {} )
+		.filter( ( [ , w ] ) => w?.plantilla === 'article' )
+		.forEach( ( [ domini, w ] ) =>
+			fitxersWeb( w ).forEach( ( f ) => {
+				if ( ! parelles.has( `${ domini } ${ f }` ) ) {
+					errors.push(
+						`descarrega: fitxer sense disparador: ${ domini } ${ f }`
+					);
+				}
+			} )
+		);
 }
 
 /**
@@ -1072,7 +1137,7 @@ export function validaMissio( m, mon ) {
 	validaRevenda( m, mon, errors );
 	validaAnuncisDiari( m, mon, errors );
 	validaDisparadors( m, mon, errors );
-	validaFitxersDescarrega( m, errors );
+	validaDisparadorsArticle( m, errors );
 
 	llista( m.decisio?.opcions ).forEach( ( o ) => {
 		if ( ! o || typeof o !== 'object' ) {

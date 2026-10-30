@@ -79,6 +79,14 @@ const fixture = () => {
 				fitxer: 'suport-remot.exe',
 			},
 			efectes: [ { tipus: 'pescat' } ],
+		},
+		{
+			quan: {
+				esdeveniment: 'descarrega.fes',
+				url: URL_WEB,
+				fitxer: 'actualitzacio-navegador.exe',
+			},
+			efectes: [ { tipus: 'pescat' } ],
 		}
 	);
 	return m;
@@ -109,7 +117,8 @@ describe( 'validaMissio: plantilla article', () => {
 					'domini_top',
 				].includes( s.id )
 		);
-		m.disparadors.pop();
+		// Sense avís ni fitxers no hi pot haver trucada ni baixada.
+		m.disparadors.splice( -3, 3 );
 		expect( errors( m ) ).toEqual( [] );
 	} );
 
@@ -234,9 +243,11 @@ describe( 'validaMissio: senyals de l’article', () => {
 } );
 
 describe( 'validaMissio: descarrega.fes i fitxers declarats', () => {
-	it( 'accepta el fitxer de la barra', () => {
+	it( 'accepta només el fitxer de la barra', () => {
 		const m = fixture();
-		m.disparadors.at( -1 ).quan.fitxer = 'actualitzacio-navegador.exe';
+		delete w( m ).avis.instal_la;
+		m.senyals = m.senyals.filter( ( s ) => s.id !== 'instalador' );
+		m.disparadors.splice( -2, 1 );
 		expect( errors( m ) ).toEqual( [] );
 	} );
 
@@ -248,7 +259,7 @@ describe( 'validaMissio: descarrega.fes i fitxers declarats', () => {
 		);
 	} );
 
-	it( 'sense fitxers declarats no es creua', () => {
+	it( 'sense fitxers declarats, descarrega.fes falla', () => {
 		const m = fixture();
 		delete w( m ).barra;
 		delete w( m ).avis.instal_la;
@@ -256,6 +267,8 @@ describe( 'validaMissio: descarrega.fes i fitxers declarats', () => {
 			( s ) => ! [ 'instalador', 'domini_top' ].includes( s.id )
 		);
 		m.disparadors.at( -1 ).quan.fitxer = 'qualsevol.exe';
-		expect( errors( m ) ).toEqual( [] );
+		expect( errors( m ) ).toContain(
+			`descarrega.fes: la web ${ DOMINI } no té cap fitxer`
+		);
 	} );
 } );
