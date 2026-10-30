@@ -58,15 +58,14 @@ function Anuncis( { anuncis } ) {
 					<article className="nep-revenda-anunci">
 						<div
 							className="nep-revenda-anunci__imatge"
-							role="img"
-							aria-label={ a.titol }
+							aria-hidden="true"
 						>
 							<Ilustracio id={ a.il } />
 						</div>
 						<div className="nep-revenda-anunci__cos">
-							<h3 className="nep-revenda-anunci__titol">
+							<h2 className="nep-revenda-anunci__titol">
 								{ a.titol }
-							</h3>
+							</h2>
 							<p className="nep-revenda-anunci__preu">
 								{ formataPreu( a.preu ) }
 							</p>
@@ -138,6 +137,7 @@ function LlistaXats( { elements, onObre } ) {
  * @param {string}             props.nom        Nom del contacte.
  * @param {string}             props.anunci     Títol de l'anunci del xat.
  * @param {Object[]}           props.missatges  Missatges visibles.
+ * @param {number}             props.enviats    Missatges enviats pel jugador (només el nombre).
  * @param {boolean}            props.desconegut El contacte no és a l'agenda.
  * @param {boolean}            props.bloquejat  El contacte ja és bloquejat.
  * @param {()=>void}           props.onBloqueja Bloqueja el contacte.
@@ -149,6 +149,7 @@ function Conversa( {
 	nom,
 	anunci,
 	missatges,
+	enviats = 0,
 	desconegut,
 	bloquejat,
 	onBloqueja,
@@ -159,7 +160,7 @@ function Conversa( {
 	const registre = useRef( null );
 	const camp = useRef( null );
 	const nota = useRef( null );
-	const total = missatges.length;
+	const total = missatges.length + enviats;
 
 	useLayoutEffect( () => {
 		const el = registre.current;
@@ -196,7 +197,7 @@ function Conversa( {
 				</button>
 				<AvatarXat nom={ nom } mida={ 40 } />
 				<div className="nep-parla-conversa__qui">
-					<h2 className="nep-parla-conversa__nom">{ nom }</h2>
+					<h1 className="nep-parla-conversa__nom">{ nom }</h1>
 					{ anunci && (
 						<p className="nep-parla-conversa__estat">{ anunci }</p>
 					) }
@@ -275,6 +276,25 @@ function Conversa( {
 								</li>
 							);
 						} ) }
+						{ Array.from( { length: enviats }, ( _, k ) => (
+							// Acusament genèric: el text escrit no es desa enlloc.
+							<li
+								key={ `enviat-${ k }` }
+								className="nep-parla-msg is-propi amb-cua nep-revenda-msg--enviat"
+							>
+								<div className="nep-parla-msg__bombolla">
+									<span className="nep-so-sr">
+										{ __( 'Tu:', 'noempesquen' ) }
+									</span>
+									<p className="nep-parla-msg__text nep-revenda-msg__text">
+										{ __(
+											'Missatge enviat',
+											'noempesquen'
+										) }
+									</p>
+								</div>
+							</li>
+						) ) }
 					</ol>
 				</div>
 			</div>
@@ -334,6 +354,8 @@ export default function Revenda( { dades } ) {
 		[ estat.bloquejats ]
 	);
 	const [ avis, setAvis ] = useState( '' );
+	// Missatges enviats per xat: només un comptador, mai el text.
+	const [ enviats, setEnviats ] = useState( {} );
 	const refsPestanya = useRef( {} );
 	const arrel = useRef( null );
 	const ultim = useRef( null );
@@ -499,7 +521,14 @@ export default function Revenda( { dades } ) {
 				desconegut={ esDesconegut( contacte ) }
 				bloquejat={ bloquejats.has( xatObert.contacte ) }
 				onBloqueja={ () => bloqueja( contacte ) }
-				onEnvia={ () => envia( xatObert.contacte ) }
+				enviats={ enviats[ xatObert.id ] ?? 0 }
+				onEnvia={ () => {
+					setEnviats( ( e ) => ( {
+						...e,
+						[ xatObert.id ]: ( e[ xatObert.id ] ?? 0 ) + 1,
+					} ) );
+					envia( xatObert.contacte );
+				} }
 				onEnllac={ obreEnllac }
 				onEnrere={ () => setActiu( null ) }
 			/>

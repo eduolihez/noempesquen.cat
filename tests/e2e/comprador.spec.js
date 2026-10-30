@@ -35,7 +35,7 @@ const barraEstat = ( page ) =>
 const banners = ( page ) =>
 	page.getByRole( 'list', { name: 'Notificacions noves' } );
 const titolXat = ( page ) =>
-	page.getByRole( 'heading', { level: 2, name: COMPRADOR, exact: true } );
+	page.getByRole( 'heading', { level: 1, name: COMPRADOR, exact: true } );
 
 async function entra( page ) {
 	await iniciaMissio( page, MISSIO, BLOQUEIG );
@@ -180,6 +180,17 @@ test.describe( 'Compro la teva bici', () => {
 		await expect(
 			page.getByRole( 'textbox', { name: 'Missatge' } )
 		).toHaveValue( '' );
+		// Acusament genèric al fil, sense el text, i un sol anunci.
+		const fil = page.getByRole( 'log', {
+			name: `Missatges amb ${ COMPRADOR }`,
+		} );
+		await expect(
+			fil.getByRole( 'listitem' ).filter( { hasText: 'Missatge enviat' } )
+		).toHaveCount( 1 );
+		await expect( fil ).not.toContainText( MISSATGE_XAT );
+		await expect( page.getByRole( 'status' ) ).toHaveText( [
+			'Missatge enviat',
+		] );
 		await sensePistes( page, vist, [ MISSATGE_XAT ] );
 
 		await obreLaWeb( page );
