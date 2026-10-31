@@ -31,7 +31,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 ### Pendiente tras la entrega 3A
 
 - Merge de `feat/fase3a-panel-estadistiques` a `master` (lo decide Edu).
-- Despliegue: `build/` está en `.gitignore` y el servidor no tiene Node, así que debe viajar en el paquete. Excluir `tests/`, `phpunit.xml.dist` y `missions/test-fixtures/` (`.distignore`).
+- Despliegue: `npm run build && npm run empaqueta` deja en `dist/` las carpetas `wp-content/plugins/noempesquen-core` y `wp-content/themes/noempesquen` más un zip por pieza (con `build/`, sin `src/`, `tests/`, `phpunit.xml.dist`, `.distignore` ni `missions/test-fixtures/`). Comprobado en estático que todo lo que el plugin carga existe en el paquete; falta probarlo instalado en un WordPress real.
 - 3B (cuentas): comprobar la caché de Dinahosting/Cloudflare sobre `/simulador/` y `/wp-json/`; `REMOTE_ADDR` detrás de proxy (filtro `nep_ip_client`).
 - Sin probar: `uninstall.php` en multisite.
 - Resumen público: sin rate limit a propósito (solo caché de 1 h; las misiones desconocidas dan 404 sin tocar la BD); si la celda propia del jugador tiene menos de 10 partidas, la frase usa la banda de la opción más elegida.
