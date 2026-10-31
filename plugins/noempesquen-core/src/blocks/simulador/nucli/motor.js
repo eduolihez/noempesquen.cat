@@ -5,6 +5,7 @@
 
 import { processaEsdeveniment, avancaTemps } from './disparadors.js';
 import { senseWww } from '../apps/navegador/historial.js';
+import { SEGONS_PISTA } from './temps.js';
 
 export const FASE = {
 	BLOQUEIG: 'bloqueig',
@@ -21,8 +22,6 @@ export const PUNTS = {
 	picar: -20,
 	pista: -5,
 };
-
-export const SEGONS_PISTA = 60;
 
 const TEXT_SEGUENT = 'Següent';
 const TEXT_COMENCA = 'Som-hi!';

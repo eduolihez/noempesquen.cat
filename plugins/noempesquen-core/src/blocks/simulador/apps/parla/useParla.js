@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { MS_AVIS_PARLA, MS_ESCRIU } from '../../nucli/temps.js';
 import { respostesRapides, visible } from '../../nucli/motor';
 import { coincideixCodi, extreuCodis } from './codi';
 import { menysMoviment } from '../../sistemes/pc/moviment';
@@ -15,7 +16,6 @@ import {
 	properPas,
 } from './xats';
 
-const MS_ESCRIU = 600;
 export const ID_GUIA = 'guia';
 
 /*
@@ -111,7 +111,7 @@ export function useParla( xatInicial = ID_GUIA ) {
 		if ( ! avis ) {
 			return undefined;
 		}
-		const t = setTimeout( () => setAvis( '' ), 4000 );
+		const t = setTimeout( () => setAvis( '' ), MS_AVIS_PARLA );
 		return () => clearTimeout( t );
 	}, [ avis ] );
 	useEffect( () => setAvis( '' ), [ actiu ] );

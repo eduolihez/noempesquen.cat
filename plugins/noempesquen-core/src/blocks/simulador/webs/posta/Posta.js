@@ -18,6 +18,7 @@ import {
 	marca,
 	perCarpeta,
 } from './safata';
+import { MS_AVIS_POSTA } from '../../nucli/temps.js';
 import { LlistaCorreus } from './LlistaCorreus';
 import { Lectura } from './Lectura';
 import { Denuncia } from './Denuncia';
@@ -31,8 +32,6 @@ import {
 	IconaRedacta,
 	MarcaPosta,
 } from './icones';
-
-const MS_AVIS = 7000;
 
 const carpetes = () => [
 	{
@@ -93,7 +92,7 @@ function useAvis() {
 		if ( ! avis ) {
 			return undefined;
 		}
-		const t = setTimeout( () => setAvis( null ), MS_AVIS );
+		const t = setTimeout( () => setAvis( null ), MS_AVIS_POSTA );
 		return () => clearTimeout( t );
 	}, [ avis ] );
 	return [ avis, ( text ) => setAvis( { text, clau: Date.now() } ) ];

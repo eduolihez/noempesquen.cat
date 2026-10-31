@@ -19,11 +19,11 @@ import { Pausa } from './Pausa';
 import { Consequencia } from './Consequencia';
 import { Resultat } from './Resultat';
 import { demanaResum } from './estadistiques';
+import { MS_TICK } from '../nucli/temps.js';
 import { useSoNotificacions } from './useSoNotificacions';
 import { usePantalla } from './usePantalla';
 import { Pantalla } from './PantallaSistema';
 
-const MS_TICK = 1000;
 /* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
 const FASES_FINALS = [ FASE.CONSEQUENCIA, FASE.RESULTAT ];
 /* Fases en què sortir de pantalla completa sense demanar-ho pausa. */

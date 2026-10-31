@@ -14,6 +14,7 @@ import {
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { MS_AVIS_REVENDA } from '../../nucli/temps.js';
 import { useSistema } from '../../sistemes/pc/context';
 import { useMobil } from '../../sistemes/mobil/context';
 import { Cos } from '../../ui/Cos';
@@ -35,7 +36,6 @@ import { IconaEtiqueta, IconaRevenda, IconaXats } from './icones';
 
 const PESTANYES = [ 'anuncis', 'xats' ];
 const ICONES = { anuncis: IconaEtiqueta, xats: IconaXats };
-const MS_AVIS = 4000;
 
 /**
  * Pestanya «Anuncis»: targetes amb il·lustració, títol, preu i descripció.
@@ -402,7 +402,7 @@ export default function Revenda( { dades } ) {
 		if ( ! avis ) {
 			return undefined;
 		}
-		const t = setTimeout( () => setAvis( '' ), MS_AVIS );
+		const t = setTimeout( () => setAvis( '' ), MS_AVIS_REVENDA );
 		return () => clearTimeout( t );
 	}, [ avis ] );
 

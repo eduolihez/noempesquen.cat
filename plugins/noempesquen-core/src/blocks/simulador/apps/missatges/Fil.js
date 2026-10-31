@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
+import { MS_PULSACIO_LLARGA } from '../../nucli/temps.js';
 import { Cos } from '../../ui/Cos';
 import { Inspeccionable } from '../../ui/Inspeccionable';
 import { parteixHora } from '../parla/xats.js';
@@ -8,7 +9,7 @@ import { destiResposta } from './fils.js';
 import { IconaContactes, IconaEnrere, IconaEnvia, IconaMes } from './icones';
 
 /* Mil·lisegons de pulsació per considerar-la llarga. */
-const MS_LLARG = 500;
+
 /* Píxels de moviment que cancel·len la pulsació llarga. */
 const TOLERANCIA = 10;
 
@@ -51,7 +52,7 @@ function useGestosMenu( onPremut, actiu ) {
 					premut.current = null;
 					suprimeix.current = true;
 					onPremut( target );
-				}, MS_LLARG ),
+				}, MS_PULSACIO_LLARGA ),
 			};
 		},
 		onPointerMove: ( e ) => {

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
+import { RETARD_PISTA } from '../../nucli/temps.js';
 
 /* Ha de coincidir amb el `transition-delay` de `.nep-so-pista`; amb moviment
    reduït no hi ha transició i la pista es veu a l'instant. */
-const RETARD_PISTA = 450;
+
 const REDUIT = '(prefers-reduced-motion: reduce)';
 const AMB_PISTA = ':scope > .nep-so-pista';
 

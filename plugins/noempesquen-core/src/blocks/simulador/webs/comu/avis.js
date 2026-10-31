@@ -78,4 +78,4 @@ export function atrapaFocus( e, contenidor ) {
 }
 
 /** Temps (ms) que es veu l'avís «No s'ha pogut tancar». */
-export const DURADA_AVIS_TANCA = 2500;
+export { DURADA_AVIS_TANCA } from '../../nucli/temps.js';
