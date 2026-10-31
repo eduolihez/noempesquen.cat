@@ -1,7 +1,7 @@
 const { spawnSync } = require( 'node:child_process' );
 const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
 const { test, expect, RESULTAT } = require( './ajudes' );
-const { senseFullscreen } = require( './ajudes' );
+const { greusAxe, senseFullscreen } = require( './ajudes' );
 
 /**
  * Compte dins del simulador: sense sessió tot és local (i hi ha l'enllaç per
@@ -133,6 +133,7 @@ test( 'sense compte: el selector funciona igual, amb l’enllaç i sense pujar r
 		anonima.getByText( 'Progrés desat al teu compte' )
 	).toHaveCount( 0 );
 	expect( progres ).toEqual( [] );
+	expect( await greusAxe( anonima ) ).toEqual( [] );
 } );
 
 test( 'amb compte: fusiona el local i el del servidor, i es conserva sense localStorage', async () => {
@@ -178,6 +179,7 @@ test( 'amb compte: fusiona el local i el del servidor, i es conserva sense local
 		page.getByText( 'Progrés desat al teu compte' )
 	).toBeVisible();
 	await expect( enllacCompte( page ) ).toHaveCount( 0 );
+	expect( await greusAxe( page ) ).toEqual( [] );
 	await expect(
 		page.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )
 	).toHaveCount( 1 );
@@ -224,6 +226,22 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	expect( html ).toContain( 'nep-sim' );
 	expect( html ).not.toContain( nonce );
 
+	// Opcions reals del fetch de /resultat (la petició interceptada no mostra galetes).
+	await page.addInitScript( () => {
+		const original = window.fetch;
+		window.__nepResultat = [];
+		window.fetch = ( url, o = {} ) => {
+			if ( String( url ).endsWith( '/resultat' ) ) {
+				window.__nepResultat.push( {
+					credentials: o.credentials,
+					capcaleres: Object.keys( o.headers || {} ).map( ( k ) =>
+						k.toLowerCase()
+					),
+				} );
+			}
+			return original( url, o );
+		};
+	} );
 	await senseFullscreen( page );
 	await page.clock.install();
 	await page.goto( '/simulador/' );
@@ -260,6 +278,11 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	} );
 
 	await expect.poll( () => resultats.length ).toBe( 1 );
+	// Control: el PUT del compte sí porta la galeta de sessió.
+	expect( await pujada.request().allHeaders() ).toHaveProperty( 'cookie' );
+	expect( await page.evaluate( () => window.__nepResultat ) ).toEqual( [
+		{ credentials: 'omit', capcaleres: [ 'content-type' ] },
+	] );
 	const capcaleres = await resultats[ 0 ].allHeaders();
 	expect( capcaleres ).not.toHaveProperty( 'cookie' );
 	expect( capcaleres ).not.toHaveProperty( 'x-wp-nonce' );
