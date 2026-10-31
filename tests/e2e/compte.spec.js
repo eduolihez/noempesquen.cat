@@ -231,6 +231,8 @@ test( 'tanca la sessió i torna a entrar (contrasenya incorrecta → missatge ge
 	);
 
 	await bloc().getByRole( 'tab', { name: 'Entra' } ).click();
+	// Espera que acabi la transició de color de les pestanyes.
+	await expect.poll( () => greusAxe( page ) ).toEqual( [] );
 	await page.getByLabel( 'Correu electrònic' ).fill( EMAIL );
 	await page.getByLabel( 'Contrasenya' ).fill( 'no-es-aquesta-123' );
 	await bloc().getByRole( 'button', { name: 'Entra', exact: true } ).click();
@@ -253,6 +255,23 @@ test( 'esborra el compte amb teclat: Esc tanca el diàleg i retorna el focus', a
 	await expect( dialeg ).toBeVisible();
 	await expect( dialeg.getByLabel( 'Contrasenya' ) ).toBeFocused();
 	expect( await greusAxe( page ) ).toEqual( [] );
+	// El Tab no surt mai cap a la pàgina de sota (endavant i enrere). Amb
+	// `showModal` la resta és inert; el navegador pot passar el focus a la
+	// seva pròpia interfície (activeElement = body), però mai a la pàgina.
+	for ( const tecla of [ 'Tab', 'Shift+Tab' ] ) {
+		for ( let i = 0; i < 6; i++ ) {
+			await page.keyboard.press( tecla );
+			expect(
+				await dialeg.evaluate( ( d ) => {
+					const actiu = d.ownerDocument.activeElement;
+					return (
+						d.contains( actiu ) || actiu === d.ownerDocument.body
+					);
+				} )
+			).toBe( true );
+		}
+	}
+	await dialeg.getByLabel( 'Contrasenya' ).focus();
 	await page.keyboard.press( 'Escape' );
 	await expect( dialeg ).toHaveCount( 0 );
 	await expect( boto ).toBeFocused();
