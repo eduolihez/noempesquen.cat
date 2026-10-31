@@ -6,6 +6,7 @@ import {
 	useEffect,
 	useCallback,
 	useMemo,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { FASE, estatInicial, reductor, puntuacio } from '../nucli/motor';
@@ -17,6 +18,7 @@ import { horaDeJoc } from './hora';
 import { Pausa } from './Pausa';
 import { Consequencia } from './Consequencia';
 import { Resultat } from './Resultat';
+import { demanaResum } from './estadistiques';
 import { useSoNotificacions } from './useSoNotificacions';
 import { usePantalla } from './usePantalla';
 import { Pantalla } from './PantallaSistema';
@@ -58,10 +60,11 @@ function Carregant() {
  * @param {Object}    props.missio  Missió v2.
  * @param {Object}    props.mon     Dades del món (contactes, webs, correus).
  * @param {Function}  props.onSurt  Torna al selector.
- * @param {Function}  props.onAcaba (id, estrelles) en arribar al resultat.
+ * @param {Function}  props.onAcaba (id, estrelles, estat) en arribar al resultat (un cop per partida).
  * @param {?Function} props.seguent Passa a la missió següent, si n'hi ha.
+ * @param {string}    props.api     Arrel de l'API (per al resum públic; opcional).
  */
-export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
+export function Simulador( { missio, mon, onSurt, onAcaba, seguent, api } ) {
 	const arrel = useRef( null );
 	const menus = useRef( [] );
 	const [ estat, dispatch ] = useReducer(
@@ -123,9 +126,25 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		return () => clearInterval( id );
 	}, [ estat.fase, estat.pausa, girar ] );
 
+	// Un sol avís per partida: re-renderitzar o tornar a muntar l'efecte no
+	// el repeteix; només «Torna a jugar» (REINICIA) obre una partida nova.
+	// El resum públic (què va triar la gent) es demana aquí, un cop per
+	// partida i sense retardar el resultat; mai en previsualització.
+	const avisada = useRef( false );
+	const [ resum, setResum ] = useState( null );
+	const partidaResum = useRef( 0 );
 	useEffect( () => {
-		if ( estat.fase === FASE.RESULTAT ) {
-			onAcaba( missio.id, puntuacio( missio, estat ).estrelles );
+		if ( estat.fase === FASE.RESULTAT && ! avisada.current ) {
+			avisada.current = true;
+			onAcaba( missio.id, puntuacio( missio, estat ).estrelles, estat );
+			if ( api && ! missio.previsualitzacio ) {
+				const aquesta = partidaResum.current;
+				demanaResum( api, missio.id ).then( ( r ) => {
+					if ( r && aquesta === partidaResum.current ) {
+						setResum( r );
+					}
+				} );
+			}
 		}
 	}, [ estat.fase ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -205,6 +224,9 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 		entra();
 	};
 	const reinicia = () => {
+		avisada.current = false;
+		partidaResum.current += 1;
+		setResum( null );
 		dispatch( { tipus: 'REINICIA' } );
 		entra();
 	};
@@ -230,6 +252,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent } ) {
 			>
 				{ estat.fase === FASE.RESULTAT ? (
 					<Resultat
+						resum={ resum }
 						onReinicia={ reinicia }
 						onSeguent={ missioSeguent }
 						onSurt={ surtDelJoc }

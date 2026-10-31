@@ -1,0 +1,912 @@
+<?php
+/**
+ * Estadístiques agregades i anònimes de les partides acabades.
+ *
+ * Cada partida suma 1 a un comptador per (missió, versió del guió, dia,
+ * estrelles, decisió). A la taula no hi ha res que identifiqui ningú: ni
+ * usuari, ni IP, ni hora (només el dia). El límit d'enviaments sí que fa
+ * servir la IP, seudonimitzada (HMAC amb sal diària) en un transient que
+ * caduca en una hora com a màxim i que no es relaciona amb les files.
+ * Les funcions pures (sense WordPress) es proven amb PHPUnit; la resta
+ * necessita WordPress.
+ *
+ * @package noempesquen-core
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/** Enviaments màxims per clau (IP seudonimitzada) i finestra. Ajustable. */
+const NEP_RESULTATS_LIMIT = 30;
+
+/** Enviaments màxims de tothom junt per finestra (fre contra inundacions des de moltes IP). Ajustable. */
+const NEP_RESULTATS_LIMIT_GLOBAL = 2000;
+
+/** Transient del comptador global. */
+const NEP_CLAU_LIMIT_GLOBAL = 'nep_rl_global';
+
+/** Transient amb el cau de les missions jugables. */
+const NEP_CAU_MISSIONS = 'nep_cau_missions';
+
+/** Durada de la finestra del límit, en segons (1 hora). */
+const NEP_RESULTATS_FINESTRA = 3600;
+
+/** Patró d'id de missió (el mateix que `nep_valida_guio`). `\z`: cap salt de línia final (el `$` de PCRE l'admet). */
+const NEP_PATRO_ID = '^[a-z0-9]+(-[a-z0-9]+)*\z';
+
+/** Partides mínimes per mostrar xifres d'una missió al panell. */
+const NEP_RESULTATS_K = 10;
+
+/**
+ * SQL de la taula per a dbDelta (sintaxi estricta: un camp per línia, dos
+ * espais després de PRIMARY KEY). `decisio` és '' quan no n'hi ha: amb NULL
+ * la clau única no col·lidiria mai i l'UPSERT afegiria files.
+ *
+ * @param string $taula           Nom complet de la taula.
+ * @param string $charset_collate Charset i collation de la base de dades.
+ * @return string
+ */
+function nep_sql_taula_resultats( string $taula, string $charset_collate ): string {
+	return "CREATE TABLE {$taula} (
+id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+missio varchar(64) NOT NULL,
+versio_hash varchar(12) NOT NULL,
+dia date NOT NULL,
+estrelles tinyint(3) unsigned NOT NULL,
+decisio varchar(32) NOT NULL DEFAULT '',
+demo tinyint(1) NOT NULL DEFAULT 0,
+n int(10) unsigned NOT NULL DEFAULT 0,
+PRIMARY KEY  (id),
+UNIQUE KEY resultat_demo (missio,versio_hash,dia,estrelles,decisio,demo),
+KEY dia (dia)
+) {$charset_collate};";
+}
+
+/**
+ * Generador pseudoaleatori determinista (xorshift32) per a les dades demo:
+ * sense `mt_srand`, que canviaria l'estat global.
+ *
+ * @param int $estat Estat (es modifica). Mai 0.
+ * @return float Valor a [0, 1).
+ */
+function nep_aleatori_demo( int &$estat ): float {
+	$x      = $estat & 0xFFFFFFFF;
+	$x     ^= ( $x << 13 ) & 0xFFFFFFFF;
+	$x     ^= $x >> 17;
+	$x     ^= ( $x << 5 ) & 0xFFFFFFFF;
+	$estat  = $x ?: 1;
+	return $estat / 4294967296;
+}
+
+/**
+ * Tria un índex segons uns pesos.
+ *
+ * @param float[] $pesos Pesos positius.
+ * @param int     $estat Estat del generador.
+ * @return int
+ */
+function nep_tria_demo( array $pesos, int &$estat ): int {
+	$r = nep_aleatori_demo( $estat ) * array_sum( $pesos );
+	foreach ( array_values( $pesos ) as $i => $pes ) {
+		$r -= $pes;
+		if ( $r < 0 ) {
+			return $i;
+		}
+	}
+	return count( $pesos ) - 1;
+}
+
+/**
+ * Files demo deterministes (mateixa llavor → mateixes files): per a cada
+ * missió, `$partides` partides repartides pels darrers 30 dies (fins a avui),
+ * d'1 a 3 estrelles i amb una de les decisions de la missió (una de cada deu,
+ * aproximadament, sense decisió). Les files tenen `demo` = 1.
+ *
+ * @param array<string, array{hash: string, opcions: string[]}> $missions Hash actual i ids d'opció per missió.
+ * @param int                                                   $partides Partides per missió.
+ * @param int                                                   $llavor   Llavor.
+ * @param string                                                $avui     Data d'avui (Y-m-d, UTC).
+ * @return array[] Files `missio`, `versio_hash`, `dia`, `estrelles`, `decisio`, `demo`, `n`.
+ */
+function nep_genera_files_demo( array $missions, int $partides, int $llavor, string $avui ): array {
+	$estat = ( $llavor & 0xFFFFFFFF ) ?: 1;
+	$base  = (int) strtotime( $avui . ' 00:00:00 UTC' );
+	$files = array();
+	ksort( $missions, SORT_STRING );
+	foreach ( $missions as $missio => $info ) {
+		$opcions = array_values( $info['opcions'] );
+		// Pesos propis de cada missió: unes decisions més triades que d'altres.
+		$p_estrelles = array( 1 + 3 * nep_aleatori_demo( $estat ), 2 + 3 * nep_aleatori_demo( $estat ), 2 + 3 * nep_aleatori_demo( $estat ) );
+		$p_decisions = array_map( static fn() => 0.5 + 4 * nep_aleatori_demo( $estat ), $opcions );
+		for ( $i = 0; $i < $partides; $i++ ) {
+			$dia       = gmdate( 'Y-m-d', $base - (int) floor( 30 * nep_aleatori_demo( $estat ) ) * 86400 );
+			$estrelles = 1 + nep_tria_demo( $p_estrelles, $estat );
+			$decisio   = ( ! $opcions || nep_aleatori_demo( $estat ) < 0.1 ) ? '' : $opcions[ nep_tria_demo( $p_decisions, $estat ) ];
+			$clau      = "$dia|$estrelles|$decisio";
+			$files[ $missio . '|' . $clau ] ??= array(
+				'missio'      => (string) $missio,
+				'versio_hash' => $info['hash'],
+				'dia'         => $dia,
+				'estrelles'   => $estrelles,
+				'decisio'     => $decisio,
+				'demo'        => 1,
+				'n'           => 0,
+			);
+			++$files[ $missio . '|' . $clau ]['n'];
+		}
+	}
+	ksort( $files, SORT_STRING );
+	return array_values( $files );
+}
+
+/**
+ * Distribució d'estrelles i de decisions per a les barres del panell.
+ *
+ * Només per a missions amb `$k` partides o més (les altres no hi surten).
+ * Cada valor porta el recompte i el percentatge sobre totes les partides de
+ * la missió; el panell n'amaga el percentatge si el recompte és menor que `$k`.
+ *
+ * @param array                        $files   Files `missio`, `estrelles`, `decisio`, `n`.
+ * @param int                          $k       Partides mínimes.
+ * @param array<string, string[]>|null $opcions Ids d'opció vàlids per missió (null = totes).
+ * @return array<string, array{estrelles: array<int, array{n: int, percentatge: int}>, decisions: array<string, array{n: int, percentatge: int}>}>
+ */
+function nep_distribucions( array $files, int $k, ?array $opcions = null ): array {
+	$acumulat = array();
+	foreach ( $files as $fila ) {
+		$missio = (string) ( $fila['missio'] ?? '' );
+		$n      = (int) ( $fila['n'] ?? 0 );
+		if ( '' === $missio || $n <= 0 ) {
+			continue;
+		}
+		$acumulat[ $missio ] ??= array(
+			'partides'  => 0,
+			'estrelles' => array(
+				1 => 0,
+				2 => 0,
+				3 => 0,
+			),
+			'decisions' => array_fill_keys( null === $opcions ? array() : ( $opcions[ $missio ] ?? array() ), 0 ),
+		);
+		$acumulat[ $missio ]['partides'] += $n;
+		$estrelles                        = (int) ( $fila['estrelles'] ?? 0 );
+		if ( isset( $acumulat[ $missio ]['estrelles'][ $estrelles ] ) ) {
+			$acumulat[ $missio ]['estrelles'][ $estrelles ] += $n;
+		}
+		$decisio = (string) ( $fila['decisio'] ?? '' );
+		if ( '' !== $decisio && ( null === $opcions || in_array( $decisio, $opcions[ $missio ] ?? array(), true ) ) ) {
+			$acumulat[ $missio ]['decisions'][ $decisio ] = ( $acumulat[ $missio ]['decisions'][ $decisio ] ?? 0 ) + $n;
+		}
+	}
+	$resultat = array();
+	foreach ( $acumulat as $missio => $a ) {
+		if ( $a['partides'] < $k ) {
+			continue;
+		}
+		$pct = static fn( int $n ): array => array(
+			'n'           => $n,
+			'percentatge' => (int) round( 100 * $n / $a['partides'] ),
+		);
+		$resultat[ $missio ] = array(
+			'estrelles' => array_map( $pct, $a['estrelles'] ),
+			'decisions' => array_map( $pct, $a['decisions'] ),
+		);
+	}
+	ksort( $resultat, SORT_STRING );
+	return $resultat;
+}
+
+/**
+ * Guió en forma canònica: claus dels objectes ordenades (les llistes no).
+ *
+ * @param mixed $valor Valor descodificat.
+ * @return mixed
+ */
+function nep_canonic( $valor ) {
+	if ( ! is_array( $valor ) ) {
+		return $valor;
+	}
+	$valor = array_map( 'nep_canonic', $valor );
+	if ( ! array_is_list( $valor ) ) {
+		ksort( $valor, SORT_STRING );
+	}
+	return $valor;
+}
+
+/**
+ * Hash de versió d'un guió: 12 primers hex del sha1 del JSON canònic.
+ * El calcula sempre el servidor, mai el client. Si el guió no es pot
+ * codificar llança l'excepció (abans tots els guions fallits compartien el
+ * hash de la cadena buida).
+ *
+ * @param array $guio Guió descodificat.
+ * @return string
+ * @throws JsonException Si el guió no es pot codificar.
+ */
+function nep_versio_hash( array $guio ): string {
+	$json = json_encode( nep_canonic( $guio ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR );
+	return substr( sha1( $json ), 0, 12 );
+}
+
+/**
+ * Normalitza la IP per al límit: una IPv6 compta pel seu /64 (un sol client
+ * en sol tenir un de sencer); una IPv4 (també mapejada en IPv6) tal com és.
+ * Una adreça no vàlida torna ''.
+ *
+ * @param string $ip Adreça.
+ * @return string
+ */
+function nep_normalitza_ip( string $ip ): string {
+	if ( false !== filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		return $ip;
+	}
+	if ( false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		return '';
+	}
+	$bin = (string) inet_pton( $ip );
+	if ( str_starts_with( $bin, str_repeat( "\0", 10 ) . "\xff\xff" ) ) {
+		return (string) inet_ntop( substr( $bin, 12 ) );
+	}
+	return inet_ntop( substr( $bin, 0, 8 ) . str_repeat( "\0", 8 ) ) . '/64';
+}
+
+/**
+ * Ids de les opcions de la decisió d'un guió.
+ *
+ * @param array $guio Guió descodificat.
+ * @return string[]
+ */
+function nep_ids_opcions( array $guio ): array {
+	$opcions = $guio['decisio']['opcions'] ?? array();
+	if ( ! is_array( $opcions ) ) {
+		return array();
+	}
+	$ids = array();
+	foreach ( $opcions as $opcio ) {
+		if ( is_array( $opcio ) && isset( $opcio['id'] ) && is_string( $opcio['id'] ) ) {
+			$ids[] = $opcio['id'];
+		}
+	}
+	return $ids;
+}
+
+/**
+ * Agrega les files per missió.
+ *
+ * - `estrelles`: mitjana ponderada per `n`.
+ * - `decisio`: la més triada entre les partides amb decisió; en empat, l'id
+ *   més petit (ordre de text). `percentatge` es calcula sobre **totes** les
+ *   partides de la missió (també les que no van arribar a decidir).
+ * - Amb menys de `$k` partides, `suficient` és fals i no es torna cap xifra
+ *   (ni el nombre de partides).
+ * - Amb `$opcions`, una decisió que no hi és (opció esborrada o sense text)
+ *   no compta per a la més triada; la partida sí.
+ *
+ * @param array                        $files   Files `missio`, `estrelles`, `decisio`, `n` (de qualsevol període).
+ * @param int                          $k       Partides mínimes per mostrar xifres.
+ * @param array<string, string[]>|null $opcions Ids d'opció vàlids per missió (null = totes).
+ * @return array<string, array{suficient: bool, partides: ?int, estrelles: ?float, decisio: ?string, percentatge: ?int}>
+ */
+function nep_agrega_resultats( array $files, int $k, ?array $opcions = null ): array {
+	$acumulat = array();
+	foreach ( $files as $fila ) {
+		$missio = (string) ( $fila['missio'] ?? '' );
+		$n      = (int) ( $fila['n'] ?? 0 );
+		if ( '' === $missio || $n <= 0 ) {
+			continue;
+		}
+		$acumulat[ $missio ] ??= array(
+			'partides'  => 0,
+			'suma'      => 0,
+			'decisions' => array(),
+		);
+		$acumulat[ $missio ]['partides'] += $n;
+		$acumulat[ $missio ]['suma']     += $n * (int) ( $fila['estrelles'] ?? 0 );
+		$decisio                          = (string) ( $fila['decisio'] ?? '' );
+		if ( '' !== $decisio && ( null === $opcions || in_array( $decisio, $opcions[ $missio ] ?? array(), true ) ) ) {
+			$acumulat[ $missio ]['decisions'][ $decisio ] = ( $acumulat[ $missio ]['decisions'][ $decisio ] ?? 0 ) + $n;
+		}
+	}
+
+	$resultat = array();
+	foreach ( $acumulat as $missio => $a ) {
+		if ( $a['partides'] < $k ) {
+			$resultat[ $missio ] = array(
+				'suficient'   => false,
+				'partides'    => null,
+				'estrelles'   => null,
+				'decisio'     => null,
+				'percentatge' => null,
+			);
+			continue;
+		}
+		$decisio = null;
+		$vots    = 0;
+		$ids     = array_keys( $a['decisions'] );
+		sort( $ids, SORT_STRING );
+		foreach ( $ids as $id ) {
+			if ( $a['decisions'][ $id ] > $vots ) {
+				$decisio = (string) $id;
+				$vots    = $a['decisions'][ $id ];
+			}
+		}
+		$resultat[ $missio ] = array(
+			'suficient'   => true,
+			'partides'    => $a['partides'],
+			'estrelles'   => round( $a['suma'] / $a['partides'], 1 ),
+			'decisio'     => $decisio,
+			'percentatge' => null === $decisio ? null : (int) round( 100 * $vots / $a['partides'] ),
+		);
+	}
+	ksort( $resultat, SORT_STRING );
+	return $resultat;
+}
+
+/**
+ * Separa les files de la versió actual del guió de cada missió de la resta
+ * (versions anteriors o missions que ja no es juguen).
+ *
+ * @param array                 $files  Files amb `missio`, `versio_hash` i `n`.
+ * @param array<string, string> $hashes Hash actual per missió.
+ * @return array{actuals: array, antigues: int} Files actuals i partides que no compten.
+ */
+function nep_files_versio_actual( array $files, array $hashes ): array {
+	$actuals  = array();
+	$antigues = 0;
+	foreach ( $files as $fila ) {
+		$missio = (string) ( $fila['missio'] ?? '' );
+		if ( isset( $hashes[ $missio ] ) && $hashes[ $missio ] === (string) ( $fila['versio_hash'] ?? '' ) ) {
+			$actuals[] = $fila;
+		} else {
+			$antigues += max( 0, (int) ( $fila['n'] ?? 0 ) );
+		}
+	}
+	return array(
+		'actuals'  => $actuals,
+		'antigues' => $antigues,
+	);
+}
+
+/**
+ * Franja de partides per mostrar: «<10», «10-19», «20-49» o «50+».
+ *
+ * @param int $n Partides.
+ * @return string
+ */
+function nep_franja_partides( int $n ): string {
+	if ( $n < 10 ) {
+		return '<10';
+	}
+	if ( $n < 20 ) {
+		return '10-19';
+	}
+	return $n < 50 ? '20-49' : '50+';
+}
+
+/**
+ * Franja de 10 punts d'un percentatge: «0-9 %», …, «90-100 %».
+ *
+ * @param int $p Percentatge (0-100).
+ * @return string
+ */
+function nep_franja_percentatge( int $p ): string {
+	$p   = max( 0, min( 100, $p ) );
+	$des = min( 90, intdiv( $p, 10 ) * 10 );
+	return $des . '-' . ( 90 === $des ? 100 : $des + 9 ) . ' %';
+}
+
+/**
+ * Amplada (%) de la barra d'un percentatge: el centre de la seva franja de 10
+ * punts, perquè l'HTML no reveli més precisió que el text.
+ *
+ * @param int $p Percentatge (0-100).
+ * @return int
+ */
+function nep_amplada_franja( int $p ): int {
+	return min( 90, intdiv( max( 0, min( 100, $p ) ), 10 ) * 10 ) + 5;
+}
+
+/**
+ * Resum públic d'una missió (el veu el jugador en acabar): què va triar la
+ * gent. Només compten les files reals (`demo` = 0) de la versió actual del
+ * guió. Amb menys de `$k` partides, `{ prou: false }` sense cap xifra. Si no,
+ * el total en franja i, per a cada opció vàlida amb `$k` partides o més, el
+ * percentatge en franja de 10 punts. Les decisions surten en l'ordre de les
+ * opcions (no per vots: l'ordre revelaria més que les franges).
+ *
+ * @param array    $files   Files `missio`, `versio_hash`, `decisio`, `demo`, `n` d'una missió.
+ * @param string   $missio  Id de la missió.
+ * @param string   $hash    Hash actual del guió.
+ * @param string[] $opcions Ids d'opció vàlids, en ordre.
+ * @param int      $k       Partides mínimes (total i per decisió).
+ * @return array{prou: false}|array{n_banda: string, decisions: array<int, array{id: string, banda: string}>}
+ */
+function nep_resum_public( array $files, string $missio, string $hash, array $opcions, int $k ): array {
+	$reals  = array_filter( $files, static fn( $f ) => 0 === (int) ( $f['demo'] ?? 0 ) && $missio === (string) ( $f['missio'] ?? '' ) );
+	$actual = nep_files_versio_actual( array_values( $reals ), array( $missio => $hash ) )['actuals'];
+	$total  = 0;
+	foreach ( $actual as $fila ) {
+		$total += max( 0, (int) ( $fila['n'] ?? 0 ) );
+	}
+	$dist = nep_distribucions( $actual, $k, array( $missio => array_values( $opcions ) ) );
+	if ( ! isset( $dist[ $missio ] ) ) {
+		return array( 'prou' => false );
+	}
+	$decisions = array();
+	foreach ( array_values( $opcions ) as $id ) {
+		$cel = $dist[ $missio ]['decisions'][ $id ] ?? null;
+		if ( $cel && $cel['n'] >= $k ) {
+			$decisions[] = array(
+				'id'    => (string) $id,
+				'banda' => nep_franja_percentatge( $cel['percentatge'] ),
+			);
+		}
+	}
+	return array(
+		'n_banda'   => nep_franja_partides( $total ),
+		'decisions' => $decisions,
+	);
+}
+
+/**
+ * Nom del transient del resum públic d'una missió i versió.
+ *
+ * @param string $missio Id.
+ * @param string $hash   Hash de versió.
+ * @return string
+ */
+function nep_clau_resum( string $missio, string $hash ): string {
+	return 'nep_resum_' . md5( $missio . '|' . $hash );
+}
+
+/**
+ * Nom complet de la taula.
+ *
+ * @return string
+ */
+function nep_taula_resultats(): string {
+	global $wpdb;
+	return $wpdb->prefix . 'nep_resultats';
+}
+
+/**
+ * Crea o actualitza la taula (des de `nep_actualitza()`).
+ *
+ * dbDelta no diu si ha fallat: es comprova després que la taula existeixi.
+ *
+ * @return bool Cert si la taula existeix.
+ */
+function nep_crea_taula_resultats(): bool {
+	global $wpdb;
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	$taula = nep_taula_resultats();
+	dbDelta( nep_sql_taula_resultats( $taula, $wpdb->get_charset_collate() ) );
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Esquema de la taula pròpia just després de dbDelta.
+	$existeix = $taula === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $taula ) ) );
+	if ( $existeix ) {
+		// v2 → v3: dbDelta no canvia índices existents. La clau única antiga (sense `demo`) faria que una fila demo sumés a una de real.
+		$index = static fn( string $nom ) => (bool) $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM {$taula} WHERE Key_name = %s", $nom ) );
+		if ( $index( 'resultat' ) ) {
+			$wpdb->query( "ALTER TABLE {$taula} DROP INDEX resultat" );
+		}
+		$columna = (bool) $wpdb->get_var( $wpdb->prepare( "SHOW COLUMNS FROM {$taula} LIKE %s", 'demo' ) );
+		if ( $columna && $index( 'resultat_demo' ) && ! $index( 'resultat' ) ) {
+			return true;
+		}
+	}
+	// phpcs:enable
+	error_log( 'noempesquen: no s\'ha pogut crear la taula d\'estadístiques: ' . $wpdb->last_error ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error d'esquema per a l'administrador.
+	set_transient( 'nep_avis_taula', 1, DAY_IN_SECONDS );
+	return false;
+}
+
+/**
+ * Missions jugables (les mateixes que veu el client): les incloses
+ * (`missions/*.json`, sense `mon.json` ni la plantilla) i les publicades al panell, que
+ * substitueixen per id les incloses.
+ *
+ * Es desa en un transient (una hora com a màxim) que s'esborra quan canvia
+ * una missió del panell; la signatura dels fitxers inclosos (nom i data)
+ * l'invalida també després d'un desplegament.
+ *
+ * @return array<string, array> Guió per id.
+ */
+function nep_missions_jugables(): array {
+	$fitxers = nep_fitxers_missions_incloses( NEP_PATH . 'missions/' );
+	$firma   = md5( implode( '|', array_map( static fn( $f ) => basename( $f ) . ':' . filemtime( $f ), $fitxers ) ) );
+	$cau     = get_transient( NEP_CAU_MISSIONS );
+	if ( is_array( $cau ) && ( $cau['firma'] ?? '' ) === $firma && is_array( $cau['missions'] ?? null ) ) {
+		return $cau['missions'];
+	}
+
+	$missions = array();
+	foreach ( $fitxers as $fitxer ) {
+		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
+		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
+			$missions[ $guio['id'] ] = $guio;
+		}
+	}
+
+	$posts = get_posts(
+		array(
+			'post_type'      => 'nep_missio',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1, // Totes: si en faltés una, els seus resultats es rebutjarien.
+			'orderby'        => 'menu_order',
+			'order'          => 'ASC',
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+	foreach ( $posts as $post_id ) {
+		$guio = nep_descodifica_guio( (string) get_post_meta( $post_id, 'nep_guio', true ) );
+		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) && preg_match( '/' . NEP_PATRO_ID . '/D', $guio['id'] ) ) {
+			$missions[ $guio['id'] ] = $guio;
+		}
+	}
+	set_transient(
+		NEP_CAU_MISSIONS,
+		array(
+			'firma'    => $firma,
+			'missions' => $missions,
+		),
+		HOUR_IN_SECONDS
+	);
+	return $missions;
+}
+
+/**
+ * Hash actual i ids d'opció amb text de cada missió jugable (el que compta al panell).
+ *
+ * @return array<string, array{hash: string, opcions: string[], textos: array<string, string>}>
+ */
+function nep_info_missions_jugables(): array {
+	$info = array();
+	foreach ( nep_missions_jugables() as $id => $guio ) {
+		try {
+			$hash = nep_versio_hash( $guio );
+		} catch ( JsonException $e ) {
+			continue;
+		}
+		$info[ $id ] = array(
+			'hash'    => $hash,
+			'opcions' => array(),
+			'textos'  => array(),
+		);
+		foreach ( (array) ( $guio['decisio']['opcions'] ?? array() ) as $o ) {
+			if ( is_array( $o ) && is_string( $o['id'] ?? null ) && is_string( $o['text'] ?? null ) && '' !== trim( $o['text'] ) ) {
+				$info[ $id ]['opcions'][]          = $o['id'];
+				$info[ $id ]['textos'][ $o['id'] ] = $o['text'];
+			}
+		}
+	}
+	return $info;
+}
+
+/**
+ * Esborra les files demo (`demo` = 1). Les reals no es toquen.
+ *
+ * @return int|false Files esborrades, o false si falla.
+ */
+function nep_esborra_demo() {
+	global $wpdb;
+	$taula = nep_taula_resultats();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Taula pròpia.
+	return $wpdb->query( "DELETE FROM {$taula} WHERE demo = 1" );
+}
+
+/**
+ * Sembra dades demo per a les missions jugables (substitueix les demo que hi hagués).
+ *
+ * @param int $partides Partides per missió.
+ * @param int $llavor   Llavor del generador.
+ * @return int|false Partides sembrades, o false si falla.
+ */
+function nep_sembra_demo( int $partides, int $llavor ) {
+	global $wpdb;
+	if ( false === nep_esborra_demo() ) {
+		return false;
+	}
+	$taula = nep_taula_resultats();
+	$total = 0;
+	foreach ( nep_genera_files_demo( nep_info_missions_jugables(), $partides, $llavor, gmdate( 'Y-m-d' ) ) as $fila ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Taula pròpia.
+		if ( false === $wpdb->insert( $taula, $fila, array( '%s', '%s', '%s', '%d', '%s', '%d', '%d' ) ) ) {
+			return false;
+		}
+		$total += $fila['n'];
+	}
+	return $total;
+}
+
+/**
+ * Hi ha files demo a la taula (de qualsevol dia)?
+ *
+ * @return bool
+ */
+function nep_hi_ha_demo(): bool {
+	global $wpdb;
+	$taula = nep_taula_resultats();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Taula pròpia.
+	return (bool) $wpdb->get_var( "SELECT 1 FROM {$taula} WHERE demo = 1 LIMIT 1" );
+}
+
+/**
+ * Esborra el cau de missions jugables.
+ */
+function nep_buida_cau_missions(): void {
+	delete_transient( NEP_CAU_MISSIONS );
+}
+
+/**
+ * Sal del dia per al límit d'enviaments (`data|aleatori`). Es regenera quan
+ * canvia la data, de manera que la clau d'ahir no es pot relacionar amb la d'avui.
+ *
+ * @return string
+ */
+function nep_sal_dia(): string {
+	$avui = gmdate( 'Y-m-d' );
+	$sal  = (string) get_option( 'nep_sal_dia', '' );
+	if ( ! str_starts_with( $sal, $avui . '|' ) ) {
+		$sal = $avui . '|' . wp_generate_password( 32, false );
+		update_option( 'nep_sal_dia', $sal, false );
+	}
+	return $sal;
+}
+
+/**
+ * Nom del transient del límit per a una IP: un seudònim (HMAC amb la sal
+ * d'autenticació del lloc i la sal del dia), mai la IP. Sense les dues sals
+ * no es pot recalcular; el transient caduca en una hora com a màxim.
+ *
+ * @param string $ip Adreça del client.
+ * @return string
+ */
+function nep_clau_limit( string $ip ): string {
+	return 'nep_rl_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) . nep_sal_dia() ), 0, 32 );
+}
+
+/**
+ * IP del client per al límit, ja normalitzada (`nep_normalitza_ip`).
+ *
+ * Es fa servir REMOTE_ADDR. Darrere d'un proxy o CDN, REMOTE_ADDR és el del
+ * proxy (tothom compartiria el límit). No es llegeix cap X-Forwarded-For a
+ * cegues perquè el client el pot falsejar. Al desplegament: si hi ha un
+ * proxy o CDN de confiança, afegir un filtre `nep_ip_client` que torni la
+ * capçalera que posa aquest proxy (p. ex. CF-Connecting-IP) només quan
+ * REMOTE_ADDR és una de les seves adreces.
+ *
+ * @return string
+ */
+function nep_ip_client(): string {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	/**
+	 * IP del client per al límit d'enviaments de /resultat.
+	 *
+	 * @param string $ip REMOTE_ADDR.
+	 */
+	return nep_normalitza_ip( (string) apply_filters( 'nep_ip_client', $ip ) );
+}
+
+/**
+ * Compta un enviament i diu si encara és dins dels límits: el de la IP
+ * (`NEP_RESULTATS_LIMIT`) i el global (`NEP_RESULTATS_LIMIT_GLOBAL`), tots dos
+ * per finestra d'una hora. Si un és ple no es compta a cap.
+ *
+ * @return bool Cert si l'enviament es pot registrar.
+ */
+function nep_dins_limit(): bool {
+	$ara    = time();
+	$limits = array(
+		nep_clau_limit( nep_ip_client() ) => NEP_RESULTATS_LIMIT,
+		NEP_CLAU_LIMIT_GLOBAL             => NEP_RESULTATS_LIMIT_GLOBAL,
+	);
+	$estats = array();
+	foreach ( $limits as $clau => $limit ) {
+		$estat = get_transient( $clau );
+		if ( ! is_array( $estat ) || ( $estat['fi'] ?? 0 ) <= $ara ) {
+			$estat = array(
+				'n'  => 0,
+				'fi' => $ara + NEP_RESULTATS_FINESTRA,
+			);
+		}
+		if ( $estat['n'] >= $limit ) {
+			return false;
+		}
+		$estats[ $clau ] = $estat;
+	}
+	foreach ( $estats as $clau => $estat ) {
+		++$estat['n'];
+		set_transient( $clau, $estat, max( 1, $estat['fi'] - $ara ) );
+	}
+	return true;
+}
+
+/**
+ * Registra una partida acabada (endpoint POST /resultat).
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_resultat( WP_REST_Request $request ) {
+	if ( ! nep_dins_limit() ) {
+		return new WP_Error( 'nep_massa_enviaments', __( 'Massa enviaments. Torna-ho a provar més tard.', 'noempesquen' ), array( 'status' => 429 ) );
+	}
+
+	$missions = nep_missions_jugables();
+	$id       = (string) $request['missio'];
+	if ( ! isset( $missions[ $id ] ) ) {
+		return new WP_Error( 'nep_missio_desconeguda', __( 'Missió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );
+	}
+	$guio    = $missions[ $id ];
+	$decisio = isset( $request['decisio'] ) ? (string) $request['decisio'] : '';
+	if ( '' !== $decisio && ! in_array( $decisio, nep_ids_opcions( $guio ), true ) ) {
+		return new WP_Error( 'nep_decisio_desconeguda', __( 'Decisió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );
+	}
+
+	try {
+		$hash = nep_versio_hash( $guio ); // Només el de la missió demanada.
+	} catch ( JsonException $e ) {
+		error_log( 'noempesquen: no es pot calcular el hash de la missió ' . $id ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Guió del servidor corrupte.
+		return new WP_Error( 'nep_error_desant', __( 'No s\'ha pogut desar el resultat.', 'noempesquen' ), array( 'status' => 500 ) );
+	}
+
+	global $wpdb;
+	$taula = nep_taula_resultats();
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Comptador agregat (UPSERT); no hi ha API ni cau aplicable.
+	$desat = $wpdb->query(
+		$wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
+			"INSERT INTO {$taula} (missio, versio_hash, dia, estrelles, decisio, demo, n) VALUES (%s, %s, %s, %d, %s, 0, 1) ON DUPLICATE KEY UPDATE n = n + 1",
+			$id,
+			$hash,
+			gmdate( 'Y-m-d' ),
+			(int) $request['estrelles'],
+			$decisio
+		)
+	);
+	if ( false === $desat ) {
+		// Sense cap dada de la petició (l'error de MySQL pot repetir els valors).
+		error_log( 'noempesquen: no s\'ha pogut desar un resultat a ' . $taula ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Error de BD per a l'administrador.
+		return new WP_Error( 'nep_error_desant', __( 'No s\'ha pogut desar el resultat.', 'noempesquen' ), array( 'status' => 500 ) );
+	}
+	return new WP_REST_Response( null, 204 );
+}
+
+/**
+ * Resum públic d'una missió (endpoint GET /resultat/resum). Anònim i en cau
+ * una hora (transient per missió i versió, i `Cache-Control: public`: un CDN
+ * també el pot desar, no hi ha cap dada personal). Sense límit d'enviaments:
+ * compartiria el pressupost de la IP amb el POST; el cau ja ho frena.
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_resum( WP_REST_Request $request ) {
+	$id   = (string) $request['missio'];
+	$info = nep_info_missions_jugables();
+	if ( ! isset( $info[ $id ] ) ) {
+		return new WP_Error( 'nep_missio_desconeguda', __( 'Missió desconeguda.', 'noempesquen' ), array( 'status' => 404 ) );
+	}
+	$hash  = $info[ $id ]['hash'];
+	$clau  = nep_clau_resum( $id, $hash );
+	$resum = get_transient( $clau );
+	if ( ! is_array( $resum ) ) {
+		global $wpdb;
+		$taula = nep_taula_resultats();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Taula pròpia; el resultat va al transient.
+		$files = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
+				"SELECT missio, versio_hash, decisio, demo, n FROM {$taula} WHERE missio = %s AND versio_hash = %s AND demo = 0",
+				$id,
+				$hash
+			),
+			ARRAY_A
+		);
+		if ( ! is_array( $files ) || '' !== $wpdb->last_error ) {
+			return new WP_Error( 'nep_error_llegint', __( 'No s\'ha pogut llegir el resum.', 'noempesquen' ), array( 'status' => 500 ) );
+		}
+		$resum = nep_resum_public( $files, $id, $hash, $info[ $id ]['opcions'], NEP_RESULTATS_K );
+		set_transient( $clau, $resum, HOUR_IN_SECONDS );
+	}
+	$resposta = new WP_REST_Response( $resum, 200 );
+	$resposta->header( 'Cache-Control', 'public, max-age=3600' );
+	return $resposta;
+}
+
+if ( function_exists( 'add_action' ) ) {
+	// Invalidació del cau de missions. `save_post` de REST arriba abans d'escriure la meta: també es buida en canviar `nep_guio`.
+	add_action( 'save_post_nep_missio', 'nep_buida_cau_missions' );
+	foreach ( array( 'trashed_post', 'untrashed_post', 'deleted_post' ) as $nep_accio ) {
+		add_action(
+			$nep_accio,
+			static function ( $post_id, $post = null ) {
+				$tipus = $post instanceof WP_Post ? $post->post_type : get_post_type( (int) $post_id );
+				if ( 'nep_missio' === $tipus ) {
+					nep_buida_cau_missions();
+				}
+			},
+			10,
+			2
+		);
+	}
+	foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $nep_accio ) {
+		add_action(
+			$nep_accio,
+			static function ( $meta_id, $post_id, $meta_key ) {
+				if ( 'nep_guio' === $meta_key ) {
+					nep_buida_cau_missions();
+				}
+			},
+			10,
+			3
+		);
+	}
+
+	add_action(
+		'rest_api_init',
+		static function () {
+			// Anònim: sense nonce ni galetes. Només es fan servir aquests tres camps.
+			register_rest_route(
+				'noempesquen/v1',
+				'/resultat',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'permission_callback' => '__return_true',
+					'callback'            => 'nep_rest_resultat',
+					'args'                => array(
+						'missio'    => array(
+							'type'      => 'string',
+							'required'  => true,
+							'maxLength' => 64,
+							'pattern'   => NEP_PATRO_ID,
+						),
+						// El motor dona sempre d'1 a 3 estrelles: 0 no pot venir d'una partida real.
+						'estrelles' => array(
+							'type'     => 'integer',
+							'required' => true,
+							'minimum'  => 1,
+							'maximum'  => 3,
+						),
+						'decisio'   => array(
+							'type'      => 'string',
+							'maxLength' => 32,
+						),
+					),
+				)
+			);
+
+			// Resum públic agregat (franges, n>=10, sense demo). Anònim: sense nonce ni galetes.
+			register_rest_route(
+				'noempesquen/v1',
+				'/resultat/resum',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'permission_callback' => '__return_true',
+					'callback'            => 'nep_rest_resum',
+					'args'                => array(
+						'missio' => array(
+							'type'      => 'string',
+							'required'  => true,
+							'maxLength' => 64,
+							'pattern'   => NEP_PATRO_ID,
+						),
+					),
+				)
+			);
+		}
+	);
+
+	// Sense cau en cap resposta de la ruta (també els 400 de validació i el 429).
+	add_filter(
+		'rest_post_dispatch',
+		static function ( $resposta, $server, $request ) {
+			if ( $resposta instanceof WP_HTTP_Response && $request instanceof WP_REST_Request && '/noempesquen/v1/resultat' === $request->get_route() ) {
+				$resposta->header( 'Cache-Control', 'no-store' );
+			}
+			return $resposta;
+		},
+		10,
+		3
+	);
+}

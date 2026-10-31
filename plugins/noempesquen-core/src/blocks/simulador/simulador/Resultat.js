@@ -4,6 +4,7 @@ import { PUNTS, puntuacio } from '../nucli/motor';
 import { Estrella, IconaFalla, IconaFet, IconaSalvavides } from '../ui/icones';
 import { useJoc } from './context';
 import { desenllac } from './desenllac';
+import { llegeixResum } from './estadistiques';
 
 const MAX_ESTRELLES = 3;
 
@@ -26,6 +27,38 @@ function veredicte( final, estrelles ) {
 				'Bona decisió. Però hi havia més indicis per veure.',
 				'noempesquen'
 			);
+}
+
+/**
+ * Frase del resum públic, sense culpabilitzar. Buida si no n'hi ha.
+ *
+ * @param {?{min: number, max: number, mateixa: boolean}} dades De `llegeixResum`.
+ * @return {string} Frase.
+ */
+function fraseResum( dades ) {
+	if ( ! dades ) {
+		return '';
+	}
+	if ( dades.mateixa ) {
+		return sprintf(
+			/* translators: 1: percentatge mínim, 2: percentatge màxim */
+			__(
+				'Entre el %1$d %% i el %2$d %% de les persones van triar la mateixa opció que tu.',
+				'noempesquen'
+			),
+			dades.min,
+			dades.max
+		);
+	}
+	return sprintf(
+		/* translators: 1: percentatge mínim, 2: percentatge màxim */
+		__(
+			'Entre el %1$d %% i el %2$d %% de les persones van triar una altra opció.',
+			'noempesquen'
+		),
+		dades.min,
+		dades.max
+	);
 }
 
 function Estrelles( { estrelles } ) {
@@ -114,8 +147,9 @@ function Indicis( { senyals, trobats } ) {
  * @param {Function}  props.onReinicia Torna a començar la missió.
  * @param {?Function} props.onSeguent  Passa a la missió següent, si n'hi ha.
  * @param {Function}  props.onSurt     Torna al selector de missions.
+ * @param {?Object}   props.resum      Resum públic de la missió (o null).
  */
-export function Resultat( { onReinicia, onSeguent, onSurt } ) {
+export function Resultat( { onReinicia, onSeguent, onSurt, resum } ) {
 	const { missio, estat, Avatar, nomGuia } = useJoc();
 	const titol = useRef( null );
 	const { punts, maxim, estrelles } = puntuacio( missio, estat );
@@ -172,6 +206,13 @@ export function Resultat( { onReinicia, onSeguent, onSurt } ) {
 								) }
 							</p>
 						) }
+						{ /* Sempre present (buit fins que arriba): una regió viva muntada amb el text sovint no s'anuncia. */ }
+						<p
+							className="nep-res__pistes nep-res__comparativa"
+							aria-live="polite"
+						>
+							{ fraseResum( llegeixResum( resum, estat.opcio ) ) }
+						</p>
 					</div>
 					<div className="nep-res__guia">
 						<div className="nep-res__avatar">

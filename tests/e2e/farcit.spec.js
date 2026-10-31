@@ -1,4 +1,4 @@
-const { test, expect } = require( '@playwright/test' );
+const { test, expect } = require( './ajudes' );
 const { greusAxe, iniciaMissio, petits } = require( './ajudes' );
 
 const MISSIO = /El paquet retingut/;

@@ -1,0 +1,5 @@
+# Fitxers que no van al paquet del plugin.
+/tests
+/phpunit.xml.dist
+/missions/test-fixtures
+/node_modules

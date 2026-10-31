@@ -1,0 +1,77 @@
+// Editor del guió al panell: diagnòstic i controls de la caixa.
+
+.nep-guio-camps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 12px;
+
+	label {
+		display: block;
+		font-weight: 600;
+		margin-bottom: 4px;
+	}
+
+	select {
+		min-height: 32px;
+	}
+}
+
+.nep-guio-etiqueta {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+#nep-guio {
+	width: 100%;
+	min-height: 320px;
+	font-family: Consolas, Monaco, monospace;
+}
+
+.nep-guio-diagnostic {
+	margin-top: 12px;
+	padding: 8px 12px;
+	border-left: 4px solid #00a32a;
+	background: #f6f7f7;
+	color: #1d2327;
+
+	&--error {
+		border-left-color: #b32d2e;
+	}
+
+	ul {
+		margin: 4px 0 0 20px;
+		list-style: disc;
+	}
+}
+
+.nep-guio-diagnostic__titol {
+	margin: 0;
+	font-weight: 600;
+}
+
+.nep-guio-io {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.nep-guio-diagnostic__ves {
+	margin-left: 8px;
+	vertical-align: middle;
+}
+
+.nep-guio-diagnostic,
+.nep-guio-prova,
+.nep-guio-plantilla,
+.nep-guio-io,
+.nep-guio-duplica {
+	margin-top: 12px;
+
+	.button:focus-visible {
+		outline: 2px solid #2271b1;
+		outline-offset: 2px;
+	}
+}

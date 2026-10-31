@@ -1,0 +1,126 @@
+{
+	"id": "plantilla-missio",
+	"versio": 2,
+	"titol": "Missió nova",
+	"resum": "Explica en una o dues frases què veurà el jugador i quina decisió haurà de prendre.",
+	"dispositiu": "pc",
+	"personatge": "llissa",
+	"nivell": 1,
+	"durada_minuts": 3,
+	"rellotge": "09:00",
+	"intro": [
+		"Hola, Àlex! Sóc la Llissa. Avui mirarem una web que sembla normal, però hi ha un detall que no quadra.",
+		"Llegeix-la amb calma i, si et sembla estrany, revisa-ho amb la lupa."
+	],
+	"instruccions": "Llegeix la previsió de Temps Avui, revisa amb la lupa el que et sembli estrany i decideix què en fas des del menú de la Llissa.",
+	"pistes": [
+		"Llegeix el text amb calma: et demana alguna cosa amb pressa?"
+	],
+	"apps": {
+		"navegador": {
+			"inici": [
+				"https://tempsavui.cat/"
+			]
+		}
+	},
+	"webs": {
+		"tempsavui.cat": {
+			"plantilla": "article",
+			"https": true,
+			"titol": "El temps al barri per a avui",
+			"nom_lloc": "Temps Avui",
+			"entradeta": [
+				[
+					{
+						"t": "Matí assolellat i tarda amb núvols. Poca probabilitat de pluja."
+					}
+				]
+			],
+			"seccions": [
+				{
+					"titol": "Previsió per hores",
+					"llista": [
+						{
+							"t": "Matí: sol, 14 °C"
+						},
+						{
+							"t": "Tarda: núvols, 17 °C"
+						}
+					]
+				}
+			],
+			"barra": {
+				"text": [
+					{
+						"t": "Últim avís: descarrega el visor del temps avui mateix!",
+						"senyal": "pressa"
+					}
+				],
+				"boto": "Descarrega el visor",
+				"fitxer": "visor-temps.exe",
+				"origen": "visor-temps.top",
+				"senyal_fitxer": "fitxer_estrany",
+				"senyal_origen": "fitxer_estrany"
+			}
+		}
+	},
+	"disparadors": [
+		{
+			"id": "descarregat",
+			"quan": {
+				"esdeveniment": "descarrega.fes",
+				"url": "tempsavui.cat",
+				"fitxer": "visor-temps.exe"
+			},
+			"efectes": [
+				{
+					"tipus": "pescat"
+				}
+			]
+		}
+	],
+	"senyals": [
+		{
+			"id": "pressa",
+			"titol": "Et demanen pressa",
+			"explicacio": "Una web del temps no et demana res amb pressa. La pressa és perquè cliquis sense pensar.",
+			"reaccio": "Pressa en una web del temps? Això no quadra."
+		},
+		{
+			"id": "fitxer_estrany",
+			"requereix": "descarregat",
+			"titol": "Un .exe d'un domini .top",
+			"explicacio": "Una web del temps no necessita que t'instal·lis res. Un programa d'una adreça estranya pot ser un virus.",
+			"reaccio": "Un .exe per mirar el temps? Ni parlar-ne."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això és normal, tranquil."
+		],
+		"pescat": "Ai, Àlex! Has obert el fitxer. Si fos de veritat, podria instal·lar un virus. Tranquil, que és un simulacre."
+	},
+	"decisio": {
+		"pregunta": "Què fas amb la barra?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "No en faig cas i no descarrego res.",
+				"valor": "correcta",
+				"resposta": "Molt bé! Per mirar el temps no cal instal·lar res."
+			},
+			{
+				"id": "b",
+				"text": "Descarrego i obro el fitxer.",
+				"valor": "incorrecta",
+				"resposta": "T'han pescat. Aquell fitxer podia ser un programa maliciós."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"No descarreguis programes que t'ofereix una web amb pressa."
+		],
+		"consell": "Si dubtes, truca al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+	}
+}

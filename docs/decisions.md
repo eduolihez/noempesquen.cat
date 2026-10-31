@@ -4,7 +4,8 @@
 - **Simulador:** bloc de Gutenberg amb React de WordPress; missions com a tipus de contingut amb guió JSON.
 - **Personatges:** la Llissa (ordinador) i la Pirata Remei (mòbil).
 - **Sense IA de moment:** el comprovador funcionarà amb regles i plantilles en català.
-- **Sense comptes d'usuari:** el progrés es desa al navegador; només estadístiques agregades i anònimes al servidor.
+- **Comptes d'usuari (revisat 2026-10-30):** opcionals i només a l'entrega 3B de la Fase 3 (comptes natius de WordPress, rol `nep_jugador`, formulari fora de la carcassa del simulador, consentiment explícit amb casella de 14 anys). Fins llavors el progrés es desa al navegador; al servidor només hi ha estadístiques agregades i anònimes (sense `user_id` ni IP).
+- **Límit d'enviaments de `/resultat` (2026-10-31):** no és «sense IP». Per comptar enviaments es guarda un transient `nep_rl_*` amb clau `HMAC-SHA256(IP, sal auth del lloc + sal diària)` que caduca en ≤ 1 h; és seudonimització transitòria, no anonimització, i no es relaciona amb les files de la taula. La desinstal·lació esborra aquests transients.
 - **Entorn local:** wp-env (Docker). Sense staging a Dinahosting.
 - **Seguretat del servidor:** capçaleres a `.htaccess`, XML-RPC bloquejat, CSP en mode informe fins que el simulador sigui estable.
 - **Simulador realista (2026-10-29):** ordinador i mòbil simulats a pantalla completa, amb apps de marques inventades i llibertat aparent. Disseny a `docs/superpowers/specs/2026-10-29-simulador-realista-design.md`; estat a `docs/estat-del-projecte.md`.
@@ -17,6 +18,8 @@
 - **Apps de relleno no emiten eventos:** no afectan al motor ni a la puntuación; solo dan sensación de libertad.
 - **Sons (corte 4b):** Web Audio sintetizado, sin ficheros; suena solo tras una interacción, nunca en pausa ni en la petición de girar, y la preferencia `noempesquen-sons` se cambia desde Ajustos y desde la Pausa. Lo que llega durante pausa/girar se marca visto y no suena al reanudar (en la práctica no llega nada: el TICK está parado).
 - **`apps/claus.js`** es la fuente de verdad de los ids de app por dispositivo; el validador de misiones la importa.
+- **Capacidades del CPT `nep_missio` (2026-10-31, M6):** todas las capacidades primitivas del tipo (`capabilities` con `map_meta_cap`) son `nep_gestiona_missions`; un Editor no ve «Missions» ni puede crear, editar, publicar o borrar (REST 403). Solo la tiene `manage_options` (filtro `user_has_cap`) o quien la reciba explícitamente.
+- **Resumen público de decisiones (2026-10-31, N1, aprobado por Edu):** cambia «las estadísticas solo las ve un admin». Tras terminar una misión el jugador ve qué hizo la mayoría vía `GET /noempesquen/v1/resultat/resum?missio=<id>` (anónimo, sin cookies). Lo público son solo agregados de partidas **reales** (nunca `demo=1`) de la versión actual del guion, con n≥10, total en bandas («10-19», «20-49», «50+») y porcentajes en bandas de 10 puntos; una decisión solo sale si su celda tiene ≥10 partidas. Con menos, `{ prou: false }` sin cifras. El panel sigue siendo solo para admin. Caché: transient de 1 h por misión+hash y `Cache-Control: public, max-age=3600` (detrás de un CDN se cachea; no hay datos personales). Sin rate limit: compartiría el presupuesto de IP del POST.
 - **`diaridelbarri.cat`** se resuelve por defecto a la plantilla `diari`; una misión puede sobrescribirlo declarando la web.
 
 ## Corte 4b · pulido (2026-10-30)
