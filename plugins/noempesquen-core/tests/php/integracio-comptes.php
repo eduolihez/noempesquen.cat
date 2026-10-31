@@ -249,6 +249,40 @@ $nep_comprova( false !== get_userdata( $nep_jug_id ), 'neteja: l\'usuari es cons
 wp_delete_user( $nep_jug_id );
 nep_actualitza();
 
+// Privacitat: exportador i esborrador nadius.
+$nep_pv_mail = 'nep_pv_' . wp_rand( 10000, 99999 ) . '@example.test';
+$nep_pv_id   = (int) wp_insert_user(
+	array(
+		'user_login' => 'nep_pv_' . wp_rand( 10000, 99999 ),
+		'user_pass'  => wp_generate_password(),
+		'user_email' => $nep_pv_mail,
+		'role'       => 'nep_jugador',
+	)
+);
+$nep_pv_ids  = nep_compte_ids_missions();
+update_user_meta( $nep_pv_id, 'nep_progres', $nep_pv_ids ? array( $nep_pv_ids[0] => 2 ) : array() );
+update_user_meta(
+	$nep_pv_id,
+	'nep_consentiment',
+	array(
+		'versio' => '7',
+		'data'   => '2026-10-31T10:00:00+00:00',
+	)
+);
+$nep_pv_exp = nep_exporta_dades_personals( $nep_pv_mail );
+$nep_pv_txt = wp_json_encode( $nep_pv_exp );
+$nep_comprova( true === $nep_pv_exp['done'] && 1 === count( $nep_pv_exp['data'] ) && 'nep-compte-' . $nep_pv_id === $nep_pv_exp['data'][0]['item_id'], 'privacitat: exportador retorna el compte' );
+$nep_comprova( false !== strpos( $nep_pv_txt, 'example.test' ) && false !== strpos( $nep_pv_txt, '2026-10-31T10:00:00' ) && ( ! $nep_pv_ids || false !== strpos( $nep_pv_txt, $nep_pv_ids[0] . ': 2' ) ), 'privacitat: exportador inclou email, consentiment i progrés' );
+$nep_pv_buit = nep_exporta_dades_personals( 'no-existeix@example.test' );
+$nep_comprova( array() === $nep_pv_buit['data'] && true === $nep_pv_buit['done'], 'privacitat: email inexistent → buit' );
+$nep_pv_esb = nep_esborra_dades_personals( 'no-existeix@example.test' );
+$nep_comprova( false === $nep_pv_esb['items_removed'] && true === $nep_pv_esb['done'], 'privacitat: esborrador amb email inexistent sense errors' );
+$nep_pv_esb = nep_esborra_dades_personals( $nep_pv_mail );
+$nep_comprova( true === $nep_pv_esb['items_removed'] && ! metadata_exists( 'user', $nep_pv_id, 'nep_progres' ) && ! metadata_exists( 'user', $nep_pv_id, 'nep_consentiment' ) && false !== get_userdata( $nep_pv_id ), 'privacitat: esborrador deixa l\'usuari sense metes nep_*' );
+update_user_meta( $nep_pv_id, 'nep_progres', array() );
+wp_delete_user( $nep_pv_id );
+$nep_comprova( ! metadata_exists( 'user', $nep_pv_id, 'nep_progres' ), 'privacitat: wp_delete_user deixa sense metes' );
+
 if ( $nep_autonom ) {
 	if ( $nep_fallades > 0 ) {
 		WP_CLI::error( "$nep_fallades comprovacions fallades." );
