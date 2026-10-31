@@ -39,7 +39,13 @@ Hecho (commits de la rama):
 - T05 `4f1b1de`, `3584f23`, `6f6bf47`, `f696044` cliente de API, bloque de cuenta (`/compte/`) y e2e.
 - T06 `b3225bf`, `dd2da99`, `9eb8f86`, `ef5f52c` sincronización del progreso del simulador con la cuenta y e2e.
 
-Falta: ronda de arreglos (hallazgos de seguridad y revisión listados en `.claude/orquestar/registro.md`) y verificación final (lint, unit, build, Playwright).
+Ronda de arreglos hecha (T08a y T08b: endurecimiento de login, alta y borrado; `/wp/v2/users*` y contraseñas de aplicación cerradas para jugadores; progreso local borrado al salir). Falta la verificación final (lint, unit, build, Playwright).
+
+Antes de producción:
+
+- Comprobar `nep_ip_client` detrás de Varnish: si `REMOTE_ADDR` es el del proxy, el límite por IP pasa a ser global.
+- Comprobar que `is_ssl()` es cierto detrás del proxy (galeta `Secure`).
+- Crear la página `/compte/` a mano (README).
 
 Pendiente tras 3B:
 

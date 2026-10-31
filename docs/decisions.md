@@ -46,3 +46,10 @@
 - Els comptadors de límit són transients no atòmics: amb molta concurrència es poden passar uns pocs intents (acceptat).
 - `Secure` de la galeta de sessió depèn d'`is_ssl()`: cal comprovar-ho en producció darrere de Varnish.
 - Els jugadors no entren per `wp-login.php` ni XML-RPC (desactivat); `wp-admin` els porta a `/compte/`.
+- Un jugador no pot fer servir `/wp/v2/users*` (canviaria el correu o la contrasenya sense l'actual) ni contrasenyes d'aplicació (l'autenticació Basic saltaria els límits).
+- L'alta revela si un correu ja existeix (200 o 400): és inherent a no verificar el correu i queda acotat pels límits d'altes (acceptat).
+- La recuperació de contrasenya de `wp-login.php` respon igual per a jugadors i correus inexistents; per al personal del lloc el nucli encara envia el correu (resposta diferent, acceptat per no trencar-los la recuperació).
+- Els límits fan servir una sal diària: els comptadors es reinicien a mitjanit.
+- `/compte/` es crea a mà (README), no automàticament.
+- Desinstal·lar treu el rol i les metes `nep_*`, però els usuaris queden sense rol. L'esborrador de dades personals de WordPress tampoc esborra la fila de l'usuari; per esborrar el compte sencer hi ha `DELETE /compte` o wp-admin.
+- En tancar la sessió o esborrar el compte, el progrés local s'esborra (ordinadors compartits).
