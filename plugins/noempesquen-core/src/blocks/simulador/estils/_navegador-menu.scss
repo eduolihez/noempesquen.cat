@@ -1,5 +1,5 @@
 /* Navegador del PC: menú amb l'apartat «Quant a» (només informatiu). */
-
+@use "capes" as *;
 @use "navegador-tokens" as *;
 
 .nep-so .nep-nav-menu {
@@ -16,7 +16,7 @@
 		right: 0;
 		top: calc(100% + 6px);
 		width: 280px;
-		z-index: 5;
+		z-index: $capa-local-menu;
 
 		&[hidden] {
 			display: none;

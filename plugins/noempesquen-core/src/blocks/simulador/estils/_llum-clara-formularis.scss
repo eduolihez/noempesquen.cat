@@ -1,5 +1,5 @@
 /* Llum Clara: àrea client, camps amb suggeriment i còpia falsa. */
-
+@use "capes" as *;
 @use "llum-clara-tokens" as *;
 
 .nep-so .nep-lc {
@@ -164,7 +164,7 @@
 		position: absolute;
 		right: 0;
 		top: 100%;
-		z-index: 5;
+		z-index: $capa-local-menu;
 	}
 
 	.nep-lc-suggeriment__opcio {

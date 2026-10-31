@@ -1,5 +1,5 @@
 /* Posta: lectura, menú «Més», diàleg de denúncia i avís efímer. */
-
+@use "capes" as *;
 @use "posta-tokens" as *;
 
 .nep-so .nep-posta {
@@ -116,7 +116,7 @@
 		padding: 6px 0;
 		position: absolute;
 		top: calc(100% + 4px);
-		z-index: 5;
+		z-index: $capa-local-menu;
 	}
 
 	.nep-posta-mes__item {
@@ -148,7 +148,7 @@
 		justify-content: center;
 		padding: 16px;
 		position: absolute;
-		z-index: 10;
+		z-index: $capa-local-dialeg;
 	}
 
 	.nep-posta-dialeg__caixa {
@@ -207,7 +207,7 @@
 		left: 24px;
 		pointer-events: none;
 		position: absolute;
-		z-index: 6;
+		z-index: $capa-local-avis;
 	}
 
 	.nep-posta__avis {

@@ -1,4 +1,6 @@
 /* Pantalla de bloqueig del mòbil. */
+@use "moviment" as *;
+@use "capes" as *;
 
 .nep-so-m-bloqueig {
 	background: var(--m-fons);
@@ -9,10 +11,10 @@
 	inset: 0;
 	position: absolute;
 	touch-action: none;
-	z-index: 20;
+	z-index: $capa-mobil-bloqueig;
 
 	&.is-sortint {
-		animation: nep-so-m-desbloqueja 0.35s ease-in forwards;
+		animation: nep-so-m-desbloqueja 0.35s $corba-sortida forwards;
 		pointer-events: none;
 	}
 

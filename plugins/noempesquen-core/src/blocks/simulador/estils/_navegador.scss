@@ -1,5 +1,5 @@
 /* Navegador del PC (estil Chromium, sense marca): pestanyes i eines. */
-
+@use "capes" as *;
 @use "navegador-tokens" as *;
 
 /* La barra de títol del sistema es fon amb la franja de pestanyes. */
@@ -280,7 +280,7 @@
 		position: absolute;
 		top: calc(100% + 8px);
 		width: 320px;
-		z-index: 5;
+		z-index: $capa-local-menu;
 
 		&[hidden] {
 			display: none;

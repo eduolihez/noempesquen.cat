@@ -1,5 +1,5 @@
 /* PC simulat: bloqueig, escriptori, finestres i lupa. Tot sota .nep-so. */
-
+@use "capes" as *;
 @use "pc-vidre" as *;
 
 $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M19.5 19.5 28 28' stroke='%23fff' stroke-width='7'/%3E%3Cpath d='M19.5 19.5 28 28' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='13' cy='13' r='9' fill='%23fff' fill-opacity='.35' stroke='%23fff' stroke-width='5'/%3E%3Ccircle cx='13' cy='13' r='9' stroke='%231a1a1a' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E");
@@ -106,10 +106,10 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 	overflow: hidden;
 	position: absolute;
 	text-shadow: 0 1px 12px rgb(0 0 0 / 25%);
-	z-index: 10;
+	z-index: $capa-bloqueig;
 
 	&.is-sortint {
-		animation: nep-so-bloqueig-surt 0.45s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+		animation: nep-so-bloqueig-surt 0.45s $corba-bloqueig forwards;
 	}
 
 	&__fons {
@@ -276,13 +276,13 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 		transform: translateY(64px) scale(0.86);
 		transition:
 			opacity 0.16s ease,
-			transform 0.2s ease-in,
+			transform 0.2s $corba-sortida,
 			visibility 0s linear 0.2s;
 		visibility: hidden;
 	}
 
 	&.is-tancant {
-		animation: nep-so-finestra-tanca 0.14s ease-in forwards;
+		animation: nep-so-finestra-tanca 0.14s $corba-sortida forwards;
 	}
 
 	&__barra {

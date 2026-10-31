@@ -1,9 +1,10 @@
 /* Variables i superfícies acríliques compartides del PC simulat. */
 
+@forward "moviment";
+
 $vidre: rgb(243 243 243 / 85%);
 $vidre-panell: rgb(240 240 240 / 88%);
 $text-secundari: #5c5c5c;
-$corba-entrada: cubic-bezier(0.1, 0.9, 0.2, 1);
 
 @mixin acrilic($fons: $vidre-panell) {
 	backdrop-filter: blur(30px) saturate(1.4);

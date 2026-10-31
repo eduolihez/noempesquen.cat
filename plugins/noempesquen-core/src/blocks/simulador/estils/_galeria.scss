@@ -1,4 +1,5 @@
 /* Galeria del mòbil: quadrícula per dates i visor. */
+@use "capes" as *;
 
 $gal-text: #1a1a1a;
 $gal-text-2: #555b63;
@@ -96,7 +97,7 @@ $gal-fons-visor: #101215;
 	flex-direction: column;
 	inset: 0;
 	position: absolute;
-	z-index: 5;
+	z-index: $capa-local-menu;
 
 	&__cap,
 	&__nav {

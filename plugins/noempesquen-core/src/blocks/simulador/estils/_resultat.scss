@@ -2,6 +2,7 @@
  * Informe de la missió a pantalla completa. Un sol moment fort: la franja
  * de mar amb les estrelles; la resta, quieta i llegible.
  */
+@use "moviment" as *;
 
 .nep-so .nep-res {
 	background: var(--res-fons);
@@ -67,7 +68,7 @@
 		line-height: 0;
 
 		&.is-plena {
-			animation: nep-res-estrella 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+			animation: nep-res-estrella 0.45s $corba-rebot both;
 			color: var(--res-or);
 		}
 

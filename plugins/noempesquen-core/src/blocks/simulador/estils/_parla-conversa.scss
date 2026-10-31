@@ -1,5 +1,5 @@
 /* Parla d'escriptori: conversa, bafarades, respostes ràpides i camp de text. */
-
+@use "capes" as *;
 @use "parla-tokens" as *;
 
 /* ---------- Conversa ---------- */
@@ -484,7 +484,7 @@
 		position: absolute;
 		right: 0;
 		top: 100%;
-		z-index: 5;
+		z-index: $capa-local-menu;
 	}
 
 	&__opcio {

@@ -1,5 +1,5 @@
 /* Navegador: contingut, barra d'estat, pàgina d'error i pestanya nova. */
-
+@use "capes" as *;
 @use "navegador-tokens" as *;
 
 /* ---------- Contingut i barra d'estat ---------- */
@@ -42,7 +42,7 @@
 	position: absolute;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	z-index: 3;
+	z-index: $capa-local-flotant;
 }
 
 .nep-so .nep-nav-carregant {

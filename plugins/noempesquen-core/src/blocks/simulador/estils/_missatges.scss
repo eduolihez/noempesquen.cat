@@ -1,4 +1,5 @@
 /* Missatges (SMS) del mòbil: llista, conversa, contactes, fitxa i fulls. */
+@use "capes" as *;
 
 $sms-accent: #1f5fd1;
 $sms-text: #1a1a1a;
@@ -399,7 +400,7 @@ $sms-fons-full: #fff;
 	background: rgb(0 0 0 / 40%);
 	inset: 0;
 	position: absolute;
-	z-index: 5;
+	z-index: $capa-local-menu;
 }
 
 .nep-so .nep-missatges-fulla {
@@ -417,7 +418,7 @@ $sms-fons-full: #fff;
 	padding: 8px 16px 16px;
 	position: absolute;
 	right: 0;
-	z-index: 6;
+	z-index: $capa-local-avis;
 
 	&__nansa {
 		align-self: center;

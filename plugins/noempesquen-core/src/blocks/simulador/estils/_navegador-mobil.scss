@@ -1,5 +1,5 @@
 /* Navegador al mòbil: una sola barra a dalt i selector de pestanyes. */
-
+@use "capes" as *;
 @use "navegador-tokens" as *;
 
 .nep-so .nep-nav--mobil {
@@ -99,7 +99,7 @@
 	flex-direction: column;
 	inset: 0;
 	position: absolute;
-	z-index: 5;
+	z-index: $capa-local-menu;
 
 	&__capcalera {
 		align-items: center;

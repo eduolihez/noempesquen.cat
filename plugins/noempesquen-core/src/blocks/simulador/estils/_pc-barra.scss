@@ -1,5 +1,5 @@
 /* PC simulat: barra de tasques i menú d'inici. */
-
+@use "capes" as *;
 @use "pc-vidre" as *;
 
 /* ---------- Barra de tasques ---------- */
@@ -16,7 +16,7 @@
 	left: 0;
 	position: absolute;
 	right: 0;
-	z-index: 3;
+	z-index: $capa-barra;
 
 	&__centre {
 		align-items: center;
@@ -56,7 +56,7 @@
 		}
 
 		> svg {
-			transition: transform 0.12s ease;
+			transition: transform $t-rapid ease;
 		}
 	}
 
@@ -209,10 +209,10 @@
 
 	@include superficie;
 
-	animation: nep-so-panell-puja 0.22s $corba-entrada both;
+	animation: nep-so-panell-puja $t-normal $corba-entrada both;
 	bottom: calc(var(--so-alt-barra, 48px) + 12px);
 	position: absolute;
-	z-index: 4;
+	z-index: $capa-centre;
 
 	&:focus {
 		outline: none;

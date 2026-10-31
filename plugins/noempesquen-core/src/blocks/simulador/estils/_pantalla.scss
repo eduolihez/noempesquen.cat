@@ -1,4 +1,5 @@
 /* Embolcall del PC: escalat a 1280×720 i petició de girar. Tot sota .nep-so. */
+@use "capes" as *;
 
 .nep-so-pantalla {
 	height: 100%;
@@ -42,7 +43,7 @@
 	overflow-y: auto;
 	padding: 24px;
 	position: absolute;
-	z-index: 900;
+	z-index: $capa-girar;
 
 	&__panell {
 		align-items: center;

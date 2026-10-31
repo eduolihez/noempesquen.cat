@@ -1,4 +1,6 @@
 /* Conseqüència: capa sobre el sistema quan la partida s'acaba. */
+@use "moviment" as *;
+@use "capes" as *;
 
 .nep-so .nep-cons {
 	align-items: center;
@@ -10,7 +12,7 @@
 	overflow: hidden;
 	padding: 16px;
 	position: absolute;
-	z-index: 900;
+	z-index: $capa-consequencia;
 
 	&--correcta,
 	&--parcial {
@@ -18,7 +20,7 @@
 	}
 
 	&__xarxa {
-		animation: nep-cau 0.7s cubic-bezier(0.5, 0, 0.75, 0) both;
+		animation: nep-cau 0.7s $corba-cau both;
 		border-radius: 0;
 		z-index: 0;
 	}

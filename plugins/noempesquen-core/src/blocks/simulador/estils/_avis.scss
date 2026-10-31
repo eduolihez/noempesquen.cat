@@ -1,6 +1,7 @@
 /* Avisos falsos de les webs: overlay d'alerta, barra d'actualització i
    diàleg de baixada. Viuen DINS de la pàgina simulada (position: absolute),
    mai cobreixen el navegador ni el sistema. Sense cap animació. */
+@use "capes" as *;
 
 $avis-vermell: #a4161a;
 $avis-fosc: #1f2937;
@@ -18,7 +19,7 @@ $avis-blau: #1d4ed8;
 		justify-content: center;
 		padding: 16px;
 		position: absolute;
-		z-index: 20;
+		z-index: $capa-local-descarrega;
 	}
 
 	.nep-avis__finestra,
