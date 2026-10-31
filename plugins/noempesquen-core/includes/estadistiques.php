@@ -406,6 +406,59 @@ function nep_amplada_franja( int $p ): int {
 }
 
 /**
+ * Resum públic d'una missió (el veu el jugador en acabar): què va triar la
+ * gent. Només compten les files reals (`demo` = 0) de la versió actual del
+ * guió. Amb menys de `$k` partides, `{ prou: false }` sense cap xifra. Si no,
+ * el total en franja i, per a cada opció vàlida amb `$k` partides o més, el
+ * percentatge en franja de 10 punts. Les decisions surten en l'ordre de les
+ * opcions (no per vots: l'ordre revelaria més que les franges).
+ *
+ * @param array    $files   Files `missio`, `versio_hash`, `decisio`, `demo`, `n` d'una missió.
+ * @param string   $missio  Id de la missió.
+ * @param string   $hash    Hash actual del guió.
+ * @param string[] $opcions Ids d'opció vàlids, en ordre.
+ * @param int      $k       Partides mínimes (total i per decisió).
+ * @return array{prou: false}|array{n_banda: string, decisions: array<int, array{id: string, banda: string}>}
+ */
+function nep_resum_public( array $files, string $missio, string $hash, array $opcions, int $k ): array {
+	$reals  = array_filter( $files, static fn( $f ) => 0 === (int) ( $f['demo'] ?? 0 ) && $missio === (string) ( $f['missio'] ?? '' ) );
+	$actual = nep_files_versio_actual( array_values( $reals ), array( $missio => $hash ) )['actuals'];
+	$total  = 0;
+	foreach ( $actual as $fila ) {
+		$total += max( 0, (int) ( $fila['n'] ?? 0 ) );
+	}
+	$dist = nep_distribucions( $actual, $k, array( $missio => array_values( $opcions ) ) );
+	if ( ! isset( $dist[ $missio ] ) ) {
+		return array( 'prou' => false );
+	}
+	$decisions = array();
+	foreach ( array_values( $opcions ) as $id ) {
+		$cel = $dist[ $missio ]['decisions'][ $id ] ?? null;
+		if ( $cel && $cel['n'] >= $k ) {
+			$decisions[] = array(
+				'id'    => (string) $id,
+				'banda' => nep_franja_percentatge( $cel['percentatge'] ),
+			);
+		}
+	}
+	return array(
+		'n_banda'   => nep_franja_partides( $total ),
+		'decisions' => $decisions,
+	);
+}
+
+/**
+ * Nom del transient del resum públic d'una missió i versió.
+ *
+ * @param string $missio Id.
+ * @param string $hash   Hash de versió.
+ * @return string
+ */
+function nep_clau_resum( string $missio, string $hash ): string {
+	return 'nep_resum_' . md5( $missio . '|' . $hash );
+}
+
+/**
  * Nom complet de la taula.
  *
  * @return string
@@ -719,6 +772,48 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 	return new WP_REST_Response( null, 204 );
 }
 
+/**
+ * Resum públic d'una missió (endpoint GET /resultat/resum). Anònim i en cau
+ * una hora (transient per missió i versió, i `Cache-Control: public`: un CDN
+ * també el pot desar, no hi ha cap dada personal). Sense límit d'enviaments:
+ * compartiria el pressupost de la IP amb el POST; el cau ja ho frena.
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_resum( WP_REST_Request $request ) {
+	$id   = (string) $request['missio'];
+	$info = nep_info_missions_jugables();
+	if ( ! isset( $info[ $id ] ) ) {
+		return new WP_Error( 'nep_missio_desconeguda', __( 'Missió desconeguda.', 'noempesquen' ), array( 'status' => 404 ) );
+	}
+	$hash  = $info[ $id ]['hash'];
+	$clau  = nep_clau_resum( $id, $hash );
+	$resum = get_transient( $clau );
+	if ( ! is_array( $resum ) ) {
+		global $wpdb;
+		$taula = nep_taula_resultats();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Taula pròpia; el resultat va al transient.
+		$files = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Nom de taula intern.
+				"SELECT missio, versio_hash, decisio, demo, n FROM {$taula} WHERE missio = %s AND versio_hash = %s AND demo = 0",
+				$id,
+				$hash
+			),
+			ARRAY_A
+		);
+		if ( ! is_array( $files ) || '' !== $wpdb->last_error ) {
+			return new WP_Error( 'nep_error_llegint', __( 'No s\'ha pogut llegir el resum.', 'noempesquen' ), array( 'status' => 500 ) );
+		}
+		$resum = nep_resum_public( $files, $id, $hash, $info[ $id ]['opcions'], NEP_RESULTATS_K );
+		set_transient( $clau, $resum, HOUR_IN_SECONDS );
+	}
+	$resposta = new WP_REST_Response( $resum, 200 );
+	$resposta->header( 'Cache-Control', 'public, max-age=3600' );
+	return $resposta;
+}
+
 if ( function_exists( 'add_action' ) ) {
 	// Invalidació del cau de missions. `save_post` de REST arriba abans d'escriure la meta: també es buida en canviar `nep_guio`.
 	add_action( 'save_post_nep_missio', 'nep_buida_cau_missions' );
@@ -776,6 +871,25 @@ if ( function_exists( 'add_action' ) ) {
 						'decisio'   => array(
 							'type'      => 'string',
 							'maxLength' => 32,
+						),
+					),
+				)
+			);
+
+			// Resum públic agregat (franges, n>=10, sense demo). Anònim: sense nonce ni galetes.
+			register_rest_route(
+				'noempesquen/v1',
+				'/resultat/resum',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'permission_callback' => '__return_true',
+					'callback'            => 'nep_rest_resum',
+					'args'                => array(
+						'missio' => array(
+							'type'      => 'string',
+							'required'  => true,
+							'maxLength' => 64,
+							'pattern'   => NEP_PATRO_ID,
 						),
 					),
 				)

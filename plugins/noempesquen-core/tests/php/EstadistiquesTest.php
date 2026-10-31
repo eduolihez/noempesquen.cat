@@ -253,4 +253,75 @@ final class EstadistiquesTest extends TestCase {
 		$this->assertSame( 95, nep_amplada_franja( 90 ) );
 		$this->assertSame( 95, nep_amplada_franja( 100 ) );
 	}
+
+	/**
+	 * Fila completa per al resum públic.
+	 *
+	 * @param string $decisio Decisió.
+	 * @param int    $n       Partides.
+	 * @param int    $demo    1 = demo.
+	 * @param string $hash    Versió.
+	 * @return array
+	 */
+	private static function fila_resum( string $decisio, int $n, int $demo = 0, string $hash = 'h1' ): array {
+		return array(
+			'missio'      => 'm',
+			'versio_hash' => $hash,
+			'decisio'     => $decisio,
+			'demo'        => $demo,
+			'n'           => $n,
+		);
+	}
+
+	public function test_resum_public_sota_k_no_dona_xifres(): void {
+		$r = nep_resum_public( array( self::fila_resum( 'a', 9 ) ), 'm', 'h1', array( 'a', 'b' ), 10 );
+		$this->assertSame( array( 'prou' => false ), $r );
+	}
+
+	public function test_resum_public_franges_i_k_per_decisio(): void {
+		$r = nep_resum_public(
+			array(
+				self::fila_resum( 'b', 8 ),
+				self::fila_resum( 'a', 12 ),
+				self::fila_resum( 'zz', 30 ), // Opció que ja no existeix: compta al total, no surt.
+			),
+			'm',
+			'h1',
+			array( 'a', 'b' ),
+			10
+		);
+		// Total 50: «50+»; a = 24 % → «20-29 %»; b (8 < k) no surt.
+		$this->assertSame(
+			array(
+				'n_banda'   => '50+',
+				'decisions' => array(
+					array(
+						'id'    => 'a',
+						'banda' => '20-29 %',
+					),
+				),
+			),
+			$r
+		);
+	}
+
+	public function test_resum_public_ordre_de_les_opcions(): void {
+		$r = nep_resum_public( array( self::fila_resum( 'b', 15 ), self::fila_resum( 'a', 10 ) ), 'm', 'h1', array( 'a', 'b' ), 10 );
+		$this->assertSame( array( 'a', 'b' ), array_column( $r['decisions'], 'id' ) );
+		$this->assertSame( '20-49', $r['n_banda'] );
+		$this->assertSame( array( '40-49 %', '60-69 %' ), array_column( $r['decisions'], 'banda' ) );
+	}
+
+	public function test_resum_public_exclou_demo_i_versions_antigues(): void {
+		$files = array(
+			self::fila_resum( 'a', 5 ),
+			self::fila_resum( 'a', 80, 1 ),
+			self::fila_resum( 'a', 80, 0, 'vell' ),
+			self::fila_resum( 'a', 80 ), // D'una altra missió (es canvia a sota).
+		);
+		$files[3]['missio'] = 'altra';
+		$this->assertSame( array( 'prou' => false ), nep_resum_public( $files, 'm', 'h1', array( 'a' ), 10 ) );
+		$files[] = self::fila_resum( 'a', 5 );
+		$this->assertSame( '10-19', nep_resum_public( $files, 'm', 'h1', array( 'a' ), 10 )['n_banda'] );
+	}
 }

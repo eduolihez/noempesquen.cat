@@ -277,6 +277,56 @@ nep_pinta_estadistiques();
 $nep_html = (string) ob_get_clean();
 wp_set_current_user( 0 );
 $nep_comprova( ! str_contains( $nep_html, 'Dades de demostració incloses' ) && ! str_contains( $nep_html, 'Decisions: ' . esc_html( $nep_est['titol'] ) ), 'demo: sense files demo no hi ha avís ni barres de la missió' );
+
+// Resum públic GET /resultat/resum: anònim, franges, n>=10 reals de la versió actual, en cau.
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) );
+$nep_hash_resum = nep_info_missions_jugables()[ $nep_est['id'] ]['hash'];
+$nep_resum      = static function ( string $missio ) use ( $nep_hash_resum ): WP_REST_Response {
+	delete_transient( nep_clau_resum( $missio, $nep_hash_resum ) );
+	$peticio = new WP_REST_Request( 'GET', '/noempesquen/v1/resultat/resum' );
+	$peticio->set_query_params( array( 'missio' => $missio ) );
+	return rest_ensure_response( rest_do_request( $peticio ) );
+};
+$nep_fila_resum = static fn( string $decisio, int $n, int $demo = 0, ?string $hash = null ) => $wpdb->insert(
+	$nep_taula,
+	array(
+		'missio'      => $nep_est['id'],
+		'versio_hash' => $hash ?? $nep_hash_resum,
+		'dia'         => gmdate( 'Y-m-d' ),
+		'estrelles'   => 2,
+		'decisio'     => $decisio,
+		'demo'        => $demo,
+		'n'           => $n,
+	)
+);
+$nep_comprova( 404 === $nep_resum( 'no-existeix-mai' )->get_status(), 'resum: missió desconeguda → 404' );
+$nep_comprova( 400 === $nep_resum( $nep_est['id'] . '--prova' )->get_status(), 'resum: id de previsualització → 400' );
+$nep_fila_resum( 'a', 9 );
+$nep_fila_resum( 'a', 50, 1 );
+$nep_fila_resum( 'b', 50, 0, 'aaaaaaaaaaaa' );
+$nep_r = $nep_resum( $nep_est['id'] );
+$nep_comprova( 200 === $nep_r->get_status() && array( 'prou' => false ) === $nep_r->get_data(), 'resum: 9 reals (+ demo + versió antiga) → prou:false sense xifres' );
+$nep_comprova( 'public, max-age=3600' === ( $nep_r->get_headers()['Cache-Control'] ?? '' ), 'resum: Cache-Control public, max-age=3600' );
+$nep_fila_resum( 'c', 11 );
+$nep_r = $nep_resum( $nep_est['id'] );
+$nep_comprova(
+	array(
+		'n_banda'   => '20-49',
+		'decisions' => array(
+			array(
+				'id'    => 'c',
+				'banda' => '50-59 %',
+			),
+		),
+	) === $nep_r->get_data(),
+	'resum: 20 reals → franges; «a» (9 < k) no surt (rebut ' . wp_json_encode( $nep_r->get_data() ) . ')'
+);
+// En cau: una fila nova no canvia la resposta fins que caduca.
+$nep_fila_resum( 'a', 30 );
+$nep_p = new WP_REST_Request( 'GET', '/noempesquen/v1/resultat/resum' );
+$nep_p->set_query_params( array( 'missio' => $nep_est['id'] ) );
+$nep_comprova( '20-49' === ( rest_do_request( $nep_p )->get_data()['n_banda'] ?? '' ), 'resum: la resposta surt del transient' );
+delete_transient( nep_clau_resum( $nep_est['id'], $nep_hash_resum ) );
 // phpcs:enable
 
 // Neteja.
