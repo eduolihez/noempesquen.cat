@@ -55,9 +55,11 @@ $nep_comprova( true === apply_filters( 'show_admin_bar', true ), 'administrador:
 // Neteja: rol i metes desapareixen, l'usuari es conserva.
 update_user_meta( $nep_jug_id, 'nep_progres', 'x' );
 update_user_meta( $nep_jug_id, 'nep_consentiment', '1' );
-defined( 'WP_UNINSTALL_PLUGIN' ) || define( 'WP_UNINSTALL_PLUGIN', 'noempesquen-core/noempesquen-core.php' );
-define( 'NEP_PROVA_NETEJA', true );
-require_once dirname( __DIR__, 2 ) . '/uninstall.php';
+if ( ! function_exists( 'nep_neteja_jugadors' ) ) {
+	defined( 'WP_UNINSTALL_PLUGIN' ) || define( 'WP_UNINSTALL_PLUGIN', 'noempesquen-core/noempesquen-core.php' );
+	define( 'NEP_PROVA_NETEJA', true );
+	require_once dirname( __DIR__, 2 ) . '/uninstall.php';
+}
 nep_neteja_jugadors();
 $nep_comprova( null === get_role( 'nep_jugador' ), 'neteja: rol eliminat' );
 $nep_comprova( '' === get_user_meta( $nep_jug_id, 'nep_progres', true ) && '' === get_user_meta( $nep_jug_id, 'nep_consentiment', true ), 'neteja: metes eliminades' );
