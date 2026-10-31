@@ -139,6 +139,8 @@ Pendiente tras 3B:
 - Navegador: pulsar Enter con la misma URL duplica el historial; `Esc` en la barra de direcciones no restaura el texto.
 - Faltan e2e del teclado en la tira de pestañas y tests de componente de Consecuencia/Resultado.
 
-## Rediseño estético (2026-10-31, sin desplegar)
+## Rediseño estético «Llotja» (2026-10-31, desplegado)
 
-Dirección «señalética de metro»: tres líneas de color (verde, amarillo, rojo) por nivel de misión, rótulos en Barlow Semi Condensed y texto en Atkinson Hyperlegible (ambas OFL, locales en `themes/noempesquen/assets/fonts/`). Home nueva en `templates/front-page.html`, CSS en `assets/tema.css` (encolado en `functions.php`), cabecera y pie rehechos, paleta en `theme.json`. El selector hereda la paleta y la tipografía. `PRODUCT.md` recoge el contexto. Verificado: lint, unit, build, Playwright (2 flakes que pasan aislados) y detector de diseño sin hallazgos. Pendiente: commit/push, `npm run empaqueta` y subir el tema.
+Dirección lonja: azul de caja de pescado, rojo aviso, amarillo de lote; rótulos Big Shoulders y texto Atkinson Hyperlegible (OFL, locales en `themes/noempesquen/assets/fonts/`). CSS en `assets/tema.css`; plantillas en `templates/`. `PRODUCT.md` recoge el contexto.
+
+Pulido posterior (sin desplegar): cabecera sin «Entra a jugar» duplicado, menú en tablet alineado a la izquierda, el hilo del anzuelo ya no cuelga del botón en móvil, cebo de la portada más grande, plantilla `page-compte.html` con rótulo y `h1`, sin sombra dura en `.nep-nota`. Pendiente: `npm run empaqueta` y subir el tema.

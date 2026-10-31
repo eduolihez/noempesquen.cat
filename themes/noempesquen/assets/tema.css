@@ -217,8 +217,8 @@ html {
 
 .nep-capcalera__joc { margin-left: auto; }
 
-.nep-menu__joc { display: none; }
-.nep-menu .is-menu-open .nep-menu__joc { display: block; }
+.nep-menu .nep-menu__joc { display: none; }
+.nep-menu .is-menu-open .nep-menu__joc { display: flex; }
 
 .nep-menu .wp-block-navigation__responsive-container-open svg,
 .nep-menu .wp-block-navigation__responsive-container-close svg { width: 2rem; height: 2rem; }
@@ -231,6 +231,10 @@ html {
 	.nep-marca { margin-right: auto; }
 	.nep-capcalera__joc { margin-left: 0; }
 	.nep-menu { flex-basis: 100%; order: 3; }
+	.wp-block-navigation.nep-menu.is-content-justification-right .wp-block-navigation__container {
+		justify-content: flex-start;
+		margin-left: -0.85rem;
+	}
 }
 
 @media (min-width: 78.01rem) {
@@ -313,7 +317,7 @@ html {
 	position: relative;
 	margin: 0 auto;
 	padding-top: 6.1rem;
-	max-width: 27rem;
+	max-width: 30rem;
 	width: 100%;
 }
 
@@ -357,7 +361,7 @@ html {
 
 .nep-cebo__text {
 	margin: 0;
-	font-size: 1.2rem;
+	font-size: 1.3rem;
 	line-height: 1.45;
 }
 
@@ -402,7 +406,7 @@ html {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	font-size: 1.1rem;
+	font-size: 1.2rem;
 	font-weight: 700;
 }
 
@@ -424,7 +428,11 @@ html {
 
 @media (max-width: 56rem) {
 	.nep-ham__dins { grid-template-columns: minmax(0, 1fr); }
-	.nep-cebo { margin-top: 1rem; }
+	.nep-cebo { margin-top: 5.5rem; }
+	.nep-cebo__fil {
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%);
+		mask-image: linear-gradient(to bottom, transparent, #000 40%);
+	}
 	.nep-cebo__peix { display: none; }
 }
 
@@ -664,6 +672,18 @@ html {
 .nep-prosa .nep-cta-fi { margin-top: 2.5rem; }
 .nep-prosa p, .nep-prosa li { font-size: 1.25rem; line-height: 1.65; }
 .nep-main > * { margin-block-start: 0; }
+.nep-pagina { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+
+.nep-compte-pagina { padding-block: clamp(2.5rem, 6vw, 4.5rem); }
+.nep-compte-pagina .nep-compte { margin-inline: 0; }
+
+.nep-compte__pestanyes [role="tab"] {
+	font-family: var(--nep-rotul);
+	font-weight: 800;
+	font-size: 1.25rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
 .nep-prosa a:not(.nep-btn) { color: var(--nep-mar); text-underline-offset: 0.2em; text-decoration-thickness: 2px; }
 .nep-prosa a:not(.nep-btn):hover { color: var(--nep-port); text-decoration-thickness: 4px; }
 
@@ -720,8 +740,9 @@ html {
 	margin: 2rem 0;
 	padding: 1.1rem 1.35rem;
 	border: 2px solid var(--nep-tinta);
+	border-top: 8px solid var(--nep-segur);
+	border-radius: 10px;
 	background: var(--nep-blanc);
-	box-shadow: 6px 6px 0 var(--nep-segur);
 }
 
 .nep-nota p { margin: 0; }
