@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-31 (cortes 3 a 5c y entrega 3A en `master`, 3A mergeada en `bce1bcc`; entrega 3B de la Fase 3 en la rama `feat/fase3b-comptes`, sin merge ni push)
+Última actualización: 2026-10-31 (cortes 3 a 5c y entrega 3A en `master`, 3A mergeada en `bce1bcc`; 3B mergeada en `master` en local (`02f4461`), `master` 27 commits por delante de `origin`, sin push ni despliegue)
 
 ## Dónde estamos
 
@@ -17,7 +17,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
 | Fase 2 · corte 5c | Misiones «Virus detectat!» (pop-up de soporte técnico falso de Suport Segur Digital en la web Cuina Avui) y «Actualitza el navegador» (barra falsa de actualización en Temps Avui; comprobación en «Quant a Brúixola»); plantilla `article` con `avis`/`barra` y descarga ficticia | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5c-suport-actualitzacio.md`) |
 | Fase 3 · entrega 3A | Panel de misiones en WordPress (CPT `nep_missio` con editor del guion, diagnóstico en vivo, previsualización, plantilla, duplicado, importar/exportar), capacidades propias (`nep_gestiona_missions`, `nep_veu_estadistiques`), estadísticas anónimas por misión (tabla `nep_resultats`, k ≥ 10, datos demo con `wp nep demo-estadistiques`) y resumen público agregado en la pantalla de resultado | **Hecho** (merge a `master`, `bce1bcc`; plan `docs/superpowers/plans/2026-10-30-fase3a-panel-estadistiques.md`) |
-| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **En curso en la rama `feat/fase3b-comptes`** (T01-T06 hechas; faltan ronda de arreglos y verificación final; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
+| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **Hecho y mergeado en `master` local (pendiente de push y despliegue)** (verificación final: lint:js 0 errores, lint:css ok, unit 755, PHPUnit 80 + integración, build ok, Playwright 284/0; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
@@ -28,7 +28,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 ## Pendientes conocidos
 
-### Entrega 3B · cuentas opcionales (rama `feat/fase3b-comptes`)
+### Entrega 3B · cuentas opcionales (mergeada en `master` local)
 
 Hecho (commits de la rama):
 
@@ -39,11 +39,11 @@ Hecho (commits de la rama):
 - T05 `4f1b1de`, `3584f23`, `6f6bf47`, `f696044` cliente de API, bloque de cuenta (`/compte/`) y e2e.
 - T06 `b3225bf`, `dd2da99`, `9eb8f86`, `ef5f52c` sincronización del progreso del simulador con la cuenta y e2e.
 
-Ronda de arreglos hecha (T08a y T08b: endurecimiento de login, alta y borrado; `/wp/v2/users*` y contraseñas de aplicación cerradas para jugadores; progreso local borrado al salir). Falta la verificación final (lint, unit, build, Playwright).
+Ronda de arreglos hecha (T08a y T08b: endurecimiento de login, alta y borrado; `/wp/v2/users*` y contraseñas de aplicación cerradas para jugadores; progreso local borrado al salir). Verificación final hecha (ver tabla).
 
 Antes de producción:
 
-- Comprobar `nep_ip_client` detrás de Varnish: si `REMOTE_ADDR` es el del proxy, el límite por IP pasa a ser global.
+- ~~`nep_ip_client` detrás de Varnish~~: resuelto en el cierre de 3A (Apache registra la IP real, el límite por IP no es global).
 - Comprobar que `is_ssl()` es cierto detrás del proxy (galeta `Secure`).
 - Crear la página `/compte/` a mano (README).
 
@@ -51,7 +51,7 @@ Pendiente tras 3B:
 
 - Verificación de email y recuperación de contraseña (decisión D1: fuera de 3B) -> posible 3C.
 - Gestión de jugadores desde wp-admin (hoy el rol no tiene acceso).
-- Push y merge de la rama a `master` (lo decide Edu).
+- Push de `master` a `origin` (lo decide Edu) y despliegue en producción.
 - `uninstall.php` en multisite sigue sin probar.
 
 ### Pendiente tras la entrega 3A
