@@ -54,7 +54,9 @@ describe( 'proposaId', () => {
 	} );
 
 	it( 'no col·lideix amb els ids ocupats', () => {
-		expect( proposaId( 'Prova', [ 'prova', 'prova-2' ] ) ).toBe( 'prova-3' );
+		expect( proposaId( 'Prova', [ 'prova', 'prova-2' ] ) ).toBe(
+			'prova-3'
+		);
 		expect( proposaId( 'Prova', [ 'prova-2' ] ) ).toBe( 'prova' );
 	} );
 } );

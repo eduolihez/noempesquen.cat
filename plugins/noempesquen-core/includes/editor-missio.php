@@ -112,6 +112,13 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 	<label id="nep-guio-etiqueta" class="nep-guio-etiqueta" for="nep-guio"><?php esc_html_e( 'Guió (JSON, format v2)', 'noempesquen' ); ?></label>
 	<textarea id="nep-guio" name="nep_guio" rows="20" spellcheck="false" aria-describedby="nep-guio-diagnostic"><?php echo esc_textarea( $guio ); ?></textarea>
 	<div id="nep-guio-diagnostic" class="nep-guio-diagnostic" role="status" aria-live="polite"></div>
+	<?php if ( '' === trim( $guio ) || '{}' === trim( $guio ) ) : ?>
+		<p class="nep-guio-plantilla">
+			<button type="button" class="button" id="nep-guio-plantilla"><?php esc_html_e( 'Nova missió des de plantilla', 'noempesquen' ); ?></button>
+			<span class="description"><?php esc_html_e( 'Omple el guió amb una missió d\'exemple i un id nou a partir del títol. No desa res.', 'noempesquen' ); ?></span>
+		</p>
+		<p id="nep-guio-plantilla-avis" class="nep-guio-plantilla-avis" role="status" aria-live="polite"></p>
+	<?php endif; ?>
 	<p class="nep-guio-prova">
 		<?php if ( 'auto-draft' === $post->post_status ) : ?>
 			<?php esc_html_e( 'Desa l\'esborrany per poder provar la missió al simulador.', 'noempesquen' ); ?>
@@ -120,6 +127,12 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 			<span class="description"><?php esc_html_e( 'Prova el guió desat (també si és un esborrany). Desa abans els canvis.', 'noempesquen' ); ?></span>
 		<?php endif; ?>
 	</p>
+	<?php if ( 'auto-draft' !== $post->post_status && current_user_can( 'edit_post', $post->ID ) ) : ?>
+		<p class="nep-guio-duplica">
+			<a class="button" href="<?php echo esc_url( nep_url_duplica_missio( $post->ID ) ); ?>"><?php esc_html_e( 'Duplica la missió', 'noempesquen' ); ?></a>
+			<span class="description"><?php esc_html_e( 'Crea un esborrany amb el guió desat i un id nou.', 'noempesquen' ); ?></span>
+		</p>
+	<?php endif; ?>
 	<?php
 }
 
@@ -204,6 +217,7 @@ function nep_encua_editor_missio( string $hook ): void {
 			array(
 				'codeEditor'   => $code_editor,
 				'idsExistents' => nep_ids_missions_existents( $post_id ),
+				'idsInclosos'  => nep_ids_missions_incloses(),
 			)
 		) . ';',
 		'before'

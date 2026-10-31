@@ -462,3 +462,161 @@ function nep_protegeix_esborrat_guio_per_mid( $check, $meta_id ) {
 	return false;
 }
 add_filter( 'delete_post_metadata_by_mid', 'nep_protegeix_esborrat_guio_per_mid', 10, 2 );
+
+/**
+ * Ids de les missions incloses al plugin (`missions/*.json`, sense el món ni la plantilla).
+ *
+ * @return string[]
+ */
+function nep_ids_missions_incloses(): array {
+	$ids = array();
+	foreach ( nep_fitxers_missions_incloses( NEP_PATH . 'missions/' ) as $fitxer ) {
+		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
+		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
+			$ids[] = $guio['id'];
+		}
+	}
+	return $ids;
+}
+
+/**
+ * URL (amb nonce) que duplica una missió com a esborrany.
+ *
+ * @param int $post_id Missió original.
+ * @return string
+ */
+function nep_url_duplica_missio( int $post_id ): string {
+	return wp_nonce_url(
+		add_query_arg(
+			array(
+				'action' => 'nep_duplica_missio',
+				'post'   => $post_id,
+			),
+			admin_url( 'admin-post.php' )
+		),
+		'nep_duplica_missio_' . $post_id
+	);
+}
+
+/**
+ * Si l'usuari actual pot duplicar la missió.
+ *
+ * @param int $post_id Missió original.
+ * @return bool
+ */
+function nep_pot_duplicar_missio( int $post_id ): bool {
+	$tipus = get_post_type_object( 'nep_missio' );
+	return 'nep_missio' === get_post_type( $post_id )
+		&& $tipus
+		&& current_user_can( 'nep_gestiona_missions' )
+		&& current_user_can( 'edit_post', $post_id )
+		&& current_user_can( $tipus->cap->create_posts );
+}
+
+/**
+ * Acció de fila «Duplica» a la llista de missions.
+ *
+ * @param array   $accions Accions de la fila.
+ * @param WP_Post $post    Entrada.
+ * @return array
+ */
+function nep_accio_fila_duplica( $accions, $post ) {
+	if ( ! $post instanceof WP_Post || 'trash' === $post->post_status || ! nep_pot_duplicar_missio( $post->ID ) ) {
+		return $accions;
+	}
+	$accions['nep_duplica'] = sprintf(
+		'<a href="%s" aria-label="%s">%s</a>',
+		esc_url( nep_url_duplica_missio( $post->ID ) ),
+		/* translators: %s: títol de la missió */
+		esc_attr( sprintf( __( 'Duplica «%s»', 'noempesquen' ), $post->post_title ) ),
+		esc_html__( 'Duplica', 'noempesquen' )
+	);
+	return $accions;
+}
+add_filter( 'post_row_actions', 'nep_accio_fila_duplica', 10, 2 );
+
+/**
+ * Duplica una missió: esborrany amb «(còpia)» al títol, les mateixes metas i un
+ * id de guió nou que no és de cap missió inclosa ni del panell (si no, el
+ * duplicat substituiria l'original a `combinaMissions`). No publica mai.
+ */
+function nep_duplica_missio(): void {
+	$original = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- El nonce es comprova just a continuació.
+	check_admin_referer( 'nep_duplica_missio_' . $original );
+	if ( ! $original || ! nep_pot_duplicar_missio( $original ) ) {
+		wp_die( esc_html__( 'No pots duplicar aquesta missió.', 'noempesquen' ), '', array( 'response' => 403 ) );
+	}
+	$post = get_post( $original );
+
+	$guio = nep_descodifica_guio( (string) get_post_meta( $original, 'nep_guio', true ) );
+	if ( $guio ) {
+		$base       = isset( $guio['id'] ) && is_string( $guio['id'] ) && '' !== $guio['id'] ? $guio['id'] : $post->post_title;
+		$guio['id'] = nep_proposa_id_missio(
+			$base . '-copia',
+			array_merge( nep_ids_missions_incloses(), nep_ids_missions_existents( 0 ) )
+		);
+	}
+
+	$nou = wp_insert_post(
+		wp_slash(
+			array(
+				'post_type'    => 'nep_missio',
+				'post_status'  => 'draft',
+				/* translators: %s: títol de la missió original */
+				'post_title'   => sprintf( __( '%s (còpia)', 'noempesquen' ), $post->post_title ),
+				'post_excerpt' => $post->post_excerpt,
+				'menu_order'   => $post->menu_order,
+			)
+		),
+		true
+	);
+	if ( is_wp_error( $nou ) ) {
+		wp_die( esc_html( $nou->get_error_message() ) );
+	}
+
+	// Dispositiu i personatge abans del guió (les proteccions validen el guió amb els desats).
+	foreach ( array( 'nep_dispositiu', 'nep_personatge' ) as $clau ) {
+		if ( metadata_exists( 'post', $original, $clau ) ) {
+			update_post_meta( $nou, $clau, wp_slash( (string) get_post_meta( $original, $clau, true ) ) );
+		}
+	}
+	if ( $guio ) {
+		update_post_meta( $nou, 'nep_guio', wp_slash( (string) wp_json_encode( $guio, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) ) );
+	}
+
+	wp_safe_redirect(
+		add_query_arg(
+			array(
+				'post'          => $nou,
+				'action'        => 'edit',
+				'nep_duplicada' => $original,
+			),
+			admin_url( 'post.php' )
+		)
+	);
+	exit;
+}
+add_action( 'admin_post_nep_duplica_missio', 'nep_duplica_missio' );
+
+/**
+ * Avís a l'editor del duplicat acabat de crear.
+ */
+function nep_avis_missio_duplicada(): void {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Només decideix si es mostra l'avís.
+	$original = isset( $_GET['nep_duplicada'] ) ? absint( wp_unslash( $_GET['nep_duplicada'] ) ) : 0;
+	$pantalla = get_current_screen();
+	if ( ! $original || ! $pantalla || 'nep_missio' !== $pantalla->post_type || 'post' !== $pantalla->base ) {
+		return;
+	}
+	printf(
+		'<div class="notice notice-success is-dismissible" role="status"><p>%s</p></div>',
+		esc_html(
+			sprintf(
+				/* translators: %s: títol de la missió original */
+				__( 'S\'ha creat un esborrany a partir de «%s» amb un id de guió nou. Revisa\'l abans de publicar-lo.', 'noempesquen' ),
+				get_post_field( 'post_title', $original )
+			)
+		)
+	);
+}
+add_action( 'admin_notices', 'nep_avis_missio_duplicada' );

@@ -29,7 +29,7 @@ export function slugId( titol ) {
  *
  * @param {string}   titol   Títol de la missió.
  * @param {string[]} ocupats Ids de les missions incloses i de les del panell.
- * @return {string}
+ * @return {string} Id lliure.
  */
 export function proposaId( titol, ocupats = [] ) {
 	const base = slugId( titol ) || ID_PER_DEFECTE;
@@ -46,7 +46,7 @@ export function proposaId( titol, ocupats = [] ) {
  *
  * @param {string}   titol   Títol de la missió.
  * @param {string[]} ocupats Ids ocupats.
- * @return {Object}
+ * @return {Object} Guió nou (còpia de la plantilla).
  */
 export function guioDesDePlantilla( titol, ocupats = [] ) {
 	const guio = structuredClone( plantilla );

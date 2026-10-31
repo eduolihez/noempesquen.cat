@@ -7,6 +7,7 @@
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { errorsGuio } from './diagnostic';
+import { guioDesDePlantilla } from './plantilla';
 import mon from '../../missions/mon.json';
 import './style.scss';
 
@@ -102,6 +103,74 @@ function inicia() {
 	dispositiu?.addEventListener( 'change', programa );
 	personatge?.addEventListener( 'change', programa );
 	valida();
+
+	iniciaPlantilla( {
+		editor,
+		textarea,
+		dispositiu,
+		personatge,
+		config,
+		valida,
+	} );
+}
+
+/**
+ * Botó «Nova missió des de plantilla»: omple el guió (no desa res) i valida.
+ *
+ * @param {Object}     opcions
+ * @param {?Object}    opcions.editor     CodeMirror (null: textarea).
+ * @param {Element}    opcions.textarea   Camp del guió.
+ * @param {?Element}   opcions.dispositiu Selector del dispositiu.
+ * @param {?Element}   opcions.personatge Selector del personatge.
+ * @param {Object}     opcions.config     Dades de `window.nepEditorMissio`.
+ * @param {() => void} opcions.valida     Pinta el diagnòstic ara.
+ */
+function iniciaPlantilla( {
+	editor,
+	textarea,
+	dispositiu,
+	personatge,
+	config,
+	valida,
+} ) {
+	const boto = document.getElementById( 'nep-guio-plantilla' );
+	if ( ! boto ) {
+		return;
+	}
+	const avis = document.getElementById( 'nep-guio-plantilla-avis' );
+	boto.addEventListener( 'click', () => {
+		const titol = document.getElementById( 'title' )?.value ?? '';
+		const guio = guioDesDePlantilla( titol, [
+			...( config.idsInclosos ?? [] ),
+			...( config.idsExistents ?? [] ),
+		] );
+		if ( dispositiu ) {
+			dispositiu.value = guio.dispositiu;
+		}
+		if ( personatge ) {
+			personatge.value = guio.personatge;
+		}
+		const text = JSON.stringify( guio, null, '	' );
+		if ( editor ) {
+			editor.setValue( text );
+			editor.save();
+		} else {
+			textarea.value = text;
+		}
+		valida();
+		if ( avis ) {
+			avis.textContent = sprintf(
+				/* translators: %s: id del guió */
+				__(
+					'Guió omplert amb la plantilla i l’id «%s». Revisa’l i desa l’esborrany quan vulguis.',
+					'noempesquen'
+				),
+				guio.id
+			);
+		}
+		boto.closest( '.nep-guio-plantilla' )?.setAttribute( 'hidden', '' );
+		( editor ?? textarea ).focus();
+	} );
 }
 
 if ( document.readyState === 'loading' ) {
