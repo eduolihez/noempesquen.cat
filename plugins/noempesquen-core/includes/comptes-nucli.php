@@ -50,7 +50,7 @@ function nep_sanea_progres( $entrada, $ids_valids ) {
 	if ( ! is_array( $entrada ) ) {
 		return array();
 	}
-	$ids_valids = array_values( (array) $ids_valids );
+	$ids_valids = array_values( array_unique( (array) $ids_valids ) );
 	$sortida    = array();
 	foreach ( $entrada as $id => $estrelles ) {
 		if ( count( $sortida ) >= count( $ids_valids ) ) {

@@ -24,7 +24,7 @@ function nep_neteja_lloc(): void {
 	global $wpdb;
 
 	// Llista explícita d'opcions conegudes (afegir-hi les noves).
-	foreach ( array( 'nep_db_version', 'nep_sal_dia' ) as $opcio ) {
+	foreach ( array( 'nep_db_version', 'nep_sal_dia', 'nep_hash_fals' ) as $opcio ) {
 		delete_option( $opcio );
 	}
 
@@ -50,8 +50,8 @@ function nep_neteja_lloc(): void {
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nep_resultats" );
 }
 
-// Quan el carrega el test d'integració només es defineix la funció.
-if ( defined( 'NEP_PROVA_NETEJA' ) ) {
+// Quan el carrega el test d'integració (WP-CLI) només es defineixen les funcions; fora de WP-CLI la constant no té efecte.
+if ( defined( 'NEP_PROVA_NETEJA' ) && defined( 'WP_CLI' ) && WP_CLI ) {
 	return;
 }
 

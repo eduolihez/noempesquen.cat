@@ -110,6 +110,22 @@ final class ComptesNucliTest extends TestCase {
 				)
 			)
 		);
+		$this->assertFalse(
+			nep_consentiment_valid(
+				array(
+					'acepta'       => '1',
+					'majoria_edat' => '1',
+				)
+			)
+		);
+		$this->assertFalse(
+			nep_consentiment_valid(
+				array(
+					'acepta'       => true,
+					'majoria_edat' => 1,
+				)
+			)
+		);
 		$this->assertFalse( nep_consentiment_valid( null ) );
 		$this->assertSame( '2026-10-31', NEP_VERSIO_CONSENTIMENT );
 	}

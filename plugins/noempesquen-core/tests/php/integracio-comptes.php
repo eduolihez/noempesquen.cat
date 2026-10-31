@@ -358,8 +358,16 @@ $nep_pv_buit = nep_exporta_dades_personals( 'no-existeix@example.test' );
 $nep_comprova( array() === $nep_pv_buit['data'] && true === $nep_pv_buit['done'], 'privacitat: email inexistent → buit' );
 $nep_pv_esb = nep_esborra_dades_personals( 'no-existeix@example.test' );
 $nep_comprova( false === $nep_pv_esb['items_removed'] && true === $nep_pv_esb['done'], 'privacitat: esborrador amb email inexistent sense errors' );
+WP_Session_Tokens::get_instance( $nep_pv_id )->create( time() + HOUR_IN_SECONDS );
+$nep_pv_ses = count( WP_Session_Tokens::get_instance( $nep_pv_id )->get_all() );
 $nep_pv_esb = nep_esborra_dades_personals( $nep_pv_mail );
+$nep_comprova( 1 === $nep_pv_ses && array() === WP_Session_Tokens::get_instance( $nep_pv_id )->get_all(), 'privacitat: l\'esborrador destrueix les sessions' );
 $nep_comprova( true === $nep_pv_esb['items_removed'] && ! metadata_exists( 'user', $nep_pv_id, 'nep_progres' ) && ! metadata_exists( 'user', $nep_pv_id, 'nep_consentiment' ) && false !== get_userdata( $nep_pv_id ), 'privacitat: esborrador deixa l\'usuari sense metes nep_*' );
+// El ganxo delete_user esborra les metes sense passar per l'esborrador.
+update_user_meta( $nep_pv_id, 'nep_progres', array( 'x' => 1 ) );
+update_user_meta( $nep_pv_id, 'nep_consentiment', array( 'versio' => '7' ) );
+do_action( 'delete_user', $nep_pv_id, null, get_userdata( $nep_pv_id ) );
+$nep_comprova( false !== has_action( 'delete_user', 'nep_esborra_metes_compte' ) && ! metadata_exists( 'user', $nep_pv_id, 'nep_progres' ) && ! metadata_exists( 'user', $nep_pv_id, 'nep_consentiment' ), 'privacitat: el ganxo delete_user esborra les metes' );
 update_user_meta( $nep_pv_id, 'nep_progres', array() );
 wp_delete_user( $nep_pv_id );
 $nep_comprova( ! metadata_exists( 'user', $nep_pv_id, 'nep_progres' ), 'privacitat: wp_delete_user deixa sense metes' );
