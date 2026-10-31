@@ -236,6 +236,8 @@ html {
 @media (min-width: 78.01rem) {
 	.nep-menu { order: 1; }
 	.nep-capcalera__joc { order: 2; margin-left: 0; }
+	.nep-capcalera__dins { column-gap: 1.25rem; }
+	.nep-menu .wp-block-navigation-item__content { font-size: 1.1rem; padding: 0 0.65rem; }
 }
 
 @media (max-width: 40rem) {
