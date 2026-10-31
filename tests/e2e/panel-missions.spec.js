@@ -86,7 +86,7 @@ test( 'mostra els errors en viu i no publica un guió invàlid', async ( { page 
 
 	const id = `e2e-invalida-${ Date.now() }`;
 	await escriuGuio( page, guio( id, { versio: 1, dispositiu: 'mobil' } ) );
-	await expect( diagnostic ).toContainText( 'versio no suportada' );
+	await expect( diagnostic ).toContainText( 'La versió del format ha de ser 2' );
 	await expect( diagnostic ).toContainText( 'no coincideix' );
 
 	const greus = (
@@ -225,4 +225,68 @@ test( '«Duplica» a la llista no reutilitza l’id d’una missió inclosa', as
 
 	await page.goto( `/wp-admin/post.php?post=${ original }&action=edit` );
 	expect( ( await llegeixGuio( page ) ).id ).toBe( factura.id );
+} );
+
+const cursor = ( page ) =>
+	page.evaluate( () => document.querySelector( '#nep-guio-missio .CodeMirror' ).CodeMirror.getCursor() );
+
+test( '«Exporta» descarrega el guió de l’editor com a <id>.json', async ( { page } ) => {
+	const id = `e2e-exporta-${ Date.now() }`;
+	await novaMissio( page, 'Prova e2e exporta' );
+	const text = JSON.stringify( { ...factura, id }, null, '	' );
+	await escriuGuio( page, text );
+	const [ baixada ] = await Promise.all( [
+		page.waitForEvent( 'download' ),
+		page.getByRole( 'button', { name: 'Exporta' } ).click(),
+	] );
+	expect( baixada.suggestedFilename() ).toBe( `${ id }.json` );
+	const fs = require( 'fs' );
+	expect( fs.readFileSync( await baixada.path(), 'utf8' ) ).toBe( `${ text }\n` );
+} );
+
+test( '«Importa» posa el guió a l’editor sense desar i rebutja fitxers dolents', async ( { page } ) => {
+	await novaMissio( page, 'Prova e2e importa' );
+	const avis = page.locator( '#nep-guio-io-avis' );
+	await expect( avis ).toHaveAttribute( 'role', 'status' );
+	const fitxer = page.locator( '#nep-guio-fitxer' );
+	const id = `e2e-importa-${ Date.now() }`;
+	const text = JSON.stringify( { ...factura, id, versio: 1 }, null, '	' );
+
+	await fitxer.setInputFiles( { name: 'guio.json', mimeType: 'application/json', buffer: Buffer.from( text ) } );
+	await expect( avis ).toHaveText( 'Guió importat. Revisa els errors abans de desar.' );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( id );
+	await expect( page.locator( '#nep-guio-diagnostic' ) ).toContainText( 'La versió del format ha de ser 2' );
+	await expect( page ).toHaveURL( /post-new\.php/ );
+
+	await fitxer.setInputFiles( { name: 'trencat.json', mimeType: 'application/json', buffer: Buffer.from( '{ "id": <b>x</b>' ) } );
+	await expect( avis ).toContainText( 'no és un JSON vàlid' );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( id );
+	await expect( page.locator( '#nep-guio-missio b' ) ).toHaveCount( 0 );
+
+	await fitxer.setInputFiles( {
+		name: 'gran.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from( `{"a":"${ 'x'.repeat( 524288 ) }"}` ),
+	} );
+	await expect( avis ).toContainText( 'massa gran' );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( id );
+} );
+
+test( '«Ves-hi» porta el cursor a la línia de l’error', async ( { page } ) => {
+	await novaMissio( page, 'Prova e2e ves-hi' );
+	const text = JSON.stringify( { ...factura, id: `e2e-vesi-${ Date.now() }`, versio: 1 }, null, '	' );
+	await escriuGuio( page, text );
+	const error = page.locator( '#nep-guio-diagnostic li' ).filter( { hasText: 'La versió del format' } );
+	const boto = error.getByRole( 'button', { name: 'Ves-hi' } );
+	await expect( boto ).toBeVisible();
+	const linia = text.split( '\n' ).findIndex( ( l ) => l.includes( '"versio"' ) );
+	await boto.focus();
+	await page.keyboard.press( 'Enter' );
+	expect( ( await cursor( page ) ).line ).toBe( linia );
+
+	// Un error de sintaxi també es pot localitzar.
+	await escriuGuio( page, '{\n\t"id": "x",\n\t"titol": oops\n}' );
+	await expect( page.locator( '#nep-guio-diagnostic' ) ).toContainText( 'no és un JSON vàlid' );
+	await page.locator( '#nep-guio-diagnostic' ).getByRole( 'button', { name: 'Ves-hi' } ).click();
+	expect( await cursor( page ) ).toMatchObject( { line: 2, ch: 10 } );
 } );
