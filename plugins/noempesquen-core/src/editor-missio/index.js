@@ -6,7 +6,8 @@
  * no carrega res del simulador dins del wp-admin.
  */
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { errorsGuio } from './diagnostic';
+import { diagnosticGuio } from './diagnostic';
+import { posicioDeRuta, posicioErrorSintaxi } from './localitza';
 import { guioDesDePlantilla } from './plantilla';
 import {
 	MIDA_MAXIMA,
@@ -24,8 +25,38 @@ const ESPERA_MS = 300;
 // tornaria a anunciar la regió viva).
 let darrer = null;
 
-function pinta( caixa, errors ) {
-	const clau = JSON.stringify( errors );
+/**
+ * On és un error dins del text actual (es calcula en el moment: el text pot
+ * haver canviat per sobre sense que canviï la llista d'errors).
+ *
+ * @param {Object} error Error de `diagnosticGuio`.
+ * @param {string} text  Text actual de l'editor.
+ * @return {?number} Índex dins del text.
+ */
+function posicioError( error, text ) {
+	if ( error.ruta ) {
+		return posicioDeRuta( text, error.ruta );
+	}
+	return error.posicio === null
+		? null
+		: posicioErrorSintaxi( text, error.codi );
+}
+
+/**
+ * Pinta el diagnòstic. Cada error localitzable té un botó «Ves-hi».
+ *
+ * @param {Element}                 caixa  Regió del diagnòstic.
+ * @param {Array}                   errors Errors de `diagnosticGuio`.
+ * @param {string}                  text   Text actual de l'editor.
+ * @param {(error: Object) => void} vesHi  Porta el cursor a l'error.
+ */
+function pinta( caixa, errors, text, vesHi ) {
+	const visibles = errors.map( ( e ) => ( {
+		...e,
+		posicio: undefined,
+		localitzable: posicioError( e, text ) !== null,
+	} ) );
+	const clau = JSON.stringify( visibles );
 	if ( clau === darrer ) {
 		return;
 	}
@@ -50,9 +81,26 @@ function pinta( caixa, errors ) {
 		errors.length
 	);
 	const llista = document.createElement( 'ul' );
-	errors.forEach( ( error ) => {
+	visibles.forEach( ( error, n ) => {
 		const li = document.createElement( 'li' );
-		li.textContent = error;
+		const descripcio = document.createElement( 'span' );
+		descripcio.id = `nep-guio-error-${ n }`;
+		if ( error.on ) {
+			const on = document.createElement( 'strong' );
+			on.textContent = `${ error.on }: `;
+			descripcio.append( on );
+		}
+		descripcio.append( error.text );
+		li.append( descripcio );
+		if ( error.localitzable ) {
+			const boto = document.createElement( 'button' );
+			boto.type = 'button';
+			boto.className = 'button button-small nep-guio-diagnostic__ves';
+			boto.textContent = __( 'Ves-hi', 'noempesquen' );
+			boto.setAttribute( 'aria-describedby', descripcio.id );
+			boto.addEventListener( 'click', () => vesHi( errors[ n ] ) );
+			li.append( boto );
+		}
 		llista.append( li );
 	} );
 	caixa.append( titol, llista );
@@ -82,15 +130,33 @@ function inicia() {
 			.setAttribute( 'aria-describedby', 'nep-guio-diagnostic' );
 	}
 
+	const text = () => ( editor ? editor.getValue() : textarea.value );
+	const vesHi = ( error ) => {
+		const index = posicioError( error, text() );
+		if ( index === null ) {
+			return;
+		}
+		if ( editor ) {
+			const pos = editor.posFromIndex( index );
+			editor.focus();
+			editor.setCursor( pos );
+			editor.scrollIntoView( pos, 80 );
+		} else {
+			textarea.focus();
+			textarea.setSelectionRange( index, index );
+		}
+	};
 	const valida = () =>
 		pinta(
 			caixa,
-			errorsGuio( editor ? editor.getValue() : textarea.value, {
+			diagnosticGuio( text(), {
 				mon,
 				dispositiu: dispositiu?.value,
 				personatge: personatge?.value,
 				idsExistents: config.idsExistents,
-			} )
+			} ),
+			text(),
+			vesHi
 		);
 
 	let temps = null;
@@ -232,7 +298,7 @@ function iniciaIO( { editor, textarea, valida } ) {
 		} else {
 			try {
 				resultat = llegeixImportat( await triat.text() );
-			} catch ( e ) {
+			} catch {
 				resultat = llegeixImportat( null );
 			}
 		}
