@@ -1,4 +1,5 @@
 /* Navegador al mòbil: una sola barra a dalt i selector de pestanyes. */
+@use "tokens" as *;
 @use "capes" as *;
 @use "navegador-tokens" as *;
 
@@ -23,7 +24,7 @@
 			height: 44px;
 
 			&:focus-visible {
-				outline: 2px solid var(--so-accent, #0b57d0);
+				outline: 2px solid var(--so-accent, #{$tok-accent-mobil});
 				outline-offset: -2px;
 			}
 		}
@@ -139,7 +140,7 @@
 		margin: 0;
 
 		&.is-activa {
-			border-color: var(--so-accent, #0b57d0);
+			border-color: var(--so-accent, #{$tok-accent-mobil});
 		}
 	}
 
@@ -198,7 +199,7 @@
 	&__tanca {
 
 		&:focus-visible {
-			outline: 2px solid var(--so-accent, #0b57d0);
+			outline: 2px solid var(--so-accent, #{$tok-accent-mobil});
 			outline-offset: -2px;
 		}
 	}

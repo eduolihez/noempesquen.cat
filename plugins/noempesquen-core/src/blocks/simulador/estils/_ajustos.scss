@@ -1,7 +1,8 @@
 /* Ajustos del mòbil: llista i subpantalles. */
+@use "tokens" as *;
 
 $ajt-accent: #1f5fd1;
-$ajt-text: #1a1a1a;
+$ajt-text: $tok-tinta;
 $ajt-text-2: #555b63;
 $ajt-vora: #e2e5ea;
 $ajt-perill: #b42318;

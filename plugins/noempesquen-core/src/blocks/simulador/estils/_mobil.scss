@@ -1,5 +1,5 @@
 /* Mòbil simulat: marc, barra d'estat, inici, apps, navegació i lupa. */
-
+@use "tokens" as *;
 @use "mobil-bloqueig";
 @use "mobil-centre";
 
@@ -18,7 +18,7 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 .nep-so-mobil {
 	--m-fons: radial-gradient(120% 80% at 20% 0%, #3b4f8f 0%, transparent 60%), radial-gradient(100% 70% at 100% 100%, #1f6b5e 0%, transparent 60%), linear-gradient(160deg, #1b2240, #0f1a24);
-	--m-accent: #0b57d0;
+	--m-accent: #{$tok-accent-mobil};
 
 	background: var(--m-fons);
 	color: #fff;
@@ -98,7 +98,7 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 	&.is-clar {
 		background: #fff;
-		color: #1a1a1a;
+		color: $tok-tinta;
 	}
 
 	&__icones {
@@ -200,7 +200,7 @@ button.nep-so-m-estat {
 /* Apps a pantalla completa: només la de dalt de la pila es veu. */
 .nep-so-m-app-pantalla {
 	background: #fff;
-	color: #1a1a1a;
+	color: $tok-tinta;
 	inset: 0;
 	overflow: auto;
 	position: absolute;
@@ -247,7 +247,7 @@ button.nep-so-m-estat {
 /* Focus del sistema: anell fosc i filet blanc, visible sobre qualsevol fons. */
 .nep-so .nep-so-mobil :focus-visible {
 	box-shadow: 0 0 0 2px #fff;
-	outline: 2px solid #1a1a1a;
+	outline: 2px solid $tok-foco;
 	outline-offset: 2px;
 }
 

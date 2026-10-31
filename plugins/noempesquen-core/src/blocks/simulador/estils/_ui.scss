@@ -1,4 +1,5 @@
 /* Text inspeccionable i enllaços del cos dels missatges. */
+@use "tokens" as *;
 
 .nep-so {
 
@@ -25,7 +26,7 @@
 	/* Marca discreta de progrés amb la lupa apagada. */
 	.nep-marcat {
 		text-decoration: underline;
-		text-decoration-color: #1e7b45;
+		text-decoration-color: $tok-verd-segur;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 2px;
 	}
@@ -34,14 +35,14 @@
 
 		.nep-inspecciona {
 			cursor: inherit;
-			text-decoration: underline wavy #b98a00;
+			text-decoration: underline wavy $tok-ressalt-vora;
 			text-decoration-thickness: 1px;
 			text-underline-offset: 3px;
 
 			&:hover,
 			&:focus-visible {
-				background: #fff3c4;
-				color: #1a1a1a;
+				background: $tok-ressalt-fons;
+				color: $tok-tinta;
 			}
 
 			&:focus-visible {
@@ -50,7 +51,7 @@
 			}
 
 			&.nep-marcat {
-				outline: 2px solid #1e7b45;
+				outline: 2px solid $tok-verd-segur;
 				outline-offset: 1px;
 				text-decoration: none;
 			}

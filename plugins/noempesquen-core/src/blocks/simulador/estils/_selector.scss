@@ -3,6 +3,7 @@
  * joc (mar, escuma i or), com l'informe de la missió. Un sol moment fort,
  * la targeta «Continua per aquí»; la resta, net i llegible.
  */
+@use "tokens" as *;
 
 .nep-selector {
 	--sel-tinta: var(--nep-text, #14213d);
@@ -236,7 +237,7 @@
 .nep-sel-horitzontal {
 	align-items: center;
 	align-self: flex-start;
-	background: #fff3c4;
+	background: $tok-ressalt-fons;
 	border: 1px solid var(--sel-or-tinta);
 	border-radius: 6px;
 	color: #5c4500;
@@ -332,7 +333,7 @@
 	}
 
 	.nep-sel-horitzontal {
-		background: #fff3c4;
+		background: $tok-ressalt-fons;
 		color: #5c4500;
 	}
 

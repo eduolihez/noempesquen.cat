@@ -1,6 +1,7 @@
 /* Ullada: xarxa social de farciment del mòbil. */
+@use "tokens" as *;
 
-$ull-text: #1a1a1a;
+$ull-text: $tok-tinta;
 $ull-text-2: #555b63;
 $ull-vora: #8a9099;
 $ull-vora-suau: #e2e5ea;

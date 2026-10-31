@@ -1,4 +1,5 @@
 /* Parla d'escriptori: conversa, bafarades, respostes ràpides i camp de text. */
+@use "tokens" as *;
 @use "capes" as *;
 @use "parla-tokens" as *;
 
@@ -74,7 +75,7 @@
 	user-select: text;
 
 	&:focus-visible {
-		box-shadow: inset 0 0 0 2px #1a1a1a;
+		box-shadow: inset 0 0 0 2px $tok-foco;
 		outline: none;
 	}
 

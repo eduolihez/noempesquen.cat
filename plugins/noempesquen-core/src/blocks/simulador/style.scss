@@ -1,3 +1,4 @@
+@use "estils/tokens" as *;
 @use "estils/fonts";
 @use "estils/so";
 @use "estils/pc";
@@ -45,7 +46,7 @@
 	--nep-mar: var(--wp--preset--color--mar, #0b5e7a);
 	--nep-escuma: var(--wp--preset--color--escuma, #ddeff2);
 	--nep-alerta: var(--wp--preset--color--alerta, #b42318);
-	--nep-segur: var(--wp--preset--color--segur, #1e7b45);
+	--nep-segur: var(--wp--preset--color--segur, #{$tok-verd-segur});
 	--nep-vora: #c9cfd6;
 	--nep-radi: 12px;
 
@@ -128,8 +129,8 @@
 	}
 
 	&--lupa.is-actiu {
-		background: #fff3c4;
-		border-color: #b98a00;
+		background: $tok-ressalt-fons;
+		border-color: $tok-ressalt-vora;
 	}
 }
 

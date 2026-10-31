@@ -1,7 +1,8 @@
 /* Galeria del mòbil: quadrícula per dates i visor. */
+@use "tokens" as *;
 @use "capes" as *;
 
-$gal-text: #1a1a1a;
+$gal-text: $tok-tinta;
 $gal-text-2: #555b63;
 $gal-vora: #e2e5ea;
 $gal-fons-visor: #101215;

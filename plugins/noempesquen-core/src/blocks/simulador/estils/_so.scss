@@ -1,9 +1,10 @@
 /* Carcasa del sistema simulat (escriptori i mòbil). Tot sota .nep-so. */
+@use "tokens" as *;
 @use "capes" as *;
 
 .nep-so {
 	--so-accent: #005fb8;
-	--so-text: #1a1a1a;
+	--so-text: #{$tok-tinta};
 	--so-vidre: rgb(243 243 243 / 85%);
 
 	background: #000;

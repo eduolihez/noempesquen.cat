@@ -2,6 +2,7 @@
  * Marca del joc per a la conseqüència i l'informe de la missió: surten de
  * l'estètica del sistema simulat a propòsit (paleta del tema).
  */
+@use "tokens" as *;
 
 .nep-so {
 	--res-fons: var(--nep-fons, #f7f4ec);
@@ -11,7 +12,7 @@
 	--res-mar-fosc: #084a61;
 	--res-escuma: var(--nep-escuma, #ddeff2);
 	--res-alerta: var(--nep-alerta, #b42318);
-	--res-segur: var(--nep-segur, #1e7b45);
+	--res-segur: var(--nep-segur, #{$tok-verd-segur});
 	--res-or: #f2b705;
 	--res-filet: rgb(20 33 61 / 14%);
 	--res-display: "Bahnschrift", "DIN Alternate", "Avenir Next Condensed", "Roboto Condensed", system-ui, sans-serif;

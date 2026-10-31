@@ -1,8 +1,9 @@
 /* Missatges (SMS) del mòbil: llista, conversa, contactes, fitxa i fulls. */
+@use "tokens" as *;
 @use "capes" as *;
 
 $sms-accent: #1f5fd1;
-$sms-text: #1a1a1a;
+$sms-text: $tok-tinta;
 $sms-text-2: #555b63;
 $sms-vora: #e2e5ea;
 $sms-rebut: #eef1f5;

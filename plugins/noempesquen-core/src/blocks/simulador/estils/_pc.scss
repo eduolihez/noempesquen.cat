@@ -1,4 +1,5 @@
 /* PC simulat: bloqueig, escriptori, finestres i lupa. Tot sota .nep-so. */
+@use "tokens" as *;
 @use "capes" as *;
 @use "pc-vidre" as *;
 
@@ -46,7 +47,7 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 /* Focus del sistema: anell fosc i filet blanc, visible sobre qualsevol fons. */
 .nep-so .nep-so-pc :focus-visible {
 	box-shadow: 0 0 0 1px #fff;
-	outline: 2px solid #1a1a1a;
+	outline: 2px solid $tok-foco;
 	outline-offset: 1px;
 }
 
@@ -322,7 +323,7 @@ $cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 		align-items: center;
 		background: transparent;
 		border: 0;
-		color: #1a1a1a;
+		color: $tok-tinta;
 		display: flex;
 		height: max(32px, var(--so-tactil, 0px));
 		justify-content: center;

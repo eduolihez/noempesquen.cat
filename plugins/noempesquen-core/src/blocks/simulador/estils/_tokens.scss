@@ -1,0 +1,23 @@
+/*
+ * Colors compartits del sistema simulat, anomenats per funció (no pel valor).
+ * Els tokens de cada app (llum-clara, navegador, parla, posta, resultat) es
+ * queden als seus fitxers; aquí només hi ha els que es repeteixen entre parts.
+ */
+
+/* Text principal del sistema (escriptori, mòbil, apps). */
+$tok-tinta: #1a1a1a;
+
+/* Anell de focus visible dins del sistema simulat. */
+$tok-foco: #1a1a1a;
+
+/* Verd de «segur» i marca de progrés (subratllat, lupa apagada). */
+$tok-verd-segur: #1e7b45;
+
+/* Ressaltat groc: lupa, selector d'opcions i hover. */
+$tok-ressalt-fons: #fff3c4;
+
+/* Vora i subratllat ondulat del ressaltat groc. */
+$tok-ressalt-vora: #b98a00;
+
+/* Accent del mòbil simulat (també fallback del navegador). */
+$tok-accent-mobil: #0b57d0;

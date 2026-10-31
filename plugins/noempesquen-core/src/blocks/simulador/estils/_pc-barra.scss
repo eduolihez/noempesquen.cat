@@ -1,4 +1,5 @@
 /* PC simulat: barra de tasques i menú d'inici. */
+@use "tokens" as *;
 @use "capes" as *;
 @use "pc-vidre" as *;
 
@@ -179,7 +180,7 @@
 	border-radius: 4px;
 	bottom: calc(100% + 12px);
 	box-shadow: 0 4px 12px rgb(0 0 0 / 14%);
-	color: #1a1a1a;
+	color: $tok-tinta;
 	font-size: 12px;
 	left: 50%;
 	line-height: 16px;
@@ -250,7 +251,7 @@
 		input {
 			background: transparent;
 			border: 0;
-			color: #1a1a1a;
+			color: $tok-tinta;
 			align-self: stretch;
 			flex: 1;
 			min-width: 0;

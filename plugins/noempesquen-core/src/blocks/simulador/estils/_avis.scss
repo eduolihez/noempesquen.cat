@@ -1,6 +1,7 @@
 /* Avisos falsos de les webs: overlay d'alerta, barra d'actualització i
    diàleg de baixada. Viuen DINS de la pàgina simulada (position: absolute),
    mai cobreixen el navegador ni el sistema. Sense cap animació. */
+@use "tokens" as *;
 @use "capes" as *;
 
 $avis-vermell: #a4161a;
@@ -141,7 +142,7 @@ $avis-blau: #1d4ed8;
 	.nep-barra-act {
 		align-items: center;
 		background: $avis-groc;
-		border-bottom: 1px solid #b98a00;
+		border-bottom: 1px solid $tok-ressalt-vora;
 		color: $avis-fosc;
 		display: flex;
 		flex-wrap: wrap;
