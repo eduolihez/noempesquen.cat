@@ -102,20 +102,23 @@ function nep_es_jugador( $user = null ): bool {
 	return $user instanceof WP_User && in_array( 'nep_jugador', (array) $user->roles, true );
 }
 
-// El jugador no veu wp-admin: es redirigeix al seu compte (AJAX, admin-post i cron no es toquen).
-add_action(
-	'admin_init',
-	static function () {
-		if ( ! nep_es_jugador() || wp_doing_ajax() || wp_doing_cron() ) {
-			return;
-		}
-		if ( 'admin-post.php' === basename( wp_parse_url( (string) ( $_SERVER['SCRIPT_NAME'] ?? '' ), PHP_URL_PATH ) ?? '' ) ) {
-			return;
-		}
-		wp_safe_redirect( home_url( '/compte/' ) );
-		exit;
+/**
+ * El jugador no veu wp-admin: es redirigeix al seu compte (AJAX, admin-post i
+ * cron no es toquen). Com que el rol no té `read`, `wp-admin/menu.php` crida
+ * `wp_die` abans d'`admin_init`; per això també penja d'`admin_page_access_denied`.
+ */
+function nep_redirigeix_jugador_admin(): void {
+	if ( ! nep_es_jugador() || wp_doing_ajax() || wp_doing_cron() ) {
+		return;
 	}
-);
+	if ( 'admin-post.php' === basename( (string) wp_parse_url( (string) ( $_SERVER['SCRIPT_NAME'] ?? '' ), PHP_URL_PATH ) ) ) {
+		return;
+	}
+	wp_safe_redirect( home_url( '/compte/' ) );
+	exit;
+}
+add_action( 'admin_page_access_denied', 'nep_redirigeix_jugador_admin' );
+add_action( 'admin_init', 'nep_redirigeix_jugador_admin' );
 
 // Sense barra d'administració per al jugador.
 add_filter(

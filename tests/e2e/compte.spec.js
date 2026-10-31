@@ -191,15 +191,14 @@ test( 'en recarregar segueix amb sessió i l’HTML no porta cap nonce', async (
 	expect( await greusAxe( page ) ).toEqual( [] );
 } );
 
-// FIXME (T01, includes/capacitats.php): el rol nep_jugador no té cap capacitat i
-// wp-admin/includes/menu.php fa wp_die («No teniu permisos…») abans que arribi
-// `admin_init`, on hi ha la redirecció. Cal moure-la a un ganxo anterior
-// (p. ex. `admin_page_access_denied`) o donar `read` al rol.
-test.fixme( 'un jugador que obre /wp-admin/ acaba a /compte/ sense barra d’administració', async () => {
-	await page.goto( '/wp-admin/' );
-	await expect( page ).toHaveURL( /\/compte\/$/ );
-	await expect( titolPanell() ).toBeVisible();
-	await expect( page.locator( '#wpadminbar' ) ).toHaveCount( 0 );
+// El rol no té `read`: la redirecció penja d'`admin_page_access_denied`.
+test( 'un jugador que obre /wp-admin/ acaba a /compte/ sense barra d’administració', async () => {
+	for ( const ruta of [ '/wp-admin/', '/wp-admin/profile.php' ] ) {
+		await page.goto( ruta );
+		await expect( page ).toHaveURL( /\/compte\/$/ );
+		await expect( titolPanell() ).toBeVisible();
+		await expect( page.locator( '#wpadminbar' ) ).toHaveCount( 0 );
+	}
 } );
 
 test( 'descarrega un JSON amb només correu, consentiment, progrés i data', async () => {
