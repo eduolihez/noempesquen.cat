@@ -11,20 +11,34 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/*
+ * Límits configurables a wp-config.php.
+ */
+
 /** Fallades de login permeses per finestra (per IP i per correu). */
-const NEP_COMPTE_LIMIT_ENTRA = 8;
+if ( ! defined( 'NEP_COMPTE_LIMIT_ENTRA' ) ) {
+	define( 'NEP_COMPTE_LIMIT_ENTRA', 8 );
+}
 
 /** Finestra del límit de login, en segons. */
-const NEP_COMPTE_FINESTRA_ENTRA = 15 * MINUTE_IN_SECONDS;
+if ( ! defined( 'NEP_COMPTE_FINESTRA_ENTRA' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_ENTRA', 15 * MINUTE_IN_SECONDS );
+}
 
 /** Altes permeses per IP i finestra. */
-const NEP_COMPTE_LIMIT_REGISTRE = 5;
+if ( ! defined( 'NEP_COMPTE_LIMIT_REGISTRE' ) ) {
+	define( 'NEP_COMPTE_LIMIT_REGISTRE', 5 );
+}
 
 /** Finestra del límit d'altes, en segons. */
-const NEP_COMPTE_FINESTRA_REGISTRE = HOUR_IN_SECONDS;
+if ( ! defined( 'NEP_COMPTE_FINESTRA_REGISTRE' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_REGISTRE', HOUR_IN_SECONDS );
+}
 
 /** Mida màxima del cos de les peticions de compte, en bytes. */
-const NEP_COMPTE_MIDA_MAX = 8192;
+if ( ! defined( 'NEP_COMPTE_MIDA_MAX' ) ) {
+	define( 'NEP_COMPTE_MIDA_MAX', 8192 );
+}
 
 /*
  * Altes totals per hora (totes les IP): mitigació sense captcha ni verificació
@@ -295,6 +309,22 @@ function nep_compte_inicia_sessio( int $id, bool $signon = false, array $credenc
 }
 
 /**
+ * Sessió anterior d'aquest navegador (si n'hi ha), per destruir-la quan
+ * se n'inicia una de nova. Cal llegir-la abans d'iniciar la nova.
+ *
+ * @return callable Destrueix la sessió anterior.
+ */
+function nep_compte_sessio_previa(): callable {
+	$previa   = wp_parse_auth_cookie( '', 'logged_in' );
+	$id_previ = (int) wp_validate_auth_cookie( '', 'logged_in' );
+	return static function () use ( $previa, $id_previ ): void {
+		if ( $id_previ && is_array( $previa ) && ! empty( $previa['token'] ) ) {
+			WP_Session_Tokens::get_instance( $id_previ )->destroy( $previa['token'] );
+		}
+	};
+}
+
+/**
  * Resposta de sessió iniciada.
  *
  * @param array $progres Progrés.
@@ -331,7 +361,6 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		return nep_compte_massa_intents();
 	}
 	nep_compte_suma_intent( $clau_ip, NEP_COMPTE_FINESTRA_REGISTRE );
-	nep_compte_suma_intent( $clau_global, HOUR_IN_SECONDS );
 
 	$email = $cos['email'] ?? null;
 	$pass  = $cos['contrasenya'] ?? null;
@@ -342,6 +371,8 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 	if ( ! nep_valida_email( $email ) || ! nep_valida_contrasenya( $pass ) || ! nep_consentiment_valid( $dades ) ) {
 		return $generic;
 	}
+	// El comptador global només suma cossos vàlids (les peticions buides no l'omplen).
+	nep_compte_suma_intent( $clau_global, HOUR_IN_SECONDS );
 	if ( email_exists( $email ) ) {
 		// Mateix cost que una alta real: el temps no revela si el correu existeix.
 		wp_hash_password( $pass );
@@ -377,10 +408,12 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 			'data'   => gmdate( 'c' ),
 		)
 	);
-	$usuari = nep_compte_inicia_sessio( (int) $id );
+	$destrueix_previa = nep_compte_sessio_previa();
+	$usuari           = nep_compte_inicia_sessio( (int) $id );
 	if ( is_wp_error( $usuari ) ) {
 		return $generic;
 	}
+	$destrueix_previa();
 	return nep_compte_resposta_connectat( array() );
 }
 
@@ -410,8 +443,7 @@ function nep_rest_compte_entra( WP_REST_Request $request ) {
 
 	$usuari = nep_valida_email( $email ) && is_string( $pass ) && '' !== $pass ? get_user_by( 'email', $email ) : false;
 	// Sessió anterior d'aquest navegador (si n'hi ha): es destrueix en entrar.
-	$previa   = wp_parse_auth_cookie( '', 'logged_in' );
-	$id_previ = (int) wp_validate_auth_cookie( '', 'logged_in' );
+	$destrueix_previa = nep_compte_sessio_previa();
 	// Només jugadors: un administrador no entra per aquí (ni rep galeta).
 	if ( $usuari instanceof WP_User && nep_es_jugador( $usuari ) ) {
 		$usuari = nep_compte_inicia_sessio(
@@ -433,9 +465,7 @@ function nep_rest_compte_entra( WP_REST_Request $request ) {
 		nep_compte_suma_intent( $clau_email, NEP_COMPTE_FINESTRA_ENTRA );
 		return $generic;
 	}
-	if ( $id_previ && is_array( $previa ) && ! empty( $previa['token'] ) ) {
-		WP_Session_Tokens::get_instance( $id_previ )->destroy( $previa['token'] );
-	}
+	$destrueix_previa();
 	return nep_compte_resposta_connectat( nep_compte_progres_desat( $usuari->ID ) );
 }
 
@@ -586,9 +616,10 @@ add_filter( 'wp_is_application_passwords_available_for_user', 'nep_app_passwords
  *
  * @param WP_User|WP_Error|null $usuari        Resultat dels filtres anteriors.
  * @param string                $identificador Usuari o correu.
+ * @param string                $contrasenya   Contrasenya enviada.
  * @return WP_User|WP_Error|null
  */
-function nep_filtra_login_jugador( $usuari, $identificador ) {
+function nep_filtra_login_jugador( $usuari, $identificador, $contrasenya = '' ) {
 	if ( apply_filters( 'nep_login_propi', false ) ) {
 		return $usuari;
 	}
@@ -605,15 +636,22 @@ function nep_filtra_login_jugador( $usuari, $identificador ) {
 		return $generic;
 	}
 	if ( is_wp_error( $usuari ) && array_intersect( $usuari->get_error_codes(), array( 'invalid_username', 'invalid_email', 'incorrect_password' ) ) ) {
+		if ( array_intersect( $usuari->get_error_codes(), array( 'invalid_username', 'invalid_email' ) ) ) {
+			// Usuari inexistent: mateix cost que comprovar una contrasenya real.
+			wp_check_password( is_string( $contrasenya ) ? $contrasenya : '', nep_compte_hash_fals() );
+		}
 		return $generic;
 	}
 	return $usuari;
 }
-add_filter( 'authenticate', 'nep_filtra_login_jugador', 100, 2 );
+add_filter( 'authenticate', 'nep_filtra_login_jugador', 100, 3 );
 
 /**
  * Sense recuperació de contrasenya per als jugadors (D1). El missatge és el
  * mateix per a un correu inexistent i per a un jugador: no enumera correus.
+ * Per a comptes no jugadors (personal del lloc) el nucli segueix enviant el
+ * correu i la resposta canvia: igualar-la trencaria la recuperació de
+ * l'equip; s'accepta (vegeu docs/decisions.md).
  *
  * @param WP_Error      $errors    Errors acumulats.
  * @param WP_User|false $user_data Usuari trobat o false.

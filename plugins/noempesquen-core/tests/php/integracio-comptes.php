@@ -298,6 +298,27 @@ set_transient(
 $r = $nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( 'g' . $nep_email1 ) );
 delete_transient( nep_clau_limit( 'registre-global' ) );
 $nep_comprova( 429 === $r->get_status() && false === get_user_by( 'email', 'g' . $nep_email1 ), 'registre: límit global per hora → 429' );
+$nep_nova_ip();
+$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( 'correu-dolent' ) );
+$nep_comprova( false === get_transient( nep_clau_limit( 'registre-global' ) ), 'registre: un cos invàlid no suma al límit global' );
+
+// L'alta també destrueix la sessió anterior del navegador.
+$nep_nova_ip();
+$_COOKIE    = array();
+$nep_galeta = '';
+wp_set_current_user( 0 );
+$nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$nep_galeta_vella = $nep_galeta;
+$_COOKIE          = array( LOGGED_IN_COOKIE => $nep_galeta_vella );
+wp_set_current_user( 0 );
+$nep_email_s = 's' . $nep_email1;
+$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_s ) );
+$nep_comprova( '' !== $nep_galeta_vella && $nep_galeta !== $nep_galeta_vella && false === wp_validate_auth_cookie( $nep_galeta_vella, 'logged_in' ) && false !== get_user_by( 'email', $nep_email_s ), 'registre: destrueix la sessió anterior' );
+$nep_usuari_s = get_user_by( 'email', $nep_email_s );
+if ( $nep_usuari_s ) {
+	wp_delete_user( $nep_usuari_s->ID );
+}
+delete_transient( nep_clau_limit( 'registre-global' ) );
 
 // DELETE /compte: límit d'intents de contrasenya i 415 sense JSON.
 $nep_nova_ip();
