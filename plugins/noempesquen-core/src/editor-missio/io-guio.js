@@ -41,7 +41,7 @@ export function nomFitxer( text ) {
 		if ( typeof id === 'string' && ID_MISSIO.test( id ) ) {
 			return `${ id }.json`;
 		}
-	} catch ( e ) {}
+	} catch {}
 	return 'guio.json';
 }
 
@@ -59,11 +59,13 @@ export function llegeixImportat( text ) {
 	if ( midaUtf8( text ) > MIDA_MAXIMA ) {
 		return { ok: false, motiu: MOTIU_GRAN };
 	}
-	const net = text.replace( /^﻿/, '' ).replace( /\r\n?/g, '\n' );
+	const net = text
+		.replace( new RegExp( `^${ String.fromCharCode( 0xfeff ) }` ), '' )
+		.replace( /\r\n?/g, '\n' );
 	let guio;
 	try {
 		guio = JSON.parse( net );
-	} catch ( e ) {
+	} catch {
 		return {
 			ok: false,
 			motiu: 'El fitxer no és un JSON vàlid. Comprova que l’has exportat bé.',

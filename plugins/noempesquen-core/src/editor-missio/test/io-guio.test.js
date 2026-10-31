@@ -23,7 +23,11 @@ describe( 'exportar el guió', () => {
 
 describe( 'importar el guió', () => {
 	it( 'accepta un objecte JSON i treu el BOM', () => {
-		expect( llegeixImportat( '﻿{"id":"x"}\r\n' ) ).toEqual( {
+		expect(
+			llegeixImportat(
+				`${ String.fromCharCode( 0xfeff ) }{"id":"x"}\r\n`
+			)
+		).toEqual( {
 			ok: true,
 			text: '{"id":"x"}\n',
 		} );
