@@ -1,0 +1,30 @@
+/*
+ * Escala de capes (z-index) amb nom. De baix a dalt dins el sistema simulat.
+ * Els 0/1/2 locals dins d'un component (ordre intern de fills)
+ * no passen per aquí.
+ */
+
+/* PC */
+$capa-barra: 3;
+$capa-toast: 3;
+$capa-centre: 4;
+$capa-bloqueig: 10;
+
+/* Mòbil */
+$capa-mobil-capa: 10;
+$capa-mobil-banner: 14;
+$capa-mobil-centre: 15;
+$capa-mobil-bloqueig: 20;
+
+/* Dins d'una app o web (context local de apilament) */
+$capa-local-flotant: 3;
+$capa-local-menu: 5;
+$capa-local-avis: 6;
+$capa-local-dialeg: 10;
+$capa-local-descarrega: 20;
+
+/* Carcassa */
+$capa-so-menu: 1000;
+$capa-girar: 900;
+$capa-consequencia: 910; /* per sobre de «girar» */
+$capa-so-fixa: 100000;

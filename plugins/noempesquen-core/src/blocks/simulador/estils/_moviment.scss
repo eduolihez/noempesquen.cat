@@ -1,0 +1,11 @@
+/* Escala de moviment compartida: durades i corbes. */
+
+$t-rapid: 120ms;
+$t-normal: 220ms;
+$t-lent: 360ms;
+
+$corba-entrada: cubic-bezier(0.1, 0.9, 0.2, 1);
+$corba-sortida: cubic-bezier(0.42, 0, 1, 1); /* equival a ease-in */
+$corba-bloqueig: cubic-bezier(0.55, 0, 0.1, 1); /* el bloqueig se'n va */
+$corba-cau: cubic-bezier(0.5, 0, 0.75, 0); /* la consequència cau */
+$corba-rebot: cubic-bezier(0.3, 1.6, 0.5, 1); /* estrelles del resultat */
