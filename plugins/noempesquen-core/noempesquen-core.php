@@ -24,6 +24,8 @@ require_once NEP_PATH . 'includes/cpt-missio.php';
 require_once NEP_PATH . 'includes/editor-missio.php';
 require_once NEP_PATH . 'includes/rest.php';
 require_once NEP_PATH . 'includes/estadistiques.php';
+require_once NEP_PATH . 'includes/comptes-nucli.php';
+require_once NEP_PATH . 'includes/comptes.php';
 require_once NEP_PATH . 'includes/admin-estadistiques.php';
 require_once NEP_PATH . 'includes/cli.php';
 
