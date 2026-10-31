@@ -218,7 +218,13 @@ function nep_compte_cos_json( WP_REST_Request $request ) {
  */
 function nep_compte_hash_fals(): string {
 	$hash = get_option( 'nep_hash_fals' );
-	if ( ! is_string( $hash ) || '' === $hash || wp_password_needs_rehash( $hash ) ) {
+	/*
+	 * wp_password_needs_rehash() existeix des de WP 6.8 (el plugin admet 6.6).
+	 * Abans, l'algorisme no canvia (phpass) i el hash desat és estable; en
+	 * actualitzar a 6.8+ la funció ja hi és i el regenera amb el nou.
+	 */
+	$caduc = function_exists( 'wp_password_needs_rehash' ) && is_string( $hash ) && '' !== $hash && wp_password_needs_rehash( $hash );
+	if ( ! is_string( $hash ) || '' === $hash || $caduc ) {
 		$hash = wp_hash_password( wp_generate_password( 32, true, true ) );
 		update_option( 'nep_hash_fals', $hash, false );
 	}
@@ -542,6 +548,36 @@ function nep_rest_compte_esborra( WP_REST_Request $request ) {
 
 // XML-RPC desactivat: cap camí d'entrada sense els límits de /compte/entra.
 add_filter( 'xmlrpc_enabled', '__return_false' );
+
+/**
+ * Un jugador no fa servir /wp/v2/users* (canviaria correu o contrasenya sense
+ * l'actual). `rest_request_before_callbacks` també s'aplica a /batch/v1.
+ *
+ * @param mixed           $resposta Resposta prèvia.
+ * @param array           $handler  Gestor de la ruta.
+ * @param WP_REST_Request $request  Petició.
+ * @return mixed
+ */
+function nep_bloqueja_users_jugador( $resposta, $handler, $request ) {
+	if ( $request instanceof WP_REST_Request && str_starts_with( $request->get_route(), '/wp/v2/users' ) && is_user_logged_in() && nep_es_jugador( wp_get_current_user() ) ) {
+		return nep_compte_error( 'nep_sense_permis', __( 'No tens permís per fer això.', 'noempesquen' ), 403 );
+	}
+	return $resposta;
+}
+add_filter( 'rest_request_before_callbacks', 'nep_bloqueja_users_jugador', 10, 3 );
+
+/**
+ * Sense contrasenyes d'aplicació per als jugadors (l'autenticació Basic
+ * saltaria els límits de /compte/entra).
+ *
+ * @param bool    $disponible Valor previ.
+ * @param WP_User $usuari     Usuari.
+ * @return bool
+ */
+function nep_app_passwords_jugador( $disponible, $usuari ) {
+	return nep_es_jugador( $usuari ) ? false : $disponible;
+}
+add_filter( 'wp_is_application_passwords_available_for_user', 'nep_app_passwords_jugador', 10, 2 );
 
 /**
  * wp-login.php (i qualsevol `wp_authenticate` aliè a /compte/entra): un jugador

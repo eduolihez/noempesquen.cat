@@ -49,8 +49,29 @@ wp_set_current_user( $nep_jug_id );
 $nep_comprova( false === apply_filters( 'show_admin_bar', true ), 'jugador: sense barra d\'administració' );
 $nep_comprova( home_url( '/compte/' ) === apply_filters( 'login_redirect', 'x', '', new WP_User( $nep_jug_id ) ), 'jugador: login_redirect → /compte/' );
 $nep_comprova( ! current_user_can( 'read' ), 'jugador: sense read' );
+// Un jugador amb sessió no toca /wp/v2/users* (correu o contrasenya sense la
+// actual) ni crea contrasenyes d'aplicació (Basic saltaria els límits).
+$nep_jug_obj = get_userdata( $nep_jug_id );
+$nep_email_0 = $nep_jug_obj->user_email;
+$nep_hash_0  = $nep_jug_obj->user_pass;
+$nep_u       = new WP_REST_Request( 'PUT', '/wp/v2/users/me' );
+$nep_u->set_header( 'Content-Type', 'application/json' );
+$nep_u->set_body( wp_json_encode( array( 'email' => 'canvi' . wp_rand( 1000, 9999 ) . '@exemple.cat', 'password' => 'nova-contrasenya-123' ) ) );
+$r = rest_do_request( $nep_u );
+clean_user_cache( $nep_jug_id );
+$nep_jug_obj = get_userdata( $nep_jug_id );
+$nep_comprova( 403 === $r->get_status() && $nep_email_0 === $nep_jug_obj->user_email && $nep_hash_0 === $nep_jug_obj->user_pass, 'jugador: PUT /wp/v2/users/me → 403 i res canviat' );
+$r = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/users/me' ) );
+$nep_comprova( 403 === $r->get_status(), 'jugador: GET /wp/v2/users/me → 403' );
+$nep_ap = new WP_REST_Request( 'POST', '/wp/v2/users/me/application-passwords' );
+$nep_ap->set_header( 'Content-Type', 'application/json' );
+$nep_ap->set_body( wp_json_encode( array( 'name' => 'prova' ) ) );
+$r = rest_do_request( $nep_ap );
+$nep_comprova( 403 === $r->get_status() && array() === WP_Application_Passwords::get_user_application_passwords( $nep_jug_id ), 'jugador: no crea contrasenyes d\'aplicació (REST)' );
+$nep_comprova( false === wp_is_application_passwords_available_for_user( $nep_jug_id ), 'jugador: contrasenyes d\'aplicació no disponibles' );
 wp_set_current_user( 1 );
 $nep_comprova( true === apply_filters( 'show_admin_bar', true ), 'administrador: conserva la barra' );
+$nep_comprova( 200 === rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/users/me' ) )->get_status(), 'administrador: /wp/v2/users/me segueix funcionant' );
 
 // --- Endpoints REST de compte ---------------------------------------------
 global $wpdb;
