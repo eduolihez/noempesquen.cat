@@ -23,6 +23,11 @@ add_action(
 				'show_in_rest' => true,
 				'menu_icon'    => 'dashicons-shield',
 				'supports'     => array( 'title', 'excerpt', 'custom-fields', 'page-attributes' ),
+					// Totes les capacitats primitives del tipus (menú, llista, editors, REST,
+					// paperera, duplicar) es redueixen a `nep_gestiona_missions`; map_meta_cap
+					// tradueix edit_post, delete_post i read_post a aquestes.
+					'map_meta_cap' => true,
+					'capabilities' => nep_capacitats_missio(),
 			)
 		);
 
@@ -42,13 +47,24 @@ add_action(
 					'single'            => true,
 					'show_in_rest'      => true,
 					'sanitize_callback' => 'nep_guio' === $key ? 'nep_sanitize_guio' : 'sanitize_key',
-					// Decisió: capacitats per defecte del tipus post; la capacitat pròpia només protegeix l'escriptura de la meta.
+					// El tipus ja exigeix `nep_gestiona_missions` (vegeu `nep_capacitats_missio`); aquí es repeteix com a defensa.
 					'auth_callback'     => static fn( $allowed, $meta_key, $post_id ) => current_user_can( 'edit_post', $post_id ) && current_user_can( 'nep_gestiona_missions' ),
 				)
 			);
 		}
 	}
 );
+
+/**
+ * Capacitats primitives del tipus `nep_missio`: totes són `nep_gestiona_missions`.
+ * `read` es manté (llegir el lloc), la resta no s'hereta de les de `post`.
+ *
+ * @return array<string,string>
+ */
+function nep_capacitats_missio(): array {
+	$caps = array( 'edit_posts', 'edit_others_posts', 'edit_private_posts', 'edit_published_posts', 'publish_posts', 'read_private_posts', 'delete_posts', 'delete_private_posts', 'delete_published_posts', 'delete_others_posts', 'create_posts' );
+	return array_fill_keys( $caps, 'nep_gestiona_missions' );
+}
 
 /**
  * Només accepta JSON vàlid al guió.

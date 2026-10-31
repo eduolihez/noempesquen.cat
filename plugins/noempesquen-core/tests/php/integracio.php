@@ -314,6 +314,10 @@ $nep_comprova( $nep_mid && false === get_metadata_by_mid( 'post', $nep_mid ), 'w
 // Estadístiques: endpoint /resultat (fa servir les mateixes ajudes).
 require __DIR__ . '/integracio-estadistiques.php';
 
+// Capacitats del tipus nep_missio: editor 403, administrador i gestor OK.
+require __DIR__ . '/integracio-capacitats.php';
+wp_set_current_user( 1 );
+
 foreach ( array_unique( $nep_creades ) as $nep_id ) {
 	wp_delete_post( $nep_id, true );
 }

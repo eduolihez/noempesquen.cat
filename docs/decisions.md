@@ -18,6 +18,7 @@
 - **Apps de relleno no emiten eventos:** no afectan al motor ni a la puntuación; solo dan sensación de libertad.
 - **Sons (corte 4b):** Web Audio sintetizado, sin ficheros; suena solo tras una interacción, nunca en pausa ni en la petición de girar, y la preferencia `noempesquen-sons` se cambia desde Ajustos y desde la Pausa. Lo que llega durante pausa/girar se marca visto y no suena al reanudar (en la práctica no llega nada: el TICK está parado).
 - **`apps/claus.js`** es la fuente de verdad de los ids de app por dispositivo; el validador de misiones la importa.
+- **Capacidades del CPT `nep_missio` (2026-10-31, M6):** todas las capacidades primitivas del tipo (`capabilities` con `map_meta_cap`) son `nep_gestiona_missions`; un Editor no ve «Missions» ni puede crear, editar, publicar o borrar (REST 403). Solo la tiene `manage_options` (filtro `user_has_cap`) o quien la reciba explícitamente.
 - **`diaridelbarri.cat`** se resuelve por defecto a la plantilla `diari`; una misión puede sobrescribirlo declarando la web.
 
 ## Corte 4b · pulido (2026-10-30)
