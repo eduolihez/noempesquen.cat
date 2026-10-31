@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-31 (cortes 3 a 5c y entrega 3A en `master`, 3A mergeada en `bce1bcc`; 3B mergeada en `master` (`02f4461`), con push y desplegada en producción el 2026-10-31; falta actualizar el tema)
+Última actualización: 2026-10-31 (cortes 3 a 5c y entrega 3A en `master`, 3A mergeada en `bce1bcc`; 3B mergeada en `master` (`02f4461`), con push y desplegada en producción el 2026-10-31; tema actualizado, falta probar un alta real)
 
 ## Dónde estamos
 
@@ -17,7 +17,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
 | Fase 2 · corte 5c | Misiones «Virus detectat!» (pop-up de soporte técnico falso de Suport Segur Digital en la web Cuina Avui) y «Actualitza el navegador» (barra falsa de actualización en Temps Avui; comprobación en «Quant a Brúixola»); plantilla `article` con `avis`/`barra` y descarga ficticia | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5c-suport-actualitzacio.md`) |
 | Fase 3 · entrega 3A | Panel de misiones en WordPress (CPT `nep_missio` con editor del guion, diagnóstico en vivo, previsualización, plantilla, duplicado, importar/exportar), capacidades propias (`nep_gestiona_missions`, `nep_veu_estadistiques`), estadísticas anónimas por misión (tabla `nep_resultats`, k ≥ 10, datos demo con `wp nep demo-estadistiques`) y resumen público agregado en la pantalla de resultado | **Hecho** (merge a `master`, `bce1bcc`; plan `docs/superpowers/plans/2026-10-30-fase3a-panel-estadistiques.md`) |
-| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **Hecho, mergeado, subido a `origin` y desplegado en producción (plugin y `/compte/`; tema pendiente)** (verificación final: lint:js 0 errores, lint:css ok, unit 755, PHPUnit 80 + integración, build ok, Playwright 284/0; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
+| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **Hecho, mergeado, subido a `origin` y desplegado en producción (plugin, tema y `/compte/`)** (verificación final: lint:js 0 errores, lint:css ok, unit 755, PHPUnit 80 + integración, build ok, Playwright 284/0; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
@@ -43,7 +43,7 @@ Ronda de arreglos hecha (T08a y T08b: endurecimiento de login, alta y borrado; `
 
 Antes de producción:
 
-- Despliegue hecho (2026-10-31): plugin reemplazado desde wp-admin, rutas `/compte*` activas en la REST, página `/compte/` (ID 11) creada por REST y 200 con el bloque. `is_ssl()` comprobado: las galletas salen `Secure`. Sin probar el alta real en producción (crearía un usuario). El tema no se actualizó: el formulario de subida de wp-admin redirige a `about.php` sin instalar; el header en vivo no tiene los enlaces «Simulador» y «El meu compte». Subir `dist/noempesquen.zip` a mano.
+- Despliegue hecho (2026-10-31): plugin reemplazado desde wp-admin, rutas `/compte*` activas en la REST, página `/compte/` (ID 11) creada por REST y 200 con el bloque. `is_ssl()` comprobado: las galletas salen `Secure`. Sin probar el alta real en producción (crearía un usuario). Tema actualizado después (el formulario de wp-admin redirigía a `about.php` sin completar el paso «Reemplaça l'instal·lat»; se completó el paso por fetch). El menú de la home ya enlaza «Simulador» y «El meu compte».
 - ~~`nep_ip_client` detrás de Varnish~~: resuelto en el cierre de 3A (Apache registra la IP real, el límite por IP no es global).
 - Comprobar que `is_ssl()` es cierto detrás del proxy (galeta `Secure`).
 - Crear la página `/compte/` a mano (README).
@@ -52,7 +52,7 @@ Pendiente tras 3B:
 
 - Verificación de email y recuperación de contraseña (decisión D1: fuera de 3B) -> posible 3C.
 - Gestión de jugadores desde wp-admin (hoy el rol no tiene acceso).
-- Actualizar el tema en producción y probar un alta/borrado real con una cuenta de prueba.
+- Probar un alta/borrado real en `/compte/` con una cuenta de prueba (lo hace Edu: crear cuentas y contraseñas no lo hace Claude).
 - `uninstall.php` en multisite sigue sin probar.
 
 ### Pendiente tras la entrega 3A
