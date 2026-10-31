@@ -35,7 +35,8 @@
 .nep-compte__avis:not(:empty) {
 	margin-block-end: 1rem;
 	padding: 0.75rem 1rem;
-	border-inline-start: 4px solid var(--nep-compte-segur);
+	border: 2px solid var(--nep-compte-segur);
+	border-radius: 0.25rem;
 	background: #fff;
 }
 
@@ -129,7 +130,8 @@
 
 .nep-compte__important {
 	padding: 0.75rem 1rem;
-	border-inline-start: 4px solid var(--nep-compte-alerta);
+	border: 2px solid var(--nep-compte-alerta);
+	border-radius: 0.25rem;
 	background: #fff;
 	font-weight: 700;
 }
