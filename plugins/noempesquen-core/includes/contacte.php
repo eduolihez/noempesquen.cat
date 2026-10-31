@@ -96,6 +96,17 @@ function nep_contacte_suma( string $clau, int $durada ): void {
  * @return WP_REST_Response
  */
 function nep_rest_contacte( WP_REST_Request $request ) {
+	// Cos massa gran: es rebutja abans de processar-lo.
+	if ( strlen( (string) $request->get_body() ) > 10240 ) {
+		return new WP_REST_Response(
+			array(
+				'ok'      => false,
+				'message' => 'El missatge és massa llarg.',
+			),
+			413
+		);
+	}
+
 	$cos = $request->get_json_params();
 	$cos = is_array( $cos ) ? $cos : array();
 
@@ -135,7 +146,13 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 
 	$clau_h = nep_contacte_clau_limit( 'h' );
 	$clau_d = nep_contacte_clau_limit( 'd' );
-	if ( nep_contacte_limit_ple( $clau_h, NEP_CONTACTE_LIMIT_HORA ) || nep_contacte_limit_ple( $clau_d, NEP_CONTACTE_LIMIT_DIA ) ) {
+	// Topall global (totes les IP) perquè una rotació d'IP no ompli la bústia.
+	if (
+		nep_contacte_limit_ple( $clau_h, NEP_CONTACTE_LIMIT_HORA )
+		|| nep_contacte_limit_ple( $clau_d, NEP_CONTACTE_LIMIT_DIA )
+		|| nep_contacte_limit_ple( 'nep_ct_global_h', 30 )
+		|| nep_contacte_limit_ple( 'nep_ct_global_d', 100 )
+	) {
 		return new WP_REST_Response(
 			array(
 				'ok'      => false,
@@ -146,6 +163,8 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 	}
 	nep_contacte_suma( $clau_h, HOUR_IN_SECONDS );
 	nep_contacte_suma( $clau_d, DAY_IN_SECONDS );
+	nep_contacte_suma( 'nep_ct_global_h', HOUR_IN_SECONDS );
+	nep_contacte_suma( 'nep_ct_global_d', DAY_IN_SECONDS );
 
 	$dades = $resultat['dades'];
 	/**

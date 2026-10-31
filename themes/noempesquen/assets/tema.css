@@ -217,6 +217,9 @@ html {
 
 .nep-capcalera__joc { margin-left: auto; }
 
+.nep-menu__joc { display: none; }
+.nep-menu .is-menu-open .nep-menu__joc { display: block; }
+
 .nep-menu .wp-block-navigation__responsive-container-open svg,
 .nep-menu .wp-block-navigation__responsive-container-close svg { width: 2rem; height: 2rem; }
 

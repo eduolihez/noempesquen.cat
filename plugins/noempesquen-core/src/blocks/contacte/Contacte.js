@@ -180,7 +180,7 @@ export function Contacte( { config } ) {
 			<p className="nep-contacte__intro">{ T.intro }</p>
 
 			{ claus.length > 0 && (
-				<div className="nep-contacte__resum">
+				<div className="nep-contacte__resum" role="alert">
 					<p className="nep-contacte__resum-titol">
 						{ T.resumTitol }
 					</p>
