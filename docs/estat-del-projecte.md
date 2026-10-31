@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-31 (cortes 3 a 5c en `master`; entrega 3A de la Fase 3 hecha en rama, pendiente de merge)
+Última actualización: 2026-10-31 (cortes 3 a 5c y entrega 3A en `master`, 3A mergeada en `bce1bcc`; entrega 3B de la Fase 3 en la rama `feat/fase3b-comptes`, sin merge ni push)
 
 ## Dónde estamos
 
@@ -16,8 +16,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
 | Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
 | Fase 2 · corte 5c | Misiones «Virus detectat!» (pop-up de soporte técnico falso de Suport Segur Digital en la web Cuina Avui) y «Actualitza el navegador» (barra falsa de actualización en Temps Avui; comprobación en «Quant a Brúixola»); plantilla `article` con `avis`/`barra` y descarga ficticia | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5c-suport-actualitzacio.md`) |
-| Fase 3 · entrega 3A | Panel de misiones en WordPress (CPT `nep_missio` con editor del guion, diagnóstico en vivo, previsualización, plantilla, duplicado, importar/exportar), capacidades propias (`nep_gestiona_missions`, `nep_veu_estadistiques`), estadísticas anónimas por misión (tabla `nep_resultats`, k ≥ 10, datos demo con `wp nep demo-estadistiques`) y resumen público agregado en la pantalla de resultado | **Hecho en la rama `feat/fase3a-panel-estadistiques`** (sin merge; plan `docs/superpowers/plans/2026-10-30-fase3a-panel-estadistiques.md`) |
-| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | Pendiente (necesita su propio plan) |
+| Fase 3 · entrega 3A | Panel de misiones en WordPress (CPT `nep_missio` con editor del guion, diagnóstico en vivo, previsualización, plantilla, duplicado, importar/exportar), capacidades propias (`nep_gestiona_missions`, `nep_veu_estadistiques`), estadísticas anónimas por misión (tabla `nep_resultats`, k ≥ 10, datos demo con `wp nep demo-estadistiques`) y resumen público agregado en la pantalla de resultado | **Hecho** (merge a `master`, `bce1bcc`; plan `docs/superpowers/plans/2026-10-30-fase3a-panel-estadistiques.md`) |
+| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **En curso en la rama `feat/fase3b-comptes`** (T01-T06 hechas; faltan ronda de arreglos y verificación final; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
@@ -28,12 +28,30 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 ## Pendientes conocidos
 
+### Entrega 3B · cuentas opcionales (rama `feat/fase3b-comptes`)
+
+Hecho (commits de la rama):
+
+- T01 `ca999f6` rol `nep_jugador`, bloqueo de wp-admin y limpieza en `uninstall`; `4b49a4e` tests de jugador en `test:php`.
+- T02 `3cb44e3` validación y fusión de progreso por máximo (módulos puros).
+- T03 `6620981` endpoints REST (registro, entrada, progreso, exportación, borrado); `aebadb7` pruebas de integración.
+- T04 `5c4b191` exportador y borrador de datos personales.
+- T05 `4f1b1de`, `3584f23`, `6f6bf47`, `f696044` cliente de API, bloque de cuenta (`/compte/`) y e2e.
+- T06 `b3225bf`, `dd2da99`, `9eb8f86`, `ef5f52c` sincronización del progreso del simulador con la cuenta y e2e.
+
+Falta: ronda de arreglos (hallazgos de seguridad y revisión listados en `.claude/orquestar/registro.md`) y verificación final (lint, unit, build, Playwright).
+
+Pendiente tras 3B:
+
+- Verificación de email y recuperación de contraseña (decisión D1: fuera de 3B) -> posible 3C.
+- Gestión de jugadores desde wp-admin (hoy el rol no tiene acceso).
+- Push y merge de la rama a `master` (lo decide Edu).
+- `uninstall.php` en multisite sigue sin probar.
+
 ### Pendiente tras la entrega 3A
 
-- Merge de `feat/fase3a-panel-estadistiques` a `master` (lo decide Edu).
 - Despliegue: `npm run build && npm run empaqueta` deja en `dist/` las carpetas `wp-content/plugins/noempesquen-core` y `wp-content/themes/noempesquen` más un zip por pieza (con `build/`, sin `src/`, `tests/`, `phpunit.xml.dist`, `.distignore` ni `missions/test-fixtures/`). - Despliegue de prueba hecho (2026-10-31) en `noempesquen.cat` (Dinahosting, sin Cloudflare, sin staging): zips subidos desde wp-admin (Plugins/Temas > Añadir), plugin y tema activados sin errores, página `/simulador/` (ID 9) publicada con el bloque. Comprobado desde fuera: `/simulador/` 200 sin `Cache-Control` agresivo; `GET /resultat/resum` 200 con `Cache-Control: public, max-age=3600` (el servidor no lo reescribe); `src/` y `tests/` del plugin dan 404; los `.php` por URL directa responden 200 con 0 bytes (guarda `ABSPATH` / `WP_UNINSTALL_PLUGIN`); selector de misiones renderiza, assets `build/` 200; consola sin errores propios (solo un `ViewTransition` del tema/navegador).
 - Cierre del despliegue (2026-10-31, comprobado por SSH en solo lectura): `POST /resultat` real con 204 en el log de Apache; tabla `wp_nep_resultats` creada y `nep_db_version` = 3; en producción hay 2 filas reales de prueba (una partida jugada y un envío manual, misión `llissa-01-factura`). Varnish está activo, con `wp-json`, `wp-admin` y `wp-login.php` excluidos de la caché; Apache registra la IP real del cliente, así que el límite por IP no se comparte (no hace falta el filtro `nep_ip_client`). El log de errores solo trae `AH01630` de bots contra `xmlrpc.php`. Aviso: la extensión de Chrome mostró un 503 falso al medir el `fetch` con `keepalive`; fiarse del log del servidor.
-- 3B (cuentas): `uninstall.php` en multisite sigue sin probar.
 - Sin probar: `uninstall.php` en multisite.
 - Resumen público: sin rate limit a propósito (solo caché de 1 h; las misiones desconocidas dan 404 sin tocar la BD); si la celda propia del jugador tiene menos de 10 partidas, la frase usa la banda de la opción más elegida.
 - Diagnóstico del editor: mensajes legibles ya para `notifica`, `mostra`/`visible`, `bloqueja`/`denuncia`, formularios y `parla`; «Ves-hi» sigue apuntando a la primera aparición del valor en los casos que no tienen clave propia.

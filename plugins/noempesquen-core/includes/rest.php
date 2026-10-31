@@ -1,7 +1,9 @@
 <?php
 /**
  * Endpoints REST públics del simulador (namespace noempesquen/v1).
- * Res d'aquí guarda dades personals: només agregats anònims.
+ * Els endpoints d'estadístiques (`/resultat`, `/resultat/resum`) només guarden
+ * agregats anònims i s'usen sense cookies ni nonce (`credentials: 'omit'`),
+ * encara que ara existeixin comptes opcionals (vegeu `comptes.php`).
  */
 
 defined( 'ABSPATH' ) || exit;
