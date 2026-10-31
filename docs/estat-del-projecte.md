@@ -1,6 +1,6 @@
 # Estado del proyecto
 
-Última actualización: 2026-10-30 (cortes 3, 4a, 4b, 5a, 5b y 5c mergeados a `master`; Fase 3 pendiente de diseño)
+Última actualización: 2026-10-31 (cortes 3 a 5c en `master`; entrega 3A de la Fase 3 hecha en rama, pendiente de merge)
 
 ## Dónde estamos
 
@@ -16,7 +16,9 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 2 · corte 5a | Misiones «Has guanyat un sorteig!» (sorteo falso en Ullada, web Sorteig del Barri) y «Em passes el codi?» (robo del código de Parla) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5a-sorteig-codi.md`) |
 | Fase 2 · corte 5b | Misiones «Compro la teva bici» (comprador falso en la app Revenda, web Revenda Cobra) y «El truc d'inversió» (anuncio falso en El Diari del Barri, web Invest Rapid) | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5b-revenda-inversio.md`) |
 | Fase 2 · corte 5c | Misiones «Virus detectat!» (pop-up de soporte técnico falso de Suport Segur Digital en la web Cuina Avui) y «Actualitza el navegador» (barra falsa de actualización en Temps Avui; comprobación en «Quant a Brúixola»); plantilla `article` con `avis`/`barra` y descarga ficticia | **Hecho** (merge a `master` el 2026-10-30) (plan `docs/superpowers/plans/2026-10-30-fase2-corte5c-suport-actualitzacio.md`) |
-| Fase 3 | IA, cuentas, CPT | Pendiente |
+| Fase 3 · entrega 3A | Panel de misiones en WordPress (CPT `nep_missio` con editor del guion, diagnóstico en vivo, previsualización, plantilla, duplicado, importar/exportar), capacidades propias (`nep_gestiona_missions`, `nep_veu_estadistiques`), estadísticas anónimas por misión (tabla `nep_resultats`, k ≥ 10, datos demo con `wp nep demo-estadistiques`) y resumen público agregado en la pantalla de resultado | **Hecho en la rama `feat/fase3a-panel-estadistiques`** (sin merge; plan `docs/superpowers/plans/2026-10-30-fase3a-panel-estadistiques.md`) |
+| Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | Pendiente (necesita su propio plan) |
+| Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
 
@@ -25,6 +27,16 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 3. El usuario quiere: máximo realismo, marcas inventadas, pantalla completa, sensación de libertad (apps y contenido de relleno que funcionan), público general. Las decisiones de la misión pueden tomarse dentro del mundo (denunciar, borrar, bloquear...) o en el chat con la guía.
 
 ## Pendientes conocidos
+
+### Pendiente tras la entrega 3A
+
+- Merge de `feat/fase3a-panel-estadistiques` a `master` (lo decide Edu).
+- Despliegue: `build/` está en `.gitignore` y el servidor no tiene Node, así que debe viajar en el paquete. Excluir `tests/`, `phpunit.xml.dist` y `missions/test-fixtures/` (`.distignore`).
+- 3B (cuentas): comprobar la caché de Dinahosting/Cloudflare sobre `/simulador/` y `/wp-json/`; `REMOTE_ADDR` detrás de proxy (filtro `nep_ip_client`).
+- Sin probar: `uninstall.php` en multisite.
+- Resumen público: sin rate limit (solo caché de 1 h); si la celda propia del jugador tiene menos de 10 partidas, la frase usa la banda de la opción más elegida.
+- Diagnóstico del editor: faltan mensajes legibles para `notifica`, `mostra`/`visible`, `bloqueja`/`denuncia`, formularios y `parla`; «Ves-hi» apunta a la primera aparición del valor.
+- Menores: `diagnostic.js` sin `__()`; guardia de `nep_dispositiu`/`nep_personatge` en publicadas; límite 512 KB distinto en pre_insert y meta; `delete_all` ignorado en la guardia de borrado; el aviso demo sale si hay filas demo de cualquier fecha; `panel-missions.spec.js` no pasa prettier; un Editor-estadísticas sin `nep_gestiona_missions` no abre el menú padre.
 
 ### Pendiente tras el corte 4b
 
