@@ -38,3 +38,11 @@
 - Borde de botones del sistema ~1,3:1 (WCAG 1.4.11, global).
 - Estrellas del selector (`role="img"` dentro de button) solo llegan por `aria-describedby`: verificar con lector de pantalla.
 - CSS 128 KiB / entrypoint 251 KiB (aviso de webpack > 244 KiB): recortar CSS.
+
+## Fase 3B · comptes opcionals (2026-10-31)
+
+- Sense verificació de correu ni recuperació de contrasenya (D1). Mitigació: límit d'altes per IP (5/h) i global (`NEP_COMPTE_LIMIT_REGISTRE_GLOBAL`, 200/h, configurable a `wp-config.php`).
+- El límit per correu de `/compte/entra` pot bloquejar uns minuts el propietari si algú prova contrasenyes amb el seu correu (acceptat).
+- Els comptadors de límit són transients no atòmics: amb molta concurrència es poden passar uns pocs intents (acceptat).
+- `Secure` de la galeta de sessió depèn d'`is_ssl()`: cal comprovar-ho en producció darrere de Varnish.
+- Els jugadors no entren per `wp-login.php` ni XML-RPC (desactivat); `wp-admin` els porta a `/compte/`.
