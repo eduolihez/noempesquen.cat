@@ -8,6 +8,13 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { errorsGuio } from './diagnostic';
 import { guioDesDePlantilla } from './plantilla';
+import {
+	MIDA_MAXIMA,
+	MOTIU_GRAN,
+	llegeixImportat,
+	nomFitxer,
+	textExportat,
+} from './io-guio';
 import mon from '../../missions/mon.json';
 import './style.scss';
 
@@ -112,6 +119,7 @@ function inicia() {
 		config,
 		valida,
 	} );
+	iniciaIO( { editor, textarea, valida } );
 }
 
 /**
@@ -170,6 +178,81 @@ function iniciaPlantilla( {
 		}
 		boto.closest( '.nep-guio-plantilla' )?.setAttribute( 'hidden', '' );
 		( editor ?? textarea ).focus();
+	} );
+}
+
+/**
+ * Botons «Exporta» i «Importa». El fitxer importat és entrada no confiable:
+ * només se'n posa el text a l'editor (mai com a HTML) i no es desa.
+ *
+ * @param {Object}     opcions
+ * @param {?Object}    opcions.editor   CodeMirror (null: textarea).
+ * @param {Element}    opcions.textarea Camp del guió.
+ * @param {() => void} opcions.valida   Pinta el diagnòstic ara.
+ */
+function iniciaIO( { editor, textarea, valida } ) {
+	const exporta = document.getElementById( 'nep-guio-exporta' );
+	const importa = document.getElementById( 'nep-guio-importa' );
+	const fitxer = document.getElementById( 'nep-guio-fitxer' );
+	const avis = document.getElementById( 'nep-guio-io-avis' );
+	const text = () => ( editor ? editor.getValue() : textarea.value );
+	const avisa = ( missatge ) => {
+		if ( avis ) {
+			avis.textContent = missatge;
+		}
+	};
+
+	exporta?.addEventListener( 'click', () => {
+		const blob = new Blob( [ textExportat( text() ) ], {
+			type: 'application/json;charset=utf-8',
+		} );
+		const url = URL.createObjectURL( blob );
+		const enllac = document.createElement( 'a' );
+		enllac.href = url;
+		enllac.download = nomFitxer( text() );
+		document.body.append( enllac );
+		enllac.click();
+		enllac.remove();
+		setTimeout( () => URL.revokeObjectURL( url ), 0 );
+	} );
+
+	if ( ! importa || ! fitxer ) {
+		return;
+	}
+	importa.addEventListener( 'click', () => fitxer.click() );
+	fitxer.addEventListener( 'change', async () => {
+		const triat = fitxer.files?.[ 0 ];
+		fitxer.value = '';
+		if ( ! triat ) {
+			return;
+		}
+		let resultat;
+		if ( triat.size > MIDA_MAXIMA ) {
+			resultat = { ok: false, motiu: MOTIU_GRAN };
+		} else {
+			try {
+				resultat = llegeixImportat( await triat.text() );
+			} catch ( e ) {
+				resultat = llegeixImportat( null );
+			}
+		}
+		if ( ! resultat.ok ) {
+			avisa( resultat.motiu );
+			return;
+		}
+		if ( editor ) {
+			editor.setValue( resultat.text );
+			editor.save();
+		} else {
+			textarea.value = resultat.text;
+		}
+		valida();
+		avisa(
+			__(
+				'Guió importat. Revisa els errors abans de desar.',
+				'noempesquen'
+			)
+		);
 	} );
 }
 

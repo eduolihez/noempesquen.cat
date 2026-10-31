@@ -112,6 +112,13 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 	<label id="nep-guio-etiqueta" class="nep-guio-etiqueta" for="nep-guio"><?php esc_html_e( 'Guió (JSON, format v2)', 'noempesquen' ); ?></label>
 	<textarea id="nep-guio" name="nep_guio" rows="20" spellcheck="false" aria-describedby="nep-guio-diagnostic"><?php echo esc_textarea( $guio ); ?></textarea>
 	<div id="nep-guio-diagnostic" class="nep-guio-diagnostic" role="status" aria-live="polite"></div>
+	<p class="nep-guio-io">
+		<button type="button" class="button" id="nep-guio-exporta"><?php esc_html_e( 'Exporta', 'noempesquen' ); ?></button>
+		<button type="button" class="button" id="nep-guio-importa"><?php esc_html_e( 'Importa', 'noempesquen' ); ?></button>
+		<input type="file" id="nep-guio-fitxer" accept="application/json,.json" hidden tabindex="-1" aria-hidden="true">
+		<span class="description"><?php esc_html_e( 'Exporta descarrega el guió de l\'editor com a fitxer JSON. Importa el posa a l\'editor sense desar-lo.', 'noempesquen' ); ?></span>
+	</p>
+	<p id="nep-guio-io-avis" class="nep-guio-io-avis" role="status" aria-live="polite"></p>
 	<?php if ( '' === trim( $guio ) || '{}' === trim( $guio ) ) : ?>
 		<p class="nep-guio-plantilla">
 			<button type="button" class="button" id="nep-guio-plantilla"><?php esc_html_e( 'Nova missió des de plantilla', 'noempesquen' ); ?></button>
