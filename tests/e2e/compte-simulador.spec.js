@@ -114,12 +114,12 @@ test.afterAll( async ( {}, testInfo ) => {
 	}
 } );
 
-test( 'sense compte: el selector funciona igual, amb l’enllaç i sense pujar res', async ( {
+test( 'sense compte: el selector funciona igual, amb l’enllaç i sense cap petició de compte', async ( {
 	page: anonima,
 } ) => {
 	const progres = [];
 	anonima.on( 'request', ( r ) => {
-		if ( PROGRES.test( r.url() ) ) {
+		if ( PROGRES.test( r.url() ) || r.url().includes( 'rest-nonce' ) ) {
 			progres.push( r.url() );
 		}
 	} );
@@ -194,8 +194,14 @@ test( 'amb compte: fusiona el local i el del servidor, i es conserva sense local
 	).json();
 	expect( servidor.progres ).toEqual( { ...LOCAL, ...SERVIDOR } );
 
-	// Sense localStorage, el progrés torna del servidor.
-	await page.evaluate( () => window.localStorage.clear() );
+	// La marca de sessió l'ha posada l'entrada real a /compte/.
+	expect(
+		await page.evaluate( () =>
+			window.localStorage.getItem( 'nep-compte-sessio' )
+		)
+	).toBe( '1' );
+	// Sense el progrés local (la marca es conserva), el progrés torna del servidor.
+	await page.evaluate( ( c ) => window.localStorage.removeItem( c ), CLAU );
 	await page.reload();
 	await expect(
 		page.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )

@@ -6,6 +6,7 @@ import {
 	useCallback,
 } from '@wordpress/element';
 import { creaClient } from '../../compte/client';
+import { posaMarcaSessio, treuMarcaSessio } from '../../compte/marca';
 import { T } from './textos';
 import { Acces } from './Acces';
 import { Panell } from './Panell';
@@ -38,6 +39,11 @@ export function Compte( { config } ) {
 		let viu = true;
 		client.estat().then( ( e ) => {
 			if ( viu ) {
+				if ( e.connectat ) {
+					posaMarcaSessio();
+				} else {
+					treuMarcaSessio();
+				}
 				setConnectat( e.connectat );
 				setProgres( e.progres || {} );
 				setCarregant( false );
@@ -57,6 +63,7 @@ export function Compte( { config } ) {
 	}, [ connectat ] );
 
 	const haEntrat = useCallback( ( dades, missatge ) => {
+		posaMarcaSessio();
 		focusPendent.current = titolPanell;
 		setProgres( dades.progres || {} );
 		setConnectat( true );
@@ -64,6 +71,7 @@ export function Compte( { config } ) {
 	}, [] );
 
 	const haSortit = useCallback( ( missatge ) => {
+		treuMarcaSessio();
 		focusPendent.current = titolAcces;
 		setProgres( {} );
 		setConnectat( false );
@@ -72,7 +80,7 @@ export function Compte( { config } ) {
 
 	return (
 		<div className="nep-compte__app">
-			<div className="nep-compte__avis" aria-live="polite" role="status">
+			<div className="nep-compte__avis" role="status">
 				{ avis }
 			</div>
 			{ carregant && <p>{ T.carregant }</p> }

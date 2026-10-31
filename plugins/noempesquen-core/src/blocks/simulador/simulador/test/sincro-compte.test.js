@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { sincroInicial, sincronitza } from '../sincro-compte.js';
+import { progresAPujar, sincroInicial, sincronitza } from '../sincro-compte.js';
 
 const clientFals = ( { estat, desa } = {} ) => ( {
 	estat: vi.fn( estat ?? ( async () => ( { connectat: false } ) ) ),
@@ -113,5 +113,44 @@ describe( 'sincronitza', () => {
 		await expect(
 			sincronitza( { client, progres: { a: 1 } } )
 		).resolves.toBe( null );
+	} );
+} );
+
+describe( 'progresAPujar', () => {
+	it( 'uploads a mission finished while the initial sync was pending', () => {
+		const sincro = {
+			connectat: true,
+			progres: { 'remei-01-paquet': 2 },
+			calPujar: false,
+		};
+		expect(
+			progresAPujar( {
+				sincro,
+				vigent: { 'llissa-01-factura': 3 },
+			} )
+		).toEqual( { 'remei-01-paquet': 2, 'llissa-01-factura': 3 } );
+	} );
+
+	it( 'returns null when nothing is new for the server', () => {
+		const sincro = {
+			connectat: true,
+			progres: { 'remei-01-paquet': 2 },
+			calPujar: false,
+		};
+		expect(
+			progresAPujar( { sincro, vigent: { 'remei-01-paquet': 1 } } )
+		).toBe( null );
+	} );
+
+	it( 'uploads the current progress when the sync already needed it', () => {
+		const sincro = {
+			connectat: true,
+			progres: { a: 1 },
+			calPujar: true,
+		};
+		expect( progresAPujar( { sincro, vigent: { b: 2 } } ) ).toEqual( {
+			a: 1,
+			b: 2,
+		} );
 	} );
 } );

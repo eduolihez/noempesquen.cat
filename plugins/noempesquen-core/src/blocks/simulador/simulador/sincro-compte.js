@@ -36,6 +36,23 @@ export async function sincroInicial( { client, progresLocal } ) {
 }
 
 /**
+ * Què cal pujar en acabar la sincronització inicial. Durant l'espera el
+ * jugador pot haver acabat missions: es fusiona el progrés vigent amb el de
+ * la sincro i es puja si conté res que el servidor no tingui.
+ *
+ * @param {Object} opcions
+ * @param {Object} opcions.sincro Resultat de `sincroInicial` (connectat).
+ * @param {Object} opcions.vigent Progrés vigent de l'App.
+ * @return {Object|null} Progrés a pujar o `null` si no cal.
+ */
+export function progresAPujar( { sincro, vigent } ) {
+	const progres = fusionaProgres( vigent || {}, sincro.progres || {} );
+	return sincro.calPujar || diferencia( progres, sincro.progres || {} )
+		? progres
+		: null;
+}
+
+/**
  * Desa el progrés al compte (PUT). Mai llança.
  *
  * @param {Object} opcions

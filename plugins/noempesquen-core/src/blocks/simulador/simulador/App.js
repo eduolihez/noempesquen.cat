@@ -10,13 +10,14 @@ import { __ } from '@wordpress/i18n';
 import { desaProgres, llegeixProgres } from '../nucli/progres';
 import { fusionaProgres } from '../nucli/sincro';
 import { creaClient } from '../../../compte/client';
+import { hiHaMarcaSessio, treuMarcaSessio } from '../../../compte/marca';
 import {
 	preparaPrevisualitzacio,
 	registraResultat,
 } from '../nucli/previsualitzacio';
 import { construeixResultat, enviaResultat } from './estadistiques';
 import { EstatCompte } from './EstatCompte';
-import { sincroInicial, sincronitza } from './sincro-compte';
+import { progresAPujar, sincroInicial, sincronitza } from './sincro-compte';
 import { Selector } from './Selector';
 import { Simulador } from './Simulador';
 import llissa01 from '../../../../missions/llissa-01-factura.json';
@@ -69,15 +70,19 @@ function useEsMobil() {
  * Compte del jugador (si n'hi ha): fusiona el progrés en muntar i el desa en
  * acabar cada missió. Sense sessió o sense xarxa, tot queda en local.
  *
+ * Sense la marca `nep-compte-sessio` (posada en entrar a /compte/) no es fa
+ * cap petició de compte, ni tan sols la del nonce.
+ *
  * @param {Object}                config           Configuració del bloc.
  * @param {Object}                desat            Estat de l'App.
- * @param {Object}                desat.progres    Progrés actual.
+ * @param {{current: Object}}     desat.progresRef Progrés vigent (ref compartida amb l'App).
  * @param {(nou: Object) => void} desat.setProgres Setter del progrés.
  * @return {Object} `{ connectat, puja }`: estat (`null` pendent) i pujada.
  */
-function useCompte( config, { progres, setProgres } ) {
+function useCompte( config, { progresRef, setProgres } ) {
 	const { api, compte, previsualitza } = config;
-	const actiu = !! compte && ! previsualitza;
+	const [ ambMarca ] = useState( () => hiHaMarcaSessio() );
+	const actiu = !! compte && ! previsualitza && ambMarca;
 	// Un sol client per muntatge: el nonce viu només en aquesta instància.
 	const client = useMemo(
 		() =>
@@ -92,19 +97,17 @@ function useCompte( config, { progres, setProgres } ) {
 	);
 	const [ connectat, setConnectat ] = useState( actiu ? null : false );
 	const connectatRef = useRef( false );
-	const progresRef = useRef( progres );
-	progresRef.current = progres;
 
-	// Aplica el que torna el servidor sense trepitjar progrés més nou.
+	// Aplica el que torna el servidor sense trepitjar progrés més nou. La ref
+	// s'actualitza al moment perquè un `onAcaba` immediat parteixi d'aquí.
 	const aplica = useCallback(
 		( servidor ) => {
-			setProgres( ( p ) => {
-				const nou = fusionaProgres( p, servidor );
-				desaProgres( emmagatzematge(), nou );
-				return nou;
-			} );
+			const nou = fusionaProgres( progresRef.current, servidor );
+			progresRef.current = nou;
+			desaProgres( emmagatzematge(), nou );
+			setProgres( ( p ) => fusionaProgres( p, nou ) );
 		},
-		[ setProgres ]
+		[ progresRef, setProgres ]
 	);
 
 	useEffect( () => {
@@ -120,13 +123,19 @@ function useCompte( config, { progres, setProgres } ) {
 				connectatRef.current = r.connectat;
 				setConnectat( r.connectat );
 				if ( ! r.connectat ) {
+					treuMarcaSessio();
 					return;
 				}
+				// Inclou el que s'hagi acabat mentre s'esperava `estat()`.
+				const pendent = progresAPujar( {
+					sincro: r,
+					vigent: progresRef.current,
+				} );
 				aplica( r.progres );
-				if ( r.calPujar ) {
+				if ( pendent ) {
 					const servidor = await sincronitza( {
 						client,
-						progres: r.progres,
+						progres: pendent,
 					} );
 					if ( viu && servidor ) {
 						aplica( servidor );
@@ -137,7 +146,7 @@ function useCompte( config, { progres, setProgres } ) {
 		return () => {
 			viu = false;
 		};
-	}, [ client, aplica ] );
+	}, [ client, aplica, progresRef ] );
 
 	const puja = useCallback(
 		async ( nou ) => {
@@ -223,9 +232,12 @@ export function App( { config } ) {
 		llegeixProgres( emmagatzematge() )
 	);
 	const [ partida, setPartida ] = useState( 0 );
-	const { connectat, puja } = useCompte( config, { progres, setProgres } );
 	const progresActual = useRef( progres );
 	progresActual.current = progres;
+	const { connectat, puja } = useCompte( config, {
+		progresRef: progresActual,
+		setProgres,
+	} );
 	const jugada = useRef( null );
 	const darreres = useRef( missions );
 	darreres.current = missions;
