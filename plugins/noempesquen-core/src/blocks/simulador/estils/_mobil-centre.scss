@@ -125,7 +125,7 @@
 	background: rgb(0 0 0 / 40%);
 	inset: 0;
 	position: absolute;
-	z-index: $capa-mobil-centre; /* per sobre dels banners */
+	z-index: $capa-mobil-telo; /* per sobre dels banners */
 }
 
 .nep-so-m-centre {
@@ -141,7 +141,7 @@
 	overflow: auto;
 	padding: 16px 16px 4px;
 	position: absolute;
-	z-index: $capa-mobil-centre + 1; /* per sobre de la seva capa */
+	z-index: $capa-mobil-centre; /* per sobre de la seva capa */
 
 	&__cap {
 		align-items: baseline;

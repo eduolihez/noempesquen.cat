@@ -8,8 +8,6 @@ import { parteixHora } from '../parla/xats.js';
 import { destiResposta } from './fils.js';
 import { IconaContactes, IconaEnrere, IconaEnvia, IconaMes } from './icones';
 
-/* Mil·lisegons de pulsació per considerar-la llarga. */
-
 /* Píxels de moviment que cancel·len la pulsació llarga. */
 const TOLERANCIA = 10;
 

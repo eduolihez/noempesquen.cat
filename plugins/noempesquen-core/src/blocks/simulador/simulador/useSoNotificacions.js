@@ -3,10 +3,14 @@ import { FASE } from '../nucli/motor';
 import { creaMotorSo } from './tones';
 import { deuSonar, idsNous } from './so-notificacio';
 import { emmagatzem, llegeixSons } from './preferencies';
+import { AVIS_ENTRA } from './useCuaAvisos';
 
 /**
- * So de les notificacions noves (una nota per tanda). No substitueix l'avís
- * visual ni aria-live. Cal una interacció prèvia (política d'autoplay).
+ * So de les notificacions: una nota per avís quan entra de debò a la vista
+ * (esdeveniment AVIS_ENTRA dels toasts o banners), no quan arriba. Com que
+ * les entrades van escalonades (MS_ENTRE_AVISOS), els sons no se solapen.
+ * No substitueix l'avís visual ni aria-live. Cal una interacció prèvia
+ * (política d'autoplay).
  *
  * @param {{current: ?HTMLElement}} arrel Contenidor arrel del simulador.
  * @param {Object}                  estat Estat del motor.
@@ -14,7 +18,12 @@ import { emmagatzem, llegeixSons } from './preferencies';
 export function useSoNotificacions( arrel, estat ) {
 	const motor = useRef( null );
 	const interaccio = useRef( false );
+	const actual = useRef( estat );
+	actual.current = estat;
 	const vistes = useRef( null );
+	// Ids que no han de sonar mai: el lot que crea desbloquejar (bloqueig ->
+	// joc) i el que arriba fora de la fase de joc.
+	const muts = useRef( new Set() );
 	if ( ! vistes.current ) {
 		vistes.current = new Set( estat.notificacions.map( ( n ) => n.id ) );
 	}
@@ -26,11 +35,33 @@ export function useSoNotificacions( arrel, estat ) {
 			interaccio.current = true;
 			motor.current?.reprèn();
 		};
+		const entra = ( e ) => {
+			const id = e.detail?.id;
+			const { pausa, fase } = actual.current;
+			if (
+				! muts.current.has( id ) &&
+				deuSonar( {
+					soActivat: llegeixSons( emmagatzem() ),
+					interaccio: interaccio.current,
+					pausa,
+					enJoc: fase === FASE.JOC,
+					noves: [ id ],
+				} )
+			) {
+				// Pendent: el to «alerta» per als avisos de risc. El motor
+				// encara no distingeix el risc d'una notificació (`font` només
+				// diu l'origen, 'mobil' o PC), així que de moment tot sona
+				// «missatge».
+				motor.current?.reprodueix( 'missatge' );
+			}
+		};
 		el?.addEventListener( 'pointerdown', marca );
 		el?.addEventListener( 'keydown', marca );
+		el?.addEventListener( AVIS_ENTRA, entra );
 		return () => {
 			el?.removeEventListener( 'pointerdown', marca );
 			el?.removeEventListener( 'keydown', marca );
+			el?.removeEventListener( AVIS_ENTRA, entra );
 			motor.current?.tanca();
 			motor.current = null;
 		};
@@ -39,41 +70,17 @@ export function useSoNotificacions( arrel, estat ) {
 	const faseAnterior = useRef( estat.fase );
 
 	useEffect( () => {
-		const enJoc = estat.fase === FASE.JOC;
 		const veniaDeJoc = faseAnterior.current === FASE.JOC;
 		faseAnterior.current = estat.fase;
 		if ( ! estat.notificacions.length ) {
 			vistes.current = new Set();
+			muts.current = new Set();
 			return;
 		}
 		const noves = idsNous( vistes.current, estat.notificacions );
-		if ( ! noves.length ) {
-			return;
-		}
-		// Es marquen vistes encara que no sonin: el que arriba en pausa (o
-		// mentre es demana girar) no sona en reprendre. És intencionat: un
-		// so endarrerit no correspon a cap avís visual nou.
 		noves.forEach( ( id ) => vistes.current.add( id ) );
-		// El lot que crea desbloquejar (bloqueig -> joc) no sona.
-		if ( ! veniaDeJoc ) {
-			return;
+		if ( ! veniaDeJoc || estat.fase !== FASE.JOC ) {
+			noves.forEach( ( id ) => muts.current.add( id ) );
 		}
-		const soActivat = llegeixSons( emmagatzem() );
-		if (
-			deuSonar( {
-				soActivat,
-				interaccio: interaccio.current,
-				pausa: estat.pausa,
-				enJoc,
-				noves,
-			} )
-		) {
-			// Sona en arribar la tanda: si el tope de toasts/banners no és
-			// ple, la primera entra a la vista en aquest mateix moment.
-			// Pendent: el to «alerta» per als avisos de risc. El motor encara
-			// no distingeix el risc d'una notificació (`font` només diu
-			// l'origen, 'mobil' o PC), així que de moment tot sona «missatge».
-			motor.current?.reprodueix( 'missatge' );
-		}
-	}, [ estat.notificacions, estat.pausa, estat.fase ] );
+	}, [ estat.notificacions, estat.fase ] );
 }

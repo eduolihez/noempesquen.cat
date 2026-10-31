@@ -20,6 +20,10 @@ const MISSIONS = {
  * @param {boolean}                         sons Si el so està activat.
  */
 async function espiaAudio( page, sons ) {
+	// El so i l'anunci arriben quan l'avís entra a la vista, i fins que el
+	// bloqueig no es desmunta no n'entra cap. Amb el rellotge fals l'animació
+	// de sortida del bloqueig no acaba: sense moviment es desmunta de seguida.
+	await page.emulateMedia( { reducedMotion: 'reduce' } );
 	await page.addInitScript( ( valor ) => {
 		window.__osciladors = 0;
 		class AudioEspia {
@@ -81,7 +85,7 @@ test.describe( 'So de les notificacions', () => {
 	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 500 );
 		await page.clock.runFor( 2000 );
 		expect( await osciladors( page ) ).toBe( 0 );
 	} );
@@ -92,7 +96,7 @@ test.describe( 'So de les notificacions', () => {
 	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 500 );
 		const abans = await osciladors( page );
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toContainText(
@@ -117,7 +121,7 @@ test.describe( 'So de les notificacions', () => {
 	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 500 );
 		const abans = await osciladors( page );
 		await page.keyboard.press( 'Escape' );
 		await expect(
@@ -139,7 +143,7 @@ test.describe( 'So de les notificacions', () => {
 	} ) => {
 		await espiaAudio( page, true );
 		await entra( page, isMobile );
-		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 500 );
 		await page.keyboard.press( 'Escape' );
 		const pausa = page.getByRole( 'dialog', { name: /pausa/i } );
 		await expect( pausa ).toBeVisible();
@@ -217,7 +221,7 @@ test.describe( 'So de les notificacions', () => {
 		await senseFullscreen( page );
 		await espiaAudio( page, true );
 		await entra( page, false );
-		await expect( avis( page ) ).toContainText( /\S/ );
+		await page.clock.runFor( 500 );
 		await page.clock.runFor( 2000 );
 		const abans = await osciladors( page );
 

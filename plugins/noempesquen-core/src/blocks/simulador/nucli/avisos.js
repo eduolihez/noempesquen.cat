@@ -90,3 +90,73 @@ export function admetAvisos( {
 	}
 	return r;
 }
+
+/**
+ * Temps que queda d'un avís després d'haver corregut des de `desde` fins a
+ * `ara`. Mai negatiu.
+ *
+ * @param {number} resta Temps que quedava (ms).
+ * @param {number} desde Instant en què es va engegar el comptador (ms).
+ * @param {number} ara   Instant actual (ms).
+ * @return {number} Temps restant (ms).
+ */
+export function restaTemps( resta, desde, ara ) {
+	return Math.max( 0, resta - Math.max( 0, ara - desde ) );
+}
+
+/**
+ * Ids de la cua que encara s'han de mostrar: existeixen, no s'han llegit i
+ * no els amaga el filtre (p. ex. l'app d'origen és oberta). Manté l'ordre.
+ *
+ * @param {Array}    cua           Ids pendents.
+ * @param {Array}    notificacions Notificacions del motor.
+ * @param {Function} [oculta]      (n) => cert si no s'ha de mostrar.
+ * @return {Array} Ids que segueixen vius.
+ */
+export function filtraCua( cua, notificacions, oculta = () => false ) {
+	const per = new Map(
+		( Array.isArray( notificacions ) ? notificacions : [] ).map( ( n ) => [
+			n.id,
+			n,
+		] )
+	);
+	return ( Array.isArray( cua ) ? cua : [] ).filter( ( id ) => {
+		const n = per.get( id );
+		return Boolean( n && ! n.llegida && ! oculta( n ) );
+	} );
+}
+
+/**
+ * Còpia del mapa de temps restants amb només els ids vius.
+ *
+ * @param {Map}   restes Temps restant per id.
+ * @param {Array} vius   Ids que encara són a la vista.
+ * @return {Map} Mapa podat.
+ */
+export function podaRestes( restes, vius ) {
+	const v = new Set( vius );
+	return new Map(
+		[ ...( restes ?? [] ) ].filter( ( [ id ] ) => v.has( id ) )
+	);
+}
+
+/**
+ * Afegeix el text d'un avís que entra a la regió aria-live. Els d'una mateixa
+ * tanda s'hi acumulen; una tanda nova buida la llista. Cada entrada porta una
+ * clau única perquè dos textos iguals seguits es tornin a anunciar.
+ *
+ * @param {Array}   anuncis           Entrades actuals [{ clau, text }].
+ * @param {string}  text              Text a anunciar.
+ * @param {Object}  opcions
+ * @param {boolean} opcions.novaTanda Comença una tanda nova.
+ * @param {number}  opcions.clau      Clau única de l'entrada.
+ * @return {Array} Entrades noves.
+ */
+export function afegeixAnunci(
+	anuncis,
+	text,
+	{ novaTanda = false, clau } = {}
+) {
+	const base = novaTanda || ! Array.isArray( anuncis ) ? [] : anuncis;
+	return [ ...base, { clau, text } ];
+}
