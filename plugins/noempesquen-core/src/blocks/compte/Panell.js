@@ -156,6 +156,7 @@ function DialegEsborra( { client, onTanca, onEsborrat } ) {
 		// Esc: el navegador llança `cancel`; es tanca pel mateix camí.
 		const cancel = ( event ) => {
 			event.preventDefault();
+			d.close();
 			refTanca.current();
 		};
 		d?.addEventListener( 'cancel', cancel );
@@ -178,6 +179,7 @@ function DialegEsborra( { client, onTanca, onEsborrat } ) {
 			setEnviant( false );
 		}
 		if ( r.ok ) {
+			dialeg.current?.close();
 			onEsborrat();
 		} else {
 			setError( r.missatge );
@@ -217,7 +219,11 @@ function DialegEsborra( { client, onTanca, onEsborrat } ) {
 					<button
 						type="button"
 						className="nep-compte__boto nep-compte__boto--secundari"
-						onClick={ onTanca }
+						onClick={ () => {
+							// Primer es tanca el modal: mentre és obert, la resta és inert.
+							dialeg.current?.close();
+							onTanca();
+						} }
 					>
 						{ T.cancella }
 					</button>

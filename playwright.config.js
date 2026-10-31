@@ -14,8 +14,11 @@ const { defineConfig, devices } = require( '@playwright/test' );
  *   després, la pantalla d'estadístiques. Publiquen missions de
  *   prova que surten a /simulador/, i per això corre quan els altres ja han
  *   acabat (`dependencies`) i cap dels altres l'inclou.
+ * - compte: Desktop Chrome, només la pantalla de compte (sèrie, un sol compte de
+ *   prova per execució; sense dependències per poder-lo llançar sol).
  */
 const SPEC_PANELL = /(panel-missions|estadistiques)\.spec\.js$/;
+const SPEC_COMPTE = /compte\.spec\.js$/;
 const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;
 
@@ -29,12 +32,12 @@ module.exports = defineConfig( {
 		{
 			name: 'escriptori',
 			use: { ...devices[ 'Desktop Chrome' ] },
-			testIgnore: SPEC_PANELL,
+			testIgnore: [ SPEC_PANELL, SPEC_COMPTE ],
 		},
 		{
 			name: 'mobil',
 			use: { ...devices[ 'Pixel 7' ] },
-			testIgnore: SPEC_PANELL,
+			testIgnore: [ SPEC_PANELL, SPEC_COMPTE ],
 		},
 		{
 			name: 'mobil-horitzontal',
@@ -54,6 +57,11 @@ module.exports = defineConfig( {
 			use: { ...devices[ 'Desktop Chrome' ] },
 			testMatch: /estadistiques\.spec\.js$/,
 			dependencies: [ 'panell' ],
+		},
+		{
+			name: 'compte',
+			use: { ...devices[ 'Desktop Chrome' ] },
+			testMatch: SPEC_COMPTE,
 		},
 	],
 } );
