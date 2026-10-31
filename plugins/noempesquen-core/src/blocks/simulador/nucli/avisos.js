@@ -55,3 +55,38 @@ export function planificaAvisos(
 	}
 	return { mostra: [], espera: [ ...llista ], properaEntrada: permes };
 }
+
+/**
+ * Admissió d'avisos amb tope de visibles: si ja n'hi ha `max` a la vista, la
+ * cua espera sencera (sense perdre'n cap) fins que en surti algun; si hi ha
+ * lloc, delega en `planificaAvisos` (com a màxim un per crida).
+ *
+ * @param {Object} p
+ * @param {Array}  p.cua           Avisos pendents, en ordre d'arribada.
+ * @param {number} p.visibles      Quants n'hi ha ara a la vista.
+ * @param {number} p.max           Tope de visibles alhora.
+ * @param {number} p.ara           Instant actual (ms).
+ * @param {number} p.ultimaEntrada Instant de l'última entrada (ms), o null.
+ * @param {number} p.entre         Separació mínima entre entrades (ms).
+ * @return {{mostra: Array, espera: Array, properaEntrada: (number|null)}}
+ *   `properaEntrada` és null si cal esperar que se'n tregui algun.
+ */
+export function admetAvisos( {
+	cua,
+	visibles = 0,
+	max = Infinity,
+	ara,
+	ultimaEntrada = null,
+	entre = MS_ENTRE_AVISOS,
+} = {} ) {
+	const llista = Array.isArray( cua ) ? cua : [];
+	if ( visibles >= max ) {
+		return { mostra: [], espera: [ ...llista ], properaEntrada: null };
+	}
+	const r = planificaAvisos( llista, ara, ultimaEntrada, { entre } );
+	// Si amb aquesta entrada s'omple el tope, la propera espera una sortida.
+	if ( r.mostra.length && visibles + r.mostra.length >= max ) {
+		return { ...r, properaEntrada: null };
+	}
+	return r;
+}

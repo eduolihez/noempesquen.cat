@@ -68,6 +68,11 @@ export function useSoNotificacions( arrel, estat ) {
 				noves,
 			} )
 		) {
+			// Sona en arribar la tanda: si el tope de toasts/banners no és
+			// ple, la primera entra a la vista en aquest mateix moment.
+			// Pendent: el to «alerta» per als avisos de risc. El motor encara
+			// no distingeix el risc d'una notificació (`font` només diu
+			// l'origen, 'mobil' o PC), així que de moment tot sona «missatge».
 			motor.current?.reprodueix( 'missatge' );
 		}
 	}, [ estat.notificacions, estat.pausa, estat.fase ] );

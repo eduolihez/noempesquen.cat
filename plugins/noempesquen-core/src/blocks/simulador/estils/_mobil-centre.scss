@@ -1,12 +1,16 @@
 /* Mòbil: notificacions (targeta comuna), banners i centre de control. */
 
+@use "moviment" as *;
+@use "capes" as *;
+@use "tokens" as *;
+
 /* Targeta de notificació (bloqueig, banners i centre de control). */
 .nep-so .nep-so-m-notif {
 	background: rgb(255 255 255 / 94%);
 	border: 0;
 	border-radius: 20px;
 	box-shadow: 0 4px 16px rgb(0 0 0 / 25%);
-	color: #1a1a1a;
+	color: $tok-tinta;
 	cursor: pointer;
 	display: flex;
 	flex-direction: column;
@@ -74,11 +78,12 @@
 	inset: 48px 8px auto;
 	pointer-events: none;
 	position: absolute;
-	z-index: 10;
+	z-index: $capa-mobil-banner;
 }
 
+/* Entrada amb la mateixa durada i corba que el toast del PC. */
 .nep-so-m-banner {
-	animation: nep-so-m-baixa 0.25s ease-out;
+	animation: nep-so-m-baixa $t-lent $corba-entrada;
 	pointer-events: auto;
 	position: relative;
 	touch-action: none;
@@ -87,6 +92,11 @@
 	.nep-so-m-notif {
 		padding-inline-end: 52px;
 	}
+
+	&.is-sortint {
+		animation: nep-so-m-surt $t-rapid $corba-sortida forwards;
+		pointer-events: none;
+	}
 }
 
 .nep-so .nep-so-m-banner__descarta {
@@ -94,7 +104,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: 50%;
-	color: #1a1a1a;
+	color: $tok-tinta;
 	cursor: pointer;
 	display: flex;
 	height: 44px;
@@ -105,7 +115,7 @@
 	width: 44px;
 
 	&:focus-visible {
-		outline: 3px solid #0b57d0;
+		outline: 3px solid $tok-accent-mobil;
 		outline-offset: -3px;
 	}
 }
@@ -115,7 +125,7 @@
 	background: rgb(0 0 0 / 40%);
 	inset: 0;
 	position: absolute;
-	z-index: 14;
+	z-index: $capa-mobil-centre; /* per sobre dels banners */
 }
 
 .nep-so-m-centre {
@@ -131,7 +141,7 @@
 	overflow: auto;
 	padding: 16px 16px 4px;
 	position: absolute;
-	z-index: 15;
+	z-index: $capa-mobil-centre + 1; /* per sobre de la seva capa */
 
 	&__cap {
 		align-items: baseline;
@@ -232,9 +242,18 @@
 	}
 }
 
+@keyframes nep-so-m-surt {
+
+	to {
+		opacity: 0;
+		transform: translateY(-8px);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 
 	.nep-so-m-banner,
+	.nep-so-m-banner.is-sortint,
 	.nep-so-m-centre {
 		animation: none;
 	}

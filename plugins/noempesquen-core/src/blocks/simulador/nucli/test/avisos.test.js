@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { duradaAvis, planificaAvisos } from '../avisos.js';
+import { admetAvisos, duradaAvis, planificaAvisos } from '../avisos.js';
 
 describe( 'duradaAvis', () => {
 	it( 'texto vacío o no string da la base', () => {
@@ -51,5 +51,69 @@ describe( 'planificaAvisos', () => {
 		const cua = [ 'a', 'b' ];
 		planificaAvisos( cua, 0, 0, o );
 		expect( cua ).toEqual( [ 'a', 'b' ] );
+	} );
+} );
+
+describe( 'admetAvisos', () => {
+	it( 'amb el tope ple no entra cap i no se’n perd cap', () => {
+		const r = admetAvisos( {
+			cua: [ 'a', 'b' ],
+			visibles: 3,
+			max: 3,
+			ara: 5000,
+			ultimaEntrada: 0,
+			entre: 700,
+		} );
+		expect( r ).toEqual( {
+			mostra: [],
+			espera: [ 'a', 'b' ],
+			properaEntrada: null,
+		} );
+	} );
+	it( 'amb lloc entra el primer i programa el següent', () => {
+		const r = admetAvisos( {
+			cua: [ 'a', 'b' ],
+			visibles: 0,
+			max: 3,
+			ara: 1000,
+			ultimaEntrada: null,
+			entre: 700,
+		} );
+		expect( r ).toEqual( {
+			mostra: [ 'a' ],
+			espera: [ 'b' ],
+			properaEntrada: 1700,
+		} );
+	} );
+	it( 'si l’entrada omple el tope, la resta espera una sortida', () => {
+		const r = admetAvisos( {
+			cua: [ 'a', 'b' ],
+			visibles: 1,
+			max: 2,
+			ara: 1000,
+			ultimaEntrada: null,
+			entre: 700,
+		} );
+		expect( r.mostra ).toEqual( [ 'a' ] );
+		expect( r.espera ).toEqual( [ 'b' ] );
+		expect( r.properaEntrada ).toBeNull();
+	} );
+	it( 'respecta la separació encara que hi hagi lloc', () => {
+		const r = admetAvisos( {
+			cua: [ 'a' ],
+			visibles: 1,
+			max: 3,
+			ara: 1200,
+			ultimaEntrada: 1000,
+			entre: 700,
+		} );
+		expect( r ).toEqual( {
+			mostra: [],
+			espera: [ 'a' ],
+			properaEntrada: 1700,
+		} );
+	} );
+	it( 'cua buida o absent', () => {
+		expect( admetAvisos( { ara: 0 } ).mostra ).toEqual( [] );
 	} );
 } );

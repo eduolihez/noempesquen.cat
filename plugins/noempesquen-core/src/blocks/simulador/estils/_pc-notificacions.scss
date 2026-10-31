@@ -1,6 +1,7 @@
 /* PC simulat: centre de notificacions, calendari i toasts. */
 
 @use "pc-vidre" as *;
+@use "capes" as *;
 
 /* ---------- Centre de notificacions ---------- */
 .nep-so-centre {
@@ -12,7 +13,7 @@
 	position: absolute;
 	right: 12px;
 	width: 364px;
-	z-index: 4;
+	z-index: $capa-centre; /* per sobre dels toasts */
 
 	&:focus {
 		outline: none;
@@ -124,16 +125,23 @@
 	flex-direction: column;
 	gap: 8px;
 	position: absolute;
+	max-width: calc(100% - 24px);
 	right: 12px;
 	width: 364px;
-	z-index: 3;
+	z-index: $capa-toast;
 }
 
+/* Entrada amb la mateixa durada i corba que el banner del mòbil. */
 .nep-so-toast {
 
 	@include superficie;
 
-	animation: nep-so-toast-entra 0.32s $corba-entrada both;
+	animation: nep-so-toast-entra $t-lent $corba-entrada both;
+
+	&.is-sortint {
+		animation: nep-so-toast-surt $t-rapid $corba-sortida forwards;
+		pointer-events: none;
+	}
 }
 
 .nep-so-notif {
@@ -246,10 +254,19 @@
 	}
 }
 
+@keyframes nep-so-toast-surt {
+
+	to {
+		opacity: 0;
+		transform: translateX(16px);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 
 	.nep-so-centre,
-	.nep-so-toast {
+	.nep-so-toast,
+	.nep-so-toast.is-sortint {
 		animation: none;
 	}
 }

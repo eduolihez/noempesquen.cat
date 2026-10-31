@@ -10,14 +10,20 @@ import {
 	IconaPosta,
 	IconaTanca,
 } from '../../ui/icones';
+import { admetAvisos, duradaAvis } from '../../nucli/avisos';
+import { MAX_TOASTS, MS_ENTRE_AVISOS, MS_SORTIDA } from '../../nucli/temps';
 
 const mapaNoms = ( apps ) =>
 	Object.fromEntries(
 		Object.entries( apps ).map( ( [ k, v ] ) => [ k, v.nom ] )
 	);
 
-const MS_TOAST = 6000;
-const MAX_TOASTS = 3;
+/* Amb moviment reduït el toast descartat es desmunta sense animació. */
+const movimentReduit = () =>
+	typeof window !== 'undefined' &&
+	Boolean(
+		window.matchMedia?.( '(prefers-reduced-motion: reduce)' )?.matches
+	);
 
 /**
  * Com es presenta una notificació: app d'origen, títol i imatge.
@@ -102,7 +108,7 @@ export function CosNotificacio( { n, d, onObre } ) {
 	);
 }
 
-function Toast( { n, onObre, onDescarta } ) {
+function Toast( { n, sortint, onObre, onDescarta } ) {
 	const joc = useJoc();
 	const [ aturat, setAturat ] = useState( false );
 	const descarta = useRef( onDescarta );
@@ -110,19 +116,34 @@ function Toast( { n, onObre, onDescarta } ) {
 	const pausa = joc.estat.pausa;
 	const d = descriu( n, joc );
 
-	// Sis segons visibles; el comptador s'atura amb el punter o el focus
-	// a sobre i durant la pausa del joc.
+	// Visible segons la llargada del text (duradaAvis); el comptador s'atura
+	// amb el punter o el focus a sobre i durant la pausa del joc, i en
+	// reprendre continua amb el temps que quedava.
+	const resta = useRef( null );
+	if ( resta.current === null ) {
+		resta.current = duradaAvis( n.text );
+	}
 	useEffect( () => {
-		if ( aturat || pausa ) {
+		if ( aturat || pausa || sortint ) {
 			return undefined;
 		}
-		const t = setTimeout( () => descarta.current(), MS_TOAST );
-		return () => clearTimeout( t );
-	}, [ aturat, pausa ] );
+		const arrenca = Date.now();
+		const t = setTimeout( () => descarta.current(), resta.current );
+		return () => {
+			clearTimeout( t );
+			resta.current = Math.max(
+				0,
+				resta.current - ( Date.now() - arrenca )
+			);
+		};
+	}, [ aturat, pausa, sortint ] );
 
 	return (
 		<li
-			className="nep-so-toast nep-so-notif"
+			className={ `nep-so-toast nep-so-notif${
+				sortint ? ' is-sortint' : ''
+			}` }
+			inert={ sortint ? '' : undefined }
 			onMouseEnter={ () => setAturat( true ) }
 			onMouseLeave={ () => setAturat( false ) }
 			onFocus={ () => setAturat( true ) }
@@ -162,14 +183,31 @@ export function Toasts( { onObre, parlaActiva, amagats, silenci } ) {
 	const joc = useJoc();
 	const { notificacions } = joc.estat;
 	const vistes = useRef( new Set( notificacions.map( ( n ) => n.id ) ) );
+	const pausa = joc.estat.pausa;
+	// `cua`: esperen torn; `ids`: a la vista; `sortint`: animant la sortida.
+	const [ cua, setCua ] = useState( [] );
 	const [ ids, setIds ] = useState( [] );
+	const [ sortint, setSortint ] = useState( () => new Set() );
+	const [ rellotge, setRellotge ] = useState( 0 );
+	const ultimaEntrada = useRef( null );
+	const sortides = useRef( new Map() );
 	const [ anunci, setAnunci ] = useState( '' );
+
+	useEffect( () => {
+		const timers = sortides.current;
+		return () => timers.forEach( ( t ) => clearTimeout( t ) );
+	}, [] );
 
 	// Només reacciona a l'arribada de notificacions noves.
 	useEffect( () => {
 		if ( ! notificacions.length ) {
 			vistes.current = new Set();
+			setCua( [] );
 			setIds( [] );
+			setSortint( new Set() );
+			sortides.current.forEach( ( t ) => clearTimeout( t ) );
+			sortides.current.clear();
+			ultimaEntrada.current = null;
 			return;
 		}
 		const noves = notificacions.filter(
@@ -193,9 +231,51 @@ export function Toasts( { onObre, parlaActiva, amagats, silenci } ) {
 			)
 			.map( ( n ) => n.id );
 		if ( mostra.length && ! silenci ) {
-			setIds( ( a ) => [ ...a, ...mostra ].slice( -MAX_TOASTS ) );
+			setCua( ( a ) => [ ...a, ...mostra ] );
 		}
 	}, [ notificacions ] ); // eslint-disable-line react-hooks/exhaustive-deps
+
+	const viva = ( id ) => {
+		const n = notificacions.find( ( x ) => x.id === id );
+		return Boolean( n && ! n.llegida );
+	};
+
+	// Admissió escalonada: entren d'una en una (MS_ENTRE_AVISOS) i, si ja
+	// n'hi ha MAX_TOASTS a la vista, la resta espera a la cua.
+	useEffect( () => {
+		if ( amagats || pausa || ! cua.length ) {
+			return undefined;
+		}
+		const pendents = cua.filter( viva );
+		if ( pendents.length !== cua.length ) {
+			setCua( pendents );
+			return undefined;
+		}
+		const ara = Date.now();
+		const r = admetAvisos( {
+			cua,
+			visibles: ids.filter( ( id ) => viva( id ) && ! sortint.has( id ) )
+				.length,
+			max: MAX_TOASTS,
+			ara,
+			ultimaEntrada: ultimaEntrada.current,
+			entre: MS_ENTRE_AVISOS,
+		} );
+		if ( r.mostra.length ) {
+			ultimaEntrada.current = ara;
+			setIds( ( a ) => [ ...a, ...r.mostra ] );
+			setCua( r.espera );
+			return undefined;
+		}
+		if ( r.properaEntrada === null ) {
+			return undefined;
+		}
+		const t = setTimeout(
+			() => setRellotge( ( x ) => x + 1 ),
+			Math.max( 0, r.properaEntrada - ara )
+		);
+		return () => clearTimeout( t );
+	}, [ cua, ids, sortint, amagats, pausa, rellotge, notificacions ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const visibles = amagats
 		? []
@@ -203,7 +283,34 @@ export function Toasts( { onObre, parlaActiva, amagats, silenci } ) {
 				.map( ( id ) => notificacions.find( ( n ) => n.id === id ) )
 				.filter( ( n ) => n && ! n.llegida );
 
-	const treu = ( id ) => setIds( ( a ) => a.filter( ( x ) => x !== id ) );
+	const desmunta = ( id ) => {
+		sortides.current.delete( id );
+		setIds( ( a ) => a.filter( ( x ) => x !== id ) );
+		setSortint( ( s ) => {
+			if ( ! s.has( id ) ) {
+				return s;
+			}
+			const c = new Set( s );
+			c.delete( id );
+			return c;
+		} );
+	};
+
+	// Descarta amb animació de sortida (MS_SORTIDA) i després desmunta.
+	const treu = ( id ) => {
+		if ( sortides.current.has( id ) ) {
+			return;
+		}
+		if ( movimentReduit() ) {
+			desmunta( id );
+			return;
+		}
+		setSortint( ( s ) => new Set( [ ...s, id ] ) );
+		sortides.current.set(
+			id,
+			setTimeout( () => desmunta( id ), MS_SORTIDA )
+		);
+	};
 
 	return (
 		<>
@@ -215,6 +322,7 @@ export function Toasts( { onObre, parlaActiva, amagats, silenci } ) {
 					<Toast
 						key={ n.id }
 						n={ n }
+						sortint={ sortint.has( n.id ) }
 						onObre={ () => {
 							treu( n.id );
 							onObre( n );
