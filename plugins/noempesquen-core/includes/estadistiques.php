@@ -448,7 +448,7 @@ function nep_crea_taula_resultats(): bool {
 
 /**
  * Missions jugables (les mateixes que veu el client): les incloses
- * (`missions/*.json`, sense `mon.json`) i les publicades al panell, que
+ * (`missions/*.json`, sense `mon.json` ni la plantilla) i les publicades al panell, que
  * substitueixen per id les incloses.
  *
  * Es desa en un transient (una hora com a màxim) que s'esborra quan canvia
@@ -458,10 +458,7 @@ function nep_crea_taula_resultats(): bool {
  * @return array<string, array> Guió per id.
  */
 function nep_missions_jugables(): array {
-	$fitxers = array_filter(
-		glob( NEP_PATH . 'missions/*.json' ) ?: array(),
-		static fn( $f ) => 'mon.json' !== basename( $f )
-	);
+	$fitxers = nep_fitxers_missions_incloses( NEP_PATH . 'missions/' );
 	$firma   = md5( implode( '|', array_map( static fn( $f ) => basename( $f ) . ':' . filemtime( $f ), $fitxers ) ) );
 	$cau     = get_transient( NEP_CAU_MISSIONS );
 	if ( is_array( $cau ) && ( $cau['firma'] ?? '' ) === $firma && is_array( $cau['missions'] ?? null ) ) {

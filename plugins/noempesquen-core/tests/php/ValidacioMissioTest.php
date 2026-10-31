@@ -36,10 +36,8 @@ final class ValidacioMissioTest extends TestCase {
 	 */
 	public static function reals(): array {
 		$casos = array();
-		foreach ( glob( self::MISSIONS . '*.json' ) as $fitxer ) {
-			if ( 'mon.json' !== basename( $fitxer ) ) {
-				$casos[ basename( $fitxer ) ] = array( $fitxer );
-			}
+		foreach ( nep_fitxers_missions_incloses( self::MISSIONS ) as $fitxer ) {
+			$casos[ basename( $fitxer ) ] = array( $fitxer );
 		}
 		return $casos;
 	}
@@ -68,6 +66,22 @@ final class ValidacioMissioTest extends TestCase {
 			$casos[ basename( $fitxer ) ] = array( $fitxer );
 		}
 		return $casos;
+	}
+
+	public function test_la_plantilla_es_valida_i_no_es_inclosa(): void {
+		$guio = self::llegeix( self::MISSIONS . 'plantilla-missio.json' );
+		$this->assertSame( array(), nep_valida_guio( $guio, $guio['dispositiu'], $guio['personatge'], array() ) );
+		$noms = array_map( 'basename', nep_fitxers_missions_incloses( self::MISSIONS ) );
+		$this->assertNotContains( 'plantilla-missio.json', $noms );
+		$this->assertNotContains( 'mon.json', $noms );
+		$this->assertContains( 'llissa-01-factura.json', $noms );
+	}
+
+	public function test_proposa_id_unic_i_valid(): void {
+		$this->assertSame( 'llissa-01-factura-copia', nep_proposa_id_missio( 'llissa-01-factura-copia', array( 'llissa-01-factura' ) ) );
+		$this->assertSame( 'prova-3', nep_proposa_id_missio( 'Prova', array( 'prova', 'prova-2' ) ) );
+		$this->assertSame( 'missio-nova', nep_proposa_id_missio( '¡!', array() ) );
+		$this->assertMatchesRegularExpression( '/^[a-z0-9]+(-[a-z0-9]+)*$/D', nep_proposa_id_missio( '  Àlex   i Llissa! ', array() ) );
 	}
 
 	public function test_hi_ha_prou_casos(): void {

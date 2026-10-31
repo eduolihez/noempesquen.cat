@@ -19,15 +19,11 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 WP_CLI::add_command(
 	'noempesquen importa-missions',
 	static function () {
-		$fitxers = glob( NEP_PATH . 'missions/*.json' ) ?: array();
+		// Sense mon.json (món compartit) ni plantilla-missio.json (plantilla de l'editor).
+		$fitxers = nep_fitxers_missions_incloses( NEP_PATH . 'missions/' );
 		$ordre   = 0;
 
 		foreach ( $fitxers as $fitxer ) {
-			// mon.json és el món compartit (contactes, webs, correus), no una missió.
-			if ( 'mon.json' === basename( $fitxer ) ) {
-				continue;
-			}
-
 			$missio = json_decode( (string) file_get_contents( $fitxer ), true );
 			if ( ! is_array( $missio ) || empty( $missio['id'] ) ) {
 				WP_CLI::warning( 'JSON invàlid: ' . basename( $fitxer ) );

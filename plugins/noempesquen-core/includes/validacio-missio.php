@@ -103,3 +103,55 @@ function nep_valida_guio( array $guio, string $dispositiu, string $personatge, a
 
 	return $errors;
 }
+
+/** Fitxers de /missions que no són missions jugables. */
+const NEP_FITXERS_NO_MISSIO = array( 'mon.json', 'plantilla-missio.json' );
+
+/**
+ * Fitxers de les missions incloses: `*.json` de la carpeta, sense el món
+ * compartit (`mon.json`) ni la plantilla de l'editor (`plantilla-missio.json`).
+ *
+ * @param string $carpeta Carpeta de les missions (amb la barra final).
+ * @return string[]
+ */
+function nep_fitxers_missions_incloses( string $carpeta ): array {
+	return array_values(
+		array_filter(
+			glob( $carpeta . '*.json' ) ?: array(),
+			static fn( $f ) => ! in_array( basename( $f ), NEP_FITXERS_NO_MISSIO, true )
+		)
+	);
+}
+
+/**
+ * Id en minúscules, sense accents ni símbols (patró de `nep_valida_guio`).
+ *
+ * @param string $text Text de partida (títol o id).
+ * @return string Id vàlid o '' si no en queda res.
+ */
+function nep_slug_id( string $text ): string {
+	if ( function_exists( 'remove_accents' ) ) {
+		$text = remove_accents( $text );
+	} elseif ( class_exists( 'Normalizer' ) ) {
+		$text = (string) preg_replace( '/\p{Mn}+/u', '', (string) Normalizer::normalize( $text, Normalizer::FORM_D ) );
+	}
+	$text = strtolower( $text );
+	return trim( (string) preg_replace( '/[^a-z0-9]+/', '-', $text ), '-' );
+}
+
+/**
+ * Id únic a partir d'una base: hi afegeix -2, -3... si ja és ocupat.
+ *
+ * @param string   $base    Text de partida.
+ * @param string[] $ocupats Ids de les missions incloses i de les del panell.
+ * @return string
+ */
+function nep_proposa_id_missio( string $base, array $ocupats ): string {
+	$base = nep_slug_id( $base );
+	$base = '' === $base ? 'missio-nova' : $base;
+	$id   = $base;
+	for ( $n = 2; in_array( $id, $ocupats, true ); $n++ ) {
+		$id = $base . '-' . $n;
+	}
+	return $id;
+}
