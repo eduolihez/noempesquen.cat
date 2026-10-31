@@ -213,6 +213,87 @@ for ( $i = 1; $i <= 9; $i++ ) {
 }
 $nep_comprova( array_fill( 0, 8, 401 ) === array_slice( $nep_codis, 0, 8 ) && 429 === $nep_codis[8], 'entra: el novè intent fallit → 429' );
 
+// 9. Ronda de seguretat de la 3B.
+// X-Forwarded-For no canvia la clau del límit (només REMOTE_ADDR).
+remove_filter( 'nep_ip_client', $nep_filtre_ip );
+$nep_remot                       = $_SERVER['REMOTE_ADDR'] ?? null;
+$_SERVER['REMOTE_ADDR']          = '10.20.30.40';
+$nep_clau_a                      = nep_clau_limit( 'entra|' . nep_ip_client() );
+$_SERVER['HTTP_X_FORWARDED_FOR'] = '203.0.113.9';
+$nep_clau_b                      = nep_clau_limit( 'entra|' . nep_ip_client() );
+unset( $_SERVER['HTTP_X_FORWARDED_FOR'] );
+$_SERVER['REMOTE_ADDR'] = $nep_remot;
+add_filter( 'nep_ip_client', $nep_filtre_ip );
+$nep_comprova( $nep_clau_a === $nep_clau_b, 'límit: X-Forwarded-For no canvia la clau' );
+
+// Només cos JSON: formulari → 415; contrasenya a la query string → ignorada.
+$nep_nova_ip();
+wp_set_current_user( 0 );
+$_COOKIE = array();
+$nep_form = new WP_REST_Request( 'POST', '/noempesquen/v1/compte/entra' );
+$nep_form->set_header( 'Content-Type', 'application/x-www-form-urlencoded' );
+$nep_form->set_body_params( array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$r = rest_do_request( $nep_form );
+$nep_comprova( 415 === $r->get_status() && 0 === get_current_user_id(), 'entra: cos de formulari → 415' );
+$nep_query = new WP_REST_Request( 'POST', '/noempesquen/v1/compte/entra' );
+$nep_query->set_header( 'Content-Type', 'application/json' );
+$nep_query->set_query_params( array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$r = rest_do_request( $nep_query );
+$nep_comprova( 401 === $r->get_status() && 0 === get_current_user_id(), 'entra: contrasenya a la query string → ignorada (401)' );
+
+// Hash fictici amb el mateix algorisme que els reals.
+$nep_hash_fals = (string) get_option( 'nep_hash_fals' );
+$nep_comprova( '' !== $nep_hash_fals && substr( $nep_hash_fals, 0, 4 ) === substr( wp_hash_password( 'x' ), 0, 4 ), 'entra: hash fictici amb el mateix algorisme' );
+
+// /entra destrueix la sessió anterior del navegador (petició sense nonce: usuari 0).
+$nep_galeta = '';
+$nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$nep_galeta_vella = $nep_galeta;
+$_COOKIE          = array( LOGGED_IN_COOKIE => $nep_galeta_vella );
+wp_set_current_user( 0 );
+$nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$nep_comprova( '' !== $nep_galeta_vella && $nep_galeta !== $nep_galeta_vella && false === wp_validate_auth_cookie( $nep_galeta_vella, 'logged_in' ) && false !== wp_validate_auth_cookie( $nep_galeta, 'logged_in' ), 'entra: destrueix la sessió anterior' );
+
+// wp-login.php, XML-RPC i recuperació de contrasenya.
+$nep_ok_login = is_wp_error( wp_authenticate( $nep_jug1->user_login, $nep_pass ) ) && is_wp_error( wp_authenticate( $nep_email1, $nep_pass ) );
+$nep_err_jug  = wp_authenticate( $nep_email1, $nep_pass );
+$nep_err_cap  = wp_authenticate( 'ningu' . $nep_email1, 'x' );
+$nep_comprova( $nep_ok_login && $nep_err_jug->get_error_message() === $nep_err_cap->get_error_message(), 'wp-login: un jugador no entra i el missatge és genèric' );
+$nep_comprova( false === apply_filters( 'xmlrpc_enabled', true ), 'xmlrpc: desactivat' );
+$nep_rp_jug = retrieve_password( $nep_jug1->user_login );
+$nep_rp_cap = retrieve_password( 'ningu' . $nep_email1 );
+$nep_comprova( is_wp_error( $nep_rp_jug ) && is_wp_error( $nep_rp_cap ) && $nep_rp_jug->get_error_message() === $nep_rp_cap->get_error_message(), 'lostpassword: mateix missatge per a jugador i inexistent' );
+
+// Límit global d'altes per hora.
+$nep_nova_ip();
+set_transient(
+	nep_clau_limit( 'registre-global' ),
+	array(
+		'n'  => (int) NEP_COMPTE_LIMIT_REGISTRE_GLOBAL,
+		'fi' => time() + 60,
+	),
+	60
+);
+$r = $nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( 'g' . $nep_email1 ) );
+delete_transient( nep_clau_limit( 'registre-global' ) );
+$nep_comprova( 429 === $r->get_status() && false === get_user_by( 'email', 'g' . $nep_email1 ), 'registre: límit global per hora → 429' );
+
+// DELETE /compte: límit d'intents de contrasenya i 415 sense JSON.
+$nep_nova_ip();
+$_COOKIE = array();
+$nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_email1, 'contrasenya' => $nep_pass ) );
+$nep_form = new WP_REST_Request( 'DELETE', '/noempesquen/v1/compte' );
+$nep_form->set_query_params( array( 'contrasenya' => $nep_pass ) );
+$r = rest_do_request( $nep_form );
+$nep_comprova( 415 === $r->get_status() && false !== get_userdata( $nep_jug1->ID ), 'esborra: sense JSON (contrasenya a la query) → 415' );
+$nep_codis = array();
+for ( $i = 1; $i <= 9; $i++ ) {
+	$nep_codis[] = $nep_json( 'DELETE', '/noempesquen/v1/compte', array( 'contrasenya' => 'incorrecta-' . $i ) )->get_status();
+}
+$r = $nep_json( 'DELETE', '/noempesquen/v1/compte', array( 'contrasenya' => $nep_pass ) );
+$nep_comprova( array_fill( 0, 8, 403 ) === array_slice( $nep_codis, 0, 8 ) && 429 === $nep_codis[8] && 429 === $r->get_status() && false !== get_userdata( $nep_jug1->ID ), 'esborra: el novè intent fallit → 429 (també amb la correcta)' );
+delete_transient( nep_clau_limit( 'esborra|' . $nep_jug1->ID ) );
+
 // 6. Esborrat.
 $nep_nova_ip();
 $_COOKIE = array();
