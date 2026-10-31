@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- Script de línea de comandos. */
 /**
  * Empaqueta el plugin y el tema para subirlos al servidor (que no tiene Node).
  *
