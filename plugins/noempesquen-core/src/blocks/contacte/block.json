@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "noempesquen/contacte",
+	"title": "Contacte No em pesquen",
+	"category": "widgets",
+	"icon": "email",
+	"description": "Formulari de contacte amb validació, camp trampa i enviament per correu.",
+	"textdomain": "noempesquen",
+	"supports": { "html": false, "multiple": false },
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

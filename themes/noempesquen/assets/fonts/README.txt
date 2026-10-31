@@ -1,1 +1,1 @@
-Fonts: Barlow Semi Condensed (Jeremy Tribby) i Atkinson Hyperlegible (Braille Institute), llicència SIL Open Font License 1.1 (https://openfontlicense.org).
+Fonts: Big Shoulders Display i Stencil Display (Patric King / Chicago Design Foundation) i Atkinson Hyperlegible (Braille Institute), llicència SIL Open Font License 1.1 (https://openfontlicense.org).

@@ -27,6 +27,7 @@ require_once NEP_PATH . 'includes/estadistiques.php';
 require_once NEP_PATH . 'includes/comptes-nucli.php';
 require_once NEP_PATH . 'includes/comptes.php';
 require_once NEP_PATH . 'includes/comptes-privacitat.php';
+require_once NEP_PATH . 'includes/contacte.php';
 require_once NEP_PATH . 'includes/admin-estadistiques.php';
 require_once NEP_PATH . 'includes/cli.php';
 
@@ -38,7 +39,7 @@ register_activation_hook( __FILE__, 'nep_actualitza' );
 add_action(
 	'init',
 	static function () {
-		foreach ( array( 'simulador', 'compte' ) as $bloc ) {
+		foreach ( array( 'simulador', 'compte', 'contacte' ) as $bloc ) {
 			$block_dir = NEP_PATH . 'build/blocks/' . $bloc;
 			if ( file_exists( $block_dir . '/block.json' ) ) {
 				register_block_type( $block_dir );

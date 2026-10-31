@@ -1,0 +1,189 @@
+// Formulari de contacte: només variables CSS del tema (theme.json).
+.nep-contacte {
+	max-width: 40rem;
+	margin-inline: 0;
+	color: var(--wp--preset--color--text);
+	font-family: var(--wp--preset--font-family--text);
+
+	input,
+	select,
+	textarea,
+	button,
+	a,
+	[tabindex="-1"] {
+
+		&:focus-visible {
+			outline: 3px solid var(--wp--preset--color--mar);
+			outline-offset: 2px;
+		}
+	}
+}
+
+.nep-contacte__titol {
+	margin-block: 0 0.5rem;
+	font-family: var(--wp--preset--font-family--rotulacio);
+	font-size: clamp(2.25rem, 5vw, 3.25rem);
+	font-weight: 800;
+	line-height: 1;
+	text-transform: uppercase;
+
+	&:focus {
+		outline: none;
+	}
+}
+
+.nep-contacte__intro {
+	margin-block: 0 1.5rem;
+}
+
+.nep-contacte__resum {
+	margin-block-end: 1.5rem;
+	padding: 0.75rem 1rem;
+	border: 2px solid var(--wp--preset--color--alerta);
+	border-radius: 0.25rem;
+	background: var(--wp--preset--color--blanc);
+
+	ul {
+		margin: 0;
+		padding-inline-start: 1.25rem;
+	}
+}
+
+.nep-contacte__resum-titol {
+	margin: 0 0 0.25rem;
+	color: var(--wp--preset--color--alerta);
+	font-weight: 700;
+}
+
+.nep-contacte__camp {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-block-end: 1.25rem;
+
+	input:not([type="checkbox"]),
+	select,
+	textarea {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 48px;
+		padding: 0.5rem 0.75rem;
+		border: 2px solid var(--wp--preset--color--text);
+		border-radius: 6px;
+		background: var(--wp--preset--color--blanc);
+		color: var(--wp--preset--color--text);
+		font: inherit;
+
+		&[aria-invalid="true"] {
+			border-color: var(--wp--preset--color--alerta);
+		}
+	}
+
+	textarea {
+		min-height: 9rem;
+		resize: vertical;
+	}
+}
+
+.nep-contacte__etiqueta {
+	font-weight: 700;
+}
+
+.nep-contacte__ajuda {
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+// Casella RGPD: casella a l'esquerra, text a la dreta, error sota el text.
+.nep-contacte__camp--casella {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25rem 0.75rem;
+	align-items: start;
+
+	input {
+		width: 24px;
+		height: 24px;
+		margin: 0.125rem 0 0;
+		accent-color: var(--wp--preset--color--mar);
+	}
+
+	.nep-contacte__etiqueta {
+		font-weight: 400;
+	}
+
+	.nep-contacte__error {
+		grid-column: 2;
+	}
+
+	a {
+		display: inline-block;
+		min-height: 24px;
+		color: var(--wp--preset--color--mar);
+	}
+}
+
+.nep-contacte__error {
+	margin: 0;
+	color: var(--wp--preset--color--alerta);
+	font-weight: 700;
+}
+
+// Camp trampa: fora de pantalla (no display:none: alguns robots el detecten).
+.nep-contacte__web {
+	position: absolute;
+	left: -10000px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.nep-contacte__estat {
+	min-height: 0;
+	margin-block-end: 0.75rem;
+}
+
+.nep-contacte__enviar {
+	min-width: 44px;
+	min-height: 48px;
+	padding: 0.5rem 1.5rem;
+	border: 2px solid var(--wp--preset--color--mar);
+	border-radius: 6px;
+	background: var(--wp--preset--color--mar);
+	color: var(--wp--preset--color--blanc);
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+
+	&:hover {
+		background: var(--wp--preset--color--text);
+		border-color: var(--wp--preset--color--text);
+	}
+
+	&:active {
+		transform: translateY(1px);
+	}
+
+	&:disabled {
+		border-color: var(--wp--preset--color--text);
+		background: var(--wp--preset--color--escuma);
+		color: var(--wp--preset--color--text);
+		cursor: progress;
+	}
+}
+
+.nep-contacte__confirmacio {
+	padding: 1rem 1.25rem;
+	border: 2px solid var(--wp--preset--color--segur);
+	border-radius: 0.25rem;
+	background: var(--wp--preset--color--blanc);
+
+	&:focus {
+		outline: none;
+	}
+
+	&:focus-visible {
+		outline: 3px solid var(--wp--preset--color--mar);
+		outline-offset: 2px;
+	}
+}
