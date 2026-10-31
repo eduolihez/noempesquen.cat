@@ -10,6 +10,7 @@ Un administrador crea y valida misiones v2 desde el panel de WordPress, y el pan
 
 - Crear, editar y probar una misión v2 en el panel. Al guardar se muestran los errores y no se puede publicar una misión inválida. Una misión creada así se juega en `/simulador/`.
 - Por misión: partidas, resultado medio y decisión más elegida. Agregado, sin `user_id` ni IP, solo visible con la capacidad `nep_veu_estadistiques`. Celdas con menos de 10 partidas ocultas.
+- Resumen público (N1, 2026-10-31): al terminar, el jugador ve en bandas qué opción eligió la mayoría (`GET /resultat/resum`). Solo partidas reales de la versión actual, n≥10 total y por decisión; nunca el panel ni datos demo. Ver `docs/decisions.md`.
 - lint, test:unit, build y Playwright en verde con la salida real; PHPUnit mínimo en verde; WCAG 2.2 AA en las pantallas nuevas.
 
 ## Fuera de alcance
