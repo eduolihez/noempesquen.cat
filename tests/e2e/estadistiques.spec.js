@@ -13,7 +13,8 @@ const { iniciaMissio, senseFullscreen } = require( './ajudes' );
  */
 test.describe.configure( { mode: 'serial' } );
 
-const RESULTAT = /\/noempesquen\/v1\/resultat/;
+// Només el POST (no el GET de /resultat/resum).
+const RESULTAT = /\/noempesquen\/v1\/resultat$/;
 const escapa = ( text ) => text.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
 
 test.beforeEach( ( {}, testInfo ) => {

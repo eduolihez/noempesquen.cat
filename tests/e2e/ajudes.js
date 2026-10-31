@@ -7,8 +7,10 @@ const RESULTAT = /\/noempesquen\/v1\/resultat/;
 /**
  * `test` comú de tots els specs: per defecte el POST /resultat es respon amb
  * 204 sense arribar al servidor (no escriu files a la BD de desenvolupament ni
- * consumeix el límit d'enviaments). És una ruta del context: un `page.route`
- * propi del spec (p. ex. `estadistiques.spec.js`) hi té preferència.
+ * consumeix el límit d'enviaments). També el GET /resultat/resum (el
+ * resultat no mostra cap resum; `resum-estadistiques.spec.js` el deixa
+ * passar). És una ruta del context: un `page.route` propi del spec (p. ex.
+ * `estadistiques.spec.js`) hi té preferència.
  */
 const test = base.extend( {
 	context: async ( { context }, usa ) => {
