@@ -50,6 +50,7 @@ function nep_assigna_capacitats(): void {
  */
 function nep_actualitza(): void {
 	nep_assigna_capacitats();
+	nep_crea_rol_jugador();
 	if ( ! nep_crea_taula_resultats() ) {
 		return;
 	}
@@ -76,4 +77,60 @@ add_action(
 			nep_actualitza();
 		}
 	}
+);
+
+/**
+ * Crea el rol del jugador amb compte (sense cap capacitat, ni `read`). Idempotent.
+ */
+function nep_crea_rol_jugador(): void {
+	if ( ! get_role( 'nep_jugador' ) ) {
+		add_role( 'nep_jugador', __( 'Jugador', 'noempesquen' ), array() );
+	}
+}
+
+/**
+ * Indica si l'usuari té el rol `nep_jugador`.
+ *
+ * @param WP_User|int|null $user Usuari; per defecte, l'actual.
+ */
+function nep_es_jugador( $user = null ): bool {
+	if ( null === $user ) {
+		$user = wp_get_current_user();
+	} elseif ( is_numeric( $user ) ) {
+		$user = get_userdata( (int) $user );
+	}
+	return $user instanceof WP_User && in_array( 'nep_jugador', (array) $user->roles, true );
+}
+
+// El jugador no veu wp-admin: es redirigeix al seu compte (AJAX, admin-post i cron no es toquen).
+add_action(
+	'admin_init',
+	static function () {
+		if ( ! nep_es_jugador() || wp_doing_ajax() || wp_doing_cron() ) {
+			return;
+		}
+		if ( 'admin-post.php' === basename( wp_parse_url( (string) ( $_SERVER['SCRIPT_NAME'] ?? '' ), PHP_URL_PATH ) ?? '' ) ) {
+			return;
+		}
+		wp_safe_redirect( home_url( '/compte/' ) );
+		exit;
+	}
+);
+
+// Sense barra d'administració per al jugador.
+add_filter(
+	'show_admin_bar',
+	static function ( $mostra ) {
+		return nep_es_jugador() ? false : $mostra;
+	}
+);
+
+// Després d'entrar, el jugador va al seu compte.
+add_filter(
+	'login_redirect',
+	static function ( $desti, $demanada, $usuari ) {
+		return nep_es_jugador( $usuari instanceof WP_User ? $usuari : null ) && $usuari instanceof WP_User ? home_url( '/compte/' ) : $desti;
+	},
+	10,
+	3
 );

@@ -8,6 +8,16 @@
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 /**
+ * Elimina el rol de jugador i les metes de compte del lloc actual (els usuaris es conserven).
+ */
+function nep_neteja_jugadors(): void {
+	remove_role( 'nep_jugador' );
+	foreach ( array( 'nep_progres', 'nep_consentiment' ) as $meta ) {
+		delete_metadata( 'user', 0, $meta, '', true );
+	}
+}
+
+/**
  * Neteja opcions, transients, capacitats i taules del lloc actual.
  */
 function nep_neteja_lloc(): void {
@@ -33,9 +43,16 @@ function nep_neteja_lloc(): void {
 		$rol->remove_cap( 'nep_veu_estadistiques' );
 	}
 
+	nep_neteja_jugadors();
+
 	// Taula d'estadístiques agregades (una per lloc).
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Esborrar la taula pròpia en desinstal·lar.
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}nep_resultats" );
+}
+
+// Quan el carrega el test d'integració només es defineix la funció.
+if ( defined( 'NEP_PROVA_NETEJA' ) ) {
+	return;
 }
 
 if ( is_multisite() ) {

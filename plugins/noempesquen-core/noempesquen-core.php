@@ -14,7 +14,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'NEP_VERSION', '0.1.0' );
-define( 'NEP_DB_VERSION', '3' );
+define( 'NEP_DB_VERSION', '4' );
 define( 'NEP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NEP_URL', plugin_dir_url( __FILE__ ) );
 
