@@ -6,37 +6,96 @@
     "layout": { "contentSize": "720px", "wideSize": "1200px" },
     "color": {
       "defaultPalette": false,
+      "defaultGradients": false,
+      "gradients": [],
       "palette": [
-        { "slug": "fons", "name": "Fons", "color": "#F7F4EC" },
-        { "slug": "text", "name": "Text", "color": "#14213D" },
-        { "slug": "mar", "name": "Mar", "color": "#0B5E7A" },
-        { "slug": "escuma", "name": "Escuma", "color": "#DDEFF2" },
-        { "slug": "alerta", "name": "Alerta", "color": "#B42318" },
-        { "slug": "segur", "name": "Segur", "color": "#1E7B45" }
+        { "slug": "fons", "name": "Fons", "color": "#F4F6F9" },
+        { "slug": "text", "name": "Tinta", "color": "#0E1A2B" },
+        { "slug": "mar", "name": "Senyal blau", "color": "#0A3D91" },
+        { "slug": "escuma", "name": "Blau suau", "color": "#E1E8F4" },
+        { "slug": "alerta", "name": "Línia 3 (vermell)", "color": "#B3123F" },
+        { "slug": "segur", "name": "Línia 1 (verd)", "color": "#00704A" },
+        { "slug": "senyal", "name": "Línia 2 (groc)", "color": "#FFC20E" },
+        { "slug": "blanc", "name": "Blanc", "color": "#FFFFFF" }
       ]
     },
     "typography": {
       "fluid": true,
+      "fontFamilies": [
+        {
+          "slug": "rotulacio",
+          "name": "Rotulació",
+          "fontFamily": "\"Barlow Semi Condensed\", \"Arial Narrow\", sans-serif",
+          "fontFace": [
+            {
+              "fontFamily": "Barlow Semi Condensed",
+              "fontWeight": "700",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [ "file:./assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" ]
+            },
+            {
+              "fontFamily": "Barlow Semi Condensed",
+              "fontWeight": "800",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [ "file:./assets/fonts/barlow-semi-condensed-latin-800-normal.woff2" ]
+            }
+          ]
+        },
+        {
+          "slug": "text",
+          "name": "Text",
+          "fontFamily": "\"Atkinson Hyperlegible\", system-ui, sans-serif",
+          "fontFace": [
+            {
+              "fontFamily": "Atkinson Hyperlegible",
+              "fontWeight": "400",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [ "file:./assets/fonts/atkinson-hyperlegible-latin-400-normal.woff2" ]
+            },
+            {
+              "fontFamily": "Atkinson Hyperlegible",
+              "fontWeight": "700",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [ "file:./assets/fonts/atkinson-hyperlegible-latin-700-normal.woff2" ]
+            }
+          ]
+        }
+      ],
       "fontSizes": [
-        { "slug": "small", "name": "Petit", "size": "0.95rem" },
-        { "slug": "medium", "name": "Mitjà", "size": "1.125rem" },
+        { "slug": "small", "name": "Petit", "size": "1rem" },
+        { "slug": "medium", "name": "Mitjà", "size": "1.1875rem" },
         { "slug": "large", "name": "Gran", "size": "1.5rem", "fluid": { "min": "1.3rem", "max": "1.5rem" } },
-        { "slug": "x-large", "name": "Molt gran", "size": "2.5rem", "fluid": { "min": "1.8rem", "max": "2.5rem" } }
+        { "slug": "x-large", "name": "Molt gran", "size": "2.75rem", "fluid": { "min": "2rem", "max": "2.75rem" } }
       ]
     },
     "spacing": { "units": [ "px", "rem", "%", "vw" ] }
   },
   "styles": {
     "color": { "background": "var(--wp--preset--color--fons)", "text": "var(--wp--preset--color--text)" },
-    "typography": { "fontSize": "var(--wp--preset--font-size--medium)", "lineHeight": "1.6" },
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--text)",
+      "fontSize": "var(--wp--preset--font-size--medium)",
+      "lineHeight": "1.6"
+    },
     "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--rotulacio)",
+          "fontWeight": "800",
+          "lineHeight": "1.05"
+        }
+      },
       "link": {
         "color": { "text": "var(--wp--preset--color--mar)" },
         "typography": { "textDecoration": "underline" }
       },
       "button": {
         "color": { "background": "var(--wp--preset--color--mar)", "text": "#FFFFFF" },
-        "border": { "radius": "8px" }
+        "border": { "radius": "999px" }
       }
     }
   },

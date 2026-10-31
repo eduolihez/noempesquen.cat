@@ -1,0 +1,530 @@
+/* No em pesquen: tema «senyalètica». Colors i tipus vénen de theme.json. */
+:root {
+	--nep-tinta: var(--wp--preset--color--text);
+	--nep-blau: var(--wp--preset--color--mar);
+	--nep-suau: var(--wp--preset--color--escuma);
+	--nep-l1: var(--wp--preset--color--segur);
+	--nep-l2: var(--wp--preset--color--senyal);
+	--nep-l3: var(--wp--preset--color--alerta);
+	--nep-rotul: var(--wp--preset--font-family--rotulacio);
+	--nep-marge: clamp(1rem, 4vw, 2rem);
+}
+
+::selection {
+	background: var(--nep-l2);
+	color: var(--nep-tinta);
+}
+
+:where(a, button, summary, input, select, textarea):focus-visible {
+	outline: 3px solid var(--nep-blau);
+	outline-offset: 3px;
+}
+
+html {
+	scroll-padding-top: 1rem;
+	scrollbar-color: var(--nep-blau) var(--nep-suau);
+}
+
+/* ---------- Capçalera ---------- */
+.nep-bandes {
+	display: flex;
+	height: 8px;
+}
+
+.nep-bandes span {
+	flex: 1;
+}
+
+.nep-bandes span:nth-child(1) { background: var(--nep-l1); }
+.nep-bandes span:nth-child(2) { background: var(--nep-l2); }
+.nep-bandes span:nth-child(3) { background: var(--nep-l3); }
+
+.nep-capcalera {
+	background: #fff;
+	border-block-end: 1px solid rgb(14 26 43 / 15%);
+	column-gap: 1.5rem;
+	padding: 0.75rem var(--nep-marge);
+	row-gap: 0.25rem;
+}
+
+.nep-marca {
+	align-items: center;
+	color: var(--nep-tinta);
+	display: inline-flex;
+	font-family: var(--nep-rotul);
+	font-size: 1.75rem;
+	font-weight: 800;
+	gap: 0.75rem;
+	letter-spacing: -0.005em;
+	min-height: 44px;
+	text-decoration: none;
+}
+
+.nep-marca__pictograma {
+	flex: none;
+}
+
+.nep-nav .wp-block-navigation-item__content {
+	border-radius: 999px;
+	font-size: 1.125rem;
+	font-weight: 700;
+	min-height: 44px;
+	padding: 0.6rem 1rem;
+	text-decoration: none;
+}
+
+.nep-nav .wp-block-navigation-item__content:hover {
+	background: var(--nep-suau);
+}
+
+.nep-nav .wp-block-navigation__container {
+	gap: 0.25rem;
+}
+
+/* ---------- Estructura de portada ---------- */
+.nep-main > * {
+	margin-block: 0;
+}
+
+.nep-dins {
+	margin-inline: auto;
+	max-width: 1200px;
+	padding-inline: var(--nep-marge);
+}
+
+.nep-main h2 {
+	font-size: clamp(2rem, 4vw + 0.5rem, 3.25rem);
+	letter-spacing: -0.01em;
+	margin: 0;
+	text-wrap: balance;
+}
+
+/* ---------- Botons ---------- */
+.nep-boto {
+	align-items: center;
+	background: var(--nep-l2);
+	border-radius: 999px;
+	box-shadow: 0 10px 22px -8px rgb(0 0 0 / 45%);
+	color: var(--nep-tinta);
+	display: inline-flex;
+	font-family: var(--nep-rotul);
+	font-size: 1.5rem;
+	font-weight: 800;
+	gap: 0.75rem;
+	letter-spacing: 0.02em;
+	min-height: 56px;
+	padding: 0.75rem 1.75rem;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.nep-boto::after {
+	background: currentcolor;
+	content: "";
+	flex: none;
+	height: 0.9em;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M13 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+	width: 0.9em;
+}
+
+.nep-boto--gran {
+	font-size: clamp(1.75rem, 3vw + 0.75rem, 2.5rem);
+	min-height: 76px;
+	padding: 1rem 2.5rem;
+}
+
+.nep-boto--fosc {
+	background: var(--nep-tinta);
+	color: #fff;
+}
+
+.nep-boto:hover {
+	filter: brightness(1.08);
+}
+
+.nep-hero .nep-boto:focus-visible {
+	outline-color: #fff;
+}
+
+.nep-final .nep-boto:focus-visible {
+	outline-color: var(--nep-tinta);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.nep-boto {
+		transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s;
+	}
+
+	.nep-boto:hover {
+		transform: translateY(-2px);
+	}
+}
+
+/* ---------- Hero ---------- */
+.nep-hero {
+	background: var(--nep-blau);
+	color: #fff;
+	padding-block: clamp(2.5rem, 7vw, 5rem) 2.5rem;
+}
+
+.nep-hero__dins {
+	align-items: center;
+	display: grid;
+	gap: 2rem 4rem;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.nep-hero h1 {
+	color: #fff;
+	font-size: clamp(2.6rem, 7vw + 0.5rem, 5.5rem);
+	letter-spacing: -0.01em;
+	line-height: 0.98;
+	margin: 0 0 1.25rem;
+	text-wrap: balance;
+}
+
+.nep-hero h1 span {
+	color: var(--nep-l2);
+	display: block;
+}
+
+.nep-hero__lead {
+	font-size: clamp(1.2rem, 1vw + 1rem, 1.5rem);
+	line-height: 1.5;
+	margin: 0 0 2rem;
+	max-width: 36em;
+}
+
+.nep-hero__text p:last-child {
+	margin-block-end: 0;
+}
+
+.nep-hero__pictograma {
+	display: none;
+	width: min(100%, 300px);
+}
+
+@media (min-width: 900px) {
+	.nep-hero__dins {
+		grid-template-columns: minmax(0, 1fr) auto;
+	}
+
+	.nep-hero__pictograma {
+		display: block;
+	}
+}
+
+/* Recorregut: les deu parades, decoratiu. */
+.nep-recorregut {
+	align-items: center;
+	display: flex;
+	list-style: none;
+	margin: clamp(2.5rem, 6vw, 4rem) auto 0;
+	max-width: 1200px;
+	padding: 0 var(--nep-marge);
+	position: relative;
+}
+
+.nep-recorregut::before {
+	background: rgb(255 255 255 / 35%);
+	content: "";
+	height: 8px;
+	inset: 50% var(--nep-marge) auto;
+	margin-top: -4px;
+	position: absolute;
+}
+
+.nep-recorregut li {
+	background: var(--nep-l1);
+	border: 5px solid #fff;
+	border-radius: 50%;
+	box-sizing: border-box;
+	flex: none;
+	height: 28px;
+	margin: 0 auto;
+	position: relative;
+	width: 28px;
+}
+
+.nep-recorregut li:first-child { margin-inline-start: 0; }
+.nep-recorregut li:last-child { margin-inline-end: 0; }
+.nep-recorregut .l2 { background: var(--nep-l2); }
+.nep-recorregut .l3 { background: var(--nep-l3); }
+
+@media (prefers-reduced-motion: no-preference) {
+	.nep-recorregut li {
+		animation: nep-parada 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+	}
+
+	.nep-recorregut li:nth-child(2) { animation-delay: 0.08s; }
+	.nep-recorregut li:nth-child(3) { animation-delay: 0.16s; }
+	.nep-recorregut li:nth-child(4) { animation-delay: 0.24s; }
+	.nep-recorregut li:nth-child(5) { animation-delay: 0.32s; }
+	.nep-recorregut li:nth-child(6) { animation-delay: 0.4s; }
+	.nep-recorregut li:nth-child(7) { animation-delay: 0.48s; }
+	.nep-recorregut li:nth-child(8) { animation-delay: 0.56s; }
+	.nep-recorregut li:nth-child(9) { animation-delay: 0.64s; }
+	.nep-recorregut li:nth-child(10) { animation-delay: 0.72s; }
+
+	@keyframes nep-parada {
+		from {
+			opacity: 0;
+			transform: scale(0.4);
+		}
+	}
+}
+
+/* ---------- Línies ---------- */
+.nep-linies {
+	padding-block: clamp(3rem, 7vw, 5.5rem);
+}
+
+.nep-linies__intro {
+	font-size: 1.25rem;
+	margin: 0.75rem 0 2.5rem;
+	max-width: 40em;
+}
+
+.nep-linies__graella {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 900px) {
+	.nep-linies__graella {
+		align-items: start;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.nep-linia {
+	--linia: var(--nep-l1);
+	--linia-text: #fff;
+
+	background: #fff;
+	border: 2px solid var(--nep-tinta);
+	border-radius: 16px;
+	overflow: hidden;
+}
+
+.nep-linia--2 {
+	--linia: var(--nep-l2);
+	--linia-text: var(--nep-tinta);
+}
+
+.nep-linia--3 {
+	--linia: var(--nep-l3);
+}
+
+.nep-linia header {
+	align-items: center;
+	background: var(--linia);
+	color: var(--linia-text);
+	display: flex;
+	gap: 1rem;
+	padding: 1rem 1.25rem;
+}
+
+.nep-linia__rodona {
+	align-items: center;
+	background: #fff;
+	border-radius: 50%;
+	color: var(--nep-tinta);
+	display: inline-flex;
+	flex: none;
+	font-family: var(--nep-rotul);
+	font-size: 2rem;
+	font-weight: 800;
+	height: 52px;
+	justify-content: center;
+	line-height: 1;
+	width: 52px;
+}
+
+.nep-linia h3 {
+	color: inherit;
+	font-size: 2rem;
+	line-height: 1;
+	margin: 0;
+}
+
+.nep-linia h3 span {
+	display: block;
+	font-family: var(--wp--preset--font-family--text);
+	font-size: 1.0625rem;
+	font-weight: 700;
+	margin-top: 0.3rem;
+}
+
+.nep-parades {
+	list-style: none;
+	margin: 0;
+	padding: 1.5rem 1.25rem 1.5rem 1.5rem;
+}
+
+.nep-parades li {
+	display: flex;
+	flex-direction: column;
+	padding: 0 0 1.5rem 2.75rem;
+	position: relative;
+}
+
+.nep-parades li:last-child {
+	padding-bottom: 0;
+}
+
+.nep-parades li::before {
+	background: #fff;
+	border: 6px solid var(--linia);
+	border-radius: 50%;
+	box-sizing: border-box;
+	content: "";
+	height: 24px;
+	left: 0;
+	position: absolute;
+	top: 0.1rem;
+	width: 24px;
+	z-index: 1;
+}
+
+.nep-parades li::after {
+	background: var(--linia);
+	bottom: -0.1rem;
+	content: "";
+	left: 9px;
+	position: absolute;
+	top: 1.2rem;
+	width: 6px;
+}
+
+.nep-parades li:last-child::after {
+	display: none;
+}
+
+.nep-parades strong {
+	font-size: 1.1875rem;
+	line-height: 1.3;
+}
+
+.nep-parades span {
+	color: #3b475b;
+	font-size: 1rem;
+}
+
+/* ---------- Garanties ---------- */
+.nep-garanties {
+	background: var(--nep-suau);
+	padding-block: clamp(3rem, 7vw, 5.5rem);
+}
+
+.nep-garanties__llista {
+	margin: 2.5rem 0 0;
+}
+
+.nep-garanties__llista > div {
+	border-top: 3px solid var(--nep-tinta);
+	display: grid;
+	gap: 0.5rem 3rem;
+	padding-block: 1.5rem;
+}
+
+.nep-garanties__llista dt {
+	font-family: var(--nep-rotul);
+	font-size: clamp(1.6rem, 2vw + 1rem, 2.25rem);
+	font-weight: 800;
+	line-height: 1.1;
+}
+
+.nep-garanties__llista dd {
+	font-size: 1.25rem;
+	margin: 0;
+	max-width: 36em;
+}
+
+@media (min-width: 800px) {
+	.nep-garanties__llista > div {
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	}
+}
+
+/* ---------- Final ---------- */
+.nep-final {
+	background: var(--nep-l2);
+	padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.nep-final__dins {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem 3rem;
+	justify-content: space-between;
+}
+
+.nep-final p {
+	margin: 0;
+}
+
+/* ---------- Peu ---------- */
+.nep-peu {
+	background: var(--nep-tinta);
+	color: #fff;
+	padding-block: 2.5rem;
+}
+
+.nep-peu__dins {
+	margin-inline: auto;
+	max-width: 1200px;
+	padding-inline: var(--nep-marge);
+}
+
+.nep-peu p {
+	margin: 0 0 1rem;
+}
+
+.nep-peu__marca {
+	font-family: var(--nep-rotul);
+	font-size: 2rem;
+	font-weight: 800;
+}
+
+.nep-peu__text {
+	max-width: 40em;
+}
+
+.nep-peu__enllacos {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.5rem;
+	list-style: none;
+	margin: 0 0 1.5rem;
+	padding: 0;
+}
+
+.nep-peu a {
+	color: #fff;
+	display: inline-block;
+	font-weight: 700;
+	padding-block: 0.6rem;
+	text-underline-offset: 0.2em;
+}
+
+.nep-peu a:focus-visible {
+	outline-color: var(--nep-l2);
+}
+
+.nep-peu__petit {
+	color: #c9d2e0;
+	font-size: 1rem;
+	margin: 0;
+}
+
+/* ---------- Pàgines (simulador, compte) ---------- */
+.nep-pagina {
+	padding: clamp(1.5rem, 4vw, 3rem) var(--nep-marge) clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.wp-site-blocks > * {
+	margin-block: 0;
+}

@@ -138,3 +138,7 @@ Pendiente tras 3B:
 - Sin _error boundary_ si falla la carga de un trozo de JS (sistema, app o web).
 - Navegador: pulsar Enter con la misma URL duplica el historial; `Esc` en la barra de direcciones no restaura el texto.
 - Faltan e2e del teclado en la tira de pestañas y tests de componente de Consecuencia/Resultado.
+
+## Rediseño estético (2026-10-31, sin desplegar)
+
+Dirección «señalética de metro»: tres líneas de color (verde, amarillo, rojo) por nivel de misión, rótulos en Barlow Semi Condensed y texto en Atkinson Hyperlegible (ambas OFL, locales en `themes/noempesquen/assets/fonts/`). Home nueva en `templates/front-page.html`, CSS en `assets/tema.css` (encolado en `functions.php`), cabecera y pie rehechos, paleta en `theme.json`. El selector hereda la paleta y la tipografía. `PRODUCT.md` recoge el contexto. Verificado: lint, unit, build, Playwright (2 flakes que pasan aislados) y detector de diseño sin hallazgos. Pendiente: commit/push, `npm run empaqueta` y subir el tema.

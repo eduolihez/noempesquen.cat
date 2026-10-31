@@ -14,6 +14,19 @@ add_action(
 	}
 );
 
+add_action(
+	'wp_enqueue_scripts',
+	static function () {
+		$ruta = get_template_directory() . '/assets/tema.css';
+		wp_enqueue_style(
+			'noempesquen-tema',
+			get_template_directory_uri() . '/assets/tema.css',
+			array(),
+			file_exists( $ruta ) ? (string) filemtime( $ruta ) : null
+		);
+	}
+);
+
 // Elimina soroll del <head>.
 remove_action( 'wp_head', 'wp_generator' );
 remove_action( 'wp_head', 'rsd_link' );

@@ -18,7 +18,7 @@
 	--sel-or-tinta: #8a6700;
 	--sel-filet: rgb(20 33 61 / 14%);
 	--sel-accent: var(--sel-mar);
-	--sel-display: "Bahnschrift", "DIN Alternate", "Avenir Next Condensed", "Roboto Condensed", system-ui, sans-serif;
+	--sel-display: var(--wp--preset--font-family--rotulacio, "Bahnschrift"), "DIN Alternate", "Avenir Next Condensed", "Roboto Condensed", system-ui, sans-serif;
 
 	color: var(--sel-tinta);
 	container-type: inline-size;
