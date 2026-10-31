@@ -45,3 +45,18 @@ export function desaProgres( storage, progres ) {
 		// Sense emmagatzematge: el joc funciona igual.
 	}
 }
+
+/**
+ * Esborra el progrés local (v1 i v2): en sortir o esborrar el compte, perquè
+ * a un ordinador compartit no quedi el progrés del jugador anterior.
+ *
+ * @param {?Storage} storage Emmagatzematge.
+ */
+export function esborraProgres( storage ) {
+	try {
+		storage.removeItem( CLAU_V2 );
+		storage.removeItem( CLAU_V1 );
+	} catch {
+		// Sense emmagatzematge: no hi ha res a esborrar.
+	}
+}

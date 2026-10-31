@@ -293,3 +293,30 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	expect( capcaleres ).not.toHaveProperty( 'cookie' );
 	expect( capcaleres ).not.toHaveProperty( 'x-wp-nonce' );
 } );
+
+test( 'en tancar la sessió no queda el progrés del jugador a l’ordinador', async () => {
+	await page.goto( '/compte/' );
+	const bloc = page.locator( '.wp-block-noempesquen-compte' );
+	await expect(
+		bloc.getByRole( 'heading', { name: 'El teu compte' } )
+	).toBeVisible();
+	expect(
+		await page.evaluate( ( c ) => window.localStorage.getItem( c ), CLAU )
+	).not.toBeNull();
+	await bloc.getByRole( 'button', { name: 'Tanca la sessió' } ).click();
+	await expect( page.getByText( 'Has tancat la sessió.' ) ).toBeVisible();
+	expect(
+		await page.evaluate( () => [
+			window.localStorage.getItem( 'noempesquen-progres-v2' ),
+			window.localStorage.getItem( 'noempesquen-progres-v1' ),
+			window.localStorage.getItem( 'nep-compte-sessio' ),
+		] )
+	).toEqual( [ null, null, null ] );
+
+	await page.goto( '/simulador/' );
+	await expect( selector( page ) ).toBeVisible();
+	await expect( enllacCompte( page ) ).toBeVisible();
+	await expect(
+		page.getByRole( 'img', { name: /Millor resultat: [1-3] de 3/ } )
+	).toHaveCount( 0 );
+} );

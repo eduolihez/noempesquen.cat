@@ -7,6 +7,7 @@ import {
 } from '@wordpress/element';
 import { creaClient } from '../../compte/client';
 import { posaMarcaSessio, treuMarcaSessio } from '../../compte/marca';
+import { esborraProgres } from '../simulador/nucli/progres';
 import { T } from './textos';
 import { Acces } from './Acces';
 import { Panell } from './Panell';
@@ -72,6 +73,10 @@ export function Compte( { config } ) {
 
 	const haSortit = useCallback( ( missatge ) => {
 		treuMarcaSessio();
+		// Ordinador compartit: no hi queda el progrés copiat del servidor.
+		try {
+			esborraProgres( window.localStorage );
+		} catch {}
 		focusPendent.current = titolAcces;
 		setProgres( {} );
 		setConnectat( false );
