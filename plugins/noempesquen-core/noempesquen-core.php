@@ -38,9 +38,11 @@ register_activation_hook( __FILE__, 'nep_actualitza' );
 add_action(
 	'init',
 	static function () {
-		$block_dir = NEP_PATH . 'build/blocks/simulador';
-		if ( file_exists( $block_dir . '/block.json' ) ) {
-			register_block_type( $block_dir );
+		foreach ( array( 'simulador', 'compte' ) as $bloc ) {
+			$block_dir = NEP_PATH . 'build/blocks/' . $bloc;
+			if ( file_exists( $block_dir . '/block.json' ) ) {
+				register_block_type( $block_dir );
+			}
 		}
 	}
 );

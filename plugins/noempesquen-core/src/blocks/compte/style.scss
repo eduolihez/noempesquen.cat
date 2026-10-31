@@ -1,0 +1,215 @@
+// Pantalla de compte: colors del tema (theme.json) amb valors de reserva.
+.nep-compte {
+	--nep-compte-text: var(--wp--preset--color--text, #14213d);
+	--nep-compte-fons: var(--wp--preset--color--fons, #f7f4ec);
+	--nep-compte-mar: var(--wp--preset--color--mar, #0b5e7a);
+	--nep-compte-escuma: var(--wp--preset--color--escuma, #ddeff2);
+	--nep-compte-alerta: var(--wp--preset--color--alerta, #b42318);
+	--nep-compte-segur: var(--wp--preset--color--segur, #1e7b45);
+
+	max-width: 40rem;
+	margin-inline: auto;
+	color: var(--nep-compte-text);
+
+	h2:focus {
+		outline: none;
+	}
+
+	h2:focus-visible {
+		outline: 3px solid var(--nep-compte-mar);
+		outline-offset: 2px;
+	}
+
+	a,
+	button,
+	input,
+	summary {
+
+		&:focus-visible {
+			outline: 3px solid var(--nep-compte-mar);
+			outline-offset: 2px;
+		}
+	}
+}
+
+.nep-compte__avis:not(:empty) {
+	margin-block-end: 1rem;
+	padding: 0.75rem 1rem;
+	border-inline-start: 4px solid var(--nep-compte-segur);
+	background: #fff;
+}
+
+.nep-compte__pestanyes {
+	display: flex;
+	gap: 0.25rem;
+	border-block-end: 2px solid var(--nep-compte-mar);
+
+	[role="tab"] {
+		min-height: 44px;
+		padding: 0.5rem 1rem;
+		border: 2px solid var(--nep-compte-mar);
+		border-block-end: none;
+		border-radius: 6px 6px 0 0;
+		background: #fff;
+		color: var(--nep-compte-mar);
+		font: inherit;
+		cursor: pointer;
+
+		&[aria-selected="true"] {
+			background: var(--nep-compte-mar);
+			color: #fff;
+			font-weight: 700;
+		}
+	}
+}
+
+.nep-compte__form,
+.nep-compte__panell-pestanya {
+	padding-block: 1rem;
+}
+
+.nep-compte__camp {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-block-end: 1rem;
+
+	label {
+		font-weight: 700;
+	}
+
+	input {
+		min-height: 44px;
+		padding: 0.5rem 0.75rem;
+		border: 2px solid #5b6478;
+		border-radius: 6px;
+		background: #fff;
+		color: var(--nep-compte-text);
+		font: inherit;
+
+		&[aria-invalid="true"] {
+			border-color: var(--nep-compte-alerta);
+		}
+	}
+}
+
+.nep-compte__ajuda {
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+.nep-compte__casella {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25rem 0.75rem;
+	align-items: start;
+	margin-block-end: 1rem;
+
+	input {
+		width: 24px;
+		height: 24px;
+		margin: 0;
+		accent-color: var(--nep-compte-mar);
+	}
+
+	.nep-compte__error {
+		grid-column: 2;
+	}
+}
+
+.nep-compte__error {
+	margin: 0;
+	color: var(--nep-compte-alerta);
+	font-weight: 700;
+}
+
+.nep-compte__error--servidor {
+	margin-block-end: 1rem;
+}
+
+.nep-compte__important {
+	padding: 0.75rem 1rem;
+	border-inline-start: 4px solid var(--nep-compte-alerta);
+	background: #fff;
+	font-weight: 700;
+}
+
+.nep-compte__dades {
+	margin-block-end: 1rem;
+
+	summary {
+		min-height: 24px;
+		color: var(--nep-compte-mar);
+		font-weight: 700;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+}
+
+.nep-compte__boto {
+	min-height: 44px;
+	padding: 0.5rem 1.25rem;
+	border: 2px solid var(--nep-compte-mar);
+	border-radius: 6px;
+	background: var(--nep-compte-mar);
+	color: #fff;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+
+	&:disabled {
+		cursor: wait;
+		opacity: 0.8;
+	}
+}
+
+.nep-compte__boto--secundari {
+	background: #fff;
+	color: var(--nep-compte-mar);
+}
+
+.nep-compte__boto--perill {
+	border-color: var(--nep-compte-alerta);
+	background: var(--nep-compte-alerta);
+	color: #fff;
+}
+
+.nep-compte__accions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-block-start: 1rem;
+}
+
+.nep-compte__progres {
+	padding-inline-start: 1.25rem;
+}
+
+.nep-compte__missio {
+	font-weight: 700;
+}
+
+.nep-compte__dialeg {
+	max-width: min(32rem, calc(100vw - 2rem));
+	padding: 1.5rem;
+	border: 2px solid var(--nep-compte-alerta);
+	border-radius: 8px;
+	background: #fff;
+	color: var(--nep-compte-text);
+
+	&::backdrop {
+		background: rgb(20 33 61 / 60%);
+	}
+
+	h2 {
+		margin-block-start: 0;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.nep-compte__boto,
+	.nep-compte [role="tab"] {
+		transition: background-color 0.15s ease;
+	}
+}
