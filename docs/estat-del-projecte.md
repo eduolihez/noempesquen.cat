@@ -34,8 +34,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 - Despliegue: `build/` está en `.gitignore` y el servidor no tiene Node, así que debe viajar en el paquete. Excluir `tests/`, `phpunit.xml.dist` y `missions/test-fixtures/` (`.distignore`).
 - 3B (cuentas): comprobar la caché de Dinahosting/Cloudflare sobre `/simulador/` y `/wp-json/`; `REMOTE_ADDR` detrás de proxy (filtro `nep_ip_client`).
 - Sin probar: `uninstall.php` en multisite.
-- Resumen público: sin rate limit (solo caché de 1 h); si la celda propia del jugador tiene menos de 10 partidas, la frase usa la banda de la opción más elegida.
-- Diagnóstico del editor: faltan mensajes legibles para `notifica`, `mostra`/`visible`, `bloqueja`/`denuncia`, formularios y `parla`; «Ves-hi» apunta a la primera aparición del valor.
+- Resumen público: sin rate limit a propósito (solo caché de 1 h; las misiones desconocidas dan 404 sin tocar la BD); si la celda propia del jugador tiene menos de 10 partidas, la frase usa la banda de la opción más elegida.
+- Diagnóstico del editor: mensajes legibles ya para `notifica`, `mostra`/`visible`, `bloqueja`/`denuncia`, formularios y `parla`; «Ves-hi» sigue apuntando a la primera aparición del valor en los casos que no tienen clave propia.
 - Menores: `diagnostic.js` sin `__()`; guardia de `nep_dispositiu`/`nep_personatge` en publicadas; límite 512 KB distinto en pre_insert y meta; `delete_all` ignorado en la guardia de borrado; el aviso demo sale si hay filas demo de cualquier fecha; `panel-missions.spec.js` no pasa prettier; un Editor-estadísticas sin `nep_gestiona_missions` no abre el menú padre.
 
 ### Pendiente tras el corte 4b

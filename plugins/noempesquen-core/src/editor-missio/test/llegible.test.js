@@ -151,3 +151,95 @@ describe( 'diagnosticGuio', () => {
 		expect( error.posicio ).toBe( 8 );
 	} );
 } );
+
+describe( 'missatges d’efectes, disparadors, Parla i formularis', () => {
+	const guio = {
+		disparadors: [
+			{
+				esdeveniment: 'x',
+				efectes: [
+					{ tipus: 'guia-diu', text: 'Hola' },
+					{ tipus: 'guia-diu' },
+					{ tipus: 'notifica', app: 'parla', xat: 'xat-9' },
+				],
+			},
+			{ esdeveniment: 'y', quan: { fitxer: 3 }, efectes: [] },
+		],
+		apps: {
+			parla: {
+				xats: [
+					{ id: 'a', missatges: [ { id: 'm1', text: 'x' } ] },
+					{ id: 'b', missatges: [ { id: 'm2', text: 'y' } ] },
+				],
+			},
+		},
+	};
+
+	const ruta = ( codi ) => errorLlegible( codi, guio ).ruta;
+	const text = ( codi ) => errorLlegible( codi, guio ).text;
+
+	it( 'localitza els efectes i en dona un text planer', () => {
+		expect( ruta( 'guia-diu sense text ni frase' ) ).toEqual( [
+			'disparadors',
+			0,
+			'efectes',
+			1,
+		] );
+		expect( ruta( 'notifica: xat inexistent a parla: xat-9' ) ).toEqual( [
+			'disparadors',
+			0,
+			'efectes',
+			2,
+			'xat',
+		] );
+		expect( text( 'notifica: font invàlida: pc' ) ).toMatch( /mobil/ );
+	} );
+
+	it( 'localitza «fitxer» i la web dels formularis', () => {
+		expect( ruta( 'fitxer ha de ser text' ) ).toEqual( [
+			'disparadors',
+			1,
+			'quan',
+			'fitxer',
+		] );
+		expect( ruta( 'formulari: nota ha de ser text a x.cat' ) ).toEqual( [
+			'webs',
+			'x.cat',
+		] );
+		expect( text( 'telefon.truca: la web x.cat no té avís' ) ).toMatch(
+			/«x\.cat» no té avís/
+		);
+	} );
+
+	it( 'situa els errors de Parla al xat que toca', () => {
+		expect( ruta( 'parla: missatge duplicat: m2' ) ).toEqual( [
+			'apps',
+			'parla',
+			'xats',
+			1,
+		] );
+		expect( ruta( 'parla: xat sense missatges: a' ) ).toEqual( [
+			'apps',
+			'parla',
+			'xats',
+			0,
+		] );
+		expect( ruta( 'parla: xats ha de ser una llista' ) ).toEqual( [
+			'apps',
+			'parla',
+			'xats',
+		] );
+	} );
+
+	it( 'cap d’aquests errors cau al text genèric', () => {
+		[
+			'mostra: element inexistent: z',
+			'bloqueja: contacte inexistent: z',
+			'denuncia: publicació inexistent: z',
+			'visible: element inexistent: z',
+			'parla: contacte inexistent: z',
+		].forEach( ( codi ) => {
+			expect( text( codi ) ).toMatch( /«z»/ );
+		} );
+	} );
+} );

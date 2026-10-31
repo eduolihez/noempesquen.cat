@@ -204,6 +204,263 @@ function ambRef( codi ) {
 	};
 }
 
+/**
+ * Ruta de l'efecte que compleix `prou` (primer dels disparadors), o la dels
+ * disparadors si no n'hi ha cap.
+ *
+ * @param {Object}                 g    Guió llegit.
+ * @param {(e: Object) => boolean} prou Predicat sobre l'efecte.
+ * @return {Array<string|number>} Ruta.
+ */
+function rutaEfecte( g, prou ) {
+	const ds = Array.isArray( g.disparadors ) ? g.disparadors : [];
+	for ( let i = 0; i < ds.length; i++ ) {
+		const es = Array.isArray( ds[ i ]?.efectes ) ? ds[ i ].efectes : [];
+		const j = es.findIndex( ( e ) => e && prou( e ) );
+		if ( j >= 0 ) {
+			return [ 'disparadors', i, 'efectes', j ];
+		}
+	}
+	return [ 'disparadors' ];
+}
+
+/**
+ * Ruta del primer valor `valor` sota la clau `clau` dels disparadors.
+ *
+ * @param {Object} g     Guió llegit.
+ * @param {string} valor Valor buscat.
+ * @param {string} clau  Clau que el conté.
+ * @return {Array<string|number>} Ruta.
+ */
+function rutaDisparador( g, valor, clau ) {
+	return (
+		trobaValor( g.disparadors, valor, clau, [ 'disparadors' ] ) ?? [
+			'disparadors',
+		]
+	);
+}
+
+/**
+ * Ruta d'un xat de Parla per id (o la llista de xats).
+ *
+ * @param {Object} g  Guió llegit.
+ * @param {string} id Id del xat o d'un dels seus missatges.
+ * @return {Array<string|number>} Ruta.
+ */
+function rutaXat( g, id ) {
+	const xats = g.apps?.parla?.xats;
+	const base = [ 'apps', 'parla', 'xats' ];
+	if ( ! Array.isArray( xats ) ) {
+		return base;
+	}
+	const i = xats.findIndex(
+		( x ) =>
+			x?.id === id ||
+			( Array.isArray( x?.missatges ) &&
+				x.missatges.some( ( m ) => m?.id === id ) )
+	);
+	return i >= 0 ? [ ...base, i ] : base;
+}
+
+const REGLES_EFECTES = [
+	[
+		/^mostra: element inexistent: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'id' ),
+			text: `L’efecte «mostra» apunta a «${ m[ 1 ] }», que no és cap element de les apps ni de les webs del guió. Corregeix l’id o afegeix l’element.`,
+		} ),
+	],
+	[
+		/^notifica: xat només amb app parla o revenda$/,
+		( m, g ) => ( {
+			ruta: rutaEfecte(
+				g,
+				( e ) => e.tipus === 'notifica' && 'xat' in e
+			),
+			text: 'Un «notifica» amb «xat» només funciona amb "app": "parla" o "revenda". Canvia l’app o treu el camp «xat».',
+		} ),
+	],
+	[
+		/^notifica: xat inexistent a (\S+): (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 2 ], 'xat' ),
+			text: `L’app «${ m[ 1 ] }» no té cap xat amb l’id «${ m[ 2 ] }». Comprova que el xat existeix al guió i que l’id és igual.`,
+		} ),
+	],
+	[
+		/^notifica: font invàlida: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'font' ),
+			text: `La font «${ m[ 1 ] }» no és vàlida. Només pot ser "mobil" o no posar-la.`,
+		} ),
+	],
+	[
+		/^notifica: font desconeguda: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'app' ),
+			text: `L’app «${ m[ 1 ] }» no pot enviar notificacions des d’aquesta font. Tria’n una altra o revisa "font".`,
+		} ),
+	],
+	[
+		/^guia-diu sense text ni frase$/,
+		( m, g ) => ( {
+			ruta: rutaEfecte(
+				g,
+				( e ) => e.tipus === 'guia-diu' && ! e.text && ! e.frase
+			),
+			text: 'L’efecte «guia-diu» necessita un "text" o una "frase" (el nom d’una entrada de «frases»).',
+		} ),
+	],
+	[
+		/^efecte invàlid$/,
+		() => ( {
+			ruta: [ 'disparadors' ],
+			text: 'Hi ha un efecte que no és un objecte JSON. Cada efecte ha de ser { "tipus": "…" }.',
+		} ),
+	],
+];
+
+const REGLES_DISPARADORS = [
+	[
+		/^disparador invàlid$/,
+		() => ( {
+			ruta: [ 'disparadors' ],
+			text: 'Hi ha un disparador que no és un objecte JSON. Ha de portar "esdeveniment" i "efectes".',
+		} ),
+	],
+	[
+		/^visible: element inexistent: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'visible' ),
+			text: `La condició «visible» apunta a «${ m[ 1 ] }», que no és cap element del guió. Corregeix l’id o afegeix l’element.`,
+		} ),
+	],
+	[
+		/^bloqueja: contacte inexistent: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'id' ),
+			text: `El disparador de bloquejar espera un contacte amb l’id «${ m[ 1 ] }», però no és al món compartit ni a la missió.`,
+		} ),
+	],
+	[
+		/^denuncia: publicació inexistent: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 1 ], 'id' ),
+			text: `El disparador de denunciar espera una publicació amb l’id «${ m[ 1 ] }», però no n’hi ha cap amb aquest id a Ullada.`,
+		} ),
+	],
+	[
+		/^fitxer ha de ser text$/,
+		( m, g ) => ( {
+			ruta: ( () => {
+				const ds = Array.isArray( g.disparadors ) ? g.disparadors : [];
+				const i = ds.findIndex(
+					( d ) =>
+						d?.quan?.fitxer !== undefined &&
+						typeof d.quan.fitxer !== 'string'
+				);
+				return i >= 0
+					? [ 'disparadors', i, 'quan', 'fitxer' ]
+					: [ 'disparadors' ];
+			} )(),
+			text: 'La condició «fitxer» ha de ser un text (el nom del fitxer), entre cometes.',
+		} ),
+	],
+	[
+		/^(\S+): url sense web article: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaDisparador( g, m[ 2 ], 'url' ),
+			text: `L’esdeveniment «${ m[ 1 ] }» necessita una url d’una web amb plantilla «article», i «${ m[ 2 ] }» no ho és.`,
+		} ),
+	],
+	[
+		/^(\S+): la web (\S+) (.+)$/,
+		( m ) => ( {
+			ruta: [ 'webs', m[ 2 ] ],
+			text: `Per a l’esdeveniment «${ m[ 1 ] }», la web «${ m[ 2 ] }» ${ m[ 3 ] }. Afegeix-ho a la web.`,
+		} ),
+	],
+];
+
+const REGLES_PARLA = [
+	[
+		/^parla: xats ha de ser una llista$/,
+		() => ( {
+			ruta: [ 'apps', 'parla', 'xats' ],
+			text: '«xats» de Parla ha de ser una llista ([ … ]) de xats.',
+		} ),
+	],
+	[
+		/^parla: xat invàlid$/,
+		() => ( {
+			ruta: [ 'apps', 'parla', 'xats' ],
+			text: 'Hi ha un xat de Parla sense "id" o que no és un objecte JSON.',
+		} ),
+	],
+	[
+		/^parla: xat duplicat: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaXat( g, m[ 1 ] ),
+			text: `Hi ha dos xats de Parla amb l’id «${ m[ 1 ] }». Canvia’n un.`,
+		} ),
+	],
+	[
+		/^parla: contacte inexistent: (.*)$/,
+		( m, g ) => ( {
+			ruta: trobaValor( g.apps?.parla, m[ 1 ], 'contacte', [
+				'apps',
+				'parla',
+			] ) ?? [ 'apps', 'parla' ],
+			text: `El contacte «${ m[ 1 ] }» no és al món compartit. Comprova l’id o tria’n un d’existent.`,
+		} ),
+	],
+	[
+		/^parla: xat sense missatges: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaXat( g, m[ 1 ] ),
+			text: `El xat «${ m[ 1 ] }» no té missatges. Afegeix-ne almenys un a «missatges».`,
+		} ),
+	],
+	[
+		/^parla: missatge invàlid a (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaXat( g, m[ 1 ] ),
+			text: `Hi ha un missatge del xat «${ m[ 1 ] }» sense "id" o sense "text". Cada missatge necessita tots dos.`,
+		} ),
+	],
+	[
+		/^parla: remitent invàlid: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaXat( g, m[ 1 ] ),
+			text: `El missatge «${ m[ 1 ] }» ha de tenir "de": "ells" o "jo".`,
+		} ),
+	],
+	[
+		/^parla: missatge duplicat: (.*)$/,
+		( m, g ) => ( {
+			ruta: rutaXat( g, m[ 1 ] ),
+			text: `L’id de missatge «${ m[ 1 ] }» surt més d’una vegada. Cada missatge necessita un id propi.`,
+		} ),
+	],
+];
+
+const REGLES_FORMULARI = [
+	[
+		/^formulari: esdeveniment invàlid a (\S+): (.*)$/,
+		( m ) => ( {
+			ruta: [ 'webs', m[ 1 ] ],
+			text: `L’esdeveniment de formulari «${ m[ 2 ] }» de la web «${ m[ 1 ] }» no existeix. Ha de ser formulari.envia, codi.envia o pagament.fes.`,
+		} ),
+	],
+	[
+		/^formulari: (\S+) ha de ser text a (\S+)$/,
+		( m ) => ( {
+			ruta: [ 'webs', m[ 2 ] ],
+			text: `El camp «${ m[ 1 ] }» del formulari de la web «${ m[ 2 ] }» ha de ser un text entre cometes.`,
+		} ),
+	],
+];
+
 // Missatges sense prefix: [ patró, ( coincidència, guió ) => { ruta, text } ].
 const REGLES = [
 	[
@@ -376,6 +633,10 @@ const REGLES = [
 			text: 'Cap opció de la decisió té "valor": "correcta". Marca’n almenys una.',
 		} ),
 	],
+	...REGLES_EFECTES,
+	...REGLES_DISPARADORS,
+	...REGLES_PARLA,
+	...REGLES_FORMULARI,
 ];
 
 /**
