@@ -143,4 +143,4 @@ Pendiente tras 3B:
 
 Dirección lonja: azul de caja de pescado, rojo aviso, amarillo de lote; rótulos Big Shoulders y texto Atkinson Hyperlegible (OFL, locales en `themes/noempesquen/assets/fonts/`). CSS en `assets/tema.css`; plantillas en `templates/`. `PRODUCT.md` recoge el contexto.
 
-Pulido posterior (sin desplegar): cabecera sin «Entra a jugar» duplicado, menú en tablet alineado a la izquierda, el hilo del anzuelo ya no cuelga del botón en móvil, cebo de la portada más grande, plantilla `page-compte.html` con rótulo y `h1`, sin sombra dura en `.nep-nota`. Pendiente: `npm run empaqueta` y subir el tema.
+Pulido posterior (desplegado el 2026-10-31, tema subido por wp-admin y comprobado en producción: `/compte/` con rótulo y `h1`, `tema.css` con las reglas nuevas): cabecera sin «Entra a jugar» duplicado, menú en tablet alineado a la izquierda, el hilo del anzuelo ya no cuelga del botón en móvil, cebo de la portada más grande, plantilla `page-compte.html` con rótulo y `h1`, sin sombra dura en `.nep-nota`.
