@@ -184,6 +184,7 @@ export function App( { config } ) {
 			mon={ mon }
 			onSurt={ () => setActual( null ) }
 			onAcaba={ onAcaba }
+			api={ config.api }
 			seguent={ seguentMissio ? () => tria( seguentMissio.id ) : null }
 		/>
 	);

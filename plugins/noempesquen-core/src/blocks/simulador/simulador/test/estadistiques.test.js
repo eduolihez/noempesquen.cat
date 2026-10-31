@@ -203,7 +203,10 @@ describe( 'llegeixResum', () => {
 	it( 'la franja de dalt va fins al 100 %', () => {
 		expect(
 			llegeixResum(
-				{ n_banda: '50+', decisions: [ { id: 'a', banda: '90-100 %' } ] },
+				{
+					n_banda: '50+',
+					decisions: [ { id: 'a', banda: '90-100 %' } ],
+				},
 				'a'
 			)
 		).toStrictEqual( { min: 90, max: 100, mateixa: true } );
