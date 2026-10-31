@@ -16,9 +16,12 @@ const { defineConfig, devices } = require( '@playwright/test' );
  *   acabat (`dependencies`) i cap dels altres l'inclou.
  * - compte: Desktop Chrome, només la pantalla de compte (sèrie, un sol compte de
  *   prova per execució; sense dependències per poder-lo llançar sol).
+ * - El compte dins del simulador (compte-simulador.spec.js) corre només a
+ *   escriptori, en sèrie i amb un sol usuari de prova.
  */
 const SPEC_PANELL = /(panel-missions|estadistiques)\.spec\.js$/;
 const SPEC_COMPTE = /compte\.spec\.js$/;
+const SPEC_COMPTE_SIMULADOR = /compte-simulador\.spec\.js$/;
 const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;
 
@@ -37,7 +40,7 @@ module.exports = defineConfig( {
 		{
 			name: 'mobil',
 			use: { ...devices[ 'Pixel 7' ] },
-			testIgnore: [ SPEC_PANELL, SPEC_COMPTE ],
+			testIgnore: [ SPEC_PANELL, SPEC_COMPTE, SPEC_COMPTE_SIMULADOR ],
 		},
 		{
 			name: 'mobil-horitzontal',
