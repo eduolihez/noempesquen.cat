@@ -290,3 +290,41 @@ test( '«Ves-hi» porta el cursor a la línia de l’error', async ( { page } ) 
 	await page.locator( '#nep-guio-diagnostic' ).getByRole( 'button', { name: 'Ves-hi' } ).click();
 	expect( await cursor( page ) ).toMatchObject( { line: 2, ch: 10 } );
 } );
+
+test( 'un Editor no veu «Missions» ni pot crear-ne per REST', async ( { page, browser } ) => {
+	const nonce = await ( await page.request.get( '/wp-admin/admin-ajax.php?action=rest-nonce' ) ).text();
+	const login = `e2e_editor_${ Date.now() }`;
+	const contrasenya = `Pw-${ Date.now() }-x9!`;
+	const creat = await page.request.post( '/wp-json/wp/v2/users', {
+		headers: { 'X-WP-Nonce': nonce },
+		data: { username: login, password: contrasenya, email: `${ login }@exemple.test`, roles: [ 'editor' ] },
+	} );
+	expect( creat.status() ).toBe( 201 );
+	const usuari = ( await creat.json() ).id;
+	const context = await browser.newContext();
+	try {
+		const editor = await context.newPage();
+		await editor.goto( '/wp-login.php' );
+		await editor.locator( '#user_login' ).fill( login );
+		await editor.locator( '#user_pass' ).fill( contrasenya );
+		await editor.locator( '#wp-submit' ).click();
+		await expect( editor.locator( '#wpadminbar' ) ).toBeVisible();
+		await editor.goto( '/wp-admin/' );
+		await expect( editor.locator( '#adminmenu' ) ).toBeVisible();
+		await expect( editor.locator( '#menu-posts-nep_missio' ) ).toHaveCount( 0 );
+		await expect( editor.locator( '#adminmenu' ) ).not.toContainText( 'Missions' );
+
+		const nonceEditor = await ( await editor.request.get( '/wp-admin/admin-ajax.php?action=rest-nonce' ) ).text();
+		const r = await editor.request.post( '/wp-json/wp/v2/nep_missio', {
+			headers: { 'X-WP-Nonce': nonceEditor },
+			data: { title: 'Prova editor', status: 'draft' },
+		} );
+		expect( r.status() ).toBe( 403 );
+	} finally {
+		await context.close();
+		const esborrat = await page.request.delete( `/wp-json/wp/v2/users/${ usuari }?force=true&reassign=1`, {
+			headers: { 'X-WP-Nonce': nonce },
+		} );
+		expect( esborrat.status() ).toBe( 200 );
+	}
+} );
