@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { llegeixProgres, desaProgres } from '../progres.js';
+import { llegeixProgres, desaProgres, esborraProgres } from '../progres.js';
 
 const memoria = ( inicial = {} ) => {
 	const dades = { ...inicial };
@@ -71,5 +71,17 @@ describe( 'progres', () => {
 		const s = memoria();
 		desaProgres( s, { a: 1 } );
 		expect( s.dades[ 'noempesquen-progres-v2' ] ).toBe( '{"a":1}' );
+	} );
+	it( 'esborra les claus v1 i v2 i tolera un storage trencat', () => {
+		const s = memoria( {
+			'noempesquen-progres-v1': '{"a":1}',
+			'noempesquen-progres-v2': '{"a":2}',
+			altra: 'x',
+		} );
+		s.removeItem = ( k ) => delete s.dades[ k ];
+		esborraProgres( s );
+		expect( s.dades ).toEqual( { altra: 'x' } );
+		expect( () => esborraProgres( trenca ) ).not.toThrow();
+		expect( () => esborraProgres( null ) ).not.toThrow();
 	} );
 } );

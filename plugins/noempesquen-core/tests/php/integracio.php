@@ -316,6 +316,7 @@ require __DIR__ . '/integracio-estadistiques.php';
 
 // Capacitats del tipus nep_missio: editor 403, administrador i gestor OK.
 require __DIR__ . '/integracio-capacitats.php';
+
 wp_set_current_user( 1 );
 
 foreach ( array_unique( $nep_creades ) as $nep_id ) {
@@ -351,6 +352,10 @@ $nep_comprova( false === get_option( 'nep_db_version' ) && null === $wpdb->get_v
 delete_transient( 'nepaltre_prova' );
 nep_actualitza();
 $nep_comprova( NEP_DB_VERSION === get_option( 'nep_db_version' ), 'uninstall: restaurat amb nep_actualitza()' );
+
+// Comptes de jugador: rol, bloqueig de wp-admin i neteja.
+require __DIR__ . '/integracio-comptes.php';
+wp_set_current_user( 1 );
 
 if ( $nep_fallades ) {
 	WP_CLI::error( "$nep_fallades comprovacions fallades." );

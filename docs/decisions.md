@@ -4,7 +4,7 @@
 - **Simulador:** bloc de Gutenberg amb React de WordPress; missions com a tipus de contingut amb guió JSON.
 - **Personatges:** la Llissa (ordinador) i la Pirata Remei (mòbil).
 - **Sense IA de moment:** el comprovador funcionarà amb regles i plantilles en català.
-- **Comptes d'usuari (revisat 2026-10-30):** opcionals i només a l'entrega 3B de la Fase 3 (comptes natius de WordPress, rol `nep_jugador`, formulari fora de la carcassa del simulador, consentiment explícit amb casella de 14 anys). Fins llavors el progrés es desa al navegador; al servidor només hi ha estadístiques agregades i anònimes (sense `user_id` ni IP).
+- **Comptes d'usuari opcionals (2026-10-31, entrega 3B):** substitueix l'antic «sense comptes». Jugar no exigeix compte; qui vulgui pot crear-ne un per desar el progrés al servidor. Rol `nep_jugador` sense capacitats ni accés a wp-admin; pàgina pròpia `/compte/` (fora de la carcassa del simulador); REST propi (`noempesquen/v1`: registre, entra, progrés, exportació, esborrat) amb la cookie de sessió de WordPress i nonce; progrés local i del servidor fusionat per màxim (mai no es perd una estrella); consentiment explícit i versionat (casella de 14 anys); exportador i esborrador de dades personals de WordPress. A 3B no hi ha verificació d'email ni recuperació de contrasenya (decisió D1 d'Edu; possible 3C). Les estadístiques anònimes (`/resultat`) continuen separades: `credentials: 'omit'`, sense nonce, sense cookies ni `user_id`, encara que hi hagi sessió.
 - **Límit d'enviaments de `/resultat` (2026-10-31):** no és «sense IP». Per comptar enviaments es guarda un transient `nep_rl_*` amb clau `HMAC-SHA256(IP, sal auth del lloc + sal diària)` que caduca en ≤ 1 h; és seudonimització transitòria, no anonimització, i no es relaciona amb les files de la taula. La desinstal·lació esborra aquests transients.
 - **Entorn local:** wp-env (Docker). Sense staging a Dinahosting.
 - **Seguretat del servidor:** capçaleres a `.htaccess`, XML-RPC bloquejat, CSP en mode informe fins que el simulador sigui estable.
@@ -38,3 +38,18 @@
 - Borde de botones del sistema ~1,3:1 (WCAG 1.4.11, global).
 - Estrellas del selector (`role="img"` dentro de button) solo llegan por `aria-describedby`: verificar con lector de pantalla.
 - CSS 128 KiB / entrypoint 251 KiB (aviso de webpack > 244 KiB): recortar CSS.
+
+## Fase 3B · comptes opcionals (2026-10-31)
+
+- Sense verificació de correu ni recuperació de contrasenya (D1). Mitigació: límit d'altes per IP (5/h) i global (`NEP_COMPTE_LIMIT_REGISTRE_GLOBAL`, 200/h, configurable a `wp-config.php`).
+- El límit per correu de `/compte/entra` pot bloquejar uns minuts el propietari si algú prova contrasenyes amb el seu correu (acceptat).
+- Els comptadors de límit són transients no atòmics: amb molta concurrència es poden passar uns pocs intents (acceptat).
+- `Secure` de la galeta de sessió depèn d'`is_ssl()`: cal comprovar-ho en producció darrere de Varnish.
+- Els jugadors no entren per `wp-login.php` ni XML-RPC (desactivat); `wp-admin` els porta a `/compte/`.
+- Un jugador no pot fer servir `/wp/v2/users*` (canviaria el correu o la contrasenya sense l'actual) ni contrasenyes d'aplicació (l'autenticació Basic saltaria els límits).
+- L'alta revela si un correu ja existeix (200 o 400): és inherent a no verificar el correu i queda acotat pels límits d'altes (acceptat).
+- La recuperació de contrasenya de `wp-login.php` respon igual per a jugadors i correus inexistents; per al personal del lloc el nucli encara envia el correu (resposta diferent, acceptat per no trencar-los la recuperació).
+- Els límits fan servir una sal diària: els comptadors es reinicien a mitjanit.
+- `/compte/` es crea a mà (README), no automàticament.
+- Desinstal·lar treu el rol i les metes `nep_*`, però els usuaris queden sense rol. L'esborrador de dades personals de WordPress tampoc esborra la fila de l'usuari; per esborrar el compte sencer hi ha `DELETE /compte` o wp-admin.
+- En tancar la sessió o esborrar el compte, el progrés local s'esborra (ordinadors compartits).

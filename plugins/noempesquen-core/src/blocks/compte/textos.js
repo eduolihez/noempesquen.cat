@@ -1,0 +1,56 @@
+/**
+ * Textos de la pantalla de compte (en català, per revisar-los d'un cop).
+ */
+export const T = {
+	carregant: 'Carregant el teu compte…',
+	pestanyes: 'Accés al compte',
+	crea: 'Crea un compte',
+	entra: 'Entra',
+	correu: 'Correu electrònic',
+	contrasenya: 'Contrasenya',
+	ajudaContrasenya: 'Entre 10 i 128 caràcters.',
+	avisContrasenya:
+		'Si perds la contrasenya no es pot recuperar: apunta-la en un lloc segur.',
+	majoriaEdat: 'Tinc 14 anys o més',
+	acepta: 'Accepto que es desin el meu correu i el meu progrés per poder recuperar-lo en un altre dispositiu',
+	quinesDades: 'Quines dades es guarden',
+	dades: [
+		'Només el teu correu electrònic.',
+		'La contrasenya, guardada xifrada (amb hash): ningú no la pot llegir.',
+		'El progrés de les missions (les estrelles de cada missió).',
+		'La data i la versió del consentiment que acceptes ara.',
+		'Res del que escriguis als formularis falsos del simulador: no surt mai del teu navegador.',
+		"Pots descarregar-ho i esborrar-ho tot des d'aquesta pàgina.",
+		'Les estadístiques anònimes de les partides són a part i no porten cap dada teva.',
+	],
+	botoCrea: 'Crea el compte',
+	botoEntra: 'Entra',
+	enviant: 'Enviant…',
+	errCorreu: 'Escriu un correu electrònic vàlid.',
+	errContrasenya: 'La contrasenya ha de tenir entre 10 i 128 caràcters.',
+	errContrasenyaBuida: 'Escriu la contrasenya.',
+	errMajoriaEdat: 'Cal que tinguis 14 anys o més per crear un compte.',
+	errAcepta: 'Cal que acceptis que es desin les dades per crear un compte.',
+	errResum: 'Revisa els camps marcats.',
+	creat: 'Compte creat. Ja tens la sessió iniciada.',
+	dins: 'Has entrat al teu compte.',
+	elTeuCompte: 'El teu compte',
+	progres: 'Progrés de les missions',
+	senseProgres:
+		'Encara no hi ha cap missió desada. Juga al simulador amb la sessió iniciada.',
+	estrelles: ( n ) =>
+		n === 1 ? '1 estrella de 3' : `${ n } estrelles de 3`,
+	anarSimulador: 'Ves al simulador',
+	descarrega: 'Descarrega les meves dades',
+	descarregat: 'Dades descarregades.',
+	tanca: 'Tanca la sessió',
+	tancada: 'Has tancat la sessió.',
+	esborra: 'Esborra el compte',
+	esborraTitol: 'Esborrar el compte',
+	esborraText:
+		"S'esborraran el teu correu, la contrasenya i el progrés. No es pot desfer.",
+	esborraConfirma: 'Esborra el compte definitivament',
+	cancella: 'Cancel·la',
+	esborrat: "El compte s'ha esborrat.",
+	noscript: 'Cal JavaScript per crear un compte o entrar-hi.',
+};

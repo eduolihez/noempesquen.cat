@@ -25,7 +25,8 @@ export function construeixResultat( missio, estat, puntuacio ) {
 }
 
 /**
- * Envia el resultat sense galetes ni nonce. Falla en silenci: mai bloqueja
+ * Envia el resultat sense galetes ni nonce (`credentials: 'omit'`): és anònim
+ * encara que el jugador tingui un compte opcional. Falla en silenci: mai bloqueja
  * ni llença.
  *
  * @param {string}  api     Arrel de l'API (acaba en `/`).

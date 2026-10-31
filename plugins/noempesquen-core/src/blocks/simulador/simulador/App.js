@@ -1,12 +1,23 @@
-import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
+import {
+	useState,
+	useEffect,
+	useCallback,
+	useMemo,
+	useRef,
+} from '@wordpress/element';
 import { combinaMissions } from '../nucli/missions';
 import { __ } from '@wordpress/i18n';
-import { llegeixProgres } from '../nucli/progres';
+import { desaProgres, llegeixProgres } from '../nucli/progres';
+import { fusionaProgres } from '../nucli/sincro';
+import { creaClient } from '../../../compte/client';
+import { hiHaMarcaSessio, treuMarcaSessio } from '../../../compte/marca';
 import {
 	preparaPrevisualitzacio,
 	registraResultat,
 } from '../nucli/previsualitzacio';
 import { construeixResultat, enviaResultat } from './estadistiques';
+import { EstatCompte } from './EstatCompte';
+import { progresAPujar, sincroInicial, sincronitza } from './sincro-compte';
 import { Selector } from './Selector';
 import { Simulador } from './Simulador';
 import llissa01 from '../../../../missions/llissa-01-factura.json';
@@ -53,6 +64,104 @@ function useEsMobil() {
 		return () => mq.removeEventListener( 'change', onChange );
 	}, [] );
 	return esMobil;
+}
+
+/**
+ * Compte del jugador (si n'hi ha): fusiona el progrés en muntar i el desa en
+ * acabar cada missió. Sense sessió o sense xarxa, tot queda en local.
+ *
+ * Sense la marca `nep-compte-sessio` (posada en entrar a /compte/) no es fa
+ * cap petició de compte, ni tan sols la del nonce.
+ *
+ * @param {Object}                config           Configuració del bloc.
+ * @param {Object}                desat            Estat de l'App.
+ * @param {{current: Object}}     desat.progresRef Progrés vigent (ref compartida amb l'App).
+ * @param {(nou: Object) => void} desat.setProgres Setter del progrés.
+ * @return {Object} `{ connectat, puja }`: estat (`null` pendent) i pujada.
+ */
+function useCompte( config, { progresRef, setProgres } ) {
+	const { api, compte, previsualitza } = config;
+	const [ ambMarca ] = useState( () => hiHaMarcaSessio() );
+	const actiu = !! compte && ! previsualitza && ambMarca;
+	// Un sol client per muntatge: el nonce viu només en aquesta instància.
+	const client = useMemo(
+		() =>
+			actiu
+				? creaClient( {
+						api: api || '/wp-json/noempesquen/v1/',
+						ajaxUrl: compte.ajaxUrl || '/wp-admin/admin-ajax.php',
+						fetchFn: ( ...args ) => window.fetch( ...args ),
+					} )
+				: null,
+		[ actiu, api, compte?.ajaxUrl ]
+	);
+	const [ connectat, setConnectat ] = useState( actiu ? null : false );
+	const connectatRef = useRef( false );
+
+	// Aplica el que torna el servidor sense trepitjar progrés més nou. La ref
+	// s'actualitza al moment perquè un `onAcaba` immediat parteixi d'aquí.
+	const aplica = useCallback(
+		( servidor ) => {
+			const nou = fusionaProgres( progresRef.current, servidor );
+			progresRef.current = nou;
+			desaProgres( emmagatzematge(), nou );
+			setProgres( ( p ) => fusionaProgres( p, nou ) );
+		},
+		[ progresRef, setProgres ]
+	);
+
+	useEffect( () => {
+		if ( ! client ) {
+			return;
+		}
+		let viu = true;
+		sincroInicial( { client, progresLocal: progresRef.current } ).then(
+			async ( r ) => {
+				if ( ! viu ) {
+					return;
+				}
+				connectatRef.current = r.connectat;
+				setConnectat( r.connectat );
+				if ( ! r.connectat ) {
+					treuMarcaSessio();
+					return;
+				}
+				// Inclou el que s'hagi acabat mentre s'esperava `estat()`.
+				const pendent = progresAPujar( {
+					sincro: r,
+					vigent: progresRef.current,
+				} );
+				aplica( r.progres );
+				if ( pendent ) {
+					const servidor = await sincronitza( {
+						client,
+						progres: pendent,
+					} );
+					if ( viu && servidor ) {
+						aplica( servidor );
+					}
+				}
+			}
+		);
+		return () => {
+			viu = false;
+		};
+	}, [ client, aplica, progresRef ] );
+
+	const puja = useCallback(
+		async ( nou ) => {
+			if ( ! client || ! connectatRef.current ) {
+				return;
+			}
+			const servidor = await sincronitza( { client, progres: nou } );
+			if ( servidor ) {
+				aplica( servidor );
+			}
+		},
+		[ client, aplica ]
+	);
+
+	return { connectat, puja };
 }
 
 const llegeix = ( url, opcions ) =>
@@ -123,6 +232,12 @@ export function App( { config } ) {
 		llegeixProgres( emmagatzematge() )
 	);
 	const [ partida, setPartida ] = useState( 0 );
+	const progresActual = useRef( progres );
+	progresActual.current = progres;
+	const { connectat, puja } = useCompte( config, {
+		progresRef: progresActual,
+		setProgres,
+	} );
 	const jugada = useRef( null );
 	const darreres = useRef( missions );
 	darreres.current = missions;
@@ -136,15 +251,25 @@ export function App( { config } ) {
 	const onAcaba = useCallback(
 		( id, estrelles, estat ) => {
 			const acabada = darreres.current.find( ( m ) => m.id === id );
-			setProgres( ( p ) =>
-				registraResultat( emmagatzematge(), p, acabada, estrelles )
+			const abans = progresActual.current;
+			const nou = registraResultat(
+				emmagatzematge(),
+				abans,
+				acabada,
+				estrelles
 			);
+			progresActual.current = nou;
+			setProgres( nou );
 			enviaResultat(
 				api,
 				construeixResultat( acabada, estat, { estrelles } )
 			);
+			// Una previsualització no canvia el progrés: no hi ha res a pujar.
+			if ( nou !== abans ) {
+				puja( nou );
+			}
 		},
-		[ api ]
+		[ api, puja ]
 	);
 
 	const tria = ( id ) => {
@@ -173,6 +298,12 @@ export function App( { config } ) {
 					onTria={ tria }
 					enfoca={ jugada.current }
 				/>
+				{ ! config.previsualitza && !! config.compte && (
+					<EstatCompte
+						connectat={ connectat }
+						url={ config.compte.url || '' }
+					/>
+				) }
 			</>
 		);
 	}

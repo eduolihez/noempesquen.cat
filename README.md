@@ -34,6 +34,12 @@ Les proves e2e necessiten una pàgina `/simulador/` amb el bloc. Crea-la un cop,
 npm run env:cli -- wp post create --post_type=page --post_title=Simulador --post_name=simulador --post_status=publish --post_content='<!-- wp:noempesquen/simulador {"align":"wide"} /-->'
 ```
 
+La pantalla de compte (alta, entrada, descàrrega i esborrat de dades) va a `/compte/`; el jugador hi arriba també si intenta obrir `/wp-admin/`. Crea-la igual:
+
+```bash
+npm run env:cli -- wp post create --post_type=page --post_name=compte --post_title="El meu compte" --post_status=publish --post_content='<!-- wp:noempesquen/compte /-->'
+```
+
 Aturar: `npm run env:stop` · Esborrar l'entorn: `npm run env:clean`
 
 ## Producció

@@ -18,6 +18,13 @@ $nep_previsualitza = isset( $_GET['previsualitza'] ) ? absint( wp_unslash( $_GET
 if ( $nep_previsualitza && current_user_can( 'nep_gestiona_missions' ) && current_user_can( 'edit_post', $nep_previsualitza ) ) {
 	$config['previsualitza'] = $nep_previsualitza;
 	$config['nonce']         = wp_create_nonce( 'wp_rest' );
+} else {
+	// Compte del jugador: sense nonce a l'HTML (la pàgina es pot desar a la memòria cau).
+	$nep_pagina_compte = get_page_by_path( 'compte' );
+	$config['compte']  = array(
+		'ajaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+		'url'     => $nep_pagina_compte && 'publish' === $nep_pagina_compte->post_status ? esc_url_raw( get_permalink( $nep_pagina_compte ) ) : '',
+	);
 }
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'nep-sim' ) ); ?>

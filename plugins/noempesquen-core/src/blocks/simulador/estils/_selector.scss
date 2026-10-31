@@ -64,6 +64,39 @@
 	}
 }
 
+/* Estat del compte, sota el selector: discret, contrast AA sobre blanc. */
+.nep-estat-compte {
+	color: #3a4661;
+	font-size: 0.95rem;
+	margin: 1.5rem 0 0;
+
+	&__enllac {
+		align-items: center;
+		color: #0b5e7a;
+		display: inline-flex;
+		min-height: 24px;
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+
+		&:hover {
+			color: #084a61;
+		}
+
+		&:focus-visible {
+			border-radius: 2px;
+			outline: 3px solid #12355b;
+			outline-offset: 2px;
+		}
+	}
+}
+
+@media (max-width: 1180px) {
+
+	.nep-estat-compte {
+		padding-inline: 1rem;
+	}
+}
+
 /* Seccions */
 .nep-sel-seccio {
 	display: flex;

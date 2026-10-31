@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "noempesquen/compte",
+	"title": "Compte No em pesquen",
+	"category": "widgets",
+	"icon": "admin-users",
+	"description": "Crear un compte, entrar-hi i gestionar-ne les dades (progrés, descàrrega i esborrat).",
+	"textdomain": "noempesquen",
+	"supports": { "html": false, "multiple": false },
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

@@ -234,7 +234,7 @@ $nep_insereix( $nep_actual, 2, 'a', 3 );
 delete_option( 'nep_db_version' );
 nep_actualitza();
 $nep_index = static fn( string $nom ) => (bool) $wpdb->get_var( $wpdb->prepare( "SHOW INDEX FROM {$nep_taula} WHERE Key_name = %s", $nom ) );
-$nep_comprova( '3' === get_option( 'nep_db_version' ) && $nep_index( 'resultat_demo' ) && ! $nep_index( 'resultat' ), 'migració: v3 amb la clau resultat_demo i sense la clau antiga' );
+$nep_comprova( NEP_DB_VERSION === get_option( 'nep_db_version' ) && $nep_index( 'resultat_demo' ) && ! $nep_index( 'resultat' ), 'migració: versió actual amb la clau resultat_demo i sense la clau antiga' );
 $nep_comprova( '0' === (string) $wpdb->get_var( $wpdb->prepare( "SELECT demo FROM {$nep_taula} WHERE missio = %s", $nep_est['id'] ) ), 'migració: les files existents queden amb demo = 0' );
 
 // Demo: sembra, aïllament de l'endpoint real i esborra.
