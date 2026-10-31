@@ -155,3 +155,74 @@ test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona'
 	await expect( anonim.locator( `[data-missio="${ id }"]` ) ).toHaveCount( 0 );
 	await anonim.close();
 } );
+
+/** Guió actual de l'editor (CodeMirror), descodificat. */
+async function llegeixGuio( page ) {
+	return JSON.parse(
+		await page.evaluate( () =>
+			document.querySelector( '#nep-guio-missio .CodeMirror' ).CodeMirror.getValue()
+		)
+	);
+}
+
+test( '«Nova missió des de plantilla» omple un guió sense errors i no desa res sol', async ( { page } ) => {
+	const marca = Date.now();
+	await novaMissio( page, `Plantilla e2e ${ marca }` );
+	await page.getByRole( 'button', { name: 'Nova missió des de plantilla' } ).click();
+	await expect( page.locator( '#nep-guio-diagnostic' ) ).toHaveText( 'Cap error' );
+	await expect( page.locator( '#nep-guio-plantilla-avis' ) ).toHaveAttribute( 'role', 'status' );
+	await expect( page.locator( '#nep-guio-plantilla-avis' ) ).toContainText( `plantilla-e2e-${ marca }` );
+	// Encara és a post-new.php: no s'ha desat res.
+	await expect( page ).toHaveURL( /post-new\.php/ );
+	const guioNou = await llegeixGuio( page );
+	expect( guioNou.id ).toBe( `plantilla-e2e-${ marca }` );
+	expect( guioNou.titol ).toBe( `Plantilla e2e ${ marca }` );
+
+	await desa( page, '#save-post' );
+	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
+	await expect( page.locator( '.notice-error' ) ).toHaveCount( 0 );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( `plantilla-e2e-${ marca }` );
+	await expect( page.getByRole( 'button', { name: 'Nova missió des de plantilla' } ) ).toHaveCount( 0 );
+} );
+
+test( '«Duplica la missió» crea un esborrany amb un id nou i no toca l’original', async ( { page } ) => {
+	const id = `e2e-original-${ Date.now() }`;
+	await novaMissio( page, 'Prova e2e original' );
+	await escriuGuio( page, guio( id ) );
+	const original = await desa( page, '#save-post' );
+
+	await page.getByRole( 'link', { name: 'Duplica la missió' } ).click();
+	await page.waitForURL( /nep_duplicada=\d+/ );
+	const copia = Number( new URL( page.url() ).searchParams.get( 'post' ) );
+	creades.push( copia );
+	expect( copia ).not.toBe( original );
+	await expect( page.getByRole( 'status' ).filter( { hasText: "S'ha creat un esborrany" } ) ).toBeVisible();
+	await expect( page.locator( '#title' ) ).toHaveValue( 'Prova e2e original (còpia)' );
+	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( `${ id }-copia` );
+	await expect( page.locator( '#nep-guio-diagnostic' ) ).toHaveText( 'Cap error' );
+
+	await page.goto( `/wp-admin/post.php?post=${ original }&action=edit` );
+	await expect( page.locator( '#title' ) ).toHaveValue( 'Prova e2e original' );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( id );
+} );
+
+test( '«Duplica» a la llista no reutilitza l’id d’una missió inclosa', async ( { page } ) => {
+	const titol = `Prova e2e inclosa ${ Date.now() }`;
+	await novaMissio( page, titol );
+	await escriuGuio( page, JSON.stringify( factura ) );
+	const original = await desa( page, '#save-post' );
+
+	await page.goto( '/wp-admin/edit.php?post_type=nep_missio&post_status=draft' );
+	const fila = page.locator( `#post-${ original }` );
+	await fila.hover();
+	await fila.getByRole( 'link', { name: `Duplica «${ titol }»` } ).click();
+	await page.waitForURL( /nep_duplicada=\d+/ );
+	creades.push( Number( new URL( page.url() ).searchParams.get( 'post' ) ) );
+	const nou = ( await llegeixGuio( page ) ).id;
+	expect( nou ).not.toBe( factura.id );
+	expect( nou ).toMatch( /^llissa-01-factura-copia(-\d+)?$/ );
+
+	await page.goto( `/wp-admin/post.php?post=${ original }&action=edit` );
+	expect( ( await llegeixGuio( page ) ).id ).toBe( factura.id );
+} );
