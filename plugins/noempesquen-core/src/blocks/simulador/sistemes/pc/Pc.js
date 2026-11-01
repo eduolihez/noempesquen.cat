@@ -214,7 +214,7 @@ export default function Pc() {
 						refInici={ refInici }
 						refRellotge={ refRellotge }
 					/>
-					{ estat.lupa && <AvisLupa /> }
+					<AvisLupa />
 				</div>
 				{ ambBloqueig && (
 					<Bloqueig sortint={ ! bloquejat } onFi={ amagaBloqueig } />

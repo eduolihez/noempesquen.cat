@@ -292,7 +292,7 @@ export default function Mobil() {
 									inerta={ centre }
 								/>
 							</div>
-							{ estat.lupa && <AvisLupa /> }
+							<AvisLupa />
 							<Banners
 								onObre={ obreNotificacio }
 								activa={ appPrimerPla }

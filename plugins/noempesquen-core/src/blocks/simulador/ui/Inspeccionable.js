@@ -2,9 +2,8 @@ import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../simulador/context';
 import { indicis } from '../nucli/motor';
-import { clauXip } from '../nucli/lupa';
+import { clauXip, potInspeccionar, textXip } from '../nucli/lupa';
 import { MS_XIP_LUPA } from '../nucli/temps';
-import { textXip } from './BotoLupa';
 import { separaEspais } from './espais';
 
 /**
@@ -58,7 +57,11 @@ export function Inspeccionable( { text, senyal, as: Tag = 'span' } ) {
 					.join( ' ' ) }
 				data-xip={ xip ? textXip( xip ) : undefined }
 				onClick={ () => {
-					setMeva( ( ultima?.clau ?? 0 ) + 1 );
+					// Si el motor ignorarà la inspecció, no reserva cap clau:
+					// la següent (d'un altre text) hi coincidiria.
+					if ( potInspeccionar( estat ) ) {
+						setMeva( ( ultima?.clau ?? 0 ) + 1 );
+					}
 					dispatch( {
 						tipus: 'INSPECCIONA',
 						senyal: senyal ?? null,

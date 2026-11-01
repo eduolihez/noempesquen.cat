@@ -2,30 +2,9 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../simulador/context';
 import { indicis } from '../nucli/motor';
-import { clauXip, textComptador } from '../nucli/lupa';
+import { clauXip, textComptador, textXip } from '../nucli/lupa';
 import { MS_XIP_LUPA } from '../nucli/temps';
 import { IconaFet, IconaLupa } from './icones';
-
-/**
- * Text del xip per a una clau de `clauXip()`.
- *
- * @param {string|null} clau Clau del xip.
- * @return {string} Text traduït (buit sense clau).
- */
-export function textXip( clau ) {
-	switch ( clau ) {
-		case 'nova':
-			return __( 'Pista trobada', 'noempesquen' );
-		case 'normal':
-			return __( 'Sembla normal', 'noempesquen' );
-		case 'repetida':
-			return __( 'Ja la tenies', 'noempesquen' );
-		case 'totes':
-			return __( 'Ja els tens tots', 'noempesquen' );
-		default:
-			return '';
-	}
-}
 
 /**
  * Etiqueta completa del botó: «Lupa, 2 de 5 indicis».
@@ -90,9 +69,7 @@ export function BotoLupa( { className = '', onClick, inerta, pista } ) {
 			) }
 			{ pista && (
 				<span className="nep-so-pista" aria-hidden="true">
-					{ ind.complet
-						? __( 'Has trobat tots els indicis', 'noempesquen' )
-						: __( 'Lupa (Alt+Maj+L)', 'noempesquen' ) }
+					{ __( 'Lupa (Alt+Maj+L)', 'noempesquen' ) }
 				</span>
 			) }
 		</button>
@@ -100,8 +77,11 @@ export function BotoLupa( { className = '', onClick, inerta, pista } ) {
 }
 
 /**
- * Regió `status` única de la lupa: llegeix el resultat de cada inspecció.
- * Muntar-la una sola vegada per sistema, només amb la lupa activa.
+ * Regió viva única de la lupa: llegeix el resultat de cada inspecció.
+ * Muntar-la una sola vegada per sistema i sempre (buida fins que hi ha
+ * text), perquè ja existeixi abans del primer anunci. Va amb `aria-live`
+ * i no amb `role="status"` per no sumar una regió `status` buida a les
+ * de les apps.
  */
 export function AvisLupa() {
 	const { missio, estat } = useJoc();
@@ -138,7 +118,11 @@ export function AvisLupa() {
 		}
 	}
 	return (
-		<p className="nep-so-sr" role="status">
+		<p
+			className="nep-so-sr nep-avis-lupa"
+			aria-live="polite"
+			aria-atomic="true"
+		>
 			{ text && <span key={ clau }>{ text }</span> }
 		</p>
 	);

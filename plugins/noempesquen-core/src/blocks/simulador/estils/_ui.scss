@@ -36,6 +36,7 @@
 
 		.nep-inspecciona {
 			cursor: inherit;
+			position: relative;
 			text-decoration: underline wavy $tok-ressalt-vora;
 			text-decoration-thickness: 1px;
 			text-underline-offset: 3px;
@@ -103,7 +104,8 @@
 		}
 	}
 
-	/* Xip breu després d'inspeccionar: marca el text i diu què era. */
+	/* Xip breu després d'inspeccionar: marca el text i diu què era. Va en
+	   absolut damunt del text perquè la línia no es mogui en sortir i marxar. */
 	.is-lupa .nep-inspecciona.is-xip {
 		background: $tok-ressalt-fons;
 		color: $tok-tinta;
@@ -111,23 +113,32 @@
 		&::after {
 			background: $tok-xip-fons;
 			border-radius: 999px;
+			bottom: calc(100% + 2px);
 			color: #fff;
 			content: attr(data-xip);
-			display: inline-block;
 			font-size: 0.75em;
 			font-weight: 600;
+			inset-inline-start: 0;
 			line-height: 1.5;
-			margin-inline-start: 0.4em;
 			padding: 0 0.6em;
 			pointer-events: none;
+			position: absolute;
 			text-decoration: none;
-			vertical-align: 0.1em;
+			transform-origin: bottom left;
 			white-space: nowrap;
+			z-index: 1;
 		}
 
 		&.is-xip-nova::after {
 			background: $tok-xip-nova;
 		}
+	}
+
+	/* Mòbil: ancorat a la dreta del text, que sempre és dins la pantalla. */
+	.nep-so-mobil.is-lupa .nep-inspecciona.is-xip::after {
+		inset-inline-end: 0;
+		inset-inline-start: auto;
+		transform-origin: bottom right;
 	}
 }
 
@@ -156,7 +167,7 @@
 }
 
 /* Tàctil: sense cursor de lupa; un halo breu marca el toc. */
-@media (hover: none), (pointer: coarse) {
+@media (hover: none) and (pointer: coarse) {
 
 	.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa,
 	.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa * {

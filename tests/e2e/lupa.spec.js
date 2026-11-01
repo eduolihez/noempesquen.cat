@@ -13,8 +13,10 @@ const BLOQUEIG_MOBIL = /Llisca cap amunt/;
 const barraTasques = ( page ) =>
 	page.getByRole( 'navigation', { name: 'Barra de tasques' } );
 const parla = ( page ) => page.getByRole( 'region', { name: 'Parla' } );
-const avisLupa = ( page ) =>
-	page.locator( '.nep-so p.nep-so-sr[role="status"]' );
+const avisLupa = ( page ) => page.locator( '.nep-so p.nep-avis-lupa' );
+// Regions vives (status o aria-live) per comprovar que no hi ha doble anunci.
+const regionsVives = ( page ) =>
+	page.locator( '.nep-so [role="status"], .nep-so [aria-live="polite"]' );
 
 // Amb el rellotge fals, l'animationend del bloqueig no arriba.
 test.use( { reducedMotion: 'reduce' } );
@@ -76,7 +78,7 @@ test.describe( 'lupa al PC', () => {
 		await expect( indici ).not.toHaveAttribute( 'data-xip' );
 		await expect( avisLupa( page ) ).toHaveText( 'Sembla normal' );
 		await expect(
-			page.getByRole( 'status' ).filter( {
+			regionsVives( page ).filter( {
 				hasText: 'Sembla normal',
 			} )
 		).toHaveCount( 1 );
