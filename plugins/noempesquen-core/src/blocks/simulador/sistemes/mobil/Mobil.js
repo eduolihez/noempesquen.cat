@@ -21,6 +21,7 @@ import { Inici } from './Inici';
 import { CentreControl } from './CentreControl';
 import { Banners } from './Banners';
 import { BarraNavegacio } from './BarraNavegacio';
+import { AvisLupa, BotoLupa } from '../../ui/BotoLupa';
 
 const URL_POSTA = 'https://posta.cat/';
 
@@ -282,6 +283,12 @@ export default function Mobil() {
 								onInici={ inici }
 								inerta={ centre }
 							/>
+							<BotoLupa
+								className="nep-so-mobil__lupa"
+								onClick={ () => dispatch( { tipus: 'LUPA' } ) }
+								inerta={ centre }
+							/>
+							{ estat.lupa && <AvisLupa /> }
 							<Banners
 								onObre={ obreNotificacio }
 								activa={ appPrimerPla }

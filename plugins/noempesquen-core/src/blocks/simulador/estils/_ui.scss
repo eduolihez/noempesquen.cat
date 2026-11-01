@@ -1,5 +1,6 @@
 /* Text inspeccionable i enllaços del cos dels missatges. */
 @use "tokens" as *;
+@use "moviment" as *;
 
 .nep-so {
 
@@ -56,5 +57,114 @@
 				text-decoration: none;
 			}
 		}
+	}
+}
+
+/* Lupa: cursor únic (PC i mòbil) amb el punt calent al centre de la lent. */
+.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa,
+.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa * {
+	cursor: $cursor-lupa 13 13, zoom-in;
+}
+
+.nep-so {
+
+	/* Botó de la lupa (barra del PC i peu del mòbil): etiqueta i comptador. */
+	.nep-boto-lupa {
+		align-items: center;
+		color: $tok-tinta;
+		display: inline-flex;
+		font-family: inherit;
+		gap: 6px;
+		line-height: 1;
+
+		&__nom {
+			font-size: 12px;
+			font-weight: 600;
+		}
+
+		&__comptador {
+			align-items: center;
+			background: rgb(0 0 0 / 8%);
+			border-radius: 999px;
+			display: inline-flex;
+			font-size: 12px;
+			font-variant-numeric: tabular-nums;
+			gap: 2px;
+			padding: 2px 6px;
+		}
+
+		&.is-activa .nep-boto-lupa__comptador {
+			background: rgb(255 255 255 / 22%);
+		}
+
+		&.is-complet .nep-boto-lupa__comptador {
+			background: $tok-verd-segur;
+			color: #fff;
+		}
+	}
+
+	/* Xip breu després d'inspeccionar: marca el text i diu què era. */
+	.is-lupa .nep-inspecciona.is-xip {
+		background: $tok-ressalt-fons;
+		color: $tok-tinta;
+
+		&::after {
+			background: $tok-xip-fons;
+			border-radius: 999px;
+			color: #fff;
+			content: attr(data-xip);
+			display: inline-block;
+			font-size: 0.75em;
+			font-weight: 600;
+			line-height: 1.5;
+			margin-inline-start: 0.4em;
+			padding: 0 0.6em;
+			pointer-events: none;
+			text-decoration: none;
+			vertical-align: 0.1em;
+			white-space: nowrap;
+		}
+
+		&.is-xip-nova::after {
+			background: $tok-xip-nova;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.nep-so .is-lupa .nep-inspecciona.is-xip::after {
+		animation: nep-xip-entra $t-normal $corba-entrada;
+	}
+
+	.nep-so .is-lupa .nep-inspecciona {
+		transition: box-shadow $t-lent ease-out;
+	}
+}
+
+@keyframes nep-xip-entra {
+
+	from {
+		opacity: 0;
+		transform: scale(0.85);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Tàctil: sense cursor de lupa; un halo breu marca el toc. */
+@media (hover: none), (pointer: coarse) {
+
+	.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa,
+	.nep-so :is(.nep-so-pc, .nep-so-mobil).is-lupa * {
+		cursor: auto;
+	}
+
+	.nep-so .is-lupa .nep-inspecciona:active {
+		box-shadow: 0 0 0 6px rgb(185 138 0 / 35%);
+		transition: none;
 	}
 }

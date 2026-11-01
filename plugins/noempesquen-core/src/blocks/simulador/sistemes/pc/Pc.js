@@ -19,6 +19,7 @@ import { BarraTasques } from './BarraTasques';
 import { MenuInici } from './MenuInici';
 import { CentreNotificacions } from './CentreNotificacions';
 import { Toasts } from './Notificacions';
+import { AvisLupa } from '../../ui/BotoLupa';
 
 const URL_POSTA = 'https://posta.cat/';
 
@@ -201,7 +202,6 @@ export default function Pc() {
 						panell={ panell }
 						onPanell={ alternaPanell }
 						onApp={ clicApp }
-						lupa={ estat.lupa }
 						onLupa={ () => {
 							setPanell( null );
 							dispatch( { tipus: 'LUPA' } );
@@ -214,6 +214,7 @@ export default function Pc() {
 						refInici={ refInici }
 						refRellotge={ refRellotge }
 					/>
+					{ estat.lupa && <AvisLupa /> }
 				</div>
 				{ ambBloqueig && (
 					<Bloqueig sortint={ ! bloquejat } onFi={ amagaBloqueig } />

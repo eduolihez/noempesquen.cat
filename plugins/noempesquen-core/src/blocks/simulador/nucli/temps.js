@@ -19,3 +19,4 @@ export const MS_AVIS_BASE = 4000;
 export const MS_AVIS_PER_CARACTER = 60;
 export const MS_AVIS_MAX = 9000;
 export const MS_SORTIDA = 120; // = $t-rapid (_moviment.scss)
+export const MS_XIP_LUPA = 1800; // xip «Pista trobada» / «Sembla normal»

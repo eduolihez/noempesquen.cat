@@ -109,6 +109,14 @@
 		width: 16px;
 	}
 
+	/* Lupa amb etiqueta i comptador: més ampla que la resta. */
+	.nep-so-barra__lupa {
+		border-color: rgb(0 0 0 / 12%);
+		min-width: max(40px, var(--so-tactil, 0px));
+		padding: 0 10px;
+		width: auto;
+	}
+
 	.nep-so-barra__lupa.is-activa {
 		background: var(--so-accent);
 		border-color: var(--so-accent);

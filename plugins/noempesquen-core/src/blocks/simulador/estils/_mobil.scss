@@ -3,7 +3,6 @@
 @use "mobil-bloqueig";
 @use "mobil-centre";
 
-$cursor-lupa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M19.5 19.5 28 28' stroke='%23fff' stroke-width='7'/%3E%3Cpath d='M19.5 19.5 28 28' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='13' cy='13' r='9' fill='%23fff' fill-opacity='.35' stroke='%23fff' stroke-width='5'/%3E%3Ccircle cx='13' cy='13' r='9' stroke='%231a1a1a' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E");
 
 .nep-so-mobil-fons {
 	align-items: center;
@@ -211,6 +210,28 @@ button.nep-so-m-estat {
 	}
 }
 
+/* Lupa sempre visible a la dreta de la navegació (lluny dels bàners). */
+.nep-so-mobil__lupa {
+	background: #fff;
+	border: 1px solid rgb(0 0 0 / 15%);
+	border-radius: 22px;
+	bottom: 2px;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+	cursor: pointer;
+	height: 44px;
+	justify-content: center;
+	min-width: 44px;
+	padding: 0 12px;
+	position: absolute;
+	right: 8px;
+
+	&.is-activa {
+		background: $tok-accent-mobil;
+		border-color: $tok-accent-mobil;
+		color: #fff;
+	}
+}
+
 /* Barra de navegació: botons de 48 × 48. */
 .nep-so-m-nav {
 	align-items: center;
@@ -254,10 +275,4 @@ button.nep-so-m-estat {
 .nep-so .nep-so-mobil .nep-so-m-centre:focus-visible {
 	box-shadow: none;
 	outline: none;
-}
-
-/* Lupa: cursor propi amb el punt calent al centre de la lent. */
-.nep-so .nep-so-mobil.is-lupa,
-.nep-so .nep-so-mobil.is-lupa * {
-	cursor: $cursor-lupa 13 13, zoom-in;
 }

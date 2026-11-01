@@ -5,11 +5,11 @@ import {
 	IconaBateria,
 	IconaCampana,
 	IconaCerca,
-	IconaLupa,
 	IconaVolum,
 	IconaWifi,
 	MarcaInici,
 } from '../../ui/icones';
+import { BotoLupa } from '../../ui/BotoLupa';
 import { DATA_CURTA, DATA_LLARGA } from './calendari';
 import { usePistaDescartable } from './usePista';
 
@@ -38,7 +38,6 @@ function etiquetaApp( nom, finestra, enfocada ) {
  * @param {?string}  props.panell      Panell obert ('inici' | 'notificacions').
  * @param {Function} props.onPanell    Alterna un panell.
  * @param {Function} props.onApp       Clic en una app fixada.
- * @param {boolean}  props.lupa        La lupa és activa.
  * @param {Function} props.onLupa      Alterna la lupa.
  * @param {string}   props.hora        Hora 'HH:MM'.
  * @param {number}   props.noLlegides  Notificacions sense llegir.
@@ -51,7 +50,6 @@ export function BarraTasques( {
 	panell,
 	onPanell,
 	onApp,
-	lupa,
 	onLupa,
 	hora,
 	noLlegides,
@@ -143,21 +141,11 @@ export function BarraTasques( {
 				} ) }
 			</div>
 			<div className="nep-so-barra__safata">
-				<button
-					type="button"
-					className={ `nep-so-barra__boto nep-so-barra__lupa${
-						lupa ? ' is-activa' : ''
-					}` }
-					aria-label={ __( 'Lupa', 'noempesquen' ) }
-					aria-pressed={ lupa }
-					aria-keyshortcuts="Alt+Shift+L"
+				<BotoLupa
+					className="nep-so-barra__boto nep-so-barra__lupa"
 					onClick={ onLupa }
-				>
-					<IconaLupa mida={ 18 } />
-					<span className="nep-so-pista" aria-hidden="true">
-						{ __( 'Lupa (Alt+Maj+L)', 'noempesquen' ) }
-					</span>
-				</button>
+					pista
+				/>
 				<span className="nep-so-barra__estat" aria-hidden="true">
 					<IconaWifi />
 					<IconaVolum />
