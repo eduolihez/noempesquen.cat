@@ -6,6 +6,7 @@ import {
 	llegeixSons,
 	EVENT_SONS,
 } from './preferencies.js';
+import { useJoc } from './context';
 
 const FOCALITZABLES = 'button:not([disabled])';
 
@@ -18,6 +19,7 @@ const FOCALITZABLES = 'button:not([disabled])';
  * @param {Function} props.onSurt     Surt al selector.
  */
 export function Pausa( { onContinua, onReinicia, onSurt } ) {
+	const { missio } = useJoc();
 	const dialeg = useRef( null );
 	const continua = useRef( null );
 	// Es llegeix en obrir la pausa; no es desa res del jugador.
@@ -126,12 +128,15 @@ export function Pausa( { onContinua, onReinicia, onSurt } ) {
 					>
 						{ __( 'Reinicia la missió', 'noempesquen' ) }
 					</button>
+					{ /* Saltar un tutorial torna al selector sense desar res. */ }
 					<button
 						type="button"
 						className="nep-so-boto"
 						onClick={ onSurt }
 					>
-						{ __( 'Surt', 'noempesquen' ) }
+						{ missio?.tutorial === true
+							? __( 'Salta el tutorial', 'noempesquen' )
+							: __( 'Surt', 'noempesquen' ) }
 					</button>
 				</div>
 			</div>

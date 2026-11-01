@@ -47,12 +47,15 @@ export default function Pc() {
 	const faseAnterior = useRef( estat.fase );
 	const bloquejat = estat.fase === FASE.BLOQUEIG;
 
+	// `app.obre` només quan l'obre el jugador (no el desbloqueig automàtic).
 	const obreApp = useCallback(
-		( app, dades ) => {
+		( app, dades, { automatica = false } = {} ) => {
 			if ( APPS[ app ] ) {
 				setPanell( null );
 				dispatchF( { tipus: 'OBRE', app, dades } );
-				emet( 'app.obre', { app } );
+				if ( ! automatica ) {
+					emet( 'app.obre', { app } );
+				}
 			}
 		},
 		[ emet ]
@@ -77,8 +80,10 @@ export default function Pc() {
 			setAmbBloqueig( true );
 		} else if ( anterior === FASE.BLOQUEIG ) {
 			const url = missio.apps?.navegador?.inici?.[ 0 ];
-			obreApp( 'navegador', url ? { url } : undefined );
-			obreApp( 'parla' );
+			obreApp( 'navegador', url ? { url } : undefined, {
+				automatica: true,
+			} );
+			obreApp( 'parla', undefined, { automatica: true } );
 		}
 	}, [ estat.fase, missio, obreApp ] );
 

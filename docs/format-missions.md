@@ -92,7 +92,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | Esdeveniment | Dades |
 | --- | --- |
 | `inici` | |
-| `app.obre` | `app` (en obrir una app; al mòbil no s'emet en desbloquejar) |
+| `app.obre` | `app` (en obrir una app; al mòbil no s'emet en desbloquejar; al PC tampoc s'emet en les obertures automàtiques del desbloqueig, només quan el jugador obre l'app) |
 | `missatge.obre` | `app`, `id` |
 | `enllac.obre` | `url` |
 | `web.carrega` | `url` |
@@ -173,7 +173,16 @@ Web neutra de contingut (receptes, el temps...) amb un logotip propi. Obligatori
 | `pescat` | |
 | `decideix` | `opcio` (id d'una opció de `decisio`) |
 
-El validador exigeix: `versio` 2, senyals referenciats existents (a correus, xats i `webs`, incloent camps de formulari i `domini_senyal`), efectes i esdeveniments coneguts, `decideix` cap a opcions existents, plantilles de web registrades, almenys una opció correcta i almenys un efecte `pescat`.
+El validador exigeix: `versio` 2, senyals referenciats existents (a correus, xats i `webs`, incloent camps de formulari i `domini_senyal`), efectes i esdeveniments coneguts, `decideix` cap a opcions existents, plantilles de web registrades, almenys una opció correcta i almenys un efecte `pescat` (excepte als tutorials).
+
+### Tutorials (`tutorial: true`)
+
+Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el sistema simulat i no puntua.
+
+- **Validació**: `tutorial` ha de ser booleà (`tutorial invàlid`). Si és `true`, `decisio.opcions` ha de tenir **una sola opció** i amb `valor: "correcta"` (p. ex. «Ja ho tinc clar», sense penalització possible); `senyals` ha de ser una llista, que pot ser buida (si el guió fa servir la lupa, hi ha d'haver almenys un senyal referenciat); no cal cap efecte `pescat`. Les missions normals es validen igual que abans.
+- **No puntua**: ni estrelles ni punts a la pantalla final («Ja estàs a punt» i, si n'hi ha, `tancament.consell`), ni estadístiques: el client no envia res a `POST /resultat` i el servidor rebutja un resultat d'un tutorial (400 `nep_missio_tutorial`).
+- **Progrés**: un tutorial fet es desa al mateix mapa del progrés (`{ id: 1 }`, local i al compte). L'1 no són estrelles, només vol dir «fet»; així la fusió per màxim i el progrés antic (sense la clau = no fet) funcionen sense canvis.
+- **Selector**: els tutorials surten primer, al grup «Tutorial» (el del dispositiu en ús abans). La primera vegada (cap tutorial fet i cap missió jugada) es recomana el tutorial del dispositiu («Comença per aquí»); després ja no. No compten al resum d'estrelles. Un tutorial fet mostra «Fet». Sempre es pot jugar qualsevol missió sense fer el tutorial, i a la pausa hi ha «Salta el tutorial».
 
 ## Mons compartits (`mon.json`)
 
