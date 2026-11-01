@@ -12,11 +12,11 @@
 	"intro": [
 		"Hola, Àlex! Sóc la Llissa. Avui no hi ha cap ham de veritat: et mostro com funciona aquest ordinador perquè després no se t'escapi res.",
 		"Ja has desbloquejat la pantalla i ets a l'escriptori. A baix tens la barra de tasques, amb les apps.",
-		"Prova-ho: obre el Navegador des de la barra de tasques i després tanca'l amb la creu de dalt a la dreta."
+		"Prova-ho: tanca el Navegador amb la creu de dalt a la dreta i torna'l a obrir des de la barra de tasques."
 	],
-	"instruccions": "Obre el Navegador des de la barra de tasques i tanca'l. Després t'enviaré un avís.",
+	"instruccions": "Tanca el Navegador amb la creu i torna'l a obrir des de la barra de tasques. Després t'enviaré un avís.",
 	"pistes": [
-		"Fes clic a la icona del Navegador, a la barra de tasques de baix.",
+		"Tanca el Navegador amb la creu i fes clic a la seva icona, a la barra de tasques de baix.",
 		"Quan t'arribi l'avís de la Llissa, fes-hi clic per obrir-lo. També pots obrir Parla des de la barra de tasques.",
 		"Obre Posta al Navegador i mira el correu de Premis Fantasia. Activa la lupa i fes clic al remitent.",
 		"Quan ho tinguis clar, fes clic a «Ja ho tinc clar»."
@@ -67,7 +67,7 @@
 			"efectes": [
 				{
 					"tipus": "guia-diu",
-					"text": "Molt bé! Les finestres es tanquen amb la creu de dalt a la dreta. Ara estigues atent: t'envio un avís."
+					"text": "Molt bé! Així es tanquen i s'obren les finestres. Ara estigues atent: t'envio un avís."
 				}
 			]
 		},

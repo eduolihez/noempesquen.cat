@@ -31,8 +31,12 @@ import remei02 from '../../../../missions/remei-02-canviat.json';
 import remei03 from '../../../../missions/remei-03-sorteig.json';
 import remei04 from '../../../../missions/remei-04-codi.json';
 import remei05 from '../../../../missions/remei-05-comprador.json';
+import tutorialMobil from '../../../../missions/tutorial-mobil.json';
+import tutorialPc from '../../../../missions/tutorial-pc.json';
 
 const INCLOSES = [
+	tutorialPc,
+	tutorialMobil,
 	llissa01,
 	llissa02,
 	llissa03,
