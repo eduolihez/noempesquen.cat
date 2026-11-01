@@ -1,0 +1,173 @@
+{
+	"id": "tutorial-pc",
+	"versio": 2,
+	"tutorial": true,
+	"titol": "Aprèn a jugar a l'ordinador",
+	"resum": "La Llissa t'ensenya a moure't per l'ordinador, obrir avisos, xatejar i fer servir la lupa.",
+	"dispositiu": "pc",
+	"personatge": "llissa",
+	"nivell": 1,
+	"durada_minuts": 3,
+	"rellotge": "10:00",
+	"intro": [
+		"Hola, Àlex! Sóc la Llissa. Avui no hi ha cap ham de veritat: et mostro com funciona aquest ordinador perquè després no se t'escapi res.",
+		"Ja has desbloquejat la pantalla i ets a l'escriptori. A baix tens la barra de tasques, amb les apps.",
+		"Prova-ho: obre el Navegador des de la barra de tasques i després tanca'l amb la creu de dalt a la dreta."
+	],
+	"instruccions": "Obre el Navegador des de la barra de tasques i tanca'l. Després t'enviaré un avís.",
+	"pistes": [
+		"Fes clic a la icona del Navegador, a la barra de tasques de baix.",
+		"Quan t'arribi l'avís de la Llissa, fes-hi clic per obrir-lo. També pots obrir Parla des de la barra de tasques.",
+		"Obre Posta al Navegador i mira el correu de Premis Fantasia. Activa la lupa i fes clic al remitent.",
+		"Quan ho tinguis clar, fes clic a «Ja ho tinc clar»."
+	],
+	"apps": {
+		"posta": {
+			"correus": [
+				{
+					"id": "c1",
+					"objectiu": true,
+					"ocult": true,
+					"carpeta": "entrada",
+					"llegit": false,
+					"data": "10:02",
+					"remitent": {
+						"nom": "Premis Fantasia",
+						"adreca": "guanyador@premis-fantasia.xyz",
+						"senyal": "remitent"
+					},
+					"assumpte": "Enhorabona! Has guanyat un iot",
+					"cos": [
+						[ { "t": "Hola, afortunat," } ],
+						[
+							{
+								"t": "Has guanyat un iot de luxe en un sorteig on no t'havies apuntat mai.",
+								"senyal": "premi"
+							}
+						],
+						[ { "t": "Atentament," } ],
+						[ { "t": "L'equip de Premis Fantasia" } ]
+					]
+				}
+			]
+		},
+		"navegador": { "inici": [ "https://posta.cat/" ] }
+	},
+	"webs": {
+		"posta.cat": {
+			"plantilla": "posta",
+			"https": true,
+			"titol": "Posta"
+		}
+	},
+	"disparadors": [
+		{
+			"id": "app-oberta",
+			"quan": { "esdeveniment": "app.obre", "app": "navegador" },
+			"efectes": [
+				{
+					"tipus": "guia-diu",
+					"text": "Molt bé! Les finestres es tanquen amb la creu de dalt a la dreta. Ara estigues atent: t'envio un avís."
+				}
+			]
+		},
+		{
+			"id": "avis-guia",
+			"quan": { "esdeveniment": "app.obre", "app": "navegador" },
+			"retard": 6,
+			"efectes": [
+				{ "tipus": "mostra", "id": "c1" },
+				{
+					"tipus": "notifica",
+					"app": "parla",
+					"titol": "Llissa",
+					"text": "Això és una notificació. Fes-hi clic per obrir-la."
+				}
+			]
+		},
+		{
+			"id": "parla-oberta",
+			"quan": {
+				"esdeveniment": "app.obre",
+				"app": "parla",
+				"visible": "c1"
+			},
+			"efectes": [
+				{
+					"tipus": "guia-diu",
+					"text": "Has obert la notificació i has arribat a Parla, on parlem tu i jo. Els botons de sota el xat són respostes ràpides: fes-hi clic per contestar-me."
+				}
+			]
+		},
+		{
+			"id": "arriba-correu",
+			"quan": {
+				"esdeveniment": "app.obre",
+				"app": "parla",
+				"visible": "c1"
+			},
+			"retard": 5,
+			"efectes": [
+				{
+					"tipus": "notifica",
+					"app": "posta",
+					"titol": "Premis Fantasia",
+					"text": "Enhorabona! Has guanyat un iot"
+				},
+				{
+					"tipus": "guia-diu",
+					"text": "T'acaba d'arribar un correu de mentida, fet expressament perquè practiquis. Obre Posta i activa la lupa."
+				}
+			]
+		},
+		{
+			"id": "lupa-activa",
+			"quan": { "esdeveniment": "lupa.activa" },
+			"efectes": [
+				{
+					"tipus": "guia-diu",
+					"text": "Lupa activada! Fes clic a les parts del correu que no et quadrin. Cada indici que trobis fa pujar el comptador «Indicis»."
+				}
+			]
+		}
+	],
+	"senyals": [
+		{
+			"id": "remitent",
+			"titol": "Un remitent absurd",
+			"explicacio": "«Premis Fantasia» des d'una adreça .xyz que no coneixes. Mira sempre qui t'escriu abans de creure't res.",
+			"reaccio": "Això mateix! Mira com ha pujat el comptador «Indicis». Queda'n un altre."
+		},
+		{
+			"id": "premi",
+			"titol": "Un premi que no has demanat",
+			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Un premi massa bo és l'esquer més vell del món.",
+			"reaccio": "Els has trobat tots. Quan ho tinguis clar, fes clic a «Ja ho tinc clar», a sota del xat."
+		}
+	],
+	"frases": {
+		"normal": [
+			"Això sembla normal. Prova en una altra part del correu.",
+			"Aquí no hi ha cap ham."
+		]
+	},
+	"decisio": {
+		"pregunta": "Què en fas, del correu de Premis Fantasia?",
+		"opcions": [
+			{
+				"id": "a",
+				"text": "Ja ho tinc clar: és un correu de mentida i no en faig cas.",
+				"valor": "correcta",
+				"resposta": "Perfecte. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions de veritat hi haurà més opcions, i no totes seran bones."
+			}
+		]
+	},
+	"tancament": {
+		"aprenentatges": [
+			"Les notificacions et porten a l'app que avisa.",
+			"A Parla contestes amb les respostes ràpides.",
+			"Amb la lupa marques els indicis i el comptador et diu quants en portes."
+		],
+		"consell": "Ja estàs a punt. Si alguna cosa et fa pressa o sembla massa bona, para i mira-la amb la lupa."
+	}
+}
