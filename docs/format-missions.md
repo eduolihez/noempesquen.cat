@@ -92,7 +92,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | Esdeveniment | Dades |
 | --- | --- |
 | `inici` | |
-| `app.obre` | `app` (en obrir una app; al mòbil no s'emet en desbloquejar) |
+| `app.obre` | `app` (en obrir una app; al mòbil no s'emet en desbloquejar; al PC tampoc s'emet en les obertures automàtiques del desbloqueig, només quan el jugador obre l'app) |
 | `missatge.obre` | `app`, `id` |
 | `enllac.obre` | `url` |
 | `web.carrega` | `url` |

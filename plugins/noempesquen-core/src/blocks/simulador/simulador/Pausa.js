@@ -128,23 +128,16 @@ export function Pausa( { onContinua, onReinicia, onSurt } ) {
 					>
 						{ __( 'Reinicia la missió', 'noempesquen' ) }
 					</button>
+					{ /* Saltar un tutorial torna al selector sense desar res. */ }
 					<button
 						type="button"
 						className="nep-so-boto"
 						onClick={ onSurt }
 					>
-						{ __( 'Surt', 'noempesquen' ) }
+						{ missio?.tutorial === true
+							? __( 'Salta el tutorial', 'noempesquen' )
+							: __( 'Surt', 'noempesquen' ) }
 					</button>
-					{ /* Saltar un tutorial torna al selector sense desar res. */ }
-					{ missio?.tutorial === true && (
-						<button
-							type="button"
-							className="nep-so-boto"
-							onClick={ onSurt }
-						>
-							{ __( 'Salta el tutorial', 'noempesquen' ) }
-						</button>
-					) }
 				</div>
 			</div>
 		</div>
