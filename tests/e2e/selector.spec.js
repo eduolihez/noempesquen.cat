@@ -75,13 +75,17 @@ test.describe( 'Selector de missions', () => {
 			? 'Per al teu mòbil'
 			: 'Per al teu ordinador';
 
-		// Sense progrés, la recomanada és la primera del dispositiu en ús.
-		expect( await idsDe( seccio( page, 'Continua per aquí' ) ) ).toEqual( [
-			propi[ 0 ],
+		// Sense progrés, la recomanada és el tutorial del dispositiu en ús; l'altre
+		// tutorial va a la seva secció i les missions hi són totes.
+		const tutorialPropi = isMobile ? 'tutorial-mobil' : 'tutorial-pc';
+		const tutorialAltre = isMobile ? 'tutorial-pc' : 'tutorial-mobil';
+		expect( await idsDe( seccio( page, 'Comença per aquí' ) ) ).toEqual( [
+			tutorialPropi,
 		] );
-		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual(
-			propi.slice( 1 )
-		);
+		expect( await idsDe( seccio( page, 'Tutorial' ) ) ).toEqual( [
+			tutorialAltre,
+		] );
+		expect( await idsDe( seccio( page, titolPropi ) ) ).toEqual( propi );
 		expect( await idsDe( seccio( page, 'Altres dispositius' ) ) ).toEqual(
 			altre
 		);
@@ -96,13 +100,18 @@ test.describe( 'Selector de missions', () => {
 			await selector( page )
 				.getByRole( 'heading', { level: 3 } )
 				.allTextContents()
-		).toEqual( [ 'Continua per aquí', titolPropi, 'Altres dispositius' ] );
+		).toEqual( [
+			'Comença per aquí',
+			'Tutorial',
+			titolPropi,
+			'Altres dispositius',
+		] );
 
-		// «Millor en horitzontal» només a les de PC vistes des d'un mòbil.
+		// «Millor en horitzontal» només a les de PC (i el tutorial de PC) vistes des d'un mòbil.
 		const horitzontal = selector( page ).getByText(
 			'Millor en horitzontal'
 		);
-		await expect( horitzontal ).toHaveCount( isMobile ? PC.length : 0 );
+		await expect( horitzontal ).toHaveCount( isMobile ? PC.length + 1 : 0 );
 	} );
 
 	test( 'la recomanada apareix una sola vegada', async ( { page } ) => {
