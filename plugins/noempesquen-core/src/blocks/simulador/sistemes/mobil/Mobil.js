@@ -277,17 +277,21 @@ export default function Mobil() {
 									/>
 								) ) }
 							</div>
-							<BarraNavegacio
-								aInici={ ! activa }
-								onEnrere={ enrere }
-								onInici={ inici }
-								inerta={ centre }
-							/>
-							<BotoLupa
-								className="nep-so-mobil__lupa"
-								onClick={ () => dispatch( { tipus: 'LUPA' } ) }
-								inerta={ centre }
-							/>
+							<div className="nep-so-mobil__peu">
+								<BarraNavegacio
+									aInici={ ! activa }
+									onEnrere={ enrere }
+									onInici={ inici }
+									inerta={ centre }
+								/>
+								<BotoLupa
+									className="nep-so-mobil__lupa"
+									onClick={ () =>
+										dispatch( { tipus: 'LUPA' } )
+									}
+									inerta={ centre }
+								/>
+							</div>
 							{ estat.lupa && <AvisLupa /> }
 							<Banners
 								onObre={ obreNotificacio }

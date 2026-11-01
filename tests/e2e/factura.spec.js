@@ -39,16 +39,22 @@ const filaTrampa = ( page ) =>
 		.getByRole( 'button', { name: /Llum Clara URGENT/ } );
 
 const lupa = ( page ) =>
-	barraTasques( page ).getByRole( 'button', { name: 'Lupa', exact: true } );
+	barraTasques( page ).getByRole( 'button', { name: /^Lupa/ } );
 
-/** Obre la missió des del selector i entra a l'escriptori. */
+/**
+ * Obre la missió des del selector i entra a l'escriptori.
+ * @param page
+ */
 async function entra( page ) {
 	await iniciaMissio( page, MISSIO, BLOQUEIG );
 	await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 	await expect( parla( page ) ).toBeVisible();
 }
 
-/** Salta la presentació i fa arribar el correu trampa (8 s de joc). */
+/**
+ * Salta la presentació i fa arribar el correu trampa (8 s de joc).
+ * @param page
+ */
 async function saltaIntroIEsperaCorreu( page ) {
 	await parla( page )
 		.getByRole( 'button', { name: 'Salta la presentació' } )
@@ -57,7 +63,10 @@ async function saltaIntroIEsperaCorreu( page ) {
 	await expect( filaTrampa( page ) ).toBeVisible();
 }
 
-/** Porta Posta al davant (Parla la tapa) i obre el correu trampa. */
+/**
+ * Porta Posta al davant (Parla la tapa) i obre el correu trampa.
+ * @param page
+ */
 async function obreCorreu( page ) {
 	await barraTasques( page )
 		.getByRole( 'button', { name: /^Navegador/ } )
@@ -76,11 +85,17 @@ async function mirantElCorreu( page ) {
 	await obreCorreu( page );
 }
 
-/** El focus és dins del simulador (no a la pàgina de darrere ni a <body>). */
+/**
+ * El focus és dins del simulador (no a la pàgina de darrere ni a <body>).
+ * @param page
+ */
 const focusDins = ( page ) =>
 	page.evaluate( () => !! document.activeElement?.closest( '.nep-so' ) );
 
-/** Espera la pantalla completa real i en surt com ho faria Esc o F11. */
+/**
+ * Espera la pantalla completa real i en surt com ho faria Esc o F11.
+ * @param page
+ */
 async function surtDePantallaCompleta( page ) {
 	await expect
 		.poll( () => page.evaluate( () => !! document.fullscreenElement ) )

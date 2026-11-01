@@ -39,7 +39,7 @@ const filaTrampa = ( page ) =>
 		.getByRole( 'button', { name: /Compte bloquejat/ } );
 
 const lupa = ( page ) =>
-	barraTasques( page ).getByRole( 'button', { name: 'Lupa', exact: true } );
+	barraTasques( page ).getByRole( 'button', { name: /^Lupa/ } );
 
 const rellotge = ( page ) =>
 	barraTasques( page ).getByRole( 'button', { name: /notificaci/ } );
@@ -56,7 +56,10 @@ async function entra( page ) {
 		.click();
 }
 
-/** Fa arribar el correu trampa (8 s de joc) i l'obre a Posta. */
+/**
+ * Fa arribar el correu trampa (8 s de joc) i l'obre a Posta.
+ * @param page
+ */
 async function obreCorreu( page ) {
 	await page.clock.runFor( 8000 );
 	await expect( filaTrampa( page ) ).toBeVisible();
@@ -74,7 +77,10 @@ async function mirantElCorreu( page ) {
 	await obreCorreu( page );
 }
 
-/** Obre la web falsa des de l'enllaç del correu. */
+/**
+ * Obre la web falsa des de l'enllaç del correu.
+ * @param page
+ */
 async function obreWebFalsa( page ) {
 	await page.getByRole( 'link', { name: 'Accedeix al teu banc' } ).click();
 	await expect( pestanya( page, WEB_FALSA ) ).toHaveAttribute(
@@ -86,14 +92,21 @@ async function obreWebFalsa( page ) {
 	).toBeVisible();
 }
 
-/** Escriu una adreça a la barra d'adreces de la pestanya activa. */
+/**
+ * Escriu una adreça a la barra d'adreces de la pestanya activa.
+ * @param page
+ * @param adreca
+ */
 async function vesA( page, adreca ) {
 	const barra = page.getByRole( 'textbox', { name: "Barra d'adreces" } );
 	await barra.fill( adreca );
 	await barra.press( 'Enter' );
 }
 
-/** Envia el pas 1 de la web falsa amb dades escrites a mà. */
+/**
+ * Envia el pas 1 de la web falsa amb dades escrites a mà.
+ * @param page
+ */
 async function enviaPas1( page ) {
 	for ( const [ camp, valor ] of Object.entries( ESCRITS ) ) {
 		await page.getByRole( 'textbox', { name: camp } ).fill( valor );

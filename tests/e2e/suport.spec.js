@@ -225,8 +225,7 @@ test.describe( 'Virus detectat!', () => {
 	} ) => {
 		await ambAvis( page );
 		const lupa = barraTasques( page ).getByRole( 'button', {
-			name: 'Lupa',
-			exact: true,
+			name: /^Lupa/,
 		} );
 		await lupa.click();
 		await expect( lupa ).toHaveAttribute( 'aria-pressed', 'true' );
@@ -286,8 +285,7 @@ test.describe( 'Virus detectat!', () => {
 		await page.keyboard.press( 'Alt+Shift+KeyL' );
 		await expect(
 			barraTasques( page ).getByRole( 'button', {
-				name: 'Lupa',
-				exact: true,
+				name: /^Lupa/,
 			} )
 		).toHaveAttribute( 'aria-pressed', 'true' );
 		expect( await focusDinsAvis( page ) ).toBe( true );

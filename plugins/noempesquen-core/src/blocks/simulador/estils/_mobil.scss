@@ -45,6 +45,7 @@
 
 	&__inici {
 		height: 100%;
+		overflow-y: auto; /* en horitzontal, no per sota del peu (lupa) */
 
 		&[hidden] {
 			display: none;
@@ -210,20 +211,43 @@ button.nep-so-m-estat {
 	}
 }
 
-/* Lupa sempre visible a la dreta de la navegació (lluny dels bàners). */
+/* Peu: navegació al centre i lupa sempre visible a la dreta (lluny dels
+   bàners, sense tapar «Enrere» ni «Inici»). */
+.nep-so-mobil__peu {
+	align-items: center;
+	background: rgb(0 0 0 / 35%);
+	display: grid;
+	flex: 0 0 auto;
+	grid-template-columns: minmax(0, 1fr) auto minmax(min-content, 1fr);
+
+	.nep-so-m-nav {
+		background: none;
+		grid-column: 2;
+	}
+}
+
 .nep-so-mobil__lupa {
 	background: #fff;
 	border: 1px solid rgb(0 0 0 / 15%);
 	border-radius: 22px;
-	bottom: 2px;
 	box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
 	cursor: pointer;
+	grid-column: 3;
 	height: 44px;
 	justify-content: center;
+	justify-self: end;
+	margin-inline: 8px;
 	min-width: 44px;
 	padding: 0 12px;
-	position: absolute;
-	right: 8px;
+
+	.nep-boto-lupa__nom {
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
 
 	&.is-activa {
 		background: $tok-accent-mobil;

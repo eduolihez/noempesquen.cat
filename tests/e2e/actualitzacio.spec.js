@@ -174,8 +174,7 @@ test.describe( 'Actualitza el navegador', () => {
 	} ) => {
 		await entra( page );
 		const lupa = barraTasques( page ).getByRole( 'button', {
-			name: 'Lupa',
-			exact: true,
+			name: /^Lupa/,
 		} );
 		await lupa.click();
 		await expect( lupa ).toHaveAttribute( 'aria-pressed', 'true' );
