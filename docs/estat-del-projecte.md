@@ -20,7 +20,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Fase 3 · entrega 3B | Cuentas opcionales con progreso en servidor (rol `nep_jugador`, consentimiento, borrado de datos) | **Hecho, mergeado, subido a `origin` y desplegado en producción (plugin, tema y `/compte/`)** (verificación final: lint:js 0 errores, lint:css ok, unit 755, PHPUnit 80 + integración, build ok, Playwright 284/0; plan `docs/superpowers/plans/2026-10-31-fase3b-comptes.md`) |
 | Pulido · corte A | Base de tiempos (`nucli/temps.js`, `avisos.js`), avisos escalonados con duración dinámica y salida animada, escala de capas y movimiento, tokens de color; hook `useCuaAvisos` | **Hecho en `master` (`84167ea`, 2026-11-01), sin desplegar** (lint, unit 781, build ok; Playwright 297 pasan y 1 falla ajena: `resum-estadistiques.spec.js:107` cuenta filas acumuladas en la BD de wp-env; plan `docs/superpowers/plans/2026-10-31-pulit-interficies-i-tutorial.md`) |
 | Pulido · corte B | Lupa replanteada: botón visible con contador «Indicis n/N», chip inline, cursor compartido, evento `lupa.activa` | **Hecho en `master` (`1245bf2`, 2026-11-01), sin desplegar** (lint, unit 792, build ok; Playwright 299 pasan y 1 falla ajena) |
-| Pulido · cortes C, E, D | Tutoriales PC y móvil, retardos de misiones en ms, pulido visual | Pendiente, en ese orden |
+| Pulido · corte C | Tutoriales `tutorial-pc` y `tutorial-mobil` (`tutorial: true`, sin puntuación, saltables, grupo «Tutorial» en el selector, «Fet» y «Ja estàs a punt») | **Hecho en `master` (8d0be97, 2026-11-02), sin desplegar** (lint, unit 816, build ok; Playwright 306 pasan, 0 fallos) |
+| Pulido · cortes E, D | Retardos de misiones en ms, pulido visual | Pendiente, en ese orden |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
