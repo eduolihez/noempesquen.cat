@@ -9,6 +9,7 @@ import {
 	opcioTriada,
 	visible,
 	afegeixGuia,
+	indicis,
 } from '../motor.js';
 
 const ruta = new URL(
@@ -145,25 +146,97 @@ describe( 'motor v2', () => {
 			senyal: 'urgencia',
 		} );
 		const punts = puntuacio( m, e ).punts;
+		const xat = e.xat.length;
 		e = aplica( e, { tipus: 'INSPECCIONA', senyal: 'urgencia' } );
 		expect( e.trobats ).toEqual( [ 'urgencia' ] );
 		expect( puntuacio( m, e ).punts ).toBe( punts );
-		expect( ultimGuia( e ).nota ).toBeUndefined();
+		// Repetida: ja no hi ha missatge de guia nou (la UI mostra un xip).
+		expect( e.xat ).toHaveLength( xat );
 	} );
 
-	it( 'inspeccionar res fa servir frases.normal en rotació', () => {
+	it( 'inspeccionar res és «normal»: sense missatge de guia nou i amb clau creixent', () => {
 		let e = finalIntro();
-		const textos = [];
+		const xat = e.xat.length;
+		const claus = [];
 		for ( let i = 0; i < 4; i++ ) {
 			e = aplica( e, { tipus: 'INSPECCIONA', senyal: null } );
-			textos.push( ultimGuia( e ).text );
+			claus.push( e.ultimaInspeccio.clau );
+			expect( e.ultimaInspeccio.tipus ).toBe( 'normal' );
 		}
-		expect( textos ).toEqual( [
-			...m.frases.normal,
-			m.frases.normal[ 0 ],
-		] );
+		expect( claus ).toEqual( [ 1, 2, 3, 4 ] );
+		expect( e.xat ).toHaveLength( xat );
 		expect( e.falsos ).toBe( 4 );
 		expect( e.trobats ).toEqual( [] );
+	} );
+
+	it( 'ultimaInspeccio distingeix nova i repetida i no guarda text', () => {
+		let e = aplica( finalIntro(), {
+			tipus: 'INSPECCIONA',
+			senyal: 'urgencia',
+		} );
+		expect( e.ultimaInspeccio ).toEqual( { clau: 1, tipus: 'nova' } );
+		const xat = e.xat.length;
+		e = aplica( e, { tipus: 'INSPECCIONA', senyal: 'urgencia' } );
+		expect( e.ultimaInspeccio ).toEqual( { clau: 2, tipus: 'repetida' } );
+		expect( e.xat ).toHaveLength( xat );
+		e = aplica( e, { tipus: 'INSPECCIONA', senyal: 'urgencia' } );
+		expect( e.ultimaInspeccio.clau ).toBe( 3 );
+	} );
+
+	it( 'indicis() compta 0, parcial i complet; sense senyals no trenca', () => {
+		let e = finalIntro();
+		expect( indicis( m, e ) ).toEqual( {
+			trobats: 0,
+			total: 7,
+			complet: false,
+		} );
+		e = aplica( e, { tipus: 'INSPECCIONA', senyal: 'urgencia' } );
+		expect( indicis( m, e ) ).toMatchObject( {
+			trobats: 1,
+			complet: false,
+		} );
+		for ( const s of m.senyals ) {
+			e = aplica( e, { tipus: 'INSPECCIONA', senyal: s.id } );
+		}
+		expect( indicis( m, e ) ).toEqual( {
+			trobats: 7,
+			total: 7,
+			complet: true,
+		} );
+		expect( indicis( { senyals: [] }, e ) ).toEqual( {
+			trobats: 7,
+			total: 0,
+			complet: false,
+		} );
+		expect( indicis( {}, estatInicial( {} ) ) ).toEqual( {
+			trobats: 0,
+			total: 0,
+			complet: false,
+		} );
+	} );
+
+	it( 'lupa.activa es dispara només el primer cop que s’encén la lupa', () => {
+		const mis = {
+			...m,
+			disparadors: [
+				{
+					id: 'tut-lupa',
+					quan: { esdeveniment: 'lupa.activa' },
+					efectes: [ { tipus: 'guia-diu', text: 'Lupa!' } ],
+				},
+			],
+		};
+		const ap = ( e, a ) => reductor( mis, e, a );
+		let e = ap( ap( estatInicial( mis ), { tipus: 'DESBLOQUEJA' } ), {
+			tipus: 'LUPA',
+		} );
+		const dita = ( x ) =>
+			x.xat.filter( ( q ) => q.text === 'Lupa!' ).length;
+		expect( e.lupaUsada ).toBe( true );
+		expect( dita( e ) ).toBe( 1 );
+		e = ap( ap( e, { tipus: 'LUPA' } ), { tipus: 'LUPA' } );
+		expect( e.lupa ).toBe( true );
+		expect( dita( e ) ).toBe( 1 );
 	} );
 
 	it( "la lupa no s'activa en pausa ni fora de joc", () => {

@@ -17,7 +17,7 @@ Cada missió és un fitxer JSON a `plugins/noempesquen-core/missions/`. El simul
 | `instruccions` | text | Recordatori breu de què cal fer |
 | `missatges` | Missatge[] | Correus o SMS que apareixen a l'aplicació |
 | `senyals` | Senyal[] | Indicis d'engany que es poden descobrir amb la lupa |
-| `frases` | objecte | `normal`: reaccions quan s'inspecciona una cosa que no és sospitosa; `esquer`: què diu el personatge si piques l'enllaç |
+| `frases` | objecte | `normal`: reservat (la lupa ja no el mostra: la UI diu «no és un senyal» amb un xip); `esquer`: què diu el personatge si piques l'enllaç |
 | `decisio` | objecte | Pregunta final i opcions |
 | `tancament` | objecte | `aprenentatges` (text[]) i `consell` (text) per a la pantalla de resultat |
 
@@ -111,6 +111,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `telefon.truca` | `url` (el jugador prem «Truca ara» o el telèfon d'una web falsa) |
 | `descarrega.fes` | `url`, `fitxer` (obre o executa el fitxer descarregat fictici; al filtre `quan`, `fitxer` és obligatori) |
 | `avis.apareix` | `url` (l'avís d'una web `article` es mostra; un sol cop per web i partida) |
+| `lupa.activa` | (sense dades) El jugador encén la lupa per primer cop a la partida; un sol cop per partida |
 
 `telefon.truca`, `descarrega.fes` i `avis.apareix` no porten mai text escrit pel jugador. Al filtre `quan`, la seva `url` (host o URL, amb la mateixa normalització de `www.`) ha de ser una web `article` de la missió: amb `avis` per a `telefon.truca` i `avis.apareix`, i amb `avis.instal_la` o `barra` per a `descarrega.fes`.
 

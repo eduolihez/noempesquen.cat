@@ -89,6 +89,10 @@ export function estatInicial( missio ) {
 		introPas: 0,
 		introAcabada: false,
 		lupa: false,
+		lupaUsada: false,
+		// Resultat de l'última inspecció (mai text del jugador): `clau` puja a
+		// cada inspecció perquè la UI mostri el xip encara que el tipus es repeteixi.
+		ultimaInspeccio: { clau: 0, tipus: null },
 		trobats: [],
 		falsos: 0,
 		pescat: false,
@@ -223,25 +227,44 @@ function resposta( missio, estat, id ) {
 	return id === 'decidir' ? obreDecisio( missio, estat ) : estat;
 }
 
+/**
+ * Comptador d'indicis de la missió.
+ *
+ * @param {Object} missio Missió (pot no tenir senyals).
+ * @param {Object} estat  Estat actual.
+ * @return {{trobats:number,total:number,complet:boolean}} Comptador.
+ */
+export function indicis( missio, estat ) {
+	const total = missio?.senyals?.length ?? 0;
+	const trobats = estat?.trobats?.length ?? 0;
+	return { trobats, total, complet: trobats === total && total > 0 };
+}
+
+function amb( estat, tipus ) {
+	return {
+		...estat,
+		ultimaInspeccio: {
+			clau: ( estat.ultimaInspeccio?.clau ?? 0 ) + 1,
+			tipus,
+		},
+	};
+}
+
 function inspecciona( missio, estat, idSenyal ) {
 	if ( estat.fase !== FASE.JOC || estat.pausa ) {
 		return estat;
 	}
-	const senyal = missio.senyals.find( ( s ) => s.id === idSenyal );
+	const senyal = missio.senyals?.find( ( s ) => s.id === idSenyal );
 	if ( ! senyal ) {
-		const frases = missio.frases?.normal ?? [];
-		const text = frases.length
-			? frases[ estat.falsos % frases.length ]
-			: '';
-		const e = { ...estat, falsos: estat.falsos + 1 };
-		return text ? afegeixGuia( e, text ) : e;
+		return amb( { ...estat, falsos: estat.falsos + 1 }, 'normal' );
 	}
 	if ( estat.trobats.includes( senyal.id ) ) {
-		return afegeixGuia( estat, senyal.reaccio );
+		return amb( estat, 'repetida' );
 	}
 	const trobats = [ ...estat.trobats, senyal.id ];
+	const nou = { ...estat, trobats, ultimAvanc: estat.temps };
 	return afegeixGuia(
-		{ ...estat, trobats, ultimAvanc: estat.temps },
+		amb( nou, 'nova' ),
 		senyal.reaccio,
 		`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
 	);
@@ -312,10 +335,21 @@ export function reductor( missio, estat, accio ) {
 		case 'RESPOSTA':
 			return resposta( missio, estat, accio.id );
 
-		case 'LUPA':
-			return estat.fase === FASE.JOC && ! estat.pausa
-				? { ...estat, lupa: ! estat.lupa }
-				: estat;
+		case 'LUPA': {
+			if ( estat.fase !== FASE.JOC || estat.pausa ) {
+				return estat;
+			}
+			const nou = { ...estat, lupa: ! estat.lupa };
+			// Primera vegada per partida: avisa missions i tutorials.
+			return nou.lupa && ! estat.lupaUsada
+				? processaEsdeveniment(
+						missio,
+						{ ...nou, lupaUsada: true },
+						'lupa.activa',
+						{}
+					)
+				: nou;
+		}
 
 		case 'INSPECCIONA':
 			return inspecciona( missio, estat, accio.senyal );

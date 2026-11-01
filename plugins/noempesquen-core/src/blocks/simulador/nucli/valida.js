@@ -65,6 +65,7 @@ export const ESDEVENIMENTS = [
 	'telefon.truca',
 	'descarrega.fes',
 	'avis.apareix',
+	'lupa.activa',
 ];
 
 /**
