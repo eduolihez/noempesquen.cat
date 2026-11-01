@@ -352,7 +352,8 @@ function validaDisparadors( m, mon, errors ) {
 			}
 		} );
 	} );
-	if ( ! hiHaPescat ) {
+	// Un tutorial no té cap camí de pescat: només ensenya a fer servir el sistema.
+	if ( ! hiHaPescat && m.tutorial !== true ) {
 		errors.push( 'cap camí de pescat' );
 	}
 }
@@ -1017,6 +1018,34 @@ function validaDisparadorsArticle( m, errors ) {
 }
 
 /**
+ * Missió tutorial (`tutorial: true`): no puntua. Una sola opció de decisió,
+ * correcta (sense penalització possible), i `senyals` com a llista (pot ser
+ * buida). Les missions normals no canvien.
+ *
+ * @param {Object}   m      Missió.
+ * @param {Array}    valors Valors de les opcions de la decisió.
+ * @param {string[]} errors Llista on s'afegeixen els errors.
+ */
+function validaTutorial( m, valors, errors ) {
+	if ( m.tutorial === undefined ) {
+		return;
+	}
+	if ( typeof m.tutorial !== 'boolean' ) {
+		errors.push( 'tutorial invàlid' );
+		return;
+	}
+	if ( ! m.tutorial ) {
+		return;
+	}
+	if ( valors.length !== 1 || valors[ 0 ] !== 'correcta' ) {
+		errors.push( 'tutorial: cal una sola opció correcta' );
+	}
+	if ( ! Array.isArray( m.senyals ) ) {
+		errors.push( 'tutorial: senyals ha de ser una llista' );
+	}
+}
+
+/**
  * Valida una missió v2.
  *
  * @param {Object}  m   Missió a validar.
@@ -1171,5 +1200,6 @@ export function validaMissio( m, mon ) {
 	if ( ! valors.includes( 'correcta' ) ) {
 		errors.push( 'cap opció correcta' );
 	}
+	validaTutorial( m, valors, errors );
 	return errors;
 }

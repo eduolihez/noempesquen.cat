@@ -13,7 +13,8 @@ import { opcioTriada } from '../nucli/motor.js';
  * @return {?{missio: string, estrelles: number, decisio: (string|undefined)}} Cos.
  */
 export function construeixResultat( missio, estat, puntuacio ) {
-	if ( ! missio || missio.previsualitzacio ) {
+	// Ni previsualitzacions ni tutorials: un tutorial no puntua ni compta.
+	if ( ! missio || missio.previsualitzacio || missio.tutorial === true ) {
 		return null;
 	}
 	const cos = { missio: missio.id, estrelles: puntuacio.estrelles };

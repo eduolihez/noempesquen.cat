@@ -4,7 +4,7 @@
  */
 import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { agrupaMissions } from '../nucli/selector';
+import { agrupaMissions, tutorialFet } from '../nucli/selector';
 import { PERSONATGES } from '../ui/avatars';
 import { Estrella, Glif } from '../ui/icones';
 
@@ -68,6 +68,7 @@ function Targeta( { missio, estrelles, horitzontal, destacada, onTria } ) {
 	const infoId = `nep-sel-${ missio.id }-info`;
 	const esMobil = missio.dispositiu === 'mobil';
 	const IconaDispositiu = esMobil ? IconaMobil : IconaOrdinador;
+	const esTutorial = missio.tutorial === true;
 	let accio = __( 'Torna-hi', 'noempesquen' );
 	if ( ! estrelles ) {
 		accio = __( 'Comença', 'noempesquen' );
@@ -124,7 +125,15 @@ function Targeta( { missio, estrelles, horitzontal, destacada, onTria } ) {
 							{ __( 'Millor en horitzontal', 'noempesquen' ) }
 						</span>
 					) }
-					<Estrelles estrelles={ estrelles } />
+					{ esTutorial ? (
+						estrelles > 0 && (
+							<span className="nep-sel-xip">
+								{ __( 'Fet', 'noempesquen' ) }
+							</span>
+						)
+					) : (
+						<Estrelles estrelles={ estrelles } />
+					) }
 				</span>
 				<span className="nep-sel-targeta__accio" aria-hidden="true">
 					{ accio }
@@ -155,7 +164,7 @@ function Seccio( { id, titol, missions, pinta } ) {
 
 export function Selector( { missions, progres, preferit, onTria, enfoca } ) {
 	const arrel = useRef( null );
-	const { recomanada, principals, altres, resum } = useMemo(
+	const { recomanada, tutorials, principals, altres, resum } = useMemo(
 		() => agrupaMissions( missions, preferit, progres ),
 		[ missions, preferit, progres ]
 	);
@@ -182,7 +191,11 @@ export function Selector( { missions, progres, preferit, onTria, enfoca } ) {
 	const pinta = ( m, destacada = false ) => (
 		<Targeta
 			missio={ m }
-			estrelles={ estrellesDe( progres, m.id ) }
+			estrelles={
+				m.tutorial === true
+					? Number( tutorialFet( progres, m.id ) )
+					: estrellesDe( progres, m.id )
+			}
 			horitzontal={ preferit === 'mobil' && m.dispositiu === 'pc' }
 			destacada={ destacada }
 			onTria={ onTria }
@@ -223,12 +236,20 @@ export function Selector( { missions, progres, preferit, onTria, enfoca } ) {
 					aria-labelledby="nep-sel-continua"
 				>
 					<h3 id="nep-sel-continua" className="nep-sel-seccio__titol">
-						{ __( 'Continua per aquí', 'noempesquen' ) }
+						{ recomanada.tutorial === true
+							? __( 'Comença per aquí', 'noempesquen' )
+							: __( 'Continua per aquí', 'noempesquen' ) }
 					</h3>
 					{ pinta( recomanada, true ) }
 				</div>
 			) }
 
+			<Seccio
+				id="nep-sel-tutorials"
+				titol={ __( 'Tutorial', 'noempesquen' ) }
+				missions={ sense( tutorials ) }
+				pinta={ pinta }
+			/>
 			<Seccio
 				id="nep-sel-principals"
 				titol={

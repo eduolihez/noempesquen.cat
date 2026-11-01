@@ -737,7 +737,11 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 	if ( ! isset( $missions[ $id ] ) ) {
 		return new WP_Error( 'nep_missio_desconeguda', __( 'Missió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );
 	}
-	$guio    = $missions[ $id ];
+	$guio = $missions[ $id ];
+	// Un tutorial no puntua ni entra a les estadístiques.
+	if ( ! empty( $guio['tutorial'] ) ) {
+		return new WP_Error( 'nep_missio_tutorial', __( 'Els tutorials no tenen resultat.', 'noempesquen' ), array( 'status' => 400 ) );
+	}
 	$decisio = isset( $request['decisio'] ) ? (string) $request['decisio'] : '';
 	if ( '' !== $decisio && ! in_array( $decisio, nep_ids_opcions( $guio ), true ) ) {
 		return new WP_Error( 'nep_decisio_desconeguda', __( 'Decisió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );

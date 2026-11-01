@@ -160,6 +160,58 @@ export function Resultat( { onReinicia, onSeguent, onSurt, resum } ) {
 		titol.current?.focus();
 	}, [] );
 
+	// Un tutorial no puntua: ni estrelles, ni punts, ni «torna-ho a provar».
+	if ( missio.tutorial === true ) {
+		return (
+			<section className="nep-res" aria-labelledby="nep-res-titol">
+				<header className="nep-res__mar">
+					<div className="nep-res__cap">
+						<div className="nep-res__marcador">
+							<h2
+								id="nep-res-titol"
+								ref={ titol }
+								className="nep-res__titol"
+								tabIndex={ -1 }
+							>
+								{ missio.titol }
+							</h2>
+						</div>
+						<div className="nep-res__guia">
+							<div className="nep-res__avatar">
+								<Avatar estat="contenta" mida={ 120 } />
+							</div>
+							<p className="nep-res__veredicte">
+								<span className="nep-res__qui">
+									{ nomGuia }
+								</span>
+								{ __( 'Ja estàs a punt.', 'noempesquen' ) }
+							</p>
+						</div>
+					</div>
+				</header>
+				{ !! missio.tancament?.consell && (
+					<div className="nep-res__cos">
+						<div className="nep-res__consell">
+							<span className="nep-res__salvavides">
+								<IconaSalvavides mida={ 28 } />
+							</span>
+							<p>{ missio.tancament.consell }</p>
+						</div>
+					</div>
+				) }
+				<div className="nep-res__accions">
+					<button
+						type="button"
+						className="nep-res__boto nep-res__boto--principal"
+						onClick={ onSurt }
+					>
+						{ __( 'Juga una missió', 'noempesquen' ) }
+					</button>
+				</div>
+			</section>
+		);
+	}
+
 	return (
 		<section
 			className={ `nep-res${ caigut ? ' nep-res--caigut' : '' }` }

@@ -102,7 +102,9 @@ export function Consequencia( { onResultat } ) {
 					className="nep-cons__boto"
 					onClick={ onResultat }
 				>
-					{ __( 'Veure el resultat', 'noempesquen' ) }
+					{ missio.tutorial === true
+						? __( 'Continua', 'noempesquen' )
+						: __( 'Veure el resultat', 'noempesquen' ) }
 				</button>
 			</div>
 		</div>

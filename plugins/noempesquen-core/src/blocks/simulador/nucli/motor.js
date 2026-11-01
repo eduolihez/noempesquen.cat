@@ -446,6 +446,10 @@ function senyalDisponible( estat, senyal ) {
 }
 
 export function puntuacio( missio, estat ) {
+	// Un tutorial no puntua: l'1 només marca el progrés com a «fet».
+	if ( missio.tutorial === true ) {
+		return { punts: 0, maxim: 0, estrelles: 1 };
+	}
 	const disponibles = missio.senyals.filter( ( s ) =>
 		senyalDisponible( estat, s )
 	);
