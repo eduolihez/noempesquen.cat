@@ -75,7 +75,7 @@ async function entra( page, isMobile ) {
 	await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
 }
 
-const avis = ( page ) => page.locator( '.nep-so [aria-live="polite"]' );
+const avis = ( page ) => page.locator( '.nep-so [aria-live="polite"]:not(.nep-avis-lupa)' );
 const TRAMPA = { escriptori: /URGENT/, mobil: /paquet/i };
 
 test.describe( 'So de les notificacions', () => {
