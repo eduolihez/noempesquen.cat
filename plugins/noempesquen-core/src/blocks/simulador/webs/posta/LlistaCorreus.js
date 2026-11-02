@@ -145,7 +145,11 @@ export function LlistaCorreus( {
 	onMarca,
 } ) {
 	return (
-		<section className="nep-posta-safata" aria-label={ titol }>
+		<section
+			className="nep-posta-safata"
+			aria-label={ titol }
+			data-tut="llista-correus"
+		>
 			<div className="nep-posta-safata__barra">
 				<h2 className="nep-posta-safata__titol" tabIndex={ -1 }>
 					{ titol }

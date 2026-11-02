@@ -158,7 +158,10 @@ export default function Pc() {
 
 	return (
 		<SistemaContext.Provider value={ sistema }>
-			<div className={ `nep-so-pc${ estat.lupa ? ' is-lupa' : '' }` }>
+			<div
+				className={ `nep-so-pc${ estat.lupa ? ' is-lupa' : '' }` }
+				data-tut="pantalla"
+			>
 				<div
 					className="nep-so-pc__sessio"
 					inert={ bloquejat ? '' : undefined }

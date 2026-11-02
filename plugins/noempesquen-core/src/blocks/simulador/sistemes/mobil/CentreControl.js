@@ -53,6 +53,7 @@ export function CentreControl( { onTanca, onObre, origen } ) {
 			<div
 				ref={ panell }
 				className="nep-so-m-centre"
+				data-tut="centre-control"
 				role="dialog"
 				aria-modal="true"
 				aria-label={ __( 'Centre de control', 'noempesquen' ) }

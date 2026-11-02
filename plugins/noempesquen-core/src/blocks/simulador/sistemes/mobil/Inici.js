@@ -5,6 +5,12 @@ import { DATA_LLARGA } from '../pc/calendari';
 /* Apps del dock, en ordre; la resta va a la quadrícula en l'ordre del registre. */
 const DOCK = [ 'missatges', 'navegador' ];
 
+/* Àncores del tutorial (`data-tut`) de les apps de l'inici. */
+const TUT_APP = {
+	missatges: 'app-missatges',
+	parla: 'app-parla-mobil',
+};
+
 function BotoApp( { id, onObre } ) {
 	const { nom, Icona } = APPS_MOBIL[ id ];
 	return (
@@ -12,6 +18,7 @@ function BotoApp( { id, onObre } ) {
 			<button
 				type="button"
 				className="nep-so-m-app"
+				data-tut={ TUT_APP[ id ] }
 				onClick={ () => onObre( id ) }
 			>
 				<span className="nep-so-m-app__icona" aria-hidden="true">
@@ -51,6 +58,7 @@ export function Inici( { hora, onObre } ) {
 			</ul>
 			<ul
 				className="nep-so-m-inici__dock"
+				data-tut="dock"
 				aria-label={ __( 'Apps preferides', 'noempesquen' ) }
 			>
 				{ dock.map( ( id ) => (

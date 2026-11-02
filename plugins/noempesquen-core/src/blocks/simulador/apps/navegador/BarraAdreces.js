@@ -178,7 +178,7 @@ export function BarraAdreces( { url, info, onNavega, refInput } ) {
 	);
 
 	return (
-		<div className="nep-nav-adreca">
+		<div className="nep-nav-adreca" data-tut="adreca">
 			{ info.tipus === 'nova' || info.tipus === 'cerca' ? (
 				<span className="nep-nav-adreca__lupa">
 					<IconaCercaNav mida={ 16 } />

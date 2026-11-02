@@ -137,6 +137,7 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 			className={ `nep-so-toast nep-so-notif${
 				sortint ? ' is-sortint' : ''
 			}` }
+			data-tut="avis"
 			inert={ sortint ? '' : undefined }
 			{ ...handlers }
 		>

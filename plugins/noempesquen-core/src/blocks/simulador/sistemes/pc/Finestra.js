@@ -27,6 +27,12 @@ const REF_ALCADA = 760;
 const VISIBLE_MINIM = 120;
 const ALCADA_BARRA = 32;
 
+/* Àncores del tutorial (`data-tut`) de les finestres. */
+const TUT_FINESTRA = {
+	navegador: 'finestra-navegador',
+	parla: 'finestra-parla',
+};
+
 /**
  * Posició inicial en cascada a partir de l'origen que centraria la
  * finestra de referència, sense sortir de l'escriptori.
@@ -201,6 +207,7 @@ export function Finestra( {
 			ref={ arrel }
 			className={ classes }
 			aria-label={ titol }
+			data-tut={ TUT_FINESTRA[ finestra.app ] }
 			style={ {
 				zIndex: finestra.z,
 				left: maximitzada ? undefined : pos?.x,
@@ -233,7 +240,10 @@ export function Finestra( {
 					<Icona mida={ 16 } />
 				</span>
 				<span className="nep-so-finestra__titol">{ titol }</span>
-				<div className="nep-so-finestra__controls">
+				<div
+					className="nep-so-finestra__controls"
+					data-tut="botons-finestra"
+				>
 					<button
 						type="button"
 						className="nep-so-finestra__control"

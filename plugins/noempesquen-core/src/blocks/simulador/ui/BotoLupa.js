@@ -54,6 +54,7 @@ export function BotoLupa( { className = '', onClick, inerta, pista } ) {
 			aria-label={ etiqueta( ind ) }
 			aria-pressed={ estat.lupa }
 			aria-keyshortcuts="Alt+Shift+L"
+			data-tut="lupa"
 			inert={ inerta ? '' : undefined }
 			onClick={ onClick }
 		>

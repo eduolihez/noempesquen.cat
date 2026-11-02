@@ -203,7 +203,7 @@ export function Conversa( {
 	};
 
 	return (
-		<div className="nep-parla-conversa">
+		<div className="nep-parla-conversa" data-tut="conversa">
 			<div className="nep-parla-conversa__cap">
 				{ onEnrere && (
 					<button
@@ -263,6 +263,7 @@ export function Conversa( {
 				<div
 					ref={ registre }
 					className="nep-parla-missatges"
+					data-tut="parla-xat"
 					role="log"
 					aria-live="off"
 					aria-label={ sprintf(

@@ -211,7 +211,7 @@ export function Fil( {
 	};
 
 	return (
-		<div className="nep-missatges-fil">
+		<div className="nep-missatges-fil" data-tut="conversa">
 			<header className="nep-missatges__cap">
 				<button
 					type="button"
