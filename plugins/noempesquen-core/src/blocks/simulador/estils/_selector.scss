@@ -1,31 +1,22 @@
 /*
- * Selector de missions. És fora del sistema simulat: fa servir la marca del
- * joc (mar, escuma i or), com l'informe de la missió. Un sol moment fort,
- * la targeta «Continua per aquí»; la resta, net i llegible.
+ * Selector de missions: port amb un vaixell per dispositiu i, en triar-ne un,
+ * el mapa de la seva ruta damunt de l'escena ampliada. És fora del sistema
+ * simulat: fa servir la marca del joc (mar, escuma i or).
  */
 @use "tokens" as *;
 
 .nep-selector {
 	--sel-tinta: var(--nep-text, #14213d);
 	--sel-suau: #3a4661;
-	--sel-mar: var(--nep-mar, #0b5e7a);
-	--sel-mar-fosc: #084a61;
-	--sel-escuma: var(--nep-escuma, #ddeff2);
-	--sel-or: #f2b705;
-
-	/* Or clar sobre la franja de mar: 5,13:1 contra #0b5e7a. */
-	--sel-or-clar: #ffd54a;
+	--sel-linia: #0b1e3f;
+	--sel-or: #ffd54a;
 	--sel-anell: #12355b;
-	--sel-or-tinta: #8a6700;
-	--sel-filet: rgb(20 33 61 / 14%);
-	--sel-accent: var(--sel-mar);
 	--sel-display: var(--wp--preset--font-family--rotulacio, "Bahnschrift"), "DIN Alternate", "Avenir Next Condensed", "Roboto Condensed", system-ui, sans-serif;
 
 	color: var(--sel-tinta);
-	container-type: inline-size;
 	display: flex;
 	flex-direction: column;
-	gap: 2rem;
+	gap: 1.25rem;
 	min-width: 0;
 
 	&__cap {
@@ -98,342 +89,200 @@
 	}
 }
 
-/* Seccions */
-.nep-sel-seccio {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75rem;
-	min-width: 0;
-
-	h3.nep-sel-seccio__titol {
-		align-items: center;
-		color: var(--sel-suau);
-		display: flex;
-		font-family: var(--sel-display);
-		font-size: 0.95rem;
-		font-weight: 700;
-		gap: 0.75rem;
-		letter-spacing: 0.08em;
-		margin: 0;
-		text-transform: uppercase;
-
-		&::after {
-			background: var(--sel-filet);
-			content: "";
-			flex: 1;
-			height: 1px;
-		}
-	}
-}
-
-.nep-sel-seccio__compte {
-	background: var(--sel-escuma);
-	border-radius: 999px;
-	color: var(--sel-mar-fosc);
-	font-size: 0.8rem;
-	font-variant-numeric: tabular-nums;
-	letter-spacing: 0;
-	line-height: 1;
-	order: 1;
-	padding: 0.25rem 0.5rem;
-}
-
-.nep-sel-graella {
+/* Port: l'escena i, germana seva, la capa del mapa (fora del marc que fa el
+   zoom, perquè el mapa no s'escali). Totes dues a la mateixa cel·la: si el
+   mapa és més alt que l'escena, el que sobra és mar. */
+.nep-sel-port {
+	background: #0b5e7a;
+	border: 3px solid var(--sel-linia);
+	border-radius: 18px;
+	container-type: inline-size;
 	display: grid;
-	gap: 1rem;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-	list-style: none;
-	margin: 0;
-	padding: 0;
-
-	> li {
-		display: flex;
-		min-width: 0;
-	}
-}
-
-/* Targeta */
-.nep-selector .nep-sel-targeta {
-	align-items: flex-start;
-	--sel-barra: linear-gradient(var(--sel-accent), var(--sel-accent));
-
-	background: var(--sel-barra) top / 100% 6px no-repeat, #fff;
-	border: 1px solid var(--sel-filet);
-	border-radius: var(--nep-radi, 12px);
-	box-shadow: 0 1px 2px rgb(20 33 61 / 8%);
-	color: var(--sel-tinta);
-	cursor: pointer;
-	display: flex;
-	gap: 1rem;
-	min-height: 44px;
-	padding: calc(1.25rem + 6px) 1.25rem 1.25rem;
+	overflow: hidden;
 	position: relative;
-	text-align: left;
-	transition: box-shadow 0.18s ease, transform 0.18s ease;
-	width: 100%;
-
-	&:hover {
-		box-shadow: 0 8px 22px rgb(20 33 61 / 16%);
-		transform: translateY(-2px);
-	}
-
-	&--remei {
-		--sel-accent: #9a3412;
-	}
 }
 
-.nep-sel-targeta__avatar {
-	background: var(--sel-escuma);
-	border-radius: 50%;
-	display: grid;
-	flex: none;
-	line-height: 0;
-	padding: 6px;
-	place-items: center;
-}
-
-.nep-sel-targeta__cos {
-	align-self: stretch;
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	gap: 0.5rem;
+.nep-sel-port__escena,
+.nep-sel-mapa {
+	grid-area: 1 / 1;
 	min-width: 0;
 }
 
-.nep-sel-targeta__titol {
-	display: block;
-	font-family: var(--sel-display);
-	font-size: 1.3rem;
-	font-stretch: 87.5%;
-	font-weight: 700;
-	line-height: 1.15;
-	overflow-wrap: anywhere;
+.nep-sel-port__escena {
+	align-self: start;
 }
 
-.nep-sel-targeta__info {
+/* Botó damunt de cada vaixell: ocupa el rectangle de l'àncora. */
+.wp-block-noempesquen-simulador .nep-sel-barco,
+.nep-sel-barco {
+	background: none;
+	border: 0;
+	border-radius: 24px;
+	color: var(--sel-linia);
+	cursor: pointer;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0;
+	position: absolute;
+
+	&--pc {
+		height: var(--pesquer-h);
+		left: var(--pesquer-x);
+		top: var(--pesquer-y);
+		width: var(--pesquer-w);
+	}
+
+	&--mobil {
+		height: var(--pirata-h);
+		left: var(--pirata-x);
+		top: var(--pirata-y);
+		width: var(--pirata-w);
+	}
+
+	&:hover .nep-sel-barco__cartell {
+		transform: translateX(-50%) translateY(-3px);
+	}
+
+	&:focus-visible {
+		box-shadow: inset 0 0 0 3px #fff;
+		outline: 4px solid var(--sel-anell);
+		outline-offset: 0;
+	}
+}
+
+/* Cartell de fusta clara amb el nom i el progrés. */
+.nep-sel-barco__cartell {
+	align-items: center;
+	background: #fffdf6;
+	border: 3px solid var(--sel-linia);
+	border-radius: 14px;
+	box-shadow: 0 4px 0 var(--sel-linia);
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	font-size: clamp(0.75rem, 1.6cqi, 1rem);
+	gap: 0.15rem;
+	left: 50%;
+	line-height: 1.15;
+	padding: 0.35rem 0.75rem;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	transform: translateX(-50%);
+	transition: transform 0.18s ease;
+	white-space: nowrap;
 }
 
-.nep-sel-targeta__meta {
+.nep-sel-barco__nom {
+	font-family: var(--sel-display);
+	font-size: 1.2em;
+	font-weight: 700;
+}
+
+.nep-sel-barco__xifres {
+	display: flex;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	gap: 0.6rem;
+}
+
+.nep-sel-barco__estrelles {
+	align-items: center;
+	color: #7a5b00;
+	display: inline-flex;
+	gap: 0.2rem;
+
+	svg {
+		color: #b07d00;
+	}
+}
+
+.nep-sel-barco__marques {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.375rem;
-}
-
-.nep-sel-xip {
-	align-items: center;
-	border: 1px solid var(--sel-filet);
-	border-radius: 999px;
-	color: var(--sel-suau);
-	display: inline-flex;
-	font-size: 0.8rem;
-	font-weight: 600;
 	gap: 0.3rem;
-	line-height: 1;
-	padding: 0.3rem 0.6rem;
-
-	&--nom {
-		border-color: transparent;
-		font-weight: 500;
-		padding-inline: 0.2rem;
-	}
+	justify-content: center;
 }
 
-.nep-sel-targeta__resum {
-	color: var(--sel-suau);
-	font-size: 0.95rem;
-	line-height: 1.45;
+.nep-sel-barco__aqui {
+	background: var(--sel-or);
+	border: 2px solid var(--sel-linia);
+	border-radius: 999px;
+	font-size: 0.85em;
+	font-weight: 700;
+	padding: 0.05rem 0.55rem;
 }
 
 .nep-sel-horitzontal {
 	align-items: center;
-	align-self: flex-start;
 	background: $tok-ressalt-fons;
-	border: 1px solid var(--sel-or-tinta);
+	border: 1px solid #8a6700;
 	border-radius: 6px;
 	color: #5c4500;
 	display: inline-flex;
-	font-size: 0.85rem;
+	font-size: 0.85em;
 	font-weight: 600;
-	gap: 0.4rem;
-	padding: 0.25rem 0.55rem;
-}
-
-.nep-sel-estrelles {
-	color: var(--sel-or-tinta);
-	display: inline-flex;
-	gap: 2px;
-	line-height: 0;
-}
-
-/* Peu: estat (estrelles o «Fet») a l'esquerra, acció a la dreta; tots els peus
-   queden a la mateixa alçada dins de la fila de la graella. */
-.nep-sel-targeta__peu {
-	align-items: center;
-	border-top: 1px solid var(--sel-filet);
-	display: flex;
-	gap: 0.75rem;
-	justify-content: space-between;
-	margin-top: auto;
-	padding-top: 0.75rem;
-}
-
-.nep-sel-targeta__estat {
-	align-items: center;
-	display: inline-flex;
-	min-height: 24px;
-}
-
-.nep-sel-targeta__accio {
-	align-items: center;
-	color: var(--sel-accent);
-	display: inline-flex;
-	font-weight: 700;
 	gap: 0.3rem;
-	margin-left: auto;
+	padding: 0.05rem 0.45rem;
+}
 
-	svg {
-		transition: transform 0.18s ease;
+/* Mapa: apareix quan la càmera ja s'ha acostat (només CSS, sense timers). */
+.nep-sel-mapa {
+	animation: nep-sel-apareix 0.4s ease-out 0.45s both;
+	background: rgb(11 94 122 / 55%);
+	padding: clamp(0.5rem, 2cqi, 1rem);
+	position: relative;
+
+	/* Els nodes salten un cop el mapa ja és visible. */
+	.nep-mapa__node {
+		animation-delay: calc(0.8s + var(--i) * 0.11s);
+	}
+
+	.nep-mapa__traca,
+	.nep-mapa__fet-vora {
+		animation-delay: 0.6s;
 	}
 }
 
-.nep-selector .nep-sel-targeta:hover .nep-sel-targeta__accio svg {
-	transform: translateX(3px);
-}
+.nep-sel--directe .nep-sel-mapa {
+	animation: none;
 
-/* «Continua per aquí»: la franja de mar */
-.nep-selector .nep-sel-targeta--destacada {
-	align-items: center;
-	background: var(--sel-mar);
-	border: 0;
-	box-shadow: 0 10px 30px rgb(8 74 97 / 28%);
-	color: #fff;
-	gap: 1.75rem;
-	overflow: hidden;
-	padding: 1.75rem 2rem;
-
-	/* Malla de xarxa discreta, decorativa. */
-	&::before {
-		background-image:
-			repeating-linear-gradient(45deg, transparent 0 22px, rgb(255 255 255 / 7%) 22px 23px),
-			repeating-linear-gradient(-45deg, transparent 0 22px, rgb(255 255 255 / 7%) 22px 23px);
-		content: "";
-		inset: 0;
-		pointer-events: none;
-		position: absolute;
-	}
-
-	> * {
-		position: relative;
-	}
-
-	&:hover {
-		box-shadow: 0 14px 36px rgb(8 74 97 / 36%);
-	}
-
-	.nep-sel-targeta__avatar {
-		background: #fff;
-		box-shadow: 0 0 0 4px var(--sel-or);
-		padding: 8px;
-	}
-
-	.nep-sel-targeta__titol {
-		font-size: clamp(1.5rem, 2vw + 1rem, 2.1rem);
-	}
-
-	.nep-sel-xip {
-		border-color: rgb(255 255 255 / 45%);
-		color: #fff;
-
-		&--nom {
-			border-color: transparent;
-		}
-	}
-
-	.nep-sel-targeta__resum {
-		color: #e6f2f5;
-		font-size: 1rem;
-		max-width: 60ch;
-	}
-
-	.nep-sel-estrelles {
-		color: var(--sel-or-clar);
-	}
-
-	.nep-sel-horitzontal {
-		background: $tok-ressalt-fons;
-		color: #5c4500;
-	}
-
-	.nep-sel-targeta__peu {
-		border-top: 0;
-		justify-content: flex-start;
-		padding-top: 0.25rem;
-	}
-
-	.nep-sel-targeta__accio {
-		background: var(--sel-or);
-		border-radius: 999px;
-		color: var(--sel-tinta);
-		margin-left: 0;
-		min-height: 44px;
-		padding: 0.6rem 1.1rem 0.6rem 1.25rem;
+	.nep-mapa__node,
+	.nep-mapa__traca,
+	.nep-mapa__fet-vora {
+		animation-delay: 0s;
 	}
 }
 
-/*
- * Focus: anell fosc per fora (sobre el fons de la pàgina) i, a la destacada,
- * un segon anell d'or clar per dins, sobre la franja de mar. Va després de
- * :hover i amb més especificitat perquè l'ombra del hover no el trepitgi.
- */
-.nep-selector .nep-sel-targeta:focus-visible,
-.nep-selector .nep-sel-targeta:focus-visible:hover {
-	box-shadow: 0 0 0 2px #fff, 0 8px 22px rgb(20 33 61 / 16%);
-	outline: 3px solid var(--sel-anell);
-	outline-offset: 3px;
+/* En apaisat, el mapa cap a la pantalla i el mar fa scroll per dins. */
+@media (orientation: landscape) {
+
+	.nep-sel-mapa .nep-mapa {
+		--mapa-alt-max: max(22rem, calc(100svh - 6rem));
+	}
 }
 
-.nep-selector .nep-sel-targeta--destacada:focus-visible,
-.nep-selector .nep-sel-targeta--destacada:focus-visible:hover {
-	box-shadow: inset 0 0 0 3px var(--sel-or-clar), 0 10px 30px rgb(8 74 97 / 28%);
-}
+@keyframes nep-sel-apareix {
 
-@container (max-width: 560px) {
-
-	.nep-selector .nep-sel-targeta--destacada {
-		align-items: flex-start;
-		flex-direction: column;
-		gap: 1rem;
-		padding: 1.25rem;
+	from {
+		opacity: 0;
+		transform: translateY(16px);
 	}
 
-	.nep-selector .nep-sel-targeta {
-		padding: 1rem;
-	}
-
-	.nep-sel-targeta__avatar svg {
-		height: 56px;
-		width: 56px;
-	}
-
-	.nep-sel-targeta--destacada .nep-sel-targeta__avatar svg {
-		height: 80px;
-		width: 80px;
+	to {
+		opacity: 1;
+		transform: none;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 
-	.nep-selector .nep-sel-targeta,
-	.nep-sel-targeta__accio svg {
+	.nep-sel-mapa,
+	.nep-sel-barco__cartell {
+		animation: none;
 		transition: none;
 	}
 
-	.nep-selector .nep-sel-targeta:hover,
-	.nep-selector .nep-sel-targeta:hover .nep-sel-targeta__accio svg {
-		transform: none;
+	.nep-sel-barco:hover .nep-sel-barco__cartell {
+		transform: translateX(-50%);
 	}
 }

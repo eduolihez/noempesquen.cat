@@ -6,6 +6,7 @@ import {
 	useRef,
 } from '@wordpress/element';
 import { combinaMissions } from '../nucli/missions';
+import { seguentDe } from '../nucli/ruta';
 import { __ } from '@wordpress/i18n';
 import { desaProgres, llegeixProgres } from '../nucli/progres';
 import { fusionaProgres } from '../nucli/sincro';
@@ -247,8 +248,11 @@ export function App( { config } ) {
 	darreres.current = missions;
 
 	const missio = missions.find( ( m ) => m.id === actual ) ?? null;
-	const index = missio ? missions.indexOf( missio ) : -1;
-	const seguentMissio = index >= 0 ? missions[ index + 1 ] : null;
+	// La següent de la ruta del mateix vaixell; a l'última, tornar al mapa.
+	const seguentId = missio ? seguentDe( missions, missio.id ) : null;
+	// Vaixell de la darrera missió jugada: el selector hi torna obert.
+	const vaixellJugat =
+		missions.find( ( m ) => m.id === jugada.current )?.dispositiu ?? null;
 
 	// Una previsualització no desa progrés ni envia estadístiques.
 	const { api } = config;
@@ -301,6 +305,7 @@ export function App( { config } ) {
 					preferit={ preferit }
 					onTria={ tria }
 					enfoca={ jugada.current }
+					vaixellInicial={ vaixellJugat }
 				/>
 				{ ! config.previsualitza && !! config.compte && (
 					<EstatCompte
@@ -320,7 +325,7 @@ export function App( { config } ) {
 			onSurt={ () => setActual( null ) }
 			onAcaba={ onAcaba }
 			api={ config.api }
-			seguent={ seguentMissio ? () => tria( seguentMissio.id ) : null }
+			seguent={ seguentId ? () => tria( seguentId ) : null }
 		/>
 	);
 }

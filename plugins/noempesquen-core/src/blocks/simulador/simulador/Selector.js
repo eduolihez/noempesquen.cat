@@ -1,26 +1,31 @@
 /**
- * Selector de missions (fora del sistema simulat): targeta «Continua per
- * aquí», missions del dispositiu en ús i missions d'altres dispositius.
+ * Selector de missions (fora del sistema simulat): un port amb un vaixell per
+ * dispositiu (el Pesquer = ordinador, el Pirata = mòbil). En triar-ne un, la
+ * càmera s'hi acosta i apareix el mapa de la seva ruta.
+ *
+ * Vistes
+ * - port: escena amb un botó damunt de cada vaixell que té ruta.
+ * - mapa: escena ampliada + capa germana amb <Mapa> (fora del marc que fa el
+ *   zoom). «Torna al port» i Esc tornen al port i el focus va al vaixell.
+ *
+ * Props
+ * - missions, progres, preferit, onTria: com sempre.
+ * - enfoca:         id de la missió jugada (focus al seu node en tornar).
+ * - vaixellInicial: 'pc' | 'mobil' | null. Obre directament aquest mapa.
  */
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import {
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { agrupaMissions, tutorialFet } from '../nucli/selector';
-import { PERSONATGES } from '../ui/avatars';
+import { construeixRuta, dispositiusAmbRuta } from '../nucli/ruta';
+import { Escena } from '../ui/port/Escena';
 import { Estrella, Glif } from '../ui/icones';
-
-const IconaOrdinador = ( p ) => (
-	<Glif { ...p }>
-		<rect x="2.5" y="3.5" width="15" height="10" rx="1.5" />
-		<path d="M7 17h6M10 13.5V17" />
-	</Glif>
-);
-
-const IconaMobil = ( p ) => (
-	<Glif { ...p }>
-		<rect x="5.5" y="2" width="9" height="16" rx="2" />
-		<path d="M8.5 15h3" />
-	</Glif>
-);
+import { JocContext } from './context';
+import { Mapa } from './Mapa';
 
 /* Mòbil que gira cap a horitzontal (fletxa en arc). */
 const IconaGira = ( p ) => (
@@ -31,252 +36,292 @@ const IconaGira = ( p ) => (
 	</Glif>
 );
 
-const IconaFletxa = ( p ) => (
-	<Glif { ...p }>
-		<path d="M4 10h11M11 5.5 15.5 10 11 14.5" />
-	</Glif>
-);
+const vaixells = () => ( {
+	pc: {
+		nom: __( 'el Pesquer', 'noempesquen' ),
+		descripcio: __( 'ordinador amb la Llissa', 'noempesquen' ),
+		obert: __( 'Has obert el mapa del Pesquer', 'noempesquen' ),
+	},
+	mobil: {
+		nom: __( 'el Pirata', 'noempesquen' ),
+		descripcio: __( 'mòbil amb la Remei', 'noempesquen' ),
+		obert: __( 'Has obert el mapa del Pirata', 'noempesquen' ),
+	},
+} );
 
-const estrellesDe = ( progres, id ) => {
-	const n = Number( progres?.[ id ] );
-	return Number.isFinite( n )
-		? Math.min( 3, Math.max( 0, Math.floor( n ) ) )
-		: 0;
-};
-
-function Estrelles( { estrelles } ) {
-	const etiqueta = estrelles
-		? sprintf(
-				/* translators: %d: estrelles */
-				__( 'Millor resultat: %d de 3 estrelles', 'noempesquen' ),
-				estrelles
-			)
-		: __( "Encara no l'has jugada", 'noempesquen' );
-	return (
-		<span className="nep-sel-estrelles" role="img" aria-label={ etiqueta }>
-			{ [ 0, 1, 2 ].map( ( i ) => (
-				<Estrella key={ i } mida={ 20 } plena={ i < estrelles } />
-			) ) }
-		</span>
+function BotoVaixell( {
+	dispositiu,
+	ruta,
+	aqui,
+	horitzontal,
+	onObre,
+	refBoto,
+} ) {
+	const { nom, descripcio } = vaixells()[ dispositiu ];
+	const etiqueta = sprintf(
+		/* translators: 1: nom del vaixell, 2: dispositiu i guia, 3: missions fetes, 4: total, 5: estrelles, 6: màxim */
+		__(
+			'Obre %1$s: %2$s, %3$d de %4$d missions, %5$d de %6$d estrelles',
+			'noempesquen'
+		),
+		nom,
+		descripcio,
+		ruta.feta,
+		ruta.total,
+		ruta.estrelles,
+		ruta.max
 	);
-}
-
-function Targeta( { missio, estrelles, horitzontal, destacada, onTria } ) {
-	const { nom, Avatar } =
-		PERSONATGES[ missio.personatge ] ?? PERSONATGES.llissa;
-	const titolId = `nep-sel-${ missio.id }-titol`;
-	const infoId = `nep-sel-${ missio.id }-info`;
-	const esMobil = missio.dispositiu === 'mobil';
-	const IconaDispositiu = esMobil ? IconaMobil : IconaOrdinador;
-	const esTutorial = missio.tutorial === true;
-	let accio = __( 'Torna-hi', 'noempesquen' );
-	if ( ! estrelles ) {
-		accio = __( 'Comença', 'noempesquen' );
-	}
-	const classes = [
-		'nep-sel-targeta',
-		`nep-sel-targeta--${ missio.personatge }`,
-		destacada ? 'nep-sel-targeta--destacada' : '',
-	]
-		.filter( Boolean )
-		.join( ' ' );
-
 	return (
 		<button
 			type="button"
-			className={ classes }
-			data-missio={ missio.id }
-			aria-labelledby={ titolId }
-			aria-describedby={ infoId }
-			onClick={ () => onTria( missio.id ) }
+			ref={ refBoto }
+			className={ `nep-sel-barco nep-sel-barco--${ dispositiu }` }
+			aria-label={ etiqueta }
+			onClick={ () => onObre( dispositiu ) }
 		>
-			<span className="nep-sel-targeta__avatar">
-				<Avatar mida={ destacada ? 112 : 72 } />
-			</span>
-			<span className="nep-sel-targeta__cos">
-				<span id={ titolId } className="nep-sel-targeta__titol">
-					{ missio.titol }
-				</span>
-				<span id={ infoId } className="nep-sel-targeta__info">
-					<span className="nep-sel-targeta__meta">
-						<span className="nep-sel-xip">
-							<IconaDispositiu mida={ 16 } />
-							{ esMobil
-								? __( 'Mòbil', 'noempesquen' )
-								: __( 'Ordinador', 'noempesquen' ) }
-						</span>
-						<span className="nep-sel-xip">
-							{ sprintf(
-								/* translators: %d: minuts */
-								__( '%d min', 'noempesquen' ),
-								missio.durada_minuts
-							) }
-						</span>
-						<span className="nep-sel-xip nep-sel-xip--nom">
-							{ sprintf(
-								/* translators: %s: nom del personatge guia */
-								__( 'Amb %s', 'noempesquen' ),
-								nom
-							) }
-						</span>
-					</span>
-					<span className="nep-sel-targeta__resum">
-						{ missio.resum }
-					</span>
-					{ horitzontal && (
-						<span className="nep-sel-horitzontal">
-							<IconaGira mida={ 18 } />
-							{ __( 'Millor en horitzontal', 'noempesquen' ) }
-						</span>
-					) }
-				</span>
-				<span className="nep-sel-targeta__peu">
-					<span className="nep-sel-targeta__estat">
-						{ esTutorial ? (
-							estrelles > 0 && (
-								<span className="nep-sel-xip nep-sel-xip--fet">
-									{ __( 'Fet', 'noempesquen' ) }
-								</span>
-							)
-						) : (
-							<Estrelles estrelles={ estrelles } />
+			<span className="nep-sel-barco__cartell" aria-hidden="true">
+				<span className="nep-sel-barco__nom">{ nom }</span>
+				<span className="nep-sel-barco__xifres">
+					<span>
+						{ sprintf(
+							/* translators: 1: missions fetes, 2: total */
+							__( '%1$d de %2$d', 'noempesquen' ),
+							ruta.feta,
+							ruta.total
 						) }
 					</span>
-					<span className="nep-sel-targeta__accio" aria-hidden="true">
-						{ accio }
-						<IconaFletxa mida={ 18 } />
+					<span className="nep-sel-barco__estrelles">
+						<Estrella mida={ 16 } plena />
+						{ `${ ruta.estrelles }/${ ruta.max }` }
 					</span>
 				</span>
+				{ ( aqui || horitzontal ) && (
+					<span className="nep-sel-barco__marques">
+						{ aqui && (
+							<span className="nep-sel-barco__aqui">
+								{ __( 'Aquí', 'noempesquen' ) }
+							</span>
+						) }
+						{ horitzontal && (
+							<span className="nep-sel-horitzontal">
+								<IconaGira mida={ 16 } />
+								{ __( 'Millor en horitzontal', 'noempesquen' ) }
+							</span>
+						) }
+					</span>
+				) }
 			</span>
 		</button>
 	);
 }
 
-function Seccio( { id, titol, missions, pinta } ) {
-	if ( ! missions.length ) {
-		return null;
-	}
-	return (
-		<div role="group" className="nep-sel-seccio" aria-labelledby={ id }>
-			<h3 id={ id } className="nep-sel-seccio__titol">
-				{ titol }
-				<span className="nep-sel-seccio__compte" aria-hidden="true">
-					{ missions.length }
-				</span>
-			</h3>
-			<ul className="nep-sel-graella">
-				{ missions.map( ( m ) => (
-					<li key={ m.id }>{ pinta( m ) }</li>
-				) ) }
-			</ul>
-		</div>
-	);
+/**
+ * Esc tanca el mapa. Dins del joc es registra com a menú; fora (el cas
+ * normal: el selector no és dins de <Simulador>), escolta la finestra només
+ * mentre el mapa és obert.
+ *
+ * @param {boolean}    obert Si el mapa és obert.
+ * @param {() => void} tanca Torna al port.
+ */
+function useEscTanca( obert, tanca ) {
+	const ctx = useContext( JocContext );
+	const tancaRef = useRef( tanca );
+	tancaRef.current = tanca;
+	useEffect( () => {
+		if ( ! obert ) {
+			return;
+		}
+		if ( ctx?.registraMenu ) {
+			return ctx.registraMenu( () => tancaRef.current() );
+		}
+		const onTecla = ( e ) => {
+			if ( e.key === 'Escape' && ! e.defaultPrevented ) {
+				e.preventDefault();
+				tancaRef.current();
+			}
+		};
+		window.addEventListener( 'keydown', onTecla );
+		return () => window.removeEventListener( 'keydown', onTecla );
+	}, [ obert, ctx ] );
 }
 
-export function Selector( { missions, progres, preferit, onTria, enfoca } ) {
+export function Selector( {
+	missions,
+	progres,
+	preferit,
+	onTria,
+	enfoca,
+	vaixellInicial = null,
+} ) {
 	const arrel = useRef( null );
-	const { recomanada, tutorials, principals, altres, resum } = useMemo(
-		() => agrupaMissions( missions, preferit, progres ),
-		[ missions, preferit, progres ]
+	const escena = useRef( null );
+	const titolMapa = useRef( null );
+	const botons = { pc: useRef( null ), mobil: useRef( null ) };
+	const dispositius = useMemo(
+		() => dispositiusAmbRuta( missions ),
+		[ missions ]
 	);
-	const sense = ( llista ) =>
-		recomanada ? llista.filter( ( m ) => m.id !== recomanada.id ) : llista;
+	const rutes = useMemo( () => {
+		const r = {};
+		dispositius.forEach( ( d ) => {
+			r[ d ] = construeixRuta( missions, d, progres );
+		} );
+		return r;
+	}, [ missions, dispositius, progres ] );
 
-	// En tornar d'una partida, el focus va a la targeta que s'ha jugat. Si
-	// encara no hi és (missions remotes que arriben després), es reintenta
-	// quan canvia la llista; un cop trobada, no es torna a moure el focus.
+	const [ obert, setObert ] = useState( () =>
+		vaixellInicial === 'pc' || vaixellInicial === 'mobil'
+			? vaixellInicial
+			: null
+	);
+	// Obert en muntar (tornant d'una partida): sense animació d'entrada.
+	const [ directe, setDirecte ] = useState( () => !! obert );
+	const [ anunci, setAnunci ] = useState( '' );
+	// Què s'ha d'enfocar després del canvi de vista: 'titol' o un dispositiu.
+	const focus = useRef( null );
+
+	const ruta = obert ? rutes[ obert ] : null;
+
+	const obre = ( d ) => {
+		setDirecte( false );
+		focus.current = 'titol';
+		setObert( d );
+		setAnunci(
+			sprintf(
+				/* translators: 1: «Has obert el mapa del Pesquer», 2: missions fetes, 3: total */
+				__( '%1$s: %2$d de %3$d missions fetes', 'noempesquen' ),
+				vaixells()[ d ].obert,
+				rutes[ d ]?.feta ?? 0,
+				rutes[ d ]?.total ?? 0
+			)
+		);
+	};
+
+	const torna = () => {
+		const d = obert;
+		if ( ! d ) {
+			return;
+		}
+		setDirecte( false );
+		focus.current = d;
+		setObert( null );
+		setAnunci( __( 'Has tornat al port', 'noempesquen' ) );
+	};
+
+	useEscTanca( !! ruta, torna );
+
+	// Amb el mapa obert, l'escena (i els seus botons) queda inerta.
+	useEffect( () => {
+		if ( escena.current ) {
+			escena.current.inert = !! ruta;
+		}
+		const objectiu = focus.current;
+		focus.current = null;
+		if ( objectiu === 'titol' ) {
+			titolMapa.current?.focus();
+		} else if ( objectiu ) {
+			botons[ objectiu ]?.current?.focus();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ ruta ] );
+
+	// En tornar d'una partida, el focus va al node que s'ha jugat. Si encara
+	// no hi és (missions remotes que arriben després), es reintenta quan
+	// canvia la llista; un cop trobat, no es torna a moure el focus.
 	const pendent = useRef( enfoca );
 	useEffect( () => {
 		if ( ! pendent.current ) {
 			return;
 		}
-		const targeta = arrel.current?.querySelector(
+		const node = arrel.current?.querySelector(
 			`[data-missio="${ window.CSS.escape( pendent.current ) }"]`
 		);
-		if ( targeta ) {
-			targeta.focus();
+		if ( node ) {
+			node.focus();
 			pendent.current = null;
 		}
 	}, [ missions.length ] );
 
-	const pinta = ( m, destacada = false ) => (
-		<Targeta
-			missio={ m }
-			estrelles={
-				m.tutorial === true
-					? Number( tutorialFet( progres, m.id ) )
-					: estrellesDe( progres, m.id )
-			}
-			horitzontal={ preferit === 'mobil' && m.dispositiu === 'pc' }
-			destacada={ destacada }
-			onTria={ onTria }
-		/>
+	const total = dispositius.reduce(
+		( acc, d ) => ( {
+			fetes: acc.fetes + rutes[ d ].feta,
+			total: acc.total + rutes[ d ].total,
+			estrelles: acc.estrelles + rutes[ d ].estrelles,
+			max: acc.max + rutes[ d ].max,
+		} ),
+		{ fetes: 0, total: 0, estrelles: 0, max: 0 }
 	);
+
+	const classes = [
+		'nep-selector',
+		ruta ? 'nep-sel--mapa' : 'nep-sel--port',
+		directe && 'nep-sel--directe',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
 	return (
 		<section
 			ref={ arrel }
-			className="nep-selector"
+			className={ classes }
 			aria-labelledby="nep-selector-titol"
 		>
 			<header className="nep-selector__cap">
 				<h2 id="nep-selector-titol" className="nep-selector__titol">
 					{ __( 'Tria una missió', 'noempesquen' ) }
 				</h2>
-				{ resum.jugades > 0 && (
+				{ total.fetes > 0 && (
 					<p className="nep-selector__resum">
 						{ sprintf(
-							/* translators: 1: missions jugades, 2: total de missions, 3: estrelles guanyades, 4: estrelles possibles */
+							/* translators: 1: missions fetes, 2: total de missions, 3: estrelles guanyades, 4: estrelles possibles */
 							__(
-								'%1$d de %2$d missions jugades · %3$d de %4$d estrelles',
+								'%1$d de %2$d missions fetes · %3$d de %4$d estrelles',
 								'noempesquen'
 							),
-							resum.jugades,
-							resum.total,
-							resum.estrelles,
-							resum.max
+							total.fetes,
+							total.total,
+							total.estrelles,
+							total.max
 						) }
 					</p>
 				) }
 			</header>
 
-			{ recomanada && (
-				<div
-					role="group"
-					className="nep-sel-seccio nep-sel-seccio--destacada"
-					aria-labelledby="nep-sel-continua"
-				>
-					<h3 id="nep-sel-continua" className="nep-sel-seccio__titol">
-						{ recomanada.tutorial === true
-							? __( 'Comença per aquí', 'noempesquen' )
-							: __( 'Continua per aquí', 'noempesquen' ) }
-					</h3>
-					{ pinta( recomanada, true ) }
-				</div>
-			) }
+			<p className="screen-reader-text" aria-live="polite">
+				{ anunci }
+			</p>
 
-			<Seccio
-				id="nep-sel-tutorials"
-				titol={ __( 'Tutorial', 'noempesquen' ) }
-				missions={ sense( tutorials ) }
-				pinta={ pinta }
-			/>
-			<Seccio
-				id="nep-sel-principals"
-				titol={
-					preferit === 'mobil'
-						? __( 'Per al teu mòbil', 'noempesquen' )
-						: __( 'Per al teu ordinador', 'noempesquen' )
-				}
-				missions={ sense( principals ) }
-				pinta={ pinta }
-			/>
-			<Seccio
-				id="nep-sel-altres"
-				titol={ __( 'Altres dispositius', 'noempesquen' ) }
-				missions={ sense( altres ) }
-				pinta={ pinta }
-			/>
+			<div className="nep-sel-port">
+				<div ref={ escena } className="nep-sel-port__escena">
+					<Escena activa={ preferit } seleccionada={ obert }>
+						{ ! ruta &&
+							dispositius.map( ( d ) => (
+								<BotoVaixell
+									key={ d }
+									dispositiu={ d }
+									ruta={ rutes[ d ] }
+									aqui={ preferit === d }
+									horitzontal={
+										d === 'pc' && preferit === 'mobil'
+									}
+									onObre={ obre }
+									refBoto={ botons[ d ] }
+								/>
+							) ) }
+					</Escena>
+				</div>
+				{ ruta && (
+					<div className="nep-sel-mapa">
+						<Mapa
+							ruta={ ruta }
+							dispositiu={ obert }
+							onTria={ onTria }
+							onTorna={ torna }
+							titolRef={ titolMapa }
+						/>
+					</div>
+				) }
+			</div>
 		</section>
 	);
 }
