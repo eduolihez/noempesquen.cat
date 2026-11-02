@@ -67,3 +67,10 @@ Al pulsar un barco, la cámara se acerca al barco y los niveles «saltan» sobre
 | V6 | Revisión ciega (reviewer + accesibilidad), una ronda de arreglos, docs (`estat-del-projecte.md`, `CLAUDE.md` mapa del código), `humanizer-es` de textos | varios | — |
 
 Fases: 1 aclarar (hecha) → 2 investigar (hecha) → 3 V1-V5 → 4 revisión → 5 arreglos → 6 suite completa → 7 cierre.
+
+## Ronda 2 (Edu, 2026-11-02): pantalla completa, mejores gráficos, mapa distinto por barco
+
+- **Pantalla completa**: el selector ocupa toda la ventana (`100dvw × 100dvh`, por encima de cabecera y pie del tema, sin scroll de página), con botón «Pantalla completa» real (Fullscreen API, por gesto) y «Surt» a la web. La escena escala tipo *cover* (se recorta por los bordes, lo esencial en la zona central segura) y funciona de 16:9 a 21:9 y en vertical.
+- **Mejores gráficos**: iluminación (resplandor del sol, rim light en barcos), profundidad (parallax por capas, niebla/bruma atmosférica), agua más rica (espuma, cáusticas, reflejos de barcos), texturas (madera, tela de vela, red), sombras proyectadas, detalle extra en cubierta. Sigue siendo solo SVG + CSS, sin raster, `prefers-reduced-motion` y botón de pausa intactos.
+- **Mapa propio por barco**: el Pesquer = carta náutica diurna (turquesas/arena, líneas de sondeo, boyas y redes como nodos, bancos de peces); el Pirata = mapa del tesoro al atardecer/noche (pergamino chamuscado sobre mar oscuro, islas como nodos, X roja, brújula, niebla, estrellas, ruta de huellas). Cada uno con su camino, nodos, fondo, tipografía/ornamentos y animaciones. Contrato de accesibilidad y tests intactos (nombre del nodo = titol, contraste AA en ambos).
+- Tareas: W1 (marco a pantalla completa, secuencial), luego W2 y W3 en paralelo (ficheros disjuntos), W4 e2e + revisión ciega + verificación.
