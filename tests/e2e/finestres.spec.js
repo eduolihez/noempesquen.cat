@@ -38,6 +38,8 @@ async function proporcions( page, nom ) {
 async function arrenca( page ) {
 	await iniciaMissio( page, new RegExp( `^${ TUTORIAL_PC }` ), BLOQUEIG_PC );
 	await page.getByRole( 'button', { name: BLOQUEIG_PC } ).click();
+	// La guia visual del tutorial tapa el sistema: es deixa jugar lliurement.
+	await page.getByRole( 'button', { name: 'Salta el tutorial' } ).click();
 	await expect( finestra( page, 'Parla' ) ).toBeVisible();
 	await expect( finestra( page, 'Navegador' ) ).toBeVisible();
 }

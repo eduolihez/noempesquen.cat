@@ -4,10 +4,19 @@ const {
 	esHoritzontal,
 	greusAxe,
 	greusAxePc,
-	inspecciona,
 	iniciaMissio,
 	petits,
+	senseFullscreen,
 } = require( './ajudes' );
+const {
+	guia,
+	forat,
+	ancora,
+	foratSobre,
+	targetaDins,
+	senseSolapar,
+	clicAlCentre,
+} = require( './ajudes-guia' );
 
 const PROGRES = 'noempesquen-progres-v2';
 const BLOQUEIG_PC = /Clica o prem/;
@@ -84,7 +93,7 @@ async function comprovaFinal(
 		page.getByRole( 'heading', { level: 2, name: titol } )
 	).toBeVisible();
 	await expect( page.locator( '.nep-res__veredicte' ) ).toContainText(
-		'Ja estàs a punt.'
+		'Ara ja saps on mirar.'
 	);
 	await expect( page.getByRole( 'img', { name: /estrelles/ } ) ).toHaveCount(
 		0
@@ -115,72 +124,328 @@ async function comprovaFinal(
 	] );
 }
 
+const tutorialPc = require( '../../plugins/noempesquen-core/missions/tutorial-pc.json' );
+const tutorialMobil = require( '../../plugins/noempesquen-core/missions/tutorial-mobil.json' );
+
+const PASSOS_PC = tutorialPc.passos;
+const PASSOS_MOBIL = tutorialMobil.passos;
+const ALTERNATIVA = { decisio: 'parla-respostes' };
+
+/**
+ * Àncora d'un pas (amb l'alternativa d'abans d'obrir la decisió).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string}                          clau Clau data-tut.
+ * @return {Promise<string>} Clau que cal fer servir.
+ */
+async function ancoraDelPas( page, clau ) {
+	const principal = ancora( page, clau );
+	if ( ( await principal.count() ) > 0 || ! ALTERNATIVA[ clau ] ) {
+		return clau;
+	}
+	return ALTERNATIVA[ clau ];
+}
+
+/**
+ * Comprova el pas: comptador, títol, forat sobre l'àncora, targeta dins la
+ * pantalla, botons segons el tipus de pas i, al PC, finestres sense solapar.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {Object[]}                        passos Passos de la missió.
+ * @param {number}                          i      Índex del pas.
+ * @param {boolean}                         pc     Cert al PC.
+ */
+async function comprovaPas( page, passos, i, pc ) {
+	const pas = passos[ i ];
+	const g = guia( page );
+	await expect( g, pas.id ).toContainText(
+		`Pas ${ i + 1 } de ${ passos.length }`
+	);
+	await expect( g.getByRole( 'heading', { level: 2 } ) ).toHaveText(
+		pas.titol
+	);
+	const entes = g.getByRole( 'button', { name: 'Entès' } );
+	await expect( entes ).toHaveCount( pas.continua === 'boto' ? 1 : 0 );
+	await expect(
+		g.getByRole( 'button', { name: 'Salta el tutorial' } )
+	).toBeVisible();
+	if ( pas.ancora ) {
+		await foratSobre( page, await ancoraDelPas( page, pas.ancora ) );
+	} else {
+		await expect( forat( page ) ).toHaveCount( 0 );
+	}
+	await targetaDins( page );
+	if ( pc ) {
+		await senseSolapar( page );
+	}
+}
+
+const inspeccionaText = ( page, patro ) =>
+	page.getByRole( 'button', { name: patro } ).first();
+
+// El cos de l'avís (no la capçalera), que és el que s'obre amb un clic.
+const cosAvis = ( page ) =>
+	ancora( page, 'avis' ).locator( '.nep-so-notif__cos' );
+
+const ACCIONS_PC = {
+	tanca: ( page ) =>
+		clicAlCentre(
+			page,
+			ancora( page, 'finestra-navegador' ).getByRole( 'button', {
+				name: 'Tanca',
+				exact: true,
+			} )
+		),
+	obre: ( page ) => clicAlCentre( page, ancora( page, 'app-navegador' ) ),
+	avis: ( page ) => clicAlCentre( page, cosAvis( page ) ),
+	'correu-nou': ( page ) => clicAlCentre( page, cosAvis( page ) ),
+	'obre-correu': ( page ) =>
+		clicAlCentre(
+			page,
+			ancora( page, 'llista-correus' )
+				.getByRole( 'button', { name: /Premis Fantasia/ } )
+				.first()
+		),
+	lupa: ( page ) => clicAlCentre( page, ancora( page, 'lupa' ) ),
+	'indici-remitent': ( page ) =>
+		clicAlCentre(
+			page,
+			inspeccionaText( page, /^Inspecciona: .*premis-fantasia\.xyz/ )
+		),
+	'indici-premi': ( page ) =>
+		clicAlCentre(
+			page,
+			inspeccionaText( page, /^Inspecciona: Has guanyat/ )
+		),
+	'indici-enllac': ( page ) =>
+		clicAlCentre( page, inspeccionaText( page, /^Inspecciona: Reclama/ ) ),
+	decisio: async ( page ) => {
+		// Amb el rellotge fals, un avís de la Llissa pot quedar sobre el botó:
+		// el primer clic l'obre (i porta Parla al davant), el segon el prem.
+		const opcio = page.getByRole( 'button', {
+			name: /^Ja ho tinc clar: és un correu/,
+		} );
+		const respon = page.getByRole( 'button', {
+			name: 'Ja ho tinc clar',
+			exact: true,
+		} );
+		for ( let i = 0; i < 3 && ( await opcio.count() ) === 0; i++ ) {
+			await clicAlCentre( page, respon );
+		}
+		await clicAlCentre(
+			page,
+			page.getByRole( 'button', {
+				name: /^Ja ho tinc clar: és un correu/,
+			} )
+		);
+	},
+};
+
+const ACCIONS_MOBIL = {
+	dock: ( page ) =>
+		clicAlCentre(
+			page,
+			ancora( page, 'dock' ).getByRole( 'button', { name: 'Navegador' } ),
+			true
+		),
+	'nav-enrere': ( page ) =>
+		clicAlCentre( page, ancora( page, 'nav-enrere' ), true ),
+	'nav-inici': ( page ) =>
+		clicAlCentre( page, ancora( page, 'nav-inici' ), true ),
+	parla: ( page ) =>
+		clicAlCentre( page, ancora( page, 'app-parla-mobil' ), true ),
+	banner: ( page ) => clicAlCentre( page, ancora( page, 'banner' ), true ),
+	missatges: ( page ) =>
+		clicAlCentre(
+			page,
+			ancora( page, 'llista-sms' ).locator( '[data-fil]' ).first(),
+			true
+		),
+	lupa: ( page ) => clicAlCentre( page, ancora( page, 'lupa' ), true ),
+	'indici-remitent': ( page ) =>
+		clicAlCentre(
+			page,
+			inspeccionaText( page, /^Inspecciona: Premis Fantasia/ ),
+			true
+		),
+	'indici-premi': ( page ) =>
+		clicAlCentre(
+			page,
+			inspeccionaText( page, /^Inspecciona: .*iot/ ),
+			true
+		),
+	'obre-centre': ( page ) =>
+		clicAlCentre( page, ancora( page, 'barra-estat' ), true ),
+	'centre-control': ( page ) =>
+		clicAlCentre(
+			page,
+			ancora( page, 'centre-control' )
+				.getByRole( 'button', { name: /Remei/ } )
+				.first(),
+			true
+		),
+	decisio: async ( page ) => {
+		await clicAlCentre(
+			page,
+			page.getByRole( 'button', {
+				name: 'Ja ho tinc clar',
+				exact: true,
+			} ),
+			true
+		);
+		await clicAlCentre(
+			page,
+			page.getByRole( 'button', { name: /^Ja ho tinc clar: és un SMS/ } ),
+			true
+		);
+	},
+};
+
+/**
+ * Fa el pas `i`: «Entès» als d'explicació, l'acció real als d'acció.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {Object[]}                        passos  Passos.
+ * @param {number}                          i       Índex.
+ * @param {Object}                          accions Mapa id -> acció.
+ */
+async function fesPas( page, passos, i, accions ) {
+	const pas = passos[ i ];
+	if ( pas.continua === 'boto' ) {
+		await guia( page ).getByRole( 'button', { name: 'Entès' } ).click();
+		return;
+	}
+	expect( accions[ pas.id ], `acció del pas «${ pas.id }»` ).toBeDefined();
+	await accions[ pas.id ]( page );
+}
+
+/**
+ * Recorre els passos des del primer fins al pas `finsId` (no inclòs).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {Object[]}                        passos   Passos.
+ * @param {Object}                          accions  Accions.
+ * @param {boolean}                         pc       Cert al PC.
+ * @param {string}                          finsId   Id del pas on aturar-se.
+ * @param {Object}                          [ganxos] Funcions per id, cridades un cop comprovat el pas.
+ */
+async function vesA( page, passos, accions, pc, finsId, ganxos = {} ) {
+	for ( let i = 0; i < passos.length; i++ ) {
+		await comprovaPas( page, passos, i, pc );
+		await ganxos[ passos[ i ].id ]?.();
+		if ( passos[ i ].id === finsId ) {
+			return i;
+		}
+		await fesPas( page, passos, i, accions );
+	}
+	return passos.length;
+}
+
+const arrencaPc = async ( page ) => {
+	await senseFullscreen( page );
+	await iniciaMissio( page, new RegExp( `^${ TUTORIAL_PC }` ), BLOQUEIG_PC );
+	await page.getByRole( 'button', { name: BLOQUEIG_PC } ).click();
+	await expect( guia( page ) ).toBeVisible();
+};
+
+const arrencaMobil = async ( page ) => {
+	await iniciaMissio(
+		page,
+		new RegExp( `^${ TUTORIAL_MOBIL }` ),
+		BLOQUEIG_MOBIL
+	);
+	await page.getByRole( 'button', { name: BLOQUEIG_MOBIL } ).click();
+	await expect( guia( page ) ).toBeVisible();
+};
+
+const sistemaInert = ( page ) => page.locator( '.nep-so__sistema' );
+
 test.describe( 'tutorial al PC', () => {
 	test.beforeEach( ( { page } ) => {
 		test.skip( ! esHoritzontal( page ), 'PC en vertical: demana girar' );
+		test.slow();
 	} );
 
-	test( 'de principi a fi, sense puntuar ni enviar res', async ( {
+	test( 'recorregut real dels 22 passos, sense puntuar ni enviar res', async ( {
+		page,
+		isMobile,
+	} ) => {
+		const posts = comptaPosts( page );
+		await arrencaPc( page );
+		expect( PASSOS_PC ).toHaveLength( 22 );
+		const axe = isMobile ? greusAxePc : greusAxe;
+		const fi = await vesA( page, PASSOS_PC, ACCIONS_PC, true, '', {
+			// Un pas d'explicació (sistema inert) i un d'acció.
+			escriptori: async () => {
+				await expect( sistemaInert( page ) ).toHaveAttribute(
+					'inert',
+					''
+				);
+				expect( await axe( page ) ).toEqual( [] );
+			},
+			tanca: async () => {
+				await expect( sistemaInert( page ) ).not.toHaveAttribute(
+					'inert',
+					''
+				);
+				expect( await axe( page ) ).toEqual( [] );
+			},
+		} );
+		expect( fi ).toBe( 22 );
+		await comprovaFinal( page, {
+			id: 'tutorial-pc',
+			titol: TUTORIAL_PC,
+			seguent: 'llissa-01-factura',
+			posts,
+			axe,
+		} );
+	} );
+
+	test( 'clic fora del forat no avança ni actua; Esc obre la pausa', async ( {
 		page,
 	} ) => {
-		// Recorregut sencer amb dues passades d'axe: més de 30 s.
-		test.slow();
-		const posts = comptaPosts( page );
-		await iniciaMissio(
+		await arrencaPc( page );
+		await vesA( page, PASSOS_PC, ACCIONS_PC, true, 'tanca' );
+		const g = guia( page );
+		await expect( g ).toContainText( 'Pas 7 de 22' );
+		// Clic a la icona de Parla de la barra i a la barra de títol de Parla.
+		await clicAlCentre( page, ancora( page, 'app-parla' ) );
+		await clicAlCentre(
 			page,
-			new RegExp( `^${ TUTORIAL_PC }` ),
-			BLOQUEIG_PC
+			ancora( page, 'finestra-parla' ).locator(
+				'.nep-so-finestra__titol'
+			)
 		);
+		await expect( g ).toContainText( 'Pas 7 de 22' );
+		await expect( ancora( page, 'finestra-navegador' ) ).toBeVisible();
+		await expect( ancora( page, 'finestra-parla' ) ).toBeVisible();
 
-		// 1. Desbloqueja: Parla amb la presentació i respostes ràpides.
-		await page.getByRole( 'button', { name: BLOQUEIG_PC } ).click();
-		await expect( parla( page ) ).toBeVisible();
-		await expect( parla( page ) ).toContainText( 'Sóc la Llissa' );
-		await parla( page ).getByRole( 'button', { name: 'Següent' } ).click();
-		await parla( page ).getByRole( 'button', { name: 'Següent' } ).click();
-		await parla( page ).getByRole( 'button', { name: 'Som-hi!' } ).click();
-		await expect( parla( page ) ).toContainText(
-			"Tanca el Navegador amb la creu i torna'l a obrir"
-		);
-		// El desbloqueig obre les finestres sol: encara no compta.
-		await expect( parla( page ) ).not.toContainText( 'Molt bé!' );
+		await page.keyboard.press( 'Escape' );
+		await expect( pausa( page ) ).toBeVisible();
+		await expect( g ).toHaveCount( 0 );
+		await page.getByRole( 'button', { name: /^Continua/ } ).click();
+		await expect( g ).toContainText( 'Pas 7 de 22' );
+		await foratSobre( page, 'finestra-navegador' );
+	} );
 
-		// 2. Tanca el Navegador i torna'l a obrir des de la barra de tasques.
-		await page
-			.getByRole( 'region', { name: /Posta/ } )
-			.first()
-			.getByRole( 'button', { name: 'Tanca', exact: true } )
+	test( '«Salta el tutorial» a mig camí deixa la missió jugable i acabable', async ( {
+		page,
+		isMobile,
+	} ) => {
+		const posts = comptaPosts( page );
+		await arrencaPc( page );
+		await vesA( page, PASSOS_PC, ACCIONS_PC, true, 'respostes' );
+		await guia( page )
+			.getByRole( 'button', { name: 'Salta el tutorial' } )
 			.click();
-		await barraTasques( page )
-			.getByRole( 'button', { name: /^Navegador/ } )
-			.click();
-		await expect( parla( page ) ).toContainText(
-			"Així es tanquen i s'obren les finestres"
-		);
-
-		// 3. Arriba l'avís de la Llissa i s'obre amb un clic.
-		await page.clock.runFor( 6000 );
+		await expect( guia( page ) ).toHaveCount( 0 );
+		await expect( sistemaInert( page ) ).not.toHaveAttribute( 'inert', '' );
+		// Els disparadors pendents s'han aplicat: l'avís del correu hi és.
 		const avis = page
 			.locator( '.nep-so-toast' )
-			.filter( { hasText: 'Això és una notificació' } );
+			.filter( { hasText: 'Premis Fantasia' } );
 		await expect( avis ).toBeVisible();
 		await avis.getByRole( 'button' ).last().click();
-		await expect( parla( page ) ).toContainText(
-			'Has obert la notificació i has arribat a Parla'
-		);
-
-		// 4. Arriba el correu de mentida i la Llissa hi envia.
-		await page.clock.runFor( 5000 );
-		await expect( parla( page ) ).toContainText(
-			"T'acaba d'arribar un correu de mentida"
-		);
-		// L'avís de Posta porta a la safata.
-		await page
-			.locator( '.nep-so-toast' )
-			.filter( { hasText: 'Premis Fantasia' } )
-			.getByRole( 'button' )
-			.last()
-			.click();
 		await page
 			.getByRole( 'region', { name: 'Entrada' } )
 			.getByRole( 'button', { name: /Premis Fantasia/ } )
@@ -190,24 +455,6 @@ test.describe( 'tutorial al PC', () => {
 				name: 'Enhorabona! Has guanyat un iot',
 			} )
 		).toBeVisible();
-
-		// 5. Lupa: activa, marca el remitent i el comptador puja.
-		const lupa = barraTasques( page ).getByRole( 'button', {
-			name: 'Lupa, 0 de 2 indicis',
-		} );
-		await expect( lupa ).toContainText( '0/2' );
-		await lupa.click();
-		await expect( parla( page ) ).toContainText( 'Lupa activada!' );
-		await inspecciona( page, 'guanyador@premis-fantasia.xyz' ).click();
-		await expect(
-			barraTasques( page ).getByRole( 'button', {
-				name: 'Lupa, 1 de 2 indicis',
-			} )
-		).toContainText( '1/2' );
-		expect( await greusAxePc( page ) ).toEqual( [] );
-		// Al PC (ratolí) no es demanen 44 px, com a la resta de specs de PC.
-
-		// 6. Porta Parla al davant: «Ja ho tinc clar» i l'única opció.
 		await barraTasques( page )
 			.getByRole( 'button', { name: /^Parla/ } )
 			.click();
@@ -217,114 +464,119 @@ test.describe( 'tutorial al PC', () => {
 		await parla( page )
 			.getByRole( 'button', { name: /^Ja ho tinc clar: és un correu/ } )
 			.click();
-
 		await comprovaFinal( page, {
 			id: 'tutorial-pc',
 			titol: TUTORIAL_PC,
 			seguent: 'llissa-01-factura',
 			posts,
-			axe: greusAxePc,
+			axe: isMobile ? greusAxePc : greusAxe,
 		} );
+	} );
+
+	test( 'xarxa de seguretat: si es tanca l’avís amb la X, el vel desapareix', async ( {
+		page,
+	} ) => {
+		await arrencaPc( page );
+		await vesA( page, PASSOS_PC, ACCIONS_PC, true, 'avis' );
+		await expect( page.locator( '.nep-guia__vel' ) ).not.toHaveCount( 0 );
+		await clicAlCentre(
+			page,
+			ancora( page, 'avis' ).getByRole( 'button', {
+				name: 'Descarta la notificació',
+			} )
+		);
+		await expect( page.locator( '.nep-guia__vel' ) ).toHaveCount( 0 );
+		await expect( forat( page ) ).toHaveCount( 0 );
+		await expect( guia( page ) ).toContainText( 'Pas 9 de 22' );
+		await expect(
+			guia( page ).getByRole( 'button', { name: 'Salta el tutorial' } )
+		).toBeVisible();
+		await targetaDins( page );
 	} );
 } );
 
 test.describe( 'tutorial al mòbil', () => {
-	test.beforeEach( ( { isMobile } ) => {
-		test.skip( ! isMobile, 'Només al projecte mòbil' );
+	test.beforeEach( ( { page, isMobile } ) => {
+		test.skip(
+			! isMobile || esHoritzontal( page ),
+			'Només al mòbil en vertical'
+		);
+		test.slow();
 	} );
 
-	const dock = ( page ) =>
-		page.getByRole( 'list', { name: 'Apps preferides' } );
-	const banner = ( page, text ) =>
-		page.locator( '.nep-so-m-banner' ).filter( { hasText: text } );
-
-	test( 'de principi a fi, sense puntuar ni enviar res', async ( {
+	test( 'recorregut real dels 16 passos, sense puntuar ni enviar res', async ( {
 		page,
 	} ) => {
-		// Recorregut sencer amb dues passades d'axe: més de 30 s.
-		test.slow();
 		const posts = comptaPosts( page );
-		await iniciaMissio(
-			page,
-			new RegExp( `^${ TUTORIAL_MOBIL }` ),
-			BLOQUEIG_MOBIL
-		);
-
-		// 1. Desbloqueja, obre el Navegador i torna a l'inici.
-		await page.getByRole( 'button', { name: BLOQUEIG_MOBIL } ).click();
-		await dock( page ).getByRole( 'button', { name: 'Navegador' } ).click();
-		await page
-			.getByRole( 'navigation', { name: 'Navegació del sistema' } )
-			.getByRole( 'button', { name: 'Inici' } )
-			.click();
-		await expect( dock( page ) ).toBeVisible();
-
-		// 2. Arriba l'avís de la Remei i s'obre tocant-lo.
-		await page.clock.runFor( 6000 );
-		const avis = banner( page, 'Això és una notificació' );
-		await expect( avis ).toBeVisible();
-		await avis.locator( '.nep-so-m-notif' ).click();
-		await expect( parla( page ) ).toBeVisible();
-		await expect( parla( page ) ).toContainText(
-			'Has obert la notificació i has arribat a Parla'
-		);
-
-		// 3. Parla: presentació amb les respostes ràpides.
-		await expect( parla( page ) ).toContainText( 'Sóc la Pirata Remei' );
-		await parla( page ).getByRole( 'button', { name: 'Següent' } ).click();
-		await parla( page ).getByRole( 'button', { name: 'Següent' } ).click();
-		await parla( page ).getByRole( 'button', { name: 'Som-hi!' } ).click();
-
-		// 4. Arriba l'SMS de mentida: obre Missatges.
-		await page.clock.runFor( 5000 );
-		await expect( parla( page ) ).toContainText(
-			"T'acaba d'arribar un SMS de mentida"
-		);
-		await page
-			.getByRole( 'navigation', { name: 'Navegació del sistema' } )
-			.getByRole( 'button', { name: 'Inici' } )
-			.click();
-		await dock( page ).getByRole( 'button', { name: 'Missatges' } ).click();
-		await page.locator( '[data-fil]' ).first().click();
-
-		// 5. Lupa: activa, marca el remitent i el comptador puja.
-		const lupa = page.getByRole( 'button', {
-			name: 'Lupa, 0 de 2 indicis',
+		await arrencaMobil( page );
+		expect( PASSOS_MOBIL ).toHaveLength( 16 );
+		const fi = await vesA( page, PASSOS_MOBIL, ACCIONS_MOBIL, false, '', {
+			inici: async () => {
+				await expect( sistemaInert( page ) ).toHaveAttribute(
+					'inert',
+					''
+				);
+				expect( await greusAxe( page ) ).toEqual( [] );
+				const b = await guia( page )
+					.getByRole( 'button', { name: 'Entès' } )
+					.boundingBox();
+				expect( b.height ).toBeGreaterThanOrEqual( 44 );
+			},
+			'nav-enrere': async () => {
+				await expect( sistemaInert( page ) ).not.toHaveAttribute(
+					'inert',
+					''
+				);
+				expect( await greusAxe( page ) ).toEqual( [] );
+			},
 		} );
-		await expect( lupa ).toContainText( '0/2' );
-		await lupa.click();
-		await expect( lupa ).toHaveAttribute( 'aria-pressed', 'true' );
-		await inspecciona( page, 'Premis Fantasia' ).click();
-		await expect(
-			page.getByRole( 'button', { name: 'Lupa, 1 de 2 indicis' } )
-		).toContainText( '1/2' );
-		expect( await greusAxe( page ) ).toEqual( [] );
-		// Amb la lupa, els fragments de text inspeccionables són objectius en
-		// línia (excepció de WCAG 2.5.8): la resta ha de fer 44 px.
-		expect(
-			( await petits( page ) ).filter(
-				( p ) => ! p.startsWith( 'nep-inspecciona' )
-			)
-		).toEqual( [] );
+		expect( fi ).toBe( 16 );
+		await comprovaFinal( page, {
+			id: 'tutorial-mobil',
+			titol: TUTORIAL_MOBIL,
+			seguent: 'remei-01-paquet',
+			posts,
+			axe: greusAxe,
+			mobil: true,
+		} );
+	} );
 
-		// 6. Torna a Parla: la guia ha vist la lupa; «Ja ho tinc clar».
-		await page
-			.getByRole( 'navigation', { name: 'Navegació del sistema' } )
-			.getByRole( 'button', { name: 'Inici' } )
-			.click();
-		await page
-			.getByRole( 'list', { name: /Apps/ } )
-			.getByRole( 'button', { name: 'Parla' } )
-			.first()
-			.click();
-		await expect( parla( page ) ).toContainText( 'Lupa activada!' );
+	test( 'toc fora del forat no avança; «Salta el tutorial» deixa acabar', async ( {
+		page,
+	} ) => {
+		const posts = comptaPosts( page );
+		await arrencaMobil( page );
+		await vesA( page, PASSOS_MOBIL, ACCIONS_MOBIL, false, 'dock' );
+		const g = guia( page );
+		await expect( g ).toContainText( 'Pas 3 de 16' );
+		// Missatges és al dock però el forat és només la icona del Navegador? Toc al botó Inici del sistema.
+		await clicAlCentre( page, ancora( page, 'nav-inici' ), true );
+		await expect( g ).toContainText( 'Pas 3 de 16' );
+		await expect( ancora( page, 'dock' ) ).toBeVisible();
+
+		await page.keyboard.press( 'Escape' );
+		await expect( pausa( page ) ).toBeVisible();
+		await page.getByRole( 'button', { name: /^Continua/ } ).click();
+		await expect( g ).toContainText( 'Pas 3 de 16' );
+
+		await g.getByRole( 'button', { name: 'Salta el tutorial' } ).click();
+		await expect( g ).toHaveCount( 0 );
+		await expect( sistemaInert( page ) ).not.toHaveAttribute( 'inert', '' );
+		// L'SMS i l'avís de la Remei existeixen: obre Parla i decideix.
+		await clicAlCentre(
+			page,
+			page
+				.getByRole( 'list', { name: /Apps/ } )
+				.getByRole( 'button', { name: 'Parla' } )
+				.first(),
+			true
+		);
 		await parla( page )
 			.getByRole( 'button', { name: 'Ja ho tinc clar', exact: true } )
 			.click();
 		await parla( page )
 			.getByRole( 'button', { name: /^Ja ho tinc clar: és un SMS/ } )
 			.click();
-
 		await comprovaFinal( page, {
 			id: 'tutorial-mobil',
 			titol: TUTORIAL_MOBIL,
