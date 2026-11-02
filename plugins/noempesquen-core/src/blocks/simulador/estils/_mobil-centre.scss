@@ -89,7 +89,9 @@
 	touch-action: none;
 
 	// Deixa lloc al botó de descartar (alternativa a lliscar, WCAG 2.5.7).
+	// Fons opac: no es transparenta la capçalera de l'app oberta.
 	.nep-so-m-notif {
+		background: #fff;
 		padding-inline-end: 52px;
 	}
 
