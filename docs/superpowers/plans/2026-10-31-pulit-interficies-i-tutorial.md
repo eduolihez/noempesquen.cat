@@ -89,6 +89,15 @@ Cada corte acaba con lint, unit, build y Playwright, con salida real. Un plan co
 - Pasada misión a misión con una tabla antes/después y una partida cronometrada por tipo de misión.
 - Sonido: usar «alerta» en avisos de riesgo o quitarlo; sincronizar el sonido con la aparición visible (en Parla, tras el tecleo).
 
+### Corte F · Ilustración vectorial pulida
+
+Decisión de Edu: ilustración vectorial pulida, SVG propio y coherente con «Llotja». Sin marcas reales ni emojis.
+
+- Inventario de figuras: pez `.nep-cebo__peix`, hilo y anzuelo `.nep-cebo__fil` (`themes/noempesquen/templates/front-page.html`), señora mayor y demás personajes y avatares (Llissa, Remei, Carla Montsant, Jordi M.).
+- Primero un boceto del pez y de la señora mayor para el visto bueno de Edu; después el resto.
+- Criterios: SVG inline o archivos propios, `role="img"` con texto alternativo o `aria-hidden` si es decorativo, contraste AA, sin degradar rendimiento ni LCP de la home.
+- Va después del corte D y antes de cualquier despliegue.
+
 ## Orden y esfuerzo
 
 A → B → C → E → D. A primero porque lo demás se apoya en ella; D al final para pulir con todo en su sitio. Escala L en total; usar `orquestar` (≥ 4 tareas): un implementador por corte, revisión de rama única al final con `reviewer` y `security-reviewer`.
