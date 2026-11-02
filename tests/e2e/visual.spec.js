@@ -3,6 +3,7 @@ const {
 	greusAxePc,
 	iniciaMissio,
 	petits,
+	saltaIntro,
 	senseFullscreen,
 } = require( './ajudes' );
 
@@ -132,6 +133,7 @@ async function mobil( page, mida, prefix ) {
 	await page.setViewportSize( mida );
 	await iniciaMissio( page, CANVIAT, BLOQUEIG_MOBIL );
 	await page.getByRole( 'button', { name: BLOQUEIG_MOBIL } ).click();
+	await saltaIntro( page );
 	await page.clock.runFor( 8000 );
 	await page
 		.getByRole( 'list', { name: 'Notificacions noves' } )
