@@ -261,7 +261,7 @@ test.describe( 'Selector de missions: mapa', () => {
 		const anunci = selector( page ).locator( '[aria-live="polite"]' );
 		await barco( page, 'mobil' ).click();
 		await expect( anunci ).toHaveText(
-			'Has obert el mapa del Pirata: 0 de 6 missions fetes'
+			'0 de 6 missions fetes'
 		);
 		await tornaAlPort( page ).click();
 		await expect( anunci ).toHaveText( 'Has tornat al port' );

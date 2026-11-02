@@ -160,10 +160,13 @@
 		background: var(--sel-or);
 	}
 
-	/* Doble anell com el dels vaixells: ≥ 3:1 sobre cel clar i mar fosc. */
+	/* Doble anell com el dels vaixells: ≥ 3:1 sobre cel clar i mar fosc.
+	   L'outline transparent és el que es veu amb forced-colors (allà no hi
+	   ha box-shadow). */
 	&:focus-visible {
 		box-shadow: 0 0 0 2px var(--sel-or), 0 0 0 5px var(--sel-linia);
-		outline: 0;
+		outline: 3px solid transparent;
+		outline-offset: 2px;
 	}
 }
 
@@ -197,6 +200,10 @@
 	animation-play-state: paused !important;
 }
 
+.nep-sel--pausat .nep-sel-mapa {
+	animation: none;
+}
+
 .nep-sel--pausat .nep-mapa *,
 .nep-sel--pausat .nep-mapa *::before,
 .nep-sel--pausat .nep-mapa *::after {
@@ -214,7 +221,7 @@
 		align-items: center;
 		color: #0b5e7a;
 		display: inline-flex;
-		min-height: 24px;
+		min-height: 44px;
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
 

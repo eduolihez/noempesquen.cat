@@ -94,10 +94,15 @@ function usePantallaCompletaPagina() {
 		return () => doc.removeEventListener( 'fullscreenchange', onChange );
 	}, [ doc ] );
 	const commuta = () => {
-		const peticio = doc.fullscreenElement
-			? doc.exitFullscreen()
-			: doc.documentElement.requestFullscreen();
-		peticio?.catch?.( () => {} );
+		// Alguns navegadors llancen en lloc de rebutjar la promesa.
+		try {
+			const peticio = doc.fullscreenElement
+				? doc.exitFullscreen()
+				: doc.documentElement.requestFullscreen();
+			peticio?.catch?.( () => {} );
+		} catch {
+			// Sense pantalla completa: el selector ja ocupa tota la finestra.
+		}
 	};
 	return { pot, actiu, commuta };
 }
@@ -118,12 +123,10 @@ const vaixells = () => ( {
 	pc: {
 		nom: __( 'el Pesquer', 'noempesquen' ),
 		descripcio: __( 'ordinador amb la Llissa', 'noempesquen' ),
-		obert: __( 'Has obert el mapa del Pesquer', 'noempesquen' ),
 	},
 	mobil: {
 		nom: __( 'el Pirata', 'noempesquen' ),
 		descripcio: __( 'mòbil amb la Remei', 'noempesquen' ),
-		obert: __( 'Has obert el mapa del Pirata', 'noempesquen' ),
 	},
 } );
 
@@ -281,11 +284,12 @@ export function Selector( {
 		setDirecte( false );
 		focus.current = 'titol';
 		setObert( d );
+		// El nom del vaixell ja el diu el títol del mapa en rebre el focus:
+		// l'anunci només afegeix el progrés.
 		setAnunci(
 			sprintf(
-				/* translators: 1: «Has obert el mapa del Pesquer», 2: missions fetes, 3: total */
-				__( '%1$s: %2$d de %3$d missions fetes', 'noempesquen' ),
-				vaixells()[ d ].obert,
+				/* translators: 1: missions fetes, 2: total */
+				__( '%1$d de %2$d missions fetes', 'noempesquen' ),
 				rutes[ d ]?.feta ?? 0,
 				rutes[ d ]?.total ?? 0
 			)
@@ -344,6 +348,16 @@ export function Selector( {
 			pendent.current = null;
 		}
 	}, [ missions.length, obert ] );
+
+	// En muntar, si ningú no ha mogut el focus a dins (cap `enfoca`), va a
+	// l'arrel: la pàgina de darrere és inert i, si no, quedaria a <body>.
+	useEffect( () => {
+		const el = arrel.current;
+		const actiu = el?.ownerDocument.activeElement;
+		if ( el && ! el.contains( actiu ) ) {
+			el.focus( { preventScroll: true } );
+		}
+	}, [] );
 
 	const total = dispositius.reduce(
 		( acc, d ) => ( {
