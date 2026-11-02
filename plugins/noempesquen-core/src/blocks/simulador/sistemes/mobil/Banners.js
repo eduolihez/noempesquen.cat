@@ -92,7 +92,8 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
  * @param {Object}   props
  * @param {Function} props.onObre  Obre l'app d'una notificació.
  * @param {?string}  props.activa  App en primer pla (no en mostra banners).
- * @param {boolean}  props.amagats El centre de control és obert.
+ * @param {boolean}  props.amagats Centre de control obert o pas del tutorial
+ *                                 sense avisos.
  * @param {boolean}  props.silenci Encara es veu el bloqueig: sense banners.
  */
 export function Banners( { onObre, activa, amagats, silenci } ) {

@@ -9,6 +9,7 @@ import {
 } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
+import { pasSenseAvisos } from '../../nucli/ancores';
 import { APPS_MOBIL } from '../../apps/registre';
 import { FinestraContext, SistemaContext } from '../pc/context';
 import { MobilContext } from './context';
@@ -83,7 +84,7 @@ function PantallaApp( { entrada, activa, serveis, registra } ) {
  * Simulador que Pc (sense props; tot via useJoc()).
  */
 export default function Mobil() {
-	const { estat, dispatch, emet, hora } = useJoc();
+	const { estat, dispatch, emet, missio, hora } = useJoc();
 	const [ pila, dispatchP ] = useReducer( pilaReductor, ESTAT_PILA );
 	const [ centre, setCentre ] = useState( false );
 	const [ ambBloqueig, setAmbBloqueig ] = useState(
@@ -301,7 +302,9 @@ export default function Mobil() {
 							<Banners
 								onObre={ obreNotificacio }
 								activa={ appPrimerPla }
-								amagats={ centre }
+								amagats={
+									centre || pasSenseAvisos( missio, estat )
+								}
 								silenci={ ambBloqueig }
 							/>
 							{ centre && (

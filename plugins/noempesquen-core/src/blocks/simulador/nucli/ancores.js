@@ -51,7 +51,8 @@ export function ancoraDelPas( missio, estat ) {
 
 /**
  * Àncores que cap avís no pot tapar mentre el pas hi apunta: el botó per
- * decidir queda al racó on surten els avisos del PC.
+ * decidir queda al racó on surten els avisos del PC. Al mòbil, en el mateix
+ * pas tampoc no surten banners (que el pas no competeixi amb cap avís).
  */
 const ANCORES_SENSE_AVISOS = [ 'decisio' ];
 
