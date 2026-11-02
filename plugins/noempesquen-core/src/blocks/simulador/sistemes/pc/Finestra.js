@@ -26,6 +26,8 @@ const REF_ALCADA = 760;
 /* Part de la barra de títol que sempre ha de quedar a l'abast. */
 const VISIBLE_MINIM = 120;
 const ALCADA_BARRA = 32;
+/* Píxels de pantalla abans de començar a arrossegar. */
+const LLINDAR_MOU = 3;
 
 /* Àncores del tutorial (`data-tut`) de les finestres. */
 const TUT_FINESTRA = {
@@ -161,6 +163,14 @@ export function Finestra( {
 	};
 	const mou = ( e ) => {
 		const d = arrossega.current;
+		// Llindar: un clic amb tremolor (< 3 px) no mou ni avisa la finestra.
+		if (
+			d &&
+			! mogut.current &&
+			Math.hypot( e.clientX - d.px, e.clientY - d.py ) < LLINDAR_MOU
+		) {
+			return;
+		}
 		if ( d ) {
 			mogut.current = true;
 			const { dx, dy } = delta(
