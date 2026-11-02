@@ -23,6 +23,7 @@ import { MS_TICK } from '../nucli/temps.js';
 import { useSoNotificacions } from './useSoNotificacions';
 import { usePantalla } from './usePantalla';
 import { Pantalla } from './PantallaSistema';
+import { GuiaTutorial } from './GuiaTutorial';
 
 /* Fases en què la partida ja s'ha acabat: Esc no obre la pausa. */
 const FASES_FINALS = [ FASE.CONSEQUENCIA, FASE.RESULTAT ];
@@ -242,6 +243,11 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent, api } ) {
 		: null;
 
 	const enConsequencia = estat.fase === FASE.CONSEQUENCIA;
+	// Pas d'explicació del tutorial: només funciona la targeta de la guia.
+	const pasExplicacio =
+		estat.fase === FASE.JOC &&
+		! girar &&
+		missio.passos?.[ estat.pas ]?.continua === 'boto';
 
 	return (
 		<JocContext.Provider value={ ctx }>
@@ -260,7 +266,11 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent, api } ) {
 				) : (
 					<div
 						className="nep-so__sistema"
-						inert={ estat.pausa || enConsequencia ? '' : undefined }
+						inert={
+							estat.pausa || enConsequencia || pasExplicacio
+								? ''
+								: undefined
+						}
 					>
 						<Pantalla
 							dispositiu={ missio.dispositiu ?? 'pc' }
@@ -275,6 +285,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent, api } ) {
 						</Pantalla>
 					</div>
 				) }
+				<GuiaTutorial />
 				{ enConsequencia && (
 					<Consequencia
 						onResultat={ () =>

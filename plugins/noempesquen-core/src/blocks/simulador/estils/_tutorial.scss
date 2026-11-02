@@ -1,0 +1,112 @@
+/*
+ * Overlay del tutorial (GuiaTutorial): vel de quatre panells, forat
+ * ressaltat i targeta. Germà de `.nep-so__sistema` dins de `.nep-so`.
+ */
+@use "capes" as *;
+@use "tokens" as *;
+
+.nep-guia {
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+	z-index: $capa-guia;
+}
+
+/* Panells i tapa: aturen el clic (en els passos d'acció el forat és lliure). */
+.nep-guia__vel,
+.nep-guia__tapa {
+	pointer-events: auto;
+	position: absolute;
+}
+
+.nep-guia__vel {
+	background: rgb(0 0 0 / 60%);
+}
+
+.nep-guia__tapa {
+	background: transparent;
+	border-radius: 8px;
+}
+
+/* Anell doble (groc clar + gris fosc): ≥ 3:1 sobre qualsevol fons. */
+.nep-guia__forat {
+	border: 3px solid #ffd23f;
+	border-radius: 8px;
+	box-shadow:
+		0 0 0 2px $tok-tinta,
+		inset 0 0 0 2px $tok-tinta;
+	pointer-events: none;
+	position: absolute;
+	transition: left 0.12s ease-out, top 0.12s ease-out, width 0.12s ease-out, height 0.12s ease-out;
+}
+
+.nep-guia__targeta {
+	background: #fff;
+	border: 1px solid $tok-tinta;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+	color: $tok-tinta;
+	font-size: 1rem;
+	line-height: 1.45;
+	max-height: calc(100% - 16px);
+	overflow-y: auto;
+	overflow-wrap: break-word;
+	padding: 1rem 1.125rem;
+	pointer-events: auto;
+	position: absolute;
+	transition: left 0.12s ease-out, top 0.12s ease-out;
+
+	p {
+		margin: 0;
+	}
+}
+
+.nep-guia__comptador {
+	color: #4a4a4a;
+	font-size: 0.875rem;
+	font-weight: 600;
+	margin-bottom: 0.25rem !important;
+}
+
+.nep-guia__titol {
+	color: $tok-tinta;
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.25;
+	margin: 0 0 0.5rem;
+}
+
+.nep-guia__botons {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	margin-top: 0.875rem;
+
+	.nep-boto {
+		min-height: 44px;
+		min-width: 44px;
+	}
+}
+
+/* El vel no és el fons de la pàgina: el subratllat necessita contrast propi. */
+.nep-guia__salta.nep-boto--link {
+	color: #0b4f66 !important;
+	margin-inline-end: auto;
+	padding-inline: 0.25rem;
+}
+
+.nep-guia__targeta button:focus-visible {
+	box-shadow: 0 0 0 2px #fff;
+	outline: 3px solid $tok-tinta;
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-guia__forat,
+	.nep-guia__targeta {
+		transition: none;
+	}
+}
