@@ -1,12 +1,15 @@
 /**
  * Mapa de ruta d'un vaixell: camí sinuós sobre el mar amb un node per missió.
- * Presentacional: no sap res del joc ni del progrés, només pinta la ruta.
+ * Presentacional: no sap res del joc ni del progrés, només pinta la ruta
+ * (l'únic estat propi és el cartell temporal d'un node bloquejat).
  *
  * Props
  * - ruta:       resultat de `construeixRuta` (nucli/ruta.js).
  * - dispositiu: 'pc' (el Pesquer) | 'mobil' (el Pirata).
  * - onTria:     onTria( id ) en activar un node fet o disponible.
  * - onTorna:    onTorna() amb el botó «Torna al port».
+ * - onBloquejat: onBloquejat( id, motiu ) en activar un node bloquejat (no
+ *               crida onTria); motiu és el text «Bloquejada: acaba … primer».
  * - titolRef:   ref opcional per al títol (h3, tabIndex -1) per moure-hi el
  *               focus en entrar al mapa.
  * - classe:     classes extra per a l'arrel.
@@ -15,6 +18,7 @@
  * horitzontal; per sota, serpentina vertical. Els nodes es pinten un sol cop
  * (data-missio únic) amb la posició dels dos modes en custom properties.
  */
+import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { caminSvg, midaVista, posicionsNodes } from '../nucli/mapaGeom';
 import { Estrella, Glif, useIdSvg } from '../ui/icones';
@@ -58,19 +62,48 @@ const vaixells = () => ( {
 	},
 } );
 
-function Estrelles( { estrelles } ) {
-	const etiqueta = estrelles
+const textEstrelles = ( estrelles ) =>
+	estrelles
 		? sprintf(
 				/* translators: %d: estrelles */
 				__( 'Millor resultat: %d de 3 estrelles', 'noempesquen' ),
 				estrelles
 			)
 		: __( "Encara no l'has jugada", 'noempesquen' );
+
+/**
+ * Descripció del node (aria-describedby): resultat i estat. El nom
+ * accessible continua essent només el títol.
+ *
+ * @param {Object} node Node de la ruta.
+ * @return {string} Text de la descripció, sense el motiu del bloqueig.
+ */
+function textInfo( node ) {
+	if ( node.estat === 'feta' ) {
+		return node.tutorial
+			? __( 'Fet.', 'noempesquen' )
+			: sprintf(
+					/* translators: %s: «Millor resultat: N de 3 estrelles» */
+					__( '%s. Fet.', 'noempesquen' ),
+					textEstrelles( node.estrelles )
+				);
+	}
+	const jugada = textEstrelles( 0 );
+	return node.estat === 'disponible'
+		? sprintf(
+				/* translators: %s: «Encara no l'has jugada» */
+				__( '%s. Disponible.', 'noempesquen' ),
+				jugada
+			)
+		: `${ jugada }.`;
+}
+
+function Estrelles( { estrelles } ) {
 	return (
 		<span
 			className="nep-mapa__estrelles"
 			role="img"
-			aria-label={ etiqueta }
+			aria-label={ textEstrelles( estrelles ) }
 		>
 			{ [ 0, 1, 2 ].map( ( i ) => (
 				<Estrella key={ i } mida={ 16 } plena={ i < estrelles } />
@@ -121,10 +154,18 @@ function Cami( { punts, recorregut, mode } ) {
 	);
 }
 
-function Node( { node, i, pos, titolDe, onTria } ) {
+function Node( { node, i, pos, titolDe, onTria, onBloquejat, avisat } ) {
 	const titolId = `nep-mapa-${ node.id }-titol`;
 	const motiuId = `nep-mapa-${ node.id }-motiu`;
+	const infoId = `nep-mapa-${ node.id }-info`;
 	const bloquejada = node.estat === 'bloquejada';
+	const motiu = bloquejada
+		? sprintf(
+				/* translators: %s: títol de la missió que falta */
+				__( 'Bloquejada: acaba “%s” primer', 'noempesquen' ),
+				titolDe( node.motiu )
+			)
+		: '';
 	const disponible = node.estat === 'disponible';
 	const estil = { '--i': i };
 	MODES.forEach( ( mode ) => {
@@ -138,6 +179,7 @@ function Node( { node, i, pos, titolDe, onTria } ) {
 		'nep-mapa__node',
 		`nep-mapa__node--${ node.estat }`,
 		node.tutorial && 'nep-mapa__node--tutorial',
+		avisat && 'nep-mapa__node--avisat',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -148,10 +190,14 @@ function Node( { node, i, pos, titolDe, onTria } ) {
 				className={ classes }
 				data-missio={ node.id }
 				aria-labelledby={ titolId }
-				aria-describedby={ bloquejada ? motiuId : undefined }
+				aria-describedby={
+					bloquejada ? `${ infoId } ${ motiuId }` : infoId
+				}
 				aria-disabled={ bloquejada ? 'true' : undefined }
 				onClick={ () => {
-					if ( ! bloquejada ) {
+					if ( bloquejada ) {
+						onBloquejat?.( node.id, motiu );
+					} else {
 						onTria( node.id );
 					}
 				} }
@@ -189,18 +235,14 @@ function Node( { node, i, pos, titolDe, onTria } ) {
 					) }
 					{ bloquejada && (
 						<span id={ motiuId } className="nep-mapa__motiu">
-							{ sprintf(
-								/* translators: %s: títol de la missió que falta */
-								__(
-									'Bloquejada: acaba “%s” primer',
-									'noempesquen'
-								),
-								titolDe( node.motiu )
-							) }
+							{ motiu }
 						</span>
 					) }
 				</span>
 			</button>
+			<span id={ infoId } hidden>
+				{ textInfo( node ) }
+			</span>
 		</li>
 	);
 }
@@ -210,10 +252,26 @@ export function Mapa( {
 	dispositiu,
 	onTria,
 	onTorna,
+	onBloquejat,
 	titolRef,
 	classe = '',
 } ) {
 	const nodes = ruta?.nodes ?? [];
+	// Node bloquejat que s'acaba d'activar: mostra el motiu uns segons al seu
+	// cartell (també en tàctil, on no hi ha hover ni focus visible).
+	const [ avisat, setAvisat ] = useState( null );
+	useEffect( () => {
+		if ( ! avisat ) {
+			return;
+		}
+		const t = window.setTimeout( () => setAvisat( null ), 4000 );
+		return () => window.clearTimeout( t );
+	}, [ avisat ] );
+	const bloquejat = ( id, motiu ) => {
+		// Objecte nou a cada clic: torna a comptar els 4 s.
+		setAvisat( { id } );
+		onBloquejat?.( id, motiu );
+	};
 	const vaixell = vaixells()[ dispositiu ] ?? vaixells().pc;
 	const pos = {
 		ample: posicionsNodes( nodes.length, 'ample' ),
@@ -304,6 +362,8 @@ export function Mapa( {
 								pos={ pos }
 								titolDe={ titolDe }
 								onTria={ onTria }
+								onBloquejat={ bloquejat }
+								avisat={ avisat?.id === node.id }
 							/>
 						) ) }
 					</ol>

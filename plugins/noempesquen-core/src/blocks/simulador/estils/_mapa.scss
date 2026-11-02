@@ -395,7 +395,8 @@
 }
 
 .nep-mapa__node--bloquejada:hover .nep-mapa__motiu,
-.nep-mapa__node--bloquejada:focus-visible .nep-mapa__motiu {
+.nep-mapa__node--bloquejada:focus-visible .nep-mapa__motiu,
+.nep-mapa__node--avisat .nep-mapa__motiu {
 	clip-path: none;
 	font-size: 0.8rem;
 	font-weight: 600;

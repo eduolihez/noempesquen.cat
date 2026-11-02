@@ -218,6 +218,14 @@ export function Selector( {
 		setAnunci( __( 'Has tornat al port', 'noempesquen' ) );
 	};
 
+	// Node bloquejat: s'anuncia per l'aria-live (el Mapa el mostra al cartell
+	// del node). Un espai dur alternat fa que es torni a anunciar el mateix.
+	const repeticio = useRef( false );
+	const bloquejat = ( id, motiu ) => {
+		repeticio.current = ! repeticio.current;
+		setAnunci( repeticio.current ? motiu : `${ motiu }\u00a0` );
+	};
+
 	useEscTanca( !! ruta, torna );
 
 	// Amb el mapa obert, l'escena (i els seus botons) queda inerta.
@@ -327,6 +335,7 @@ export function Selector( {
 							dispositiu={ obert }
 							onTria={ onTria }
 							onTorna={ torna }
+							onBloquejat={ bloquejat }
 							titolRef={ titolMapa }
 						/>
 					</div>

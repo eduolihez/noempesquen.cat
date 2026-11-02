@@ -43,7 +43,10 @@ const desborda = ( page ) =>
 			document.documentElement.clientWidth
 	);
 
-/** Cert si el centre del node és tapat per un element aliè al node. */
+/**
+ * Cert si el centre del node és tapat per un element aliè al node.
+ * @param node
+ */
 const tapat = ( node ) =>
 	node.evaluate( ( el ) => {
 		const r = el.getBoundingClientRect();
@@ -54,7 +57,11 @@ const tapat = ( node ) =>
 		return ! dalt || ! el.contains( dalt );
 	} );
 
-/** Obre el port i el mapa del vaixell indicat. */
+/**
+ * Obre el port i el mapa del vaixell indicat.
+ * @param page
+ * @param d
+ */
 async function obreMapa( page, d ) {
 	await page.goto( '/simulador/' );
 	await barco( page, d ).click();
@@ -138,17 +145,34 @@ test.describe( 'Selector de missions: mapa', () => {
 			await expect( node ).toHaveAttribute( 'aria-disabled', 'true' );
 			await expect( node ).toHaveAccessibleName( ruta[ i ].titol );
 			await expect( node ).toHaveAccessibleDescription(
-				`Bloquejada: acaba “${ ruta[ i - 1 ].titol }” primer`
+				`Encara no l'has jugada. Bloquejada: acaba “${
+					ruta[ i - 1 ].titol
+				}” primer`
 			);
 		}
+		// La disponible també porta resultat i estat a la descripció.
+		await expect( nodeDe( page, ruta[ 0 ].id ) ).toHaveAccessibleName(
+			ruta[ 0 ].titol
+		);
+		await expect(
+			nodeDe( page, ruta[ 0 ].id )
+		).toHaveAccessibleDescription( "Encara no l'has jugada. Disponible." );
 	} );
 
 	test( 'una missió bloquejada no s’inicia', async ( { page } ) => {
 		const d = propi( page );
 		const ruta = rutaDe( d );
 		await obreMapa( page, d );
+		const motiu = `Bloquejada: acaba “${ ruta[ 0 ].titol }” primer`;
 		// aria-disabled: Playwright el tracta com a inhabilitat, per això `force`.
 		await nodeDe( page, ruta[ 1 ].id ).click( { force: true } );
+		// S'anuncia i es veu al cartell del node (també en tàctil).
+		await expect(
+			selector( page ).locator( '[aria-live="polite"]' )
+		).toHaveText( motiu );
+		await expect(
+			nodeDe( page, ruta[ 1 ].id ).locator( '.nep-mapa__motiu' )
+		).toBeVisible();
 		await expect( selector( page ) ).toBeVisible();
 		await expect( mapa( page ) ).toBeVisible();
 		await expect( pausa( page ) ).toHaveCount( 0 );
@@ -172,7 +196,12 @@ test.describe( 'Selector de missions: mapa', () => {
 		await expect( dos ).toContainText( 'Toca ara' );
 		await expect( tres ).toHaveAttribute( 'aria-disabled', 'true' );
 		await expect( tres ).toHaveAccessibleDescription(
-			`Bloquejada: acaba “${ ruta[ 2 ].titol }” primer`
+			`Encara no l'has jugada. Bloquejada: acaba “${ ruta[ 2 ].titol }” primer`
+		);
+		await expect( tut ).toHaveAccessibleDescription( 'Fet.' );
+		await expect( uns ).toHaveAccessibleName( ruta[ 1 ].titol );
+		await expect( uns ).toHaveAccessibleDescription(
+			'Millor resultat: 2 de 3 estrelles. Fet.'
 		);
 		await expect( tut ).toContainText( 'Fet' );
 		await expect( tut ).not.toHaveAttribute( 'aria-disabled', 'true' );
@@ -356,7 +385,8 @@ test.describe( 'Selector de missions: accessibilitat i disposició', () => {
 							'.nep-port *, .nep-mapa *, .nep-sel-barco'
 						),
 					].filter(
-						( el ) => getComputedStyle( el ).animationName !== 'none'
+						( el ) =>
+							getComputedStyle( el ).animationName !== 'none'
 					).length
 			);
 		await expect( barco( page, 'pc' ) ).toBeVisible();
