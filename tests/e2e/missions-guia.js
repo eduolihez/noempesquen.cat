@@ -15,6 +15,8 @@ const copia = ( m ) => JSON.parse( JSON.stringify( m ) );
 function guiaPc() {
 	return {
 		...copia( tutorialPc ),
+		// Els disparadors reals apunten als passos reals.
+		disparadors: [],
 		passos: [
 			{
 				id: 'benvinguda',
@@ -45,6 +47,7 @@ function guiaPc() {
 function guiaMobil() {
 	return {
 		...copia( tutorialMobil ),
+		disparadors: [],
 		passos: [
 			{
 				id: 'benvinguda',
