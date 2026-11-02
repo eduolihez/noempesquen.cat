@@ -219,12 +219,11 @@ export function Mapa( {
 		ample: posicionsNodes( nodes.length, 'ample' ),
 		estret: posicionsNodes( nodes.length, 'estret' ),
 	};
-	let recorregut = -1;
-	nodes.forEach( ( n, i ) => {
-		if ( n.estat === 'feta' ) {
-			recorregut = i;
-		}
-	} );
+	// Tram daurat: des del principi fins al primer node no fet (un progrés
+	// desordenat no pinta or damunt de nodes pendents).
+	const primerPendent = nodes.findIndex( ( n ) => n.estat !== 'feta' );
+	const recorregut =
+		primerPendent === -1 ? nodes.length - 1 : primerPendent - 1;
 	const titolDe = ( id ) => nodes.find( ( n ) => n.id === id )?.titol ?? '';
 	const a = midaVista( nodes.length, 'ample' );
 	const e = midaVista( nodes.length, 'estret' );
