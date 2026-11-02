@@ -21,7 +21,7 @@ const web = () => ( {
 	nom_lloc: 'Receptes de Prova',
 	seccions: [ { titol: 'Ingredients', llista: [ { t: 'Farina' } ] } ],
 	avis: {
-		retard: 0,
+		retard_ms: 0,
 		titol: 'Avís de prova',
 		cos: [ { t: 'Text de prova.' } ],
 		telefon: '900 000 000',

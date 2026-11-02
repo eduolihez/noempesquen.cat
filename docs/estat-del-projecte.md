@@ -98,7 +98,7 @@ Pendiente tras 3B:
 - Avís y diálogo de descarga apilados sin `inert` sobre la capa de debajo.
 - `cuinaravui.cat` y `tempsavui.cat` son dominios `.cat` registrables (riesgo bajo, como `bancsolid.cat`).
 - Los campos `senyal_*` no se validan como string (un valor no textual se ignora en silencio).
-- El `retard` del avís se redondea hacia arriba a segundos de juego.
+- El `retard_ms` del avís (en ms) se redondea hacia arriba a segundos de juego.
 - Elegir «a» sin indicios da 1★ en M9 y 2★ en M10 (coherente con M8).
 - Abrir el diálogo de descarga no emite ningún evento: las señales que solo se ven ahí (`origen_top`, `exe_top`) llevan `requereix` con el id del disparador `descarrega.fes`.
 

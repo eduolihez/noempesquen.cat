@@ -72,7 +72,7 @@ function Seccio( { seccio, navega, onHoverUrl } ) {
 
 /**
  * Web de contingut neutra (receptes, el temps...). Amb `dades.avis`, al cap de
- * `retard` ms de joc surt un avís fals a sobre de la pàgina; amb
+ * `retard_ms` ms de joc surt un avís fals a sobre de la pàgina; amb
  * `dades.barra`, una barra falsa d'actualització a dalt. Els esdeveniments
  * només porten `{ url }` o `{ url, fitxer }`.
  *
@@ -97,10 +97,12 @@ export default function Article( {
 		ultim: ara,
 		visible: 0,
 	} ) );
-	// El retard només compta mentre la pestanya és visible.
+	// El retard només compta mentre la pestanya és visible i la intro ha
+	// acabat (cap avís abans de la intro).
+	const compta = visible && estat.introAcabada !== false;
 	useEffect( () => {
-		setComptador( ( c ) => avancaVisible( c, ara, visible ) );
-	}, [ ara, visible ] );
+		setComptador( ( c ) => avancaVisible( c, ara, compta ) );
+	}, [ ara, compta ] );
 	// El que es tanca viu al motor: en tornar a la web es queda tancat.
 	const tancats = estat.tancats ?? [];
 	const avisTancat = tancats.includes( clauTancat( url, 'avis' ) );
@@ -118,7 +120,7 @@ export default function Article( {
 		visible &&
 		!! avis &&
 		! avisTancat &&
-		( avisVist || avisToca( avis.retard, 0, comptador.visible ) );
+		( avisVist || avisToca( avis.retard_ms, 0, comptador.visible ) );
 	// `avis.apareix` surt un sol cop per web: el motor en guarda el rastre.
 	const emes = useRef( false );
 	useEffect( () => {

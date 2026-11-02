@@ -107,11 +107,12 @@
 		{
 			"id": "arriba-trampa",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 8,
+			"retard_ms": 8000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "s2" },
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "missatges",
 					"titol": "+44 7700 900461",
 					"text": "Envia't: el teu paquet 4471-CA està retingut al magatzem."

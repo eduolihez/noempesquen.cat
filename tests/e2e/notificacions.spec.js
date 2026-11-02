@@ -1,4 +1,4 @@
-const { test, expect, iniciaMissio } = require( './ajudes' );
+const { test, expect, iniciaMissio, saltaIntro } = require( './ajudes' );
 
 test.describe( 'Avisos de notificació', () => {
 	test( 'en tàctil, tocar un banner no l’atura: caduca igualment', async ( {
@@ -9,6 +9,7 @@ test.describe( 'Avisos de notificació', () => {
 		await iniciaMissio( page, /El paquet retingut/, /Llisca cap amunt/ );
 		await page.getByRole( 'button', { name: /Llisca cap amunt/ } ).click();
 		await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
+		await saltaIntro( page );
 		await page.clock.runFor( 9000 );
 		const banner = page.locator( '.nep-so-m-banners li', {
 			hasText: /paquet/i,

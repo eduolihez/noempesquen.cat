@@ -3,6 +3,7 @@ const {
 	greusAxe,
 	inspecciona,
 	iniciaMissio,
+	saltaIntro,
 	petits,
 	escoltaFuites,
 	sensePistes,
@@ -44,6 +45,8 @@ async function entra( page ) {
 	await iniciaMissio( page, MISSIO, BLOQUEIG );
 	await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 	await expect( dock( page ) ).toBeVisible();
+	// Cap avís de l'inici surt abans de la fi de la intro.
+	await saltaIntro( page );
 }
 
 /** Des de l'inici, espera el primer missatge (8 s) i n'obre la notificació. */

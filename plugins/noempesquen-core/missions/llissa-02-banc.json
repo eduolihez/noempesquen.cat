@@ -166,11 +166,12 @@
 		{
 			"id": "arriba-trampa",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 8,
+			"retard_ms": 8000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "m2" },
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "posta",
 					"titol": "Banc Sòlid",
 					"text": "Compte bloquejat: verifica la teva identitat"
@@ -201,7 +202,7 @@
 				"url": "bancsolid-acces.top",
 				"formulari": "acces"
 			},
-			"retard": 3,
+			"retard_ms": 3000,
 			"efectes": [
 				{
 					"tipus": "notifica",

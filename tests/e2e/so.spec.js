@@ -3,6 +3,7 @@ const {
 	greusAxe,
 	iniciaMissio,
 	petits,
+	saltaIntro,
 	senseFullscreen,
 } = require( './ajudes' );
 
@@ -68,12 +69,20 @@ async function espiaAudio( page, sons ) {
 
 const osciladors = ( page ) => page.evaluate( () => window.__osciladors );
 
-async function entra( page, isMobile ) {
+// Per defecte salta la intro: cap avís programat surt abans de la fi de la
+// intro + MS_TRAS_INTRO.
+async function entra( page, isMobile, salta = true ) {
 	const { titol, bloqueig } = MISSIONS[ isMobile ? 'mobil' : 'escriptori' ];
 	await iniciaMissio( page, titol, bloqueig );
 	await page.getByRole( 'button', { name: bloqueig } ).click();
 	await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
+	if ( salta ) {
+		await saltaIntro( page );
+	}
 }
+
+// La trampa és un avís de risc: to «alerta» (3 osciladors; «missatge» en té 2).
+const NOTES_ALERTA = 3;
 
 const avis = ( page ) => page.locator( '.nep-so [aria-live="polite"]:not(.nep-avis-lupa)' );
 const TRAMPA = { escriptori: /URGENT/, mobil: /paquet/i };
@@ -84,13 +93,13 @@ test.describe( 'So de les notificacions', () => {
 		isMobile,
 	} ) => {
 		await espiaAudio( page, true );
-		await entra( page, isMobile );
+		await entra( page, isMobile, false );
 		await page.clock.runFor( 500 );
 		await page.clock.runFor( 2000 );
 		expect( await osciladors( page ) ).toBe( 0 );
 	} );
 
-	test( 'una notificació posterior sona (una nota de 2 tons)', async ( {
+	test( 'la notificació trampa sona amb el to «alerta» (3 notes)', async ( {
 		page,
 		isMobile,
 	} ) => {
@@ -102,7 +111,7 @@ test.describe( 'So de les notificacions', () => {
 		await expect( avis( page ) ).toContainText(
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
 		);
-		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
+		await expect.poll( () => osciladors( page ) ).toBe( abans + NOTES_ALERTA );
 	} );
 
 	test( 'no sona amb el so desactivat', async ( { page, isMobile } ) => {
@@ -134,7 +143,7 @@ test.describe( 'So de les notificacions', () => {
 		await expect( avis( page ) ).toContainText(
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
 		);
-		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
+		await expect.poll( () => osciladors( page ) ).toBe( abans + NOTES_ALERTA );
 	} );
 
 	test( "l'interruptor de la pausa apaga el so i ho recorda", async ( {
@@ -203,6 +212,7 @@ test.describe( 'So de les notificacions', () => {
 			.getByRole( 'button', { name: bloqueig } )
 			.dispatchEvent( 'click' );
 		await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
+		await saltaIntro( page, { nomesClick: true } );
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toContainText(
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]
@@ -240,6 +250,6 @@ test.describe( 'So de les notificacions', () => {
 		expect( await osciladors( page ) ).toBe( abans );
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toContainText( TRAMPA.escriptori );
-		await expect.poll( () => osciladors( page ) ).toBe( abans + 2 );
+		await expect.poll( () => osciladors( page ) ).toBe( abans + NOTES_ALERTA );
 	} );
 } );

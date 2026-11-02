@@ -194,7 +194,61 @@ const senseFullscreen = ( page ) =>
 			Promise.reject( new Error( 'test' ) );
 	} );
 
+/**
+ * Salta la presentació de la guia: cap avís programat des de l'inici surt
+ * abans de la fi de la intro + MS_TRAS_INTRO. Al PC el botó és al panell de
+ * Parla; al mòbil obre Parla, el xat de la guia, salta i torna a l'inici.
+ * Amb `nomesClick` dispara només l'esdeveniment click (sense pointerdown, per
+ * no comptar com a interacció de so).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {{nomesClick?: boolean}}          [opcions]
+ */
+async function saltaIntro( page, { nomesClick = false } = {} ) {
+	const prem = ( loc ) =>
+		nomesClick ? loc.dispatchEvent( 'click' ) : loc.click();
+	const salta = page
+		.getByRole( 'button', { name: 'Salta la presentació' } )
+		.first();
+	const dock = page.getByRole( 'list', { name: 'Apps preferides' } );
+	// PC: el botó surt al panell de Parla; mòbil: l'inici amb el dock.
+	await salta.or( dock ).first().waitFor();
+	if ( await salta.isVisible() ) {
+		await prem( salta );
+		await expect( salta ).toBeHidden();
+		return;
+	}
+	await prem(
+		page
+			.getByRole( 'list', { name: /^Apps( preferides)?$/ } )
+			.getByRole( 'button', { name: 'Parla', exact: true } )
+			.first()
+	);
+	if ( ! ( await salta.isVisible() ) ) {
+		const llista = page.getByRole( 'button', { name: 'Torna als xats' } );
+		if ( await llista.isVisible() ) {
+			await prem( llista );
+		}
+		await prem(
+			page.getByRole( 'button', { name: /^(Remei|Llissa)/ } ).first()
+		);
+	}
+	await prem( salta );
+	await expect( salta ).toBeHidden();
+	// Deixa Parla a la llista de xats (com si no s'hagués obert) i torna amb
+	// «Enrere» fins a tancar-la (que no quedi a la pila d'apps).
+	const tornar = page.getByRole( 'button', { name: 'Torna als xats' } );
+	await prem( tornar );
+	await expect( tornar ).toBeHidden();
+	const enrere = page.getByRole( 'button', { name: 'Enrere', exact: true } );
+	for ( let i = 0; i < 3 && ! ( await dock.isVisible() ); i++ ) {
+		await prem( enrere );
+	}
+	await expect( dock ).toBeVisible();
+}
+
 module.exports = {
+	saltaIntro,
 	test,
 	expect,
 	RESULTAT,

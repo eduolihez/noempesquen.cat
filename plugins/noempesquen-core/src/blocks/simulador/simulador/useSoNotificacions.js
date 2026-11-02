@@ -6,7 +6,7 @@ import { emmagatzem, llegeixSons } from './preferencies';
 import { AVIS_ENTRA } from './useCuaAvisos';
 
 /**
- * So de les notificacions: una nota per avís quan entra de debò a la vista
+ * So de les notificacions: un to per avís quan entra de debò a la vista
  * (esdeveniment AVIS_ENTRA dels toasts o banners), no quan arriba. Com que
  * les entrades van escalonades (MS_ENTRE_AVISOS), els sons no se solapen.
  * No substitueix l'avís visual ni aria-live. Cal una interacció prèvia
@@ -37,7 +37,7 @@ export function useSoNotificacions( arrel, estat ) {
 		};
 		const entra = ( e ) => {
 			const id = e.detail?.id;
-			const { pausa, fase } = actual.current;
+			const { pausa, fase, notificacions } = actual.current;
 			if (
 				! muts.current.has( id ) &&
 				deuSonar( {
@@ -48,11 +48,12 @@ export function useSoNotificacions( arrel, estat ) {
 					noves: [ id ],
 				} )
 			) {
-				// Pendent: el to «alerta» per als avisos de risc. El motor
-				// encara no distingeix el risc d'una notificació (`font` només
-				// diu l'origen, 'mobil' o PC), així que de moment tot sona
-				// «missatge».
-				motor.current?.reprodueix( 'missatge' );
+				// Els avisos de risc (efecte `notifica` amb `so: "alerta"`)
+				// sonen «alerta»; la resta, «missatge».
+				const n = notificacions.find( ( x ) => x.id === id );
+				motor.current?.reprodueix(
+					n?.so === 'alerta' ? 'alerta' : 'missatge'
+				);
 			}
 		};
 		el?.addEventListener( 'pointerdown', marca );

@@ -27,7 +27,7 @@ const envia = () =>
 
 describe( 'disparadors', () => {
 	it( 'el correu trampa apareix als 8 segons amb notificació de Posta', () => {
-		const e7 = ticks( joc(), 7 );
+		const e7 = ticks( jocSenseIntro(), 7 );
 		expect( visible( e7, m2 ) ).toBe( false );
 		const e8 = ticks( e7, 1 );
 		expect( visible( e8, m2 ) ).toBe( true );
