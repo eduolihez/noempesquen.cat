@@ -248,8 +248,9 @@ export function App( { config } ) {
 	darreres.current = missions;
 
 	const missio = missions.find( ( m ) => m.id === actual ) ?? null;
-	// La següent de la ruta del mateix vaixell; a l'última, tornar al mapa.
-	const seguentId = missio ? seguentDe( missions, missio.id ) : null;
+	// La següent de la ruta del mateix vaixell si ja és jugable amb el progrés
+	// actual; a l'última o si encara és bloquejada, tornar al mapa.
+	const seguentId = missio ? seguentDe( missions, missio.id, progres ) : null;
 	// Vaixell de la darrera missió jugada: el selector hi torna obert.
 	const vaixellJugat =
 		missions.find( ( m ) => m.id === jugada.current )?.dispositiu ?? null;

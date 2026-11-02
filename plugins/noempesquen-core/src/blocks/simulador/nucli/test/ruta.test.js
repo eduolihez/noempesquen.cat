@@ -142,15 +142,28 @@ describe( 'construeixRuta', () => {
 
 describe( 'seguentDe', () => {
 	it( 'dona la següent de la ruta del mateix dispositiu', () => {
-		expect( seguentDe( M, 'tp' ) ).toBe( 'p1' );
-		expect( seguentDe( M, 'p1' ) ).toBe( 'p2' );
-		expect( seguentDe( M, 'tm' ) ).toBe( 'm1' );
+		expect( seguentDe( M, 'tp', { tp: 1 } ) ).toBe( 'p1' );
+		expect( seguentDe( M, 'p1', { tp: 1, p1: 2 } ) ).toBe( 'p2' );
+		expect( seguentDe( M, 'tm', { tm: 1 } ) ).toBe( 'm1' );
 	} );
 	it( 'null a l’última o si l’id no existeix', () => {
-		expect( seguentDe( M, 'p3' ) ).toBeNull();
-		expect( seguentDe( M, 'm2' ) ).toBeNull();
-		expect( seguentDe( M, 'nope' ) ).toBeNull();
-		expect( seguentDe( null, 'p1' ) ).toBeNull();
+		const tot = { tp: 1, p1: 1, p2: 1, p3: 1, tm: 1, m1: 1, m2: 1 };
+		expect( seguentDe( M, 'p3', tot ) ).toBeNull();
+		expect( seguentDe( M, 'm2', tot ) ).toBeNull();
+		expect( seguentDe( M, 'nope', tot ) ).toBeNull();
+		expect( seguentDe( null, 'p1', tot ) ).toBeNull();
+	} );
+	it( 'null si la següent encara és bloquejada', () => {
+		// p1 acabada amb 0 estrelles: no compta com a feta, p2 bloquejada.
+		expect( seguentDe( M, 'p1', { tp: 1, p1: 0 } ) ).toBeNull();
+		expect( seguentDe( M, 'tp', {} ) ).toBeNull();
+		expect( seguentDe( M, 'tp' ) ).toBeNull();
+	} );
+	it( 'en rejugar una d’abans, dona la següent si ja és feta', () => {
+		const p = { tp: 1, p1: 3, p2: 2 };
+		expect( seguentDe( M, 'tp', p ) ).toBe( 'p1' );
+		expect( seguentDe( M, 'p1', p ) ).toBe( 'p2' );
+		expect( seguentDe( M, 'p2', p ) ).toBe( 'p3' );
 	} );
 } );
 

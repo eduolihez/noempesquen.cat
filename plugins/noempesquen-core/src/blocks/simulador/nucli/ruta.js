@@ -96,21 +96,25 @@ export function construeixRuta( missions, dispositiu, progres ) {
 }
 
 /**
- * Missió següent a la ruta del mateix dispositiu que `id`.
+ * Missió següent a la ruta del mateix dispositiu que `id`, només si amb el
+ * progrés actual ja es pot jugar (no és bloquejada).
  *
  * @param {Array}  missions Missions.
  * @param {string} id       Id de la missió acabada.
- * @return {string|null} Id de la següent o null si és l'última o no existeix.
+ * @param {Object} progres  Estrelles per missió (amb la que s'acaba de jugar).
+ * @return {string|null} Id de la següent; null si és l'última, si no existeix
+ *                       o si encara és bloquejada (llavors es torna al mapa).
  */
-export function seguentDe( missions, id ) {
+export function seguentDe( missions, id, progres ) {
 	const totes = Array.isArray( missions ) ? missions : [];
 	const actual = totes.find( ( m ) => m && m.id === id );
 	if ( ! actual ) {
 		return null;
 	}
-	const llista = missionsDe( totes, actual.dispositiu );
-	const i = llista.findIndex( ( m ) => m.id === id );
-	return llista[ i + 1 ]?.id ?? null;
+	const { nodes } = construeixRuta( totes, actual.dispositiu, progres );
+	const i = nodes.findIndex( ( n ) => n.id === id );
+	const seguent = nodes[ i + 1 ];
+	return seguent && seguent.estat !== 'bloquejada' ? seguent.id : null;
 }
 
 /**
