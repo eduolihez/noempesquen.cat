@@ -55,8 +55,28 @@ if ( ! defined( 'NEP_COMPTE_LIMIT_REGISTRE_GLOBAL' ) ) {
  *   límit es pot superar en uns pocs intents.
  * - `Secure` de la galeta depèn d'is_ssl(): cal comprovar-ho en producció
  *   darrere del proxy (Varnish).
- * - L'alta no verifica el correu (D1).
+ * - L'alta envia un correu de verificació; el compte funciona sense verificar.
  */
+
+/** Verificacions per IP i finestra. */
+if ( ! defined( 'NEP_COMPTE_LIMIT_VERIFICA' ) ) {
+	define( 'NEP_COMPTE_LIMIT_VERIFICA', 20 );
+}
+
+/** Finestra del límit de verificació, en segons. */
+if ( ! defined( 'NEP_COMPTE_FINESTRA_VERIFICA' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_VERIFICA', 15 * MINUTE_IN_SECONDS );
+}
+
+/** Reenviaments de la verificació per usuari i finestra. */
+if ( ! defined( 'NEP_COMPTE_LIMIT_REENVIA' ) ) {
+	define( 'NEP_COMPTE_LIMIT_REENVIA', 3 );
+}
+
+/** Finestra del límit de reenviament, en segons. */
+if ( ! defined( 'NEP_COMPTE_FINESTRA_REENVIA' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_REENVIA', HOUR_IN_SECONDS );
+}
 
 add_action(
 	'rest_api_init',
@@ -77,6 +97,24 @@ add_action(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'permission_callback' => '__return_true',
 				'callback'            => 'nep_rest_compte_entra',
+			)
+		);
+		register_rest_route(
+			'noempesquen/v1',
+			'/compte/verifica',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => '__return_true',
+				'callback'            => 'nep_rest_compte_verifica',
+			)
+		);
+		register_rest_route(
+			'noempesquen/v1',
+			'/compte/reenvia-verificacio',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => 'nep_compte_permis',
+				'callback'            => 'nep_rest_compte_reenvia_verificacio',
 			)
 		);
 		register_rest_route(
@@ -325,19 +363,53 @@ function nep_compte_sessio_previa(): callable {
 }
 
 /**
+ * Diu si el correu de l'usuari ja està verificat.
+ *
+ * @param int $id Usuari.
+ * @return bool
+ */
+function nep_compte_verificat( int $id ): bool {
+	return (bool) get_user_meta( $id, 'nep_email_verificat', true );
+}
+
+/**
  * Resposta de sessió iniciada.
  *
  * @param array $progres Progrés.
+ * @param int   $id      Usuari.
  * @return WP_REST_Response
  */
-function nep_compte_resposta_connectat( array $progres ): WP_REST_Response {
+function nep_compte_resposta_connectat( array $progres, int $id ): WP_REST_Response {
 	return rest_ensure_response(
 		array(
 			'connectat' => true,
 			'nonce'     => wp_create_nonce( 'wp_rest' ),
 			'progres'   => nep_compte_objecte( $progres ),
+			'verificat' => nep_compte_verificat( $id ),
 		)
 	);
+}
+
+/**
+ * Genera un token de verificació nou (invalida l'anterior), el desa com a hash
+ * i envia el correu. Torna si el correu s'ha enviat.
+ *
+ * @param int $id Usuari.
+ * @return bool
+ */
+function nep_compte_envia_verificacio( int $id ): bool {
+	$bytes    = random_bytes( 32 );
+	$token    = nep_token_genera( $id, $bytes );
+	$parsejat = nep_token_parseja( $token );
+	if ( null === $parsejat ) {
+		return false;
+	}
+	$registre = nep_token_registre( $parsejat['secret'], wp_salt( 'auth' ), time(), NEP_TTL_VERIFICA );
+	if ( array() === $registre ) {
+		return false;
+	}
+	update_user_meta( $id, 'nep_token_verifica', $registre );
+	return nep_correu_verificacio( $id, $token );
 }
 
 /**
@@ -439,7 +511,9 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		return $generic;
 	}
 	$destrueix_previa();
-	return nep_compte_resposta_connectat( array() );
+	// Si el correu falla, l'alta continua: el jugador pot demanar-ne un altre.
+	nep_compte_envia_verificacio( (int) $id );
+	return nep_compte_resposta_connectat( array(), (int) $id );
 }
 
 /**
@@ -491,7 +565,61 @@ function nep_rest_compte_entra( WP_REST_Request $request ) {
 		return $generic;
 	}
 	$destrueix_previa();
-	return nep_compte_resposta_connectat( nep_compte_progres_desat( $usuari->ID ) );
+	return nep_compte_resposta_connectat( nep_compte_progres_desat( $usuari->ID ), (int) $usuari->ID );
+}
+
+/**
+ * Verifica el correu amb el token de l'enllaç (POST /compte/verifica).
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_compte_verifica( WP_REST_Request $request ) {
+	$generic = nep_compte_error( 'nep_token_invalid', __( 'L\'enllaç no és vàlid o ha caducat.', 'noempesquen' ), 400 );
+	if ( nep_compte_massa_gran( $request ) ) {
+		return $generic;
+	}
+	$cos = nep_compte_cos_json( $request );
+	if ( is_wp_error( $cos ) ) {
+		return $cos;
+	}
+	$clau = nep_clau_limit( 'verifica|' . nep_ip_client() );
+	if ( nep_compte_limit_ple( $clau, (int) NEP_COMPTE_LIMIT_VERIFICA ) ) {
+		return nep_compte_massa_intents();
+	}
+	nep_compte_suma_intent( $clau, NEP_COMPTE_FINESTRA_VERIFICA );
+
+	$token = nep_token_parseja( $cos['token'] ?? null );
+	if ( null === $token ) {
+		return $generic;
+	}
+	$usuari   = get_userdata( $token['id'] );
+	$registre = $usuari instanceof WP_User ? get_user_meta( $usuari->ID, 'nep_token_verifica', true ) : null;
+	if ( ! $usuari instanceof WP_User || ! nep_es_jugador( $usuari ) || ! nep_token_valid( $registre, $token['secret'], wp_salt( 'auth' ), time() ) ) {
+		return $generic;
+	}
+	update_user_meta( $usuari->ID, 'nep_email_verificat', time() );
+	delete_user_meta( $usuari->ID, 'nep_token_verifica' );
+	return rest_ensure_response( array( 'verificat' => true ) );
+}
+
+/**
+ * Reenvia el correu de verificació (POST /compte/reenvia-verificacio).
+ *
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_compte_reenvia_verificacio() {
+	$id = get_current_user_id();
+	if ( nep_compte_verificat( $id ) ) {
+		return rest_ensure_response( array( 'verificat' => true ) );
+	}
+	$clau = nep_clau_limit( 'reenvia|' . $id );
+	if ( nep_compte_limit_ple( $clau, (int) NEP_COMPTE_LIMIT_REENVIA ) ) {
+		return nep_compte_massa_intents();
+	}
+	nep_compte_suma_intent( $clau, NEP_COMPTE_FINESTRA_REENVIA );
+	nep_compte_envia_verificacio( $id );
+	return rest_ensure_response( array( 'verificat' => false ) );
 }
 
 /**
@@ -512,7 +640,13 @@ function nep_rest_compte_surt(): WP_REST_Response {
  * @return WP_REST_Response
  */
 function nep_rest_compte_progres(): WP_REST_Response {
-	return rest_ensure_response( array( 'progres' => nep_compte_objecte( nep_compte_progres_desat( get_current_user_id() ) ) ) );
+	$id = get_current_user_id();
+	return rest_ensure_response(
+		array(
+			'progres'   => nep_compte_objecte( nep_compte_progres_desat( $id ) ),
+			'verificat' => nep_compte_verificat( $id ),
+		)
+	);
 }
 
 /**
