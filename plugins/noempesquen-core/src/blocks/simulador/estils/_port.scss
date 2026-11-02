@@ -40,7 +40,9 @@
 	aspect-ratio: 16 / 9;
 	position: relative;
 	transform-origin: var(--cam-x) var(--cam-y);
-	transition: transform 0.9s cubic-bezier(0.65, 0, 0.3, 1);
+	transition:
+		transform 0.9s cubic-bezier(0.65, 0, 0.3, 1),
+		transform-origin 0.9s cubic-bezier(0.65, 0, 0.3, 1);
 }
 
 .nep-port__fons {
