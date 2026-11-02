@@ -60,6 +60,13 @@
 	}
 }
 
+/* Sobre la capçalera clara (#fffdf6): tinta 16:1. */
+.wp-block-noempesquen-simulador .nep-mapa__torna:focus-visible,
+.nep-mapa__torna:focus-visible {
+	outline: 3px solid var(--mapa-linia);
+	outline-offset: 3px;
+}
+
 .nep-mapa__rotul {
 	flex: 1 1 14rem;
 	min-width: 0;
@@ -211,9 +218,11 @@
 	top: calc(var(--mapa-node) / -2);
 	width: var(--mapa-node);
 
+	/* Doble anell com als vaixells: or entre dos de tinta. Sobre el mar
+	   (#1b7896-#0b5e7a) l'or fa ≥ 3,56:1; el gruix fosc separa la boia. */
 	&:focus-visible {
-		box-shadow: 0 0 0 3px #fff, 0 0 0 7px #f2b705;
-		outline: 4px solid #12355b;
+		box-shadow: 0 0 0 3px var(--mapa-linia), 0 0 0 10px var(--mapa-linia);
+		outline: 4px solid var(--mapa-or);
 		outline-offset: 3px;
 	}
 
