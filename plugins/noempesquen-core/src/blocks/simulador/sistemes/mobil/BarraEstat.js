@@ -58,6 +58,7 @@ export function BarraEstat( {
 			ref={ refBoto }
 			type="button"
 			className={ classe }
+			data-tut="barra-estat"
 			inert={ inerta ? '' : undefined }
 			aria-expanded={ obert }
 			aria-label={ `${ hora }. ${ __(

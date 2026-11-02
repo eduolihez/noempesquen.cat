@@ -180,7 +180,15 @@ export default function Pc() {
 									onEnfoca={ accio( 'ENFOCA' ) }
 									onMinimitza={ accio( 'MINIMITZA' ) }
 									onMaximitza={ accio( 'MAXIMITZA' ) }
-									onTanca={ accio( 'TANCA' ) }
+									onTanca={ () => {
+										envia( {
+											tipus: 'TANCA',
+											id: finestra.id,
+										} );
+										emet( 'finestra.tanca', {
+											app: finestra.app,
+										} );
+									} }
 									onMou={ ( rect ) =>
 										dispatchF( {
 											tipus: 'MOU',

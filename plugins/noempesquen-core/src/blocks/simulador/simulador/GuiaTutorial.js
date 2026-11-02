@@ -58,8 +58,15 @@ function resolAncora( arrel, clau ) {
 		} ) ),
 		clau
 	);
+	if ( i < 0 && ALTERNATIVA[ clau ] ) {
+		return resolAncora( arrel, ALTERNATIVA[ clau ] );
+	}
 	return i >= 0 ? els[ i ] : null;
 }
+
+// Si l'àncora no hi és, la que la precedeix: abans d'obrir la decisió, el
+// botó «Ja ho tinc clar» (així el pas de decidir no queda tapat).
+const ALTERNATIVA = { decisio: 'parla-respostes' };
 
 /**
  * Elements on es pot arribar amb Tab dins d'un contenidor (ell inclòs).

@@ -35,7 +35,10 @@ export function LlistaFils( { fils, bloquejats, onObre, onContactes } ) {
 					{ __( 'No tens cap conversa.', 'noempesquen' ) }
 				</p>
 			) : (
-				<ul className="nep-missatges-llista__fils">
+				<ul
+					className="nep-missatges-llista__fils"
+					data-tut="llista-sms"
+				>
 					{ fils.map( ( f ) => {
 						const darrer = f.missatges[ f.missatges.length - 1 ];
 						const { dia, hora } = parteixHora( darrer.hora );

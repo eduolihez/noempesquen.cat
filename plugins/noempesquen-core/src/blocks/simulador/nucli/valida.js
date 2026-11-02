@@ -72,6 +72,12 @@ export const ESDEVENIMENTS = [
 	'descarrega.fes',
 	'avis.apareix',
 	'lupa.activa',
+	'finestra.tanca',
+	'senyal.troba',
+	'decisio.pren',
+	'nav.inici',
+	'nav.enrere',
+	'centre.obre',
 	'pas.entra',
 ];
 

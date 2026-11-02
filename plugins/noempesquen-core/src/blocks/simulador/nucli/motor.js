@@ -212,9 +212,16 @@ function triaOpcio( missio, estat, opcioId ) {
 	if ( ! opcio ) {
 		return estat;
 	}
+	// `decisio.pren` abans de tancar el joc: pot acabar l'últim pas.
+	const pres = processaEsdeveniment( missio, estat, 'decisio.pren', {
+		opcio: opcio.id,
+	} );
+	if ( pres.fase !== FASE.JOC ) {
+		return pres;
+	}
 	return afegeixGuia(
 		{
-			...afegeixJo( estat, opcio.text ),
+			...afegeixJo( pres, opcio.text ),
 			opcio: opcio.id,
 			decisioOberta: false,
 			fase: FASE.CONSEQUENCIA,
@@ -283,10 +290,16 @@ function inspecciona( missio, estat, idSenyal ) {
 	}
 	const trobats = [ ...estat.trobats, senyal.id ];
 	const nou = { ...estat, trobats, ultimAvanc: estat.temps };
-	return afegeixGuia(
-		amb( nou, 'nova' ),
-		senyal.reaccio,
-		`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
+	// `senyal.troba` (un sol cop per senyal) pot fer avançar un pas.
+	return processaEsdeveniment(
+		missio,
+		afegeixGuia(
+			amb( nou, 'nova' ),
+			senyal.reaccio,
+			`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
+		),
+		'senyal.troba',
+		{ senyal: senyal.id }
 	);
 }
 
@@ -386,8 +399,9 @@ export function reductor( missio, estat, accio ) {
 				return estat;
 			}
 			const nou = { ...estat, lupa: ! estat.lupa };
-			// Primera vegada per partida: avisa missions i tutorials.
-			return nou.lupa && ! estat.lupaUsada
+			// Cada encesa: els disparadors només s'executen un cop, i un pas
+			// «activa la lupa» avança encara que ja s'hagués fet servir.
+			return nou.lupa
 				? processaEsdeveniment(
 						missio,
 						{ ...nou, lupaUsada: true },

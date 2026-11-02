@@ -240,6 +240,24 @@ export function enPassos( missio, estat ) {
 }
 
 /**
+ * Un pas d'acció que l'estat ja compleix (el jugador s'hi ha avançat): la
+ * lupa ja és encesa o el senyal ja s'ha trobat. Si no, quedaria encallat.
+ *
+ * @param {Object} pas   Pas del tutorial.
+ * @param {Object} estat Estat actual.
+ * @return {boolean} Cert si el pas ja està fet.
+ */
+function pasJaFet( pas, estat ) {
+	const c = pas.continua;
+	if ( c?.esdeveniment === 'lupa.activa' ) {
+		return !! estat.lupa;
+	}
+	return (
+		c?.esdeveniment === 'senyal.troba' && estat.trobats.includes( c.senyal )
+	);
+}
+
+/**
  * Posa el tutorial al pas indicat i processa l'esdeveniment sintètic
  * `pas.entra` només contra els disparadors (no pot avançar cap altre pas).
  *
@@ -251,9 +269,15 @@ export function enPassos( missio, estat ) {
 export function entraPas( missio, estat, index ) {
 	const nou = { ...estat, pas: index, ultimAvanc: estat.temps };
 	const pas = missio.passos?.[ index ];
-	return pas
-		? executaDisparadors( missio, nou, 'pas.entra', { pas: pas.id } )
-		: nou;
+	if ( ! pas ) {
+		return nou;
+	}
+	const entrat = executaDisparadors( missio, nou, 'pas.entra', {
+		pas: pas.id,
+	} );
+	return entrat.fase === FASE.JOC && pasJaFet( pas, entrat )
+		? entraPas( missio, entrat, index + 1 )
+		: entrat;
 }
 
 /**

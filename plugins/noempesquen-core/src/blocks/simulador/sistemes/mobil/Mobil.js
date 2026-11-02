@@ -113,17 +113,19 @@ export default function Mobil() {
 		if ( ! dalt ) {
 			return;
 		}
+		emet( 'nav.enrere' );
 		const gestor = gestorsEnrere.current.get( dalt.clau );
 		if ( gestor?.() ) {
 			return;
 		}
 		dispatchP( { tipus: 'ENRERE' } );
-	}, [] );
+	}, [ emet ] );
 
 	const inici = useCallback( () => {
 		setCentre( false );
 		dispatchP( { tipus: 'INICI' } );
-	}, [] );
+		emet( 'nav.inici' );
+	}, [ emet ] );
 
 	const registra = useCallback( ( clau, fn ) => {
 		gestorsEnrere.current.set( clau, fn );
@@ -211,7 +213,8 @@ export default function Mobil() {
 	const obreCentre = useCallback( () => {
 		setCentre( true );
 		dispatch( { tipus: 'NOTIFICACIONS_LLEGIDES' } );
-	}, [ dispatch ] );
+		emet( 'centre.obre' );
+	}, [ dispatch, emet ] );
 	const tancaCentre = useCallback( () => setCentre( false ), [] );
 	const amagaBloqueig = useCallback( () => setAmbBloqueig( false ), [] );
 	const obreGuia = useCallback( () => {

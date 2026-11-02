@@ -32,4 +32,6 @@ export const ANCORES = [
 	'nav-enrere',
 	'nav-inici',
 	'conversa',
+	'barra-estat',
+	'llista-sms',
 ];

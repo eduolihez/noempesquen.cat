@@ -111,7 +111,12 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `telefon.truca` | `url` (el jugador prem «Truca ara» o el telèfon d'una web falsa) |
 | `descarrega.fes` | `url`, `fitxer` (obre o executa el fitxer descarregat fictici; al filtre `quan`, `fitxer` és obligatori) |
 | `avis.apareix` | `url` (l'avís d'una web `article` es mostra; un sol cop per web i partida) |
-| `lupa.activa` | (sense dades) El jugador encén la lupa per primer cop a la partida; un sol cop per partida |
+| `lupa.activa` | (sense dades) El jugador encén la lupa (cada encesa; un disparador només s'executa un cop) |
+| `finestra.tanca` | `app` (PC: el jugador tanca la finestra d'una app amb la creu) |
+| `senyal.troba` | `senyal` (id del senyal; l'emet el motor la primera vegada que el jugador el marca amb la lupa) |
+| `decisio.pren` | `opcio` (id de l'opció; l'emet el motor quan el jugador tria, abans de la conseqüència) |
+| `nav.inici`, `nav.enrere` | (sense dades) Mòbil: botons Inici i Enrere de la barra de navegació |
+| `centre.obre` | (sense dades) Mòbil: el jugador obre el centre de control (toc o lliscament a la barra de dalt) |
 
 `telefon.truca`, `descarrega.fes` i `avis.apareix` no porten mai text escrit pel jugador. Al filtre `quan`, la seva `url` (host o URL, amb la mateixa normalització de `www.`) ha de ser una web `article` de la missió: amb `avis` per a `telefon.truca` i `avis.apareix`, i amb `avis.instal_la` o `barra` per a `descarrega.fes`.
 
@@ -182,7 +187,7 @@ Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el 
 - **Validació**: `tutorial` ha de ser booleà (`tutorial invàlid`). Si és `true`, `decisio.opcions` ha de tenir **una sola opció** i amb `valor: "correcta"` (p. ex. «Ja ho tinc clar», sense penalització possible); `senyals` ha de ser una llista, que pot ser buida (si el guió fa servir la lupa, hi ha d'haver almenys un senyal referenciat); no cal cap efecte `pescat`. Les missions normals es validen igual que abans.
 - **No puntua**: ni estrelles ni punts a la pantalla final («Ja estàs a punt» i, si n'hi ha, `tancament.consell`), ni estadístiques: el client no envia res a `POST /resultat` i el servidor rebutja un resultat d'un tutorial (400 `nep_missio_tutorial`).
 - **Progrés**: un tutorial fet es desa al mateix mapa del progrés (`{ id: 1 }`, local i al compte). L'1 no són estrelles, només vol dir «fet»; així la fusió per màxim i el progrés antic (sense la clau = no fet) funcionen sense canvis.
-- **Passos (`passos`)**: només vàlid amb `tutorial: true`; llista no buida. Cada pas té exactament `id` (únic, `[a-z0-9-]+`), `ancora` (una clau d'`ANCORES`, a `nucli/ancores.js`, o `null` per a una targeta centrada), `titol` (1-60 caràcters), `text` (1-280) i `continua`. Es rebutgen ids duplicats, àncores desconegudes, `continua` mal format, camps desconeguts i textos buits. `ANCORES`: `pantalla`, `escriptori`, `barra`, `inici`, `rellotge`, `lupa`, `app-navegador`, `app-parla`, `finestra-navegador`, `finestra-parla`, `botons-finestra`, `parla-xat`, `parla-respostes`, `avis`, `llista-correus`, `correu-obert`, `remitent`, `enllacos`, `adreca`, `decisio`, `bloqueig`, `dock`, `app-missatges`, `app-parla-mobil`, `banner`, `centre-control`, `nav-enrere`, `nav-inici`, `conversa` (la interfície les posa com a `data-tut`).
+- **Passos (`passos`)**: només vàlid amb `tutorial: true`; llista no buida. Cada pas té exactament `id` (únic, `[a-z0-9-]+`), `ancora` (una clau d'`ANCORES`, a `nucli/ancores.js`, o `null` per a una targeta centrada), `titol` (1-60 caràcters), `text` (1-280) i `continua`. Es rebutgen ids duplicats, àncores desconegudes, `continua` mal format, camps desconeguts i textos buits. `ANCORES`: `pantalla`, `escriptori`, `barra`, `inici`, `rellotge`, `lupa`, `app-navegador`, `app-parla`, `finestra-navegador`, `finestra-parla`, `botons-finestra`, `parla-xat`, `parla-respostes`, `avis`, `llista-correus`, `correu-obert`, `remitent`, `enllacos`, `adreca`, `decisio`, `bloqueig`, `dock`, `app-missatges`, `app-parla-mobil`, `banner`, `centre-control`, `nav-enrere`, `nav-inici`, `conversa`, `barra-estat` (mòbil: barra de dalt, obre el centre de control), `llista-sms` (mòbil: llista de converses de Missatges) (la interfície les posa com a `data-tut`).
 
   Anclas (`data-tut`): si una clave coincide con varios elementos, el overlay elige la primera visible. `decisio` solo existe mientras la decisión está abierta (antes, el botón «Decidir» lleva `parla-respostes`). La ventana enfocada lleva además `data-tut-foc="true"` (`[data-tut="finestra-parla"][data-tut-foc]`) y su `botons-finestra` está dentro. `conversa` solo existe en móvil.
   - **`continua`**: `"boto"` (l'acció `PAS_SEGUENT` avança) o `{ "esdeveniment": "...", ...claus }` amb la mateixa semàntica que `quan` dels disparadors (`PAS_SEGUENT` no avança un pas d'esdeveniment). Un esdeveniment del jugador que hi coincideix avança com a màxim un pas.
@@ -193,6 +198,8 @@ Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el 
   - **`continua` d'esdeveniment**: ha de ser un esdeveniment que el jugador emet (de `ESDEVENIMENTS`); `inici` i `pas.entra` es rebutgen (el tutorial quedaria encallat; per això el pas 0 no pot esperar `inici`). Si hi ha `app`, ha de ser una app del dispositiu. Un disparador `pas.entra` exigeix `passos` i un `pas` (text) existent.
   - **Pas saltat**: `PAS_SALTA` no executa els efectes d'esdeveniments reals dels passos saltats; un disparador no ha de dependre d'accions prèvies del jugador.
   - **Pistes**: mentre `pas < passos.length` no hi ha pistes automàtiques per temps.
+  - **Pas ja fet**: en entrar en un pas amb `continua` `lupa.activa` i la lupa ja encesa, o `senyal.troba` d'un senyal ja trobat, el motor el dona per fet i passa al següent (el jugador s'hi havia avançat).
+  - **Àncora alternativa**: si `decisio` no hi és (la decisió encara no és oberta), l'overlay assenyala `parla-respostes` (el botó «Ja ho tinc clar»).
 
   ```json
   "passos": [
