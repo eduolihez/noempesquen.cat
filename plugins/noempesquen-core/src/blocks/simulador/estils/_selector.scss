@@ -221,9 +221,16 @@
 		align-items: center;
 		color: #0b5e7a;
 		display: inline-flex;
-		min-height: 44px;
+
+		/* 24 px (2.5.8 AA); 44 px amb el dit si hi ha alçada: en pantalla
+		   baixa, la barra de baix trepitjaria els cascos dels vaixells. */
+		min-height: 24px;
 		text-decoration: underline;
 		text-underline-offset: 0.2em;
+
+		@media (pointer: coarse) and (min-height: 501px) {
+			min-height: 44px;
+		}
 
 		&:hover {
 			color: #084a61;
