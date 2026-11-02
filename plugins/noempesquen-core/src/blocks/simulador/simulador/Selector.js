@@ -58,6 +58,7 @@ function BotoVaixell( {
 	refBoto,
 } ) {
 	const { nom, descripcio } = vaixells()[ dispositiu ];
+	const marquesId = `nep-sel-${ dispositiu }-marques`;
 	const etiqueta = sprintf(
 		/* translators: 1: nom del vaixell, 2: dispositiu i guia, 3: missions fetes, 4: total, 5: estrelles, 6: màxim */
 		__(
@@ -77,6 +78,7 @@ function BotoVaixell( {
 			ref={ refBoto }
 			className={ `nep-sel-barco nep-sel-barco--${ dispositiu }` }
 			aria-label={ etiqueta }
+			aria-describedby={ aqui || horitzontal ? marquesId : undefined }
 			onClick={ () => onObre( dispositiu ) }
 		>
 			<span className="nep-sel-barco__cartell" aria-hidden="true">
@@ -96,7 +98,7 @@ function BotoVaixell( {
 					</span>
 				</span>
 				{ ( aqui || horitzontal ) && (
-					<span className="nep-sel-barco__marques">
+					<span id={ marquesId } className="nep-sel-barco__marques">
 						{ aqui && (
 							<span className="nep-sel-barco__aqui">
 								{ __( 'Aquí', 'noempesquen' ) }

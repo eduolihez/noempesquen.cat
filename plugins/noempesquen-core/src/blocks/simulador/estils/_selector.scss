@@ -140,7 +140,7 @@
 	}
 
 	&:hover .nep-sel-barco__cartell {
-		transform: translateX(-50%) translateY(-3px);
+		transform: translate(-50%, calc(var(--cartell-y) - 3px));
 	}
 
 	&:focus-visible {
@@ -150,7 +150,19 @@
 	}
 }
 
-/* Cartell de fusta clara amb el nom i el progrés. */
+/* Cartell de fusta clara amb el nom i el progrés: penja damunt del vaixell
+   (en estret, el del Pesquer no hi cap sense tapar el Pirata). */
+.nep-sel-barco {
+	--cartell-y: calc(-100% + 0.75rem);
+}
+
+@container (max-width: 639px) {
+
+	.nep-sel-barco--pc {
+		--cartell-y: 0%;
+	}
+}
+
 .nep-sel-barco__cartell {
 	align-items: center;
 	background: #fffdf6;
@@ -167,7 +179,7 @@
 	pointer-events: none;
 	position: absolute;
 	top: 0;
-	transform: translateX(-50%);
+	transform: translate(-50%, var(--cartell-y));
 	transition: transform 0.18s ease;
 	white-space: nowrap;
 }
@@ -283,6 +295,6 @@
 	}
 
 	.nep-sel-barco:hover .nep-sel-barco__cartell {
-		transform: translateX(-50%);
+		transform: translate(-50%, var(--cartell-y));
 	}
 }
