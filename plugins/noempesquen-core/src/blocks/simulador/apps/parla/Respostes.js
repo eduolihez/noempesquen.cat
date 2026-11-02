@@ -32,10 +32,8 @@ export function Respostes( { respostes, onResposta } ) {
 		}
 	} );
 
-	// Amb la decisió a la vista, el grup és l'àncora «decisio».
-	const esDecisio = respostes.some(
-		( x ) => x.id === 'decidir' || x.id.startsWith( 'decisio:' )
-	);
+	// Només mentre la decisió és oberta, el grup és l'àncora «decisio».
+	const esDecisio = respostes.some( ( x ) => x.id.startsWith( 'decisio:' ) );
 
 	return (
 		<div

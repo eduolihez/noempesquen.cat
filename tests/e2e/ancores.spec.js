@@ -14,11 +14,12 @@ test.use( { reducedMotion: 'reduce' } );
  */
 async function comprovaAncores( page, claus ) {
 	for ( const clau of claus ) {
-		const caixa = await page
-			.locator( `[data-tut="${ clau }"]:visible` )
-			.first()
-			.boundingBox();
-		expect( caixa, `àncora ${ clau }` ).not.toBeNull();
+		const loc = page.locator( `[data-tut="${ clau }"]` );
+		await expect( loc.first(), `àncora «${ clau }» visible` ).toBeVisible();
+		expect(
+			await loc.first().boundingBox(),
+			`àncora «${ clau }» amb caixa`
+		).not.toBeNull();
 	}
 }
 
@@ -47,7 +48,18 @@ test.describe( 'Àncores data-tut', () => {
 			'finestra-parla',
 			'botons-finestra',
 			'parla-xat',
+			'inici',
+			'lupa',
+			'adreca',
+			'llista-correus',
 		] );
+
+		// Només la finestra enfocada duu data-tut-foc i els seus botons hi són dins.
+		const foc = page.locator( '[data-tut^="finestra-"][data-tut-foc]' );
+		await expect( foc ).toHaveCount( 1 );
+		await expect(
+			foc.locator( '[data-tut="botons-finestra"]' )
+		).toHaveCount( 1 );
 	} );
 
 	test( 'mòbil: bloqueig, dock, apps i barra de navegació', async ( {
@@ -67,6 +79,7 @@ test.describe( 'Àncores data-tut', () => {
 			'app-parla-mobil',
 			'nav-enrere',
 			'nav-inici',
+			'lupa',
 		] );
 	} );
 } );

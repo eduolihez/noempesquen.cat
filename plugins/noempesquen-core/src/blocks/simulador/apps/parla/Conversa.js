@@ -203,7 +203,10 @@ export function Conversa( {
 	};
 
 	return (
-		<div className="nep-parla-conversa" data-tut="conversa">
+		<div
+			className="nep-parla-conversa"
+			data-tut={ onEnrere ? 'conversa' : undefined }
+		>
 			<div className="nep-parla-conversa__cap">
 				{ onEnrere && (
 					<button

@@ -18,7 +18,6 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 		return (
 			<button
 				type="button"
-				data-tut="enllacos"
 				className={ `nep-enllac nep-inspecciona${
 					trobat ? ' nep-marcat' : ''
 				}` }
@@ -43,7 +42,6 @@ function Enllac( { seg, onEnllac, onHoverUrl } ) {
 
 	return (
 		<a
-			data-tut="enllacos"
 			className={ `nep-enllac${ trobat ? ' nep-marcat' : '' }` }
 			{ ...propsEnllac( url, ( u ) => onEnllac?.( u ), onHoverUrl ) }
 		>

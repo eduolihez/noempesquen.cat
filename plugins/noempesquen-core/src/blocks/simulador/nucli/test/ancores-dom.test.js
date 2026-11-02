@@ -54,4 +54,16 @@ describe( 'àncores data-tut al codi', () => {
 			[ ...claus ].filter( ( c ) => ! ANCORES.includes( c ) )
 		).toEqual( [] );
 	} );
+
+	it( 'la finestra duu data-tut-foc i els botons són dins la mateixa', () => {
+		const text = readFileSync(
+			new URL( '../../sistemes/pc/Finestra.js', import.meta.url ),
+			'utf8'
+		);
+		const arrel = text.indexOf( 'data-tut-foc=' );
+		expect( arrel ).toBeGreaterThan( -1 );
+		expect( text.indexOf( 'data-tut="botons-finestra"' ) ).toBeGreaterThan(
+			arrel
+		);
+	} );
 } );

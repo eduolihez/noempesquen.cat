@@ -207,6 +207,7 @@ export function Finestra( {
 			ref={ arrel }
 			className={ classes }
 			aria-label={ titol }
+			data-tut-foc={ enfocada ? 'true' : undefined }
 			data-tut={ TUT_FINESTRA[ finestra.app ] }
 			style={ {
 				zIndex: finestra.z,
