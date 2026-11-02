@@ -1,4 +1,4 @@
-const { test, expect } = require( './ajudes' );
+const { test, expect, rutaDe } = require( './ajudes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-factura.json' );
 
@@ -12,6 +12,23 @@ const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-fact
 test.describe.configure( { mode: 'serial' } );
 
 const creades = [];
+
+/** Obre el mapa del Pesquer (les missions de prova són de PC) des del port. */
+async function obrePesquer( p ) {
+	await p.getByRole( 'button', { name: /^Obre el Pesquer:/ } ).click();
+	await expect( p.getByRole( 'button', { name: 'Torna al port' } ) ).toBeVisible();
+}
+
+/** Marca com a fetes totes les missions de PC incloses: les remotes queden desbloquejades. */
+const desbloquejaPesquer = ( p ) =>
+	p.addInitScript(
+		( ids ) =>
+			window.localStorage.setItem(
+				'noempesquen-progres-v2',
+				JSON.stringify( Object.fromEntries( ids.map( ( id ) => [ id, 1 ] ) ) )
+			),
+		rutaDe( 'pc' ).map( ( m ) => m.id )
+	);
 
 async function entra( page ) {
 	await page.goto( '/admin/' );
@@ -107,6 +124,7 @@ test( 'mostra els errors en viu i no publica un guió invàlid', async ( { page 
 	// Provar-la avisa el gestor sense trencar el selector.
 	await page.goto( `/simulador/?previsualitza=${ post }` );
 	await expect( page.getByRole( 'status' ).filter( { hasText: "No s'ha pogut carregar el guió de prova" } ) ).toBeVisible();
+	await obrePesquer( page );
 	await expect( page.locator( '[data-missio="llissa-01-factura"]' ) ).toBeVisible();
 } );
 
@@ -121,6 +139,7 @@ test( 'publica un guió vàlid i surt al simulador', async ( { page } ) => {
 		await expect( page.locator( '#post-status-display' ) ).toContainText( /publicad/i );
 
 		await page.goto( '/simulador/' );
+		await obrePesquer( page );
 		await expect( page.locator( `[data-missio="${ id }"]` ) ).toBeVisible();
 	} finally {
 		// Publicada la veu tothom: a la paperera de seguida (el selector compta les targetes).
@@ -138,8 +157,10 @@ test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona'
 	await desa( page, '#save-post' );
 	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
 
+	await desbloquejaPesquer( page );
 	await page.getByRole( 'link', { name: 'Prova-la al simulador' } ).click();
 	await expect( page ).toHaveURL( /previsualitza=\d+/ );
+	await obrePesquer( page );
 	// La de prova porta id propi (`<id>--prova`): no substitueix cap missió real.
 	const targeta = page.locator( `[data-missio="${ id }--prova"]` );
 	await expect( targeta ).toBeVisible();
@@ -150,6 +171,7 @@ test( '«Prova-la» obre un esborrany al simulador només per a qui el gestiona'
 	// Un visitant anònim amb el mateix enllaç no veu l'esborrany.
 	const anonim = await browser.newPage();
 	await anonim.goto( page.url() );
+	await obrePesquer( anonim );
 	await expect( anonim.locator( '[data-missio="llissa-01-factura"]' ) ).toBeVisible();
 	await expect( anonim.locator( `[data-missio="${ id }--prova"]` ) ).toHaveCount( 0 );
 	await expect( anonim.locator( `[data-missio="${ id }"]` ) ).toHaveCount( 0 );

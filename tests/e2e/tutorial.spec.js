@@ -29,12 +29,7 @@ test.use( { reducedMotion: 'reduce' } );
 
 const selector = ( page ) =>
 	page.getByRole( 'region', { name: 'Tria una missió' } );
-const seccio = ( page, nom ) =>
-	selector( page ).getByRole( 'group', { name: nom, exact: true } );
-const idsDe = ( loc ) =>
-	loc
-		.locator( '[data-missio]' )
-		.evaluateAll( ( els ) => els.map( ( el ) => el.dataset.missio ) );
+const mapa = ( page ) => page.locator( '.nep-mapa' );
 const parla = ( page ) => page.getByRole( 'region', { name: 'Parla' } );
 const barraTasques = ( page ) =>
 	page.getByRole( 'navigation', { name: 'Barra de tasques' } );
@@ -112,16 +107,18 @@ async function comprovaFinal(
 	expect( posts() ).toBe( 0 );
 
 	await page.getByRole( 'button', { name: 'Juga una missió' } ).click();
+	// Torna al mapa del vaixell del tutorial: fet, i la missió següent disponible.
 	await expect( selector( page ) ).toBeVisible();
+	await expect( mapa( page ) ).toBeVisible();
 	expect( posts() ).toBe( 0 );
 	expect( ( await progres( page ) )[ id ] ).toBe( 1 );
 	const targeta = selector( page ).locator( `[data-missio="${ id }"]` );
 	await expect( targeta ).toHaveCount( 1 );
 	await expect( targeta ).toContainText( 'Fet' );
-	await expect( seccio( page, 'Comença per aquí' ) ).toHaveCount( 0 );
-	expect( await idsDe( seccio( page, 'Continua per aquí' ) ) ).toEqual( [
-		seguent,
-	] );
+	await expect( targeta ).toBeFocused();
+	const proxima = selector( page ).locator( `[data-missio="${ seguent }"]` );
+	await expect( proxima ).toContainText( 'Toca ara' );
+	await expect( proxima ).not.toHaveAttribute( 'aria-disabled', 'true' );
 }
 
 const tutorialPc = require( '../../plugins/noempesquen-core/missions/tutorial-pc.json' );
@@ -599,32 +596,29 @@ test.describe( 'tutorial al selector', () => {
 	// El selector decideix pel mateix punt de tall que `useEsMobil`.
 	const estret = ( page ) => page.viewportSize().width < 768;
 
-	test( 'la primera vegada recomana el tutorial i es pot saltar', async ( {
+	test( 'la primera vegada només el tutorial és jugable', async ( {
 		page,
 	} ) => {
-		const isMobile = estret( page );
-		const tutorial = isMobile ? 'tutorial-mobil' : 'tutorial-pc';
-		const altre = isMobile ? 'tutorial-pc' : 'tutorial-mobil';
-		const primera = isMobile ? 'remei-01-paquet' : 'llissa-01-factura';
+		const mobil = estret( page );
+		const tutorial = mobil ? 'tutorial-mobil' : 'tutorial-pc';
+		const primera = mobil ? 'remei-01-paquet' : 'llissa-01-factura';
 		await page.clock.install();
 		await page.goto( '/simulador/' );
-		expect( await idsDe( seccio( page, 'Comença per aquí' ) ) ).toEqual( [
-			tutorial,
-		] );
-		expect( await idsDe( seccio( page, 'Tutorial' ) ) ).toEqual( [
-			altre,
-		] );
-
-		// Saltar-lo jugant una altra missió: la primera del dispositiu.
-		await page.locator( `[data-missio="${ primera }"]` ).click();
-		await expect( selector( page ) ).toBeHidden();
-		await page.keyboard.press( 'Escape' );
-		await expect( pausa( page ) ).toBeVisible();
+		await page
+			.getByRole( 'button', {
+				name: mobil ? /^Obre el Pirata:/ : /^Obre el Pesquer:/,
+			} )
+			.click();
 		await expect(
-			pausa( page ).getByRole( 'button', { name: 'Salta el tutorial' } )
-		).toHaveCount( 0 );
-		await pausa( page ).getByRole( 'button', { name: 'Surt' } ).click();
+			page.locator( `[data-missio="${ tutorial }"]` )
+		).toContainText( 'Toca ara' );
+		// La primera missió no es pot saltar-se el tutorial: és bloquejada.
+		const bloquejada = page.locator( `[data-missio="${ primera }"]` );
+		await expect( bloquejada ).toHaveAttribute( 'aria-disabled', 'true' );
+		// aria-disabled: Playwright el tracta com a inhabilitat, per això `force`.
+		await bloquejada.click( { force: true } );
 		await expect( selector( page ) ).toBeVisible();
+		await expect( pausa( page ) ).toHaveCount( 0 );
 	} );
 
 	test( '«Salta el tutorial» torna al selector sense marcar-lo fet', async ( {
@@ -643,12 +637,10 @@ test.describe( 'tutorial al selector', () => {
 			.getByRole( 'button', { name: 'Salta el tutorial' } )
 			.click();
 		await expect( selector( page ) ).toBeVisible();
+		await expect( mapa( page ) ).toBeVisible();
 		expect( ( await progres( page ) )[ tutorial ] ).toBeUndefined();
-		expect( await idsDe( seccio( page, 'Comença per aquí' ) ) ).toEqual( [
-			tutorial,
-		] );
-		await expect(
-			selector( page ).locator( `[data-missio="${ tutorial }"]` )
-		).not.toContainText( 'Fet' );
+		const node = selector( page ).locator( `[data-missio="${ tutorial }"]` );
+		await expect( node ).not.toContainText( 'Fet' );
+		await expect( node ).toContainText( 'Toca ara' );
 	} );
 } );
