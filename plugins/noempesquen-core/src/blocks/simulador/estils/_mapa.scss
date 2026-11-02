@@ -12,7 +12,7 @@
 .nep-mapa {
 	--mapa-linia: #0b1e3f;
 	--mapa-tinta: #14213d;
-	--mapa-suau: #3a4661; /* 7,1:1 sobre #d5dee3; 8:1 sobre #f6ecd2 */
+	--mapa-suau: #3a4661; /* 6,9:1 sobre #d5dee3; 8:1 sobre #f6ecd2 */
 	--mapa-or: #ffd54a;
 	--mapa-or-tinta: #7a5b00; /* 5,6:1 sobre #e6f2f5 */
 	--mapa-mar-fosc: #0b5e7a;
@@ -48,7 +48,7 @@
 	--mapa-bloq-fons: #e9e2d4;
 	--mapa-xifra-fons: #fbf1d9;
 	--mapa-xifra-vora: #8a5a2b;
-	--mapa-bandera: #b3261e; /* blanc: 6,8:1 */
+	--mapa-bandera: #b3261e; /* blanc: 6,5:1 */
 	--mapa-esquitx: #8a5a2b;
 	--mapa-lletra: georgia, "Times New Roman", serif;
 	--mapa-node: 64px;
@@ -535,6 +535,10 @@
 	left: calc(var(--mapa-node) / -2);
 	padding: 0;
 	position: absolute;
+
+	/* En rebre el focus, la vista fa scroll fins a veure-hi també el banderí
+	   i l'anell (a dalt), l'etiqueta (a baix) i l'amplada de l'etiqueta. */
+	scroll-margin: 3rem 3.25rem 5.5rem;
 	top: calc(var(--mapa-node) / -2);
 	width: var(--mapa-node);
 
@@ -601,7 +605,7 @@
 	position: relative;
 }
 
-/* Boia (carta). Número de tinta sobre el cos: blanc 16:1, groc 13:1. */
+/* Boia (carta). Número de tinta sobre el cos: blanc 16,5:1, groc 11,7:1. */
 .nep-mapa[data-tema="carta"] .nep-mapa__node {
 	--boia-cos: #fff;
 	--boia-banda: #1d6b3a;
@@ -776,6 +780,13 @@
 	&--cadenat {
 		background: var(--mapa-suau);
 	}
+}
+
+/* Amb el banderí «Toca ara» a dalt, la brúixola del tutorial passa al
+   costat dret (a dalt la tapava en la vista baixa). */
+.nep-mapa__node--disponible .nep-mapa__insignia--tutorial {
+	right: -18px;
+	top: calc(50% - 13px);
 }
 
 /* Disponible: més gran, amb un pols al voltant i banderí «Toca ara». */

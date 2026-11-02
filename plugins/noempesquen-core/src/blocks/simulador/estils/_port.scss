@@ -135,7 +135,6 @@
 	--cam-min: calc(50% / var(--zoom));
 	--cam-max: calc(100% - 50% / var(--zoom));
 	transform: translate(calc(50% - var(--cam-x)), calc(50% - var(--cam-y))) scale(var(--zoom));
-	will-change: transform;
 }
 
 .nep-port--zoom-pc .nep-port__marc {
