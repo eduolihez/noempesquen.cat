@@ -399,9 +399,13 @@ export function reductor( missio, estat, accio ) {
 				return estat;
 			}
 			const nou = { ...estat, lupa: ! estat.lupa };
-			// Cada encesa: els disparadors només s'executen un cop, i un pas
-			// «activa la lupa» avança encara que ja s'hagués fet servir.
-			return nou.lupa
+			// La primera encesa i, als tutorials, cada encesa (un pas «activa
+			// la lupa» avança encara que ja s'hagués fet servir). Les missions
+			// sense passos es queden com abans.
+			const emet =
+				nou.lupa &&
+				( ! estat.lupaUsada || Array.isArray( missio.passos ) );
+			return emet
 				? processaEsdeveniment(
 						missio,
 						{ ...nou, lupaUsada: true },

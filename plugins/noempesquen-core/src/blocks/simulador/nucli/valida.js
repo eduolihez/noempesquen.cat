@@ -1146,6 +1146,24 @@ function validaTutorial( m, valors, errors ) {
 
 const ID_PAS = /^[a-z0-9-]+$/;
 const CAMPS_PAS = [ 'id', 'ancora', 'titol', 'text', 'continua' ];
+/** Tope de passos d'un tutorial. */
+export const MAX_PASSOS = 40;
+// Claus que pot dur un `continua` objecte (filtres de l'esdeveniment).
+const CLAUS_CONTINUA = [
+	'esdeveniment',
+	'app',
+	'id',
+	'senyal',
+	'opcio',
+	'url',
+];
+// Esdeveniments que només emet un dels dos sistemes.
+const ESDEVENIMENTS_DISPOSITIU = {
+	'finestra.tanca': 'pc',
+	'nav.inici': 'mobil',
+	'nav.enrere': 'mobil',
+	'centre.obre': 'mobil',
+};
 const esValorSimple = ( v ) =>
 	[ 'string', 'number', 'boolean' ].includes( typeof v );
 
@@ -1177,7 +1195,21 @@ function validaContinua( ref, c, m, errors ) {
 		errors.push(
 			`${ ref }: continua amb esdeveniment no vàlid: ${ c.esdeveniment }`
 		);
+	} else if (
+		ESDEVENIMENTS_DISPOSITIU[ c.esdeveniment ] &&
+		ESDEVENIMENTS_DISPOSITIU[ c.esdeveniment ] !== ( m.dispositiu ?? 'pc' )
+	) {
+		errors.push(
+			`${ ref }: ${ c.esdeveniment } no existeix al dispositiu ${
+				m.dispositiu ?? 'pc'
+			}`
+		);
 	}
+	Object.keys( c )
+		.filter( ( k ) => ! CLAUS_CONTINUA.includes( k ) )
+		.forEach( ( k ) =>
+			errors.push( `${ ref }: continua amb clau desconeguda: ${ k }` )
+		);
 	const apps = APPS_MISSIO[ m.dispositiu ];
 	if ( c.app !== undefined && apps && ! apps.includes( c.app ) ) {
 		errors.push( `${ ref }: continua amb app inexistent: ${ c.app }` );
@@ -1247,6 +1279,9 @@ function validaPassos( m, errors ) {
 	if ( ! Array.isArray( m.passos ) || ! m.passos.length ) {
 		errors.push( 'passos: ha de ser una llista no buida' );
 		return;
+	}
+	if ( m.passos.length > MAX_PASSOS ) {
+		errors.push( `passos: com a màxim ${ MAX_PASSOS }` );
 	}
 	const vistos = new Set();
 	m.passos.forEach( ( p, i ) => validaPas( p, i, vistos, m, errors ) );

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { validaMissio } from '../valida.js';
+import { validaMissio, MAX_PASSOS } from '../valida.js';
 import { ANCORES, ancoraDelPas } from '../ancores.js';
 import { estatInicial, reductor, respostesRapides, FASE } from '../motor.js';
 
@@ -343,5 +343,89 @@ describe( 'ancoraDelPas', () => {
 		expect( ancoraDelPas( m, { pas: m.passos.length } ) ).toBeNull();
 		expect( ancoraDelPas( { senyals: [] }, { pas: 0 } ) ).toBeNull();
 		expect( ancoraDelPas( m, { pas: 0 } ) ).toBeNull();
+	} );
+} );
+
+describe( 'validador: passos', () => {
+	const pc = llegeix( 'tutorial-pc.json' );
+	const mobil = llegeix( 'tutorial-mobil.json' );
+	const amb = ( m, passos ) => validaMissio( { ...m, passos }, mon );
+	const accio = ( continua ) => ( {
+		id: 'prova',
+		ancora: null,
+		titol: 'Prova',
+		text: 'Text de prova.',
+		continua,
+	} );
+
+	it( `com a màxim ${ MAX_PASSOS } passos`, () => {
+		const molts = Array.from( { length: MAX_PASSOS + 1 }, ( _, i ) => ( {
+			...pc.passos[ 0 ],
+			id: `p${ i }`,
+		} ) );
+		expect( amb( pc, molts ).join() ).toMatch( /com a màxim 40/ );
+		expect(
+			amb( pc, molts.slice( 0, MAX_PASSOS ) ).filter( ( e ) =>
+				e.startsWith( 'passos:' )
+			)
+		).toEqual( [] );
+	} );
+
+	it( 'continua: només claus conegudes', () => {
+		const errors = amb( pc, [
+			accio( { esdeveniment: 'app.obre', app: 'navegador', nom: 'x' } ),
+		] );
+		expect( errors.join() ).toMatch( /clau desconeguda: nom/ );
+	} );
+
+	it( 'esdeveniments propis de cada dispositiu', () => {
+		for ( const ev of [ 'nav.inici', 'nav.enrere', 'centre.obre' ] ) {
+			expect(
+				amb( pc, [ accio( { esdeveniment: ev } ) ] ).join()
+			).toMatch( /no existeix al dispositiu pc/ );
+			expect(
+				amb( mobil, [ accio( { esdeveniment: ev } ) ] ).join()
+			).not.toMatch( /no existeix/ );
+		}
+		expect(
+			amb( mobil, [
+				accio( { esdeveniment: 'finestra.tanca', app: 'parla' } ),
+			] ).join()
+		).toMatch( /no existeix al dispositiu mobil/ );
+	} );
+} );
+
+describe( 'lupa.activa fora dels tutorials', () => {
+	it( 'una missió sense passos només l’emet la primera vegada', () => {
+		const base = llegeix( 'llissa-01-factura.json' );
+		const m = {
+			...base,
+			disparadors: [
+				...base.disparadors,
+				{
+					id: 'compta-lupa',
+					quan: { esdeveniment: 'lupa.activa' },
+					efectes: [
+						{
+							tipus: 'notifica',
+							app: 'posta',
+							titol: 'Prova',
+							text: 'Lupa',
+						},
+					],
+				},
+			],
+		};
+		let e = { ...estatInicial( m ), fase: FASE.JOC, introAcabada: true };
+		const lupa = ( x ) => reductor( m, x, { tipus: 'LUPA' } );
+		e = lupa( e );
+		const primera = e;
+		e = lupa( lupa( e ) );
+		expect( e.lupa ).toBe( true );
+		expect( e.lupaUsada ).toBe( true );
+		// La segona encesa no torna a passar pels disparadors.
+		expect( e.notificacions ).toEqual( primera.notificacions );
+		expect( e.pendents ).toEqual( primera.pendents );
+		expect( e.disparats ).toEqual( primera.disparats );
 	} );
 } );
