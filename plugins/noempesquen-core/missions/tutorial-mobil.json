@@ -3,16 +3,16 @@
 	"versio": 2,
 	"tutorial": true,
 	"titol": "Aprèn a jugar al mòbil",
-	"resum": "La Pirata Remei t'ensenya a moure't pel mòbil, obrir avisos, xatejar i fer servir la lupa.",
+	"resum": "La Pirata Remei t'ensenya pas a pas el mòbil: apps, botons, avisos, SMS, la lupa i com decidir.",
 	"dispositiu": "mobil",
 	"personatge": "remei",
 	"nivell": 1,
 	"durada_minuts": 3,
 	"rellotge": "18:30",
-	"instruccions": "Segueix la guia pas a pas. Al final, obre l'SMS de Premis Fantasia, troba els indicis amb la lupa i toca «Ja ho tinc clar» a Parla.",
+	"instruccions": "Segueix la guia pas a pas: et dirà on tocar en cada moment.",
 	"pistes": [
 		"Toca la icona de Parla, a la pantalla d'inici.",
-		"Toca l'avís de l'SMS o ves a l'inici i obre Missatges. També pots tocar la barra de dalt per veure els avisos.",
+		"Toca l'avís de l'SMS. Si ha marxat, toca la barra de dalt de tot i el trobaràs al centre de control.",
 		"Obre l'SMS de Premis Fantasia, activa la lupa i toca el remitent i el premi.",
 		"Quan ho tinguis clar, torna a Parla i toca «Ja ho tinc clar»."
 	],
@@ -20,7 +20,7 @@
 		{
 			"id": "bloqueig",
 			"ancora": null,
-			"titol": "Un mòbil de mentida",
+			"titol": "Un mòbil de pràctica",
 			"text": "Aquest mòbil és de pràctica: res del que facis surt d'aquí. Ja has passat la pantalla de bloqueig, la primera que veus en encendre'l.",
 			"continua": "boto"
 		},
@@ -35,8 +35,29 @@
 			"id": "dock",
 			"ancora": "dock",
 			"titol": "Les apps de sota",
-			"text": "A baix de tot tens les apps que més faràs servir, sempre a mà.",
-			"continua": "boto"
+			"text": "A baix tens les apps que més faràs servir. Toca el Navegador.",
+			"continua": {
+				"esdeveniment": "app.obre",
+				"app": "navegador"
+			}
+		},
+		{
+			"id": "nav-enrere",
+			"ancora": "nav-enrere",
+			"titol": "El botó Enrere",
+			"text": "Aquest botó et torna a la pantalla d'abans. Toca'l.",
+			"continua": {
+				"esdeveniment": "nav.enrere"
+			}
+		},
+		{
+			"id": "nav-inici",
+			"ancora": "nav-inici",
+			"titol": "El botó Inici",
+			"text": "Aquest et porta a la pantalla d'inici des d'on siguis. Toca'l.",
+			"continua": {
+				"esdeveniment": "nav.inici"
+			}
 		},
 		{
 			"id": "app-missatges",
@@ -46,21 +67,14 @@
 			"continua": "boto"
 		},
 		{
-			"id": "obre-parla",
+			"id": "parla",
 			"ancora": "app-parla-mobil",
 			"titol": "Parla, el xat",
-			"text": "Parla és l'app de xat. Toca-la per obrir-la: la Remei t'hi espera.",
+			"text": "Parla és l'app de xat. Toca-la: la Remei t'hi espera per fer-te de guia.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "parla"
 			}
-		},
-		{
-			"id": "parla",
-			"ancora": "conversa",
-			"titol": "La teva guia",
-			"text": "Aquí xerres amb la Pirata Remei. Mentre jugues, et dona pistes per aquest xat.",
-			"continua": "boto"
 		},
 		{
 			"id": "respostes",
@@ -70,60 +84,82 @@
 			"continua": "boto"
 		},
 		{
-			"id": "nav-enrere",
-			"ancora": "nav-enrere",
-			"titol": "El botó Enrere",
-			"text": "Aquest botó et torna a la pantalla d'abans. Dins d'una app, fa un pas enrere.",
-			"continua": "boto"
-		},
-		{
-			"id": "nav-inici",
-			"ancora": "nav-inici",
-			"titol": "El botó Inici",
-			"text": "Aquest et porta a la pantalla d'inici des d'on siguis. L'app es queda oberta al darrere.",
-			"continua": "boto"
-		},
-		{
 			"id": "banner",
 			"ancora": "banner",
 			"titol": "Un avís",
-			"text": "Quan t'arriba alguna cosa, surt un avís a dalt. Aquest és un SMS. Si el toques, t'obre l'app que avisa.",
-			"continua": "boto"
-		},
-		{
-			"id": "centre-control",
-			"ancora": null,
-			"titol": "El centre de control",
-			"text": "Els avisos marxen sols al cap d'una estona. Si se t'escapa algun, toca la barra de dalt de tot: s'obre el centre de control amb tots els avisos.",
-			"continua": "boto"
+			"text": "T'acaba d'arribar un SMS i surt un avís a dalt. Toca'l per obrir Missatges.",
+			"continua": {
+				"esdeveniment": "app.obre",
+				"app": "missatges"
+			}
 		},
 		{
 			"id": "missatges",
-			"ancora": null,
-			"titol": "Llegeix l'SMS",
-			"text": "Quan acabi la guia, obre l'SMS de Premis Fantasia. Toca l'avís o ves a l'inici i obre Missatges.",
-			"continua": "boto"
+			"ancora": "llista-sms",
+			"titol": "Els teus SMS",
+			"text": "Aquí tens els SMS. Toca el de Premis Fantasia per llegir-lo.",
+			"continua": {
+				"esdeveniment": "missatge.obre",
+				"app": "missatges",
+				"id": "s1"
+			}
 		},
 		{
 			"id": "lupa",
 			"ancora": "lupa",
 			"titol": "La lupa",
-			"text": "Dins l'SMS, toca la lupa per encendre-la. Amb la lupa encesa, cada toc marca el que et sembla sospitós.",
-			"continua": "boto"
+			"text": "Toca la lupa per encendre-la. Amb la lupa encesa, cada toc marca el que et sembla sospitós.",
+			"continua": {
+				"esdeveniment": "lupa.activa"
+			}
 		},
 		{
-			"id": "remitent",
-			"ancora": null,
-			"titol": "Busca els indicis",
-			"text": "Toca el nom de qui t'escriu i la frase del premi. Cada indici fa pujar el comptador «Indicis». N'hi ha dos.",
-			"continua": "boto"
+			"id": "indici-remitent",
+			"ancora": "conversa",
+			"titol": "Primer indici: el remitent",
+			"text": "Toca el nom de qui t'escriu, a dalt. Cap empresa de debò es diu «Premis Fantasia».",
+			"continua": {
+				"esdeveniment": "senyal.troba",
+				"senyal": "remitent"
+			}
+		},
+		{
+			"id": "indici-premi",
+			"ancora": "conversa",
+			"titol": "Segon indici: el premi",
+			"text": "Ara toca la frase del premi. Ningú regala un iot per un sorteig on no t'has apuntat.",
+			"continua": {
+				"esdeveniment": "senyal.troba",
+				"senyal": "premi"
+			}
+		},
+		{
+			"id": "obre-centre",
+			"ancora": "barra-estat",
+			"titol": "El centre de control",
+			"text": "La Remei t'ha escrit. Toca la barra de dalt de tot: s'obre el centre de control, amb tots els avisos.",
+			"continua": {
+				"esdeveniment": "centre.obre"
+			}
+		},
+		{
+			"id": "centre-control",
+			"ancora": "centre-control",
+			"titol": "Tots els avisos",
+			"text": "Aquí queden els avisos que se t'escapen. Toca el de la Remei per tornar a Parla.",
+			"continua": {
+				"esdeveniment": "app.obre",
+				"app": "parla"
+			}
 		},
 		{
 			"id": "decisio",
-			"ancora": "parla-respostes",
+			"ancora": "decisio",
 			"titol": "Decideix",
-			"text": "Quan els tinguis, torna a Parla i toca «Ja ho tinc clar» per dir què en fas. Ara et toca a tu.",
-			"continua": "boto"
+			"text": "Toca «Ja ho tinc clar» i tria què en fas. A les missions, decidir bé dona més punts que trobar indicis; aquí no puntua.",
+			"continua": {
+				"esdeveniment": "decisio.pren"
+			}
 		}
 	],
 	"apps": {
@@ -158,14 +194,14 @@
 			"id": "avis-guia",
 			"quan": {
 				"esdeveniment": "pas.entra",
-				"pas": "obre-parla"
+				"pas": "parla"
 			},
 			"efectes": [
 				{
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "Remei",
-					"text": "Ei, sóc la Remei! Obre Parla i et faig de guia. Res del que veuràs aquí és de veritat."
+					"text": "Ei, sóc la Remei. Obre Parla i et faig de guia. Res del que veuràs aquí és de veritat."
 				}
 			]
 		},
@@ -195,19 +231,19 @@
 			"id": "remitent",
 			"titol": "Un remitent absurd",
 			"explicacio": "Cap empresa de debò es diu «Premis Fantasia». Mira sempre qui t'escriu abans de creure't res.",
-			"reaccio": "Ben vist! Mira com ha pujat el comptador «Indicis». Encara en queda un."
+			"reaccio": "Ben vist. Mira com ha pujat el comptador «Indicis»."
 		},
 		{
 			"id": "premi",
 			"titol": "Un premi que no has demanat",
-			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Si és massa bonic per ser veritat, és que no ho és.",
-			"reaccio": "Tots trobats. Quan ho tinguis clar, toca «Ja ho tinc clar», a sota del xat."
+			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Un premi que no has demanat és una manera de fer-te picar.",
+			"reaccio": "Tots trobats. Ara torna a Parla per decidir."
 		}
 	],
 	"frases": {
 		"normal": [
 			"Això sembla normal. Prova en una altra part del SMS.",
-			"Aquí no hi ha res de trampa."
+			"Aquí no hi ha cap trampa."
 		]
 	},
 	"decisio": {
@@ -217,7 +253,7 @@
 				"id": "a",
 				"text": "Ja ho tinc clar: és un SMS de mentida i no en faig cas.",
 				"valor": "correcta",
-				"resposta": "Molt bé. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions de veritat hi haurà més opcions, i no totes seran bones."
+				"resposta": "Ben fet. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions hi haurà més opcions, i la que triïs és el que més compta a la puntuació."
 			}
 		]
 	},
@@ -225,8 +261,8 @@
 		"aprenentatges": [
 			"Enrere fa un pas enrere i Inici et porta a la pantalla d'inici.",
 			"Els avisos et porten a l'app que avisa, i el centre de control els guarda.",
-			"Amb la lupa marques els indicis i el comptador et diu quants en portes."
+			"Amb la lupa marques els indicis; a les missions, la decisió final és el que més puntua."
 		],
-		"consell": "Ja estàs a punt. Si un missatge et fa pressa o sembla massa bonic, para i mira'l amb la lupa."
+		"consell": "Si un missatge et fa pressa o sembla massa bo, para i mira'l amb la lupa."
 	}
 }

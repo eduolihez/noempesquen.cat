@@ -3,15 +3,15 @@
 	"versio": 2,
 	"tutorial": true,
 	"titol": "Aprèn a jugar a l'ordinador",
-	"resum": "La Llissa t'ensenya a moure't per l'ordinador, obrir avisos, xatejar i fer servir la lupa.",
+	"resum": "La Llissa t'ensenya pas a pas l'ordinador: finestres, avisos, el correu, la lupa i com decidir.",
 	"dispositiu": "pc",
 	"personatge": "llissa",
 	"nivell": 1,
 	"durada_minuts": 3,
 	"rellotge": "10:00",
-	"instruccions": "Segueix la guia pas a pas. Al final, troba els indicis del correu amb la lupa i fes clic a «Ja ho tinc clar».",
+	"instruccions": "Segueix la guia pas a pas: et dirà on fer clic en cada moment.",
 	"pistes": [
-		"Fes clic a l'avís de la Llissa per obrir Parla. Si ha marxat, el trobaràs a la campana, a baix a la dreta.",
+		"Fes clic a l'avís de la Llissa per anar a Parla. Si ha marxat, el trobaràs a la campana, a baix a la dreta.",
 		"Fes clic a l'avís del correu de Premis Fantasia, o a la campana, per obrir Posta al Navegador.",
 		"Obre el correu de Premis Fantasia, activa la lupa i fes clic al remitent, al premi i a l'enllaç.",
 		"Quan ho tinguis clar, fes clic a «Ja ho tinc clar», a sota del xat."
@@ -20,8 +20,8 @@
 		{
 			"id": "benvinguda",
 			"ancora": null,
-			"titol": "Un ordinador de mentida",
-			"text": "Aquest ordinador és de pràctica. Res del que facis aquí surt de la pantalla: pots tocar-ho tot sense por.",
+			"titol": "Un ordinador de pràctica",
+			"text": "Aquest ordinador és de pràctica. Res del que facis aquí surt de la pantalla, així que pots tocar-ho tot.",
 			"continua": "boto"
 		},
 		{
@@ -39,6 +39,13 @@
 			"continua": "boto"
 		},
 		{
+			"id": "parla",
+			"ancora": "finestra-parla",
+			"titol": "Parla, el xat",
+			"text": "Aquesta finestra és Parla, l'app de xat. Aquí la Llissa, la teva guia, et dona pistes mentre jugues.",
+			"continua": "boto"
+		},
+		{
 			"id": "finestra",
 			"ancora": "finestra-navegador",
 			"titol": "Una finestra",
@@ -49,14 +56,24 @@
 			"id": "botons-finestra",
 			"ancora": "botons-finestra",
 			"titol": "Els botons de la finestra",
-			"text": "A dalt a la dreta de cada finestra hi ha tres botons. La ratlla l'amaga a la barra, el quadre la fa gran i la creu la tanca.",
+			"text": "Cada finestra té tres botons a dalt a la dreta. La ratlla l'amaga a la barra. El quadre la fa gran. La creu la tanca.",
 			"continua": "boto"
 		},
 		{
-			"id": "tanca-obre",
-			"ancora": "pantalla",
-			"titol": "Tanca i torna a obrir",
-			"text": "Prova-ho: tanca el Navegador amb la creu. Després torna'l a obrir amb la seva icona de la barra de tasques.",
+			"id": "tanca",
+			"ancora": "finestra-navegador",
+			"titol": "Tanca una finestra",
+			"text": "Prova-ho: tanca el Navegador amb la creu de dalt a la dreta.",
+			"continua": {
+				"esdeveniment": "finestra.tanca",
+				"app": "navegador"
+			}
+		},
+		{
+			"id": "obre",
+			"ancora": "app-navegador",
+			"titol": "Obre una app",
+			"text": "Ara torna'l a obrir: fes clic a la icona del Navegador, a la barra de tasques.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "navegador"
@@ -66,32 +83,11 @@
 			"id": "avis",
 			"ancora": "avis",
 			"titol": "Un avís",
-			"text": "Quan una app et vol dir alguna cosa, surt un avís a baix a la dreta. Aquest te l'envia la Llissa, la teva guia.",
-			"continua": "boto"
-		},
-		{
-			"id": "campana",
-			"ancora": "rellotge",
-			"titol": "La campana",
-			"text": "Els avisos se'n van sols al cap d'una estona. Si se t'escapa algun, el trobaràs aquí, a la campana.",
-			"continua": "boto"
-		},
-		{
-			"id": "obre-avis",
-			"ancora": "pantalla",
-			"titol": "Obre l'avís",
-			"text": "Fes clic a l'avís de la Llissa per obrir-lo. Si ja ha marxat, obre la campana i fes-hi clic allà.",
+			"text": "La Llissa t'ha enviat un avís a baix a la dreta. Fes-hi clic i passaràs a la finestra de Parla.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "parla"
 			}
-		},
-		{
-			"id": "parla",
-			"ancora": "finestra-parla",
-			"titol": "Parla, el xat",
-			"text": "Això és Parla, l'app de xat. Aquí la Llissa et dona pistes mentre jugues.",
-			"continua": "boto"
 		},
 		{
 			"id": "respostes",
@@ -102,13 +98,20 @@
 		},
 		{
 			"id": "correu-nou",
-			"ancora": "pantalla",
+			"ancora": "avis",
 			"titol": "Un correu nou",
-			"text": "T'acaba d'arribar un correu. Fes clic a l'avís, o a la campana, i s'obrirà al Navegador.",
+			"text": "T'acaba d'arribar un correu. Fes clic a l'avís i s'obrirà al Navegador.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "navegador"
 			}
+		},
+		{
+			"id": "campana",
+			"ancora": "rellotge",
+			"titol": "La campana",
+			"text": "Els avisos marxen sols al cap d'una estona. Si se t'escapa algun, el trobaràs aquí, a la campana.",
+			"continua": "boto"
 		},
 		{
 			"id": "obre-correu",
@@ -132,14 +135,14 @@
 			"id": "remitent",
 			"ancora": "remitent",
 			"titol": "Qui t'escriu",
-			"text": "Aquí veus qui t'envia el correu i des de quina adreça. Fixa-t'hi sempre: el nom es pot inventar, l'adreça costa més d'amagar.",
+			"text": "Aquí veus qui t'envia el correu i des de quina adreça. El nom es pot inventar; l'adreça diu més.",
 			"continua": "boto"
 		},
 		{
 			"id": "enllac",
 			"ancora": "enllacos",
 			"titol": "Els enllaços",
-			"text": "Els enllaços et porten a una altra web. Abans de fer-hi clic, passa-hi el ratolí per sobre: a baix del Navegador veuràs on porten de veritat.",
+			"text": "Els enllaços porten a una altra web. Si hi passes el ratolí per sobre, a baix del Navegador veuràs on porten de veritat.",
 			"continua": "boto"
 		},
 		{
@@ -153,24 +156,49 @@
 			"id": "lupa",
 			"ancora": "lupa",
 			"titol": "La lupa",
-			"text": "Fes clic a la lupa per activar-la. Amb la lupa encesa, cada clic serveix per marcar el que et sembla sospitós.",
+			"text": "Fes clic a la lupa per activar-la. Amb la lupa encesa, cada clic marca el que et sembla sospitós.",
 			"continua": {
 				"esdeveniment": "lupa.activa"
 			}
 		},
 		{
-			"id": "indicis",
+			"id": "indici-remitent",
 			"ancora": "remitent",
-			"titol": "Busca els indicis",
-			"text": "Quan acabi la guia, fes clic a les parts del correu que no et quadrin, com el remitent. Cada indici fa pujar el comptador «Indicis». N'hi ha tres.",
-			"continua": "boto"
+			"titol": "Primer indici: el remitent",
+			"text": "Fes clic al remitent. Un premi que ve d'una adreça .xyz que no coneixes fa mala espina.",
+			"continua": {
+				"esdeveniment": "senyal.troba",
+				"senyal": "remitent"
+			}
+		},
+		{
+			"id": "indici-premi",
+			"ancora": "enllacos",
+			"titol": "Segon indici: el premi",
+			"text": "Ara fes clic a la frase del premi. Ningú regala un iot per un sorteig on no t'has apuntat.",
+			"continua": {
+				"esdeveniment": "senyal.troba",
+				"senyal": "premi"
+			}
+		},
+		{
+			"id": "indici-enllac",
+			"ancora": "enllacos",
+			"titol": "Tercer indici: l'enllaç",
+			"text": "Per acabar, fes clic a l'enllaç. Porta a premis-fantasia.xyz, una web que no és de ningú que coneguis.",
+			"continua": {
+				"esdeveniment": "senyal.troba",
+				"senyal": "enllac"
+			}
 		},
 		{
 			"id": "decisio",
-			"ancora": "parla-respostes",
+			"ancora": "decisio",
 			"titol": "Decideix",
-			"text": "Quan els tinguis, fes clic a «Ja ho tinc clar» per dir què en fas. Ara et toca a tu.",
-			"continua": "boto"
+			"text": "Fes clic a «Ja ho tinc clar» i tria què en fas. A les missions, decidir bé dona més punts que trobar indicis; aquí no puntua.",
+			"continua": {
+				"esdeveniment": "decisio.pren"
+			}
 		}
 	],
 	"apps": {
@@ -247,7 +275,7 @@
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "Llissa",
-					"text": "Hola! Sóc la Llissa. Això és un avís: fes-hi clic i t'obro el xat on parlarem tu i jo."
+					"text": "Hola, sóc la Llissa. Això és un avís: fes-hi clic i t'obro el xat on parlarem tu i jo."
 				}
 			]
 		},
@@ -277,25 +305,25 @@
 			"id": "remitent",
 			"titol": "Un remitent absurd",
 			"explicacio": "«Premis Fantasia» des d'una adreça .xyz que no coneixes. Mira sempre qui t'escriu abans de creure't res.",
-			"reaccio": "Això mateix! Mira com ha pujat el comptador «Indicis»."
+			"reaccio": "Això mateix. Mira com ha pujat el comptador «Indicis»."
 		},
 		{
 			"id": "premi",
 			"titol": "Un premi que no has demanat",
-			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Un premi massa bo és l'esquer més vell del món.",
+			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Un premi que no has demanat és una manera de fer-te picar.",
 			"reaccio": "Ben vist. Un altre indici al comptador."
 		},
 		{
 			"id": "enllac",
 			"titol": "Un enllaç cap a una web estranya",
 			"explicacio": "L'enllaç porta a premis-fantasia.xyz, una web que no coneixes. No hi entris ni hi posis cap dada.",
-			"reaccio": "Molt bé. Quan els tinguis tots, fes clic a «Ja ho tinc clar», a sota del xat."
+			"reaccio": "Molt bé, ja els tens tots."
 		}
 	],
 	"frases": {
 		"normal": [
 			"Això sembla normal. Prova en una altra part del correu.",
-			"Aquí no hi ha cap ham."
+			"Aquí no hi ha cap trampa."
 		]
 	},
 	"decisio": {
@@ -305,7 +333,7 @@
 				"id": "a",
 				"text": "Ja ho tinc clar: és un correu de mentida i no en faig cas.",
 				"valor": "correcta",
-				"resposta": "Perfecte. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions de veritat hi haurà més opcions, i no totes seran bones."
+				"resposta": "Ben fet. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions hi haurà més opcions, i la que triïs és el que més compta a la puntuació."
 			}
 		]
 	},
@@ -314,8 +342,8 @@
 			"Les finestres es tanquen amb la creu i s'obren des de la barra de tasques.",
 			"Els avisos et porten a l'app que avisa, i la campana els guarda.",
 			"Abans de fer clic, mira qui t'escriu i on porta l'enllaç.",
-			"Amb la lupa marques els indicis i el comptador et diu quants en portes."
+			"Amb la lupa marques els indicis; a les missions, la decisió final és el que més puntua."
 		],
-		"consell": "Ja estàs a punt. Si alguna cosa et fa pressa o sembla massa bona, para i mira-la amb la lupa."
+		"consell": "Si alguna cosa et fa pressa o sembla massa bona, para i mira-la amb la lupa."
 	}
 }

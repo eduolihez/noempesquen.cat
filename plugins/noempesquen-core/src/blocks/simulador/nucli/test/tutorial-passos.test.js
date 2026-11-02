@@ -47,6 +47,8 @@ const DOM = {
 		'nav-enrere',
 		'nav-inici',
 		'conversa',
+		'barra-estat',
+		'llista-sms',
 	],
 };
 
@@ -67,7 +69,11 @@ const CONCEPTES = {
 		'enllac',
 		'adreca',
 		'lupa',
-		'indicis',
+		'indici-remitent',
+		'indici-premi',
+		'indici-enllac',
+		'tanca',
+		'obre',
 		'decisio',
 	],
 	mobil: [
@@ -215,40 +221,71 @@ for ( const [ dispositiu, fitxer ] of Object.entries( FITXERS ) ) {
 	} );
 }
 
+const troba = ( m, e, senyal ) =>
+	reductor( m, e, { tipus: 'INSPECCIONA', senyal } );
+const decideix = ( m, e ) =>
+	reductor( m, reductor( m, e, { tipus: 'RESPOSTA', id: 'decidir' } ), {
+		tipus: 'RESPOSTA',
+		id: 'decisio:a',
+	} );
+
+// Cap pas d'acció amb àncora `pantalla` (tot clicable, focus inútil).
+describe( 'passos d’acció', () => {
+	it.each( Object.values( FITXERS ) )( '%s: sense àncora pantalla', ( f ) => {
+		const m = llegeix( f );
+		expect(
+			m.passos.filter(
+				( p ) => p.continua !== 'boto' && p.ancora === 'pantalla'
+			)
+		).toEqual( [] );
+	} );
+} );
+
 describe( 'tutorial-pc.json: recorregut amb el reductor', () => {
 	const m = llegeix( 'tutorial-pc.json' );
 
 	it( 'arriba al final amb «Entès» i els esdeveniments reals', () => {
 		let e = obre( m );
-		expect( e.pas ).toBe( 0 );
 		expect( e.notificacions ).toEqual( [] );
-		e = finsA( m, e, 'tanca-obre' );
-		// L'obertura automàtica no compta: cal el clic a la barra.
-		e = ev( m, e, 'app.obre', { app: 'parla' } );
-		expect( idPas( m, e ) ).toBe( 'tanca-obre' );
+		e = finsA( m, e, 'tanca' );
+		e = ev( m, e, 'finestra.tanca', { app: 'parla' } );
+		expect( idPas( m, e ) ).toBe( 'tanca' );
+		e = ev( m, e, 'finestra.tanca', { app: 'navegador' } );
+		expect( idPas( m, e ) ).toBe( 'obre' );
+		expect( e.notificacions ).toEqual( [] );
 		e = ev( m, e, 'app.obre', { app: 'navegador' } );
-		// L'avís de la guia surt en entrar al pas, no abans.
+		// L'avís de la guia surt en entrar al pas que el demana.
 		expect( idPas( m, e ) ).toBe( 'avis' );
 		expect( e.notificacions.map( ( n ) => n.app ) ).toEqual( [ 'parla' ] );
-		expect( e.visibles.c1 ).toBeUndefined();
-		e = finsA( m, e, 'obre-avis' );
 		e = ev( m, e, 'app.obre', { app: 'parla' } );
 		e = finsA( m, e, 'correu-nou' );
 		expect( e.visibles.c1 ).toBe( true );
-		expect(
-			e.notificacions.some(
-				( n ) => n.app === 'posta' && n.titol === 'Premis Fantasia'
-			)
-		).toBe( true );
+		expect( e.notificacions.at( -1 ).app ).toBe( 'posta' );
 		e = ev( m, e, 'app.obre', { app: 'navegador' } );
-		expect( idPas( m, e ) ).toBe( 'obre-correu' );
+		e = finsA( m, e, 'obre-correu' );
 		e = ev( m, e, 'missatge.obre', { app: 'posta', id: 'c1' } );
 		e = finsA( m, e, 'lupa' );
 		e = reductor( m, e, { tipus: 'LUPA' } );
-		e = finsA( m, e, 'decisio' );
-		e = reductor( m, e, { tipus: 'PAS_SEGUENT' } );
+		expect( idPas( m, e ) ).toBe( 'indici-remitent' );
+		// Un indici fora d'ordre no avança el pas.
+		e = troba( m, e, 'premi' );
+		expect( idPas( m, e ) ).toBe( 'indici-remitent' );
+		e = troba( m, e, 'remitent' );
+		// El premi ja trobat: el seu pas queda fet i passa a l'enllaç.
+		expect( idPas( m, e ) ).toBe( 'indici-enllac' );
+		e = troba( m, e, 'enllac' );
+		expect( idPas( m, e ) ).toBe( 'decisio' );
+		e = decideix( m, e );
 		expect( e.pas ).toBe( m.passos.length );
-		expect( e.xat ).toEqual( [] );
+		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+
+	it( 'si la lupa ja era encesa, el pas de la lupa queda fet', () => {
+		let e = obre( m );
+		e = reductor( m, e, { tipus: 'LUPA' } );
+		e = { ...e, pas: m.passos.findIndex( ( p ) => p.id === 'adreca' ) };
+		e = reductor( m, e, { tipus: 'PAS_SEGUENT' } );
+		expect( idPas( m, e ) ).toBe( 'indici-remitent' );
 	} );
 } );
 
@@ -257,31 +294,31 @@ describe( 'tutorial-mobil.json: recorregut amb el reductor', () => {
 
 	it( 'arriba al final amb «Entès» i els esdeveniments reals', () => {
 		let e = obre( m );
-		e = finsA( m, e, 'obre-parla' );
+		e = finsA( m, e, 'dock' );
+		e = ev( m, e, 'app.obre', { app: 'navegador' } );
+		e = ev( m, e, 'nav.inici' );
+		expect( idPas( m, e ) ).toBe( 'nav-enrere' );
+		e = ev( m, e, 'nav.enrere' );
+		e = ev( m, e, 'nav.inici' );
+		e = finsA( m, e, 'parla' );
 		// L'avís de la Remei fa que Parla s'obri al seu xat.
 		expect( e.notificacions.map( ( n ) => n.app ) ).toEqual( [ 'parla' ] );
-		e = ev( m, e, 'app.obre', { app: 'missatges' } );
-		expect( idPas( m, e ) ).toBe( 'obre-parla' );
 		e = ev( m, e, 'app.obre', { app: 'parla' } );
 		expect( e.visibles.s1 ).toBeUndefined();
 		e = finsA( m, e, 'banner' );
 		expect( e.visibles.s1 ).toBe( true );
-		expect(
-			e.notificacions.some(
-				( n ) => n.app === 'missatges' && n.titol === 'Premis Fantasia'
-			)
-		).toBe( true );
-		e = finsA( m, e, 'decisio' );
-		e = reductor( m, e, { tipus: 'PAS_SEGUENT' } );
-		expect( e.pas ).toBe( m.passos.length );
-		// Després de la guia: SMS, lupa, indicis i decisió.
+		expect( e.notificacions.at( -1 ).app ).toBe( 'missatges' );
+		e = ev( m, e, 'app.obre', { app: 'missatges' } );
 		e = ev( m, e, 'missatge.obre', { app: 'missatges', id: 's1' } );
 		e = reductor( m, e, { tipus: 'LUPA' } );
-		for ( const s of m.senyals ) {
-			e = reductor( m, e, { tipus: 'INSPECCIONA', senyal: s.id } );
-		}
-		e = reductor( m, e, { tipus: 'RESPOSTA', id: 'decidir' } );
-		e = reductor( m, e, { tipus: 'RESPOSTA', id: 'decisio:a' } );
+		e = troba( m, e, 'remitent' );
+		e = troba( m, e, 'premi' );
+		expect( idPas( m, e ) ).toBe( 'obre-centre' );
+		e = ev( m, e, 'centre.obre' );
+		e = ev( m, e, 'app.obre', { app: 'parla' } );
+		expect( idPas( m, e ) ).toBe( 'decisio' );
+		e = decideix( m, e );
+		expect( e.pas ).toBe( m.passos.length );
 		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
 	} );
 } );
