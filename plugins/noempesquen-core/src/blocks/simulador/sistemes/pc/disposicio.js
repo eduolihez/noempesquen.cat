@@ -4,6 +4,10 @@
  */
 
 export const MARGE = 8;
+/* Columna d'icones de l'escriptori (vegeu _pc.scss: 6 + 78 px): les finestres
+   col·locades per la disposició comencen a la seva dreta, perquè les icones
+   quedin visibles, clicables i amb el focus sense tapar. */
+export const MARGE_ESQ = 84 + MARGE;
 export const PARLA_MINIM = 420;
 export const NAVEGADOR_MINIM = 480;
 const PART_PARLA = 0.4;
@@ -31,10 +35,11 @@ function disposicioSola( { amplada, alcada }, id ) {
 /**
  * Reparteix l'àrea entre les finestres visibles. Amb navegador i Parla:
  * navegador a l'esquerra (~60 %) i Parla a la dreta (~40 %, mínim 420).
- * Amb àrees estretes no caben Parla 420 i Navegador 480: guanya no
- * solapar, Parla conserva 420 i el navegador pren el que queda (a 800 px
- * d'ample, 356). Amb una sola finestra, la seva mida i posició per defecte. Les altres
- * finestres no tenen entrada (van en cascada).
+ * Les finestres comencen a la dreta de la columna d'icones. Amb àrees estretes
+ * no caben Parla 420 i Navegador 480: guanya no solapar, Parla conserva 420 i
+ * el navegador pren el que queda (a 800 px d'ample, 272). Amb una sola
+ * finestra, la seva mida i posició per defecte. Les altres finestres no tenen
+ * entrada (van en cascada).
  *
  * @param {Object}   p
  * @param {number}   p.amplada   Amplada de l'àrea.
@@ -57,14 +62,14 @@ export function disposicioInicial( { amplada, alcada, finestres } ) {
 	if ( ! ids.includes( 'navegador' ) || ! ids.includes( 'parla' ) ) {
 		return {};
 	}
-	const util = amplada - 3 * MARGE;
+	const util = amplada - MARGE_ESQ - 2 * MARGE;
 	const parla = Math.max( PARLA_MINIM, Math.round( util * PART_PARLA ) );
 	const navegador = util - parla;
 	const h = alcada - 2 * MARGE;
 	return {
-		navegador: { x: MARGE, y: MARGE, amplada: navegador, alcada: h },
+		navegador: { x: MARGE_ESQ, y: MARGE, amplada: navegador, alcada: h },
 		parla: {
-			x: 2 * MARGE + navegador,
+			x: MARGE_ESQ + MARGE + navegador,
 			y: MARGE,
 			amplada: parla,
 			alcada: h,
@@ -89,9 +94,9 @@ export function mitatLliure( area, ocupades, minim = PARLA_MINIM ) {
 		return { x: dreta + MARGE, y: MARGE, amplada: ampDreta, alcada: h };
 	}
 	const esquerra = Math.min( ...ocupades.map( ( r ) => r.x ) );
-	const ampEsq = esquerra - 2 * MARGE;
+	const ampEsq = esquerra - MARGE_ESQ - MARGE;
 	if ( ampEsq >= minim ) {
-		return { x: MARGE, y: MARGE, amplada: ampEsq, alcada: h };
+		return { x: MARGE_ESQ, y: MARGE, amplada: ampEsq, alcada: h };
 	}
 	return null;
 }

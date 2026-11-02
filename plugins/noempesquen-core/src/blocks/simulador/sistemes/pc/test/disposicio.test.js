@@ -48,7 +48,7 @@ describe( 'disposicioInicial', () => {
 		expect( p.x + p.amplada + 8 ).toBeLessThanOrEqual( area.amplada );
 		expect( p.amplada ).toBeGreaterThanOrEqual( 420 );
 		expect( n.alcada ).toBe( area.alcada - 16 );
-		expect( n.x ).toBe( 8 );
+		expect( n.x ).toBe( 92 );
 	} );
 
 	it( 'a 1280 el navegador fa ~60 % i Parla ~40 %', () => {
@@ -56,8 +56,8 @@ describe( 'disposicioInicial', () => {
 			...AREES[ 0 ],
 			finestres: [ NAV, PARLA ],
 		} );
-		expect( p.amplada ).toBe( 502 );
-		expect( n.amplada ).toBe( 754 );
+		expect( p.amplada ).toBe( 469 );
+		expect( n.amplada ).toBe( 703 );
 	} );
 
 	it( 'a 1024 Parla pren 420 i el navegador el que queda', () => {
@@ -66,16 +66,16 @@ describe( 'disposicioInicial', () => {
 			finestres: [ NAV, PARLA ],
 		} );
 		expect( p.amplada ).toBe( 420 );
-		expect( n.amplada ).toBe( 580 );
+		expect( n.amplada ).toBe( 496 );
 	} );
 
-	it( 'a 800 guanya no solapar: Parla 420 i navegador 356 (< 480)', () => {
+	it( 'a 800 guanya no solapar: Parla 420 i navegador 272 (< 480)', () => {
 		const { navegador: n, parla: p } = disposicioInicial( {
 			...AREES[ 2 ],
 			finestres: [ NAV, PARLA ],
 		} );
 		expect( p.amplada ).toBe( 420 );
-		expect( n.amplada ).toBe( 356 );
+		expect( n.amplada ).toBe( 272 );
 		expect( n.x + n.amplada + 8 ).toBe( p.x );
 	} );
 
@@ -112,7 +112,7 @@ describe( 'mitatLliure', () => {
 		const r = { x: 8, y: 8, amplada: 600, alcada: 656 };
 		expect( mitatLliure( area, [ r ] ).x ).toBe( 616 );
 		const dreta = { x: 700, y: 8, amplada: 572, alcada: 656 };
-		expect( mitatLliure( area, [ dreta ] ).x ).toBe( 8 );
+		expect( mitatLliure( area, [ dreta ] ).x ).toBe( 92 );
 		expect( mitatLliure( area, [ { ...r, amplada: 1200 } ] ) ).toBeNull();
 	} );
 } );
