@@ -379,12 +379,12 @@ describe( 'validador: passos', () => {
 	} );
 
 	it( 'esdeveniments propis de cada dispositiu', () => {
-		for ( const ev of [ 'nav.inici', 'nav.enrere', 'centre.obre' ] ) {
+		for ( const nom of [ 'nav.inici', 'nav.enrere', 'centre.obre' ] ) {
 			expect(
-				amb( pc, [ accio( { esdeveniment: ev } ) ] ).join()
+				amb( pc, [ accio( { esdeveniment: nom } ) ] ).join()
 			).toMatch( /no existeix al dispositiu pc/ );
 			expect(
-				amb( mobil, [ accio( { esdeveniment: ev } ) ] ).join()
+				amb( mobil, [ accio( { esdeveniment: nom } ) ] ).join()
 			).not.toMatch( /no existeix/ );
 		}
 		expect(
