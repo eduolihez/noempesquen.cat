@@ -6,7 +6,7 @@
 import { useIdSvg } from '../icones';
 import { Gavina } from './Gavina';
 import { Onada } from './Onada';
-import { MAR, trac } from './comu';
+import { MAR, punts, trac } from './comu';
 
 const T = trac( 4 );
 const T3 = trac( 3 );
@@ -23,9 +23,10 @@ export const DISPOSICIONS = {
 			[ 1060, 90, 0.8 ],
 			[ 1420, 170, 0.7 ],
 		],
+		lluny: 'M-60 470V424Q180 380 470 404T1010 392Q1290 360 1660 414V470Z',
 		turons: [
 			'M380 470Q620 360 880 400T1300 470Z',
-			'M-20 470V380Q120 330 260 350T560 420Q640 450 700 470Z',
+			'M-60 470V384Q120 330 260 350T560 420Q640 450 700 470Z',
 		],
 		cases: [ 70, 130, 186, 250, 316, 390, 452 ],
 		campanar: [ 210, 330 ],
@@ -35,6 +36,9 @@ export const DISPOSICIONS = {
 			[ 820, 518 ],
 			[ 780, 538 ],
 			[ 852, 494 ],
+			[ 740, 572 ],
+			[ 870, 600 ],
+			[ 800, 640 ],
 		],
 		boies: [
 			[ 300, 590 ],
@@ -61,9 +65,10 @@ export const DISPOSICIONS = {
 			[ 520, 60, 0.7 ],
 			[ 760, 200, 0.6 ],
 		],
+		lluny: 'M-60 430V384Q150 346 390 368T960 350V430Z',
 		turons: [
 			'M260 430Q480 330 680 360T960 430Z',
-			'M-20 430V340Q100 300 220 320T480 400Q520 420 560 430Z',
+			'M-60 430V344Q100 300 220 320T480 400Q520 420 560 430Z',
 		],
 		cases: [ 40, 96, 150, 206, 268, 330 ],
 		campanar: [ 176, 300 ],
@@ -72,6 +77,8 @@ export const DISPOSICIONS = {
 			[ 160, 460 ],
 			[ 216, 478 ],
 			[ 180, 500 ],
+			[ 230, 566 ],
+			[ 150, 600 ],
 		],
 		boies: [
 			[ 120, 640 ],
@@ -155,9 +162,29 @@ function Casa( { x, y, i } ) {
 				fill={ colors[ i % colors.length ] }
 				{ ...T3 }
 			/>
+			<rect
+				x="1.5"
+				y="2"
+				width="11"
+				height={ alt + 16.5 }
+				fill="#0b1e3f"
+				opacity=".1"
+			/>
 			<path d="M-4 2L22-16 48 2Z" fill="#d9774b" { ...T3 } />
+			<path
+				d="M24-12L42 0"
+				stroke="#ffd9a8"
+				strokeWidth="3"
+				strokeLinecap="round"
+			/>
 			<rect x="10" y="12" width="9" height="11" rx="2" fill="#14213d" />
 			<rect x="26" y="12" width="9" height="11" rx="2" fill="#14213d" />
+			<path
+				d="M8 25h13M24 25h13"
+				stroke="#fff6e0"
+				strokeWidth="3"
+				strokeLinecap="round"
+			/>
 		</g>
 	);
 }
@@ -215,6 +242,14 @@ function Far( { x, y } ) {
 				d="M-27-100H27L25-130H-25ZM-22-160H22L21-186H-21Z"
 				fill="#d9392b"
 			/>
+			<path d="M6-60L4-200H20L30-60Z" fill="#0b1e3f" opacity=".14" />
+			<path
+				d="M-14-190L-22-70"
+				stroke="#fff"
+				strokeWidth="4"
+				strokeLinecap="round"
+				opacity=".7"
+			/>
 			<path d="M-30-60L-20-200H20L30-60Z" fill="none" { ...T } />
 			<rect
 				x="-26"
@@ -265,8 +300,24 @@ function Boia( { x, y, i } ) {
 
 function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 	const ample = x1 - x0;
+	const taulons = [];
+	for ( let x = x0 + 20; x < x1 - 10; x += 46 ) {
+		taulons.push( `M${ x } ${ y + 8 }h22M${ x + 14 } ${ y + 15 }h18` );
+	}
+	const claus = punts(
+		peus.flatMap( ( x ) => [
+			[ x - 4, y + 30 ],
+			[ x + 4, y + 30 ],
+		] )
+	);
 	return (
 		<g>
+			{ /* Ombra del moll a l'aigua */ }
+			<path
+				d={ `M${ x0 } ${ y + 38 }H${ x1 + 6 }L${ x1 + 60 } ${ y + 92 }H${ x0 }Z` }
+				fill="#0b1e3f"
+				opacity=".2"
+			/>
 			{ peus.map( ( x ) => (
 				<rect
 					key={ x }
@@ -292,6 +343,17 @@ function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 				stroke="#8a5a3b"
 				strokeWidth="3"
 			/>
+			<path
+				d={ taulons.join( '' ) }
+				stroke="#a86f3c"
+				strokeWidth="2"
+				strokeLinecap="round"
+			/>
+			<path
+				d={ `M${ x0 } ${ y + 3 }H${ x1 }` }
+				stroke="#f0c48a"
+				strokeWidth="3"
+			/>
 			<rect
 				x={ x0 }
 				y={ y + 22 }
@@ -299,6 +361,12 @@ function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 				height="16"
 				fill="#8a5a3b"
 				{ ...T }
+			/>
+			<path
+				d={ claus }
+				stroke="#3d2618"
+				strokeWidth="4"
+				strokeLinecap="round"
 			/>
 			{ /* Xarxa amb suros */ }
 			<path
@@ -318,6 +386,19 @@ function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 				strokeWidth="2"
 				opacity=".45"
 			/>
+			<path
+				d={ punts( [
+					[ x0 + 64, y - 14 ],
+					[ x0 + 87, y - 15 ],
+					[ x0 + 112, y - 14 ],
+					[ x0 + 76, y - 2 ],
+					[ x0 + 104, y - 2 ],
+				] ) }
+				stroke="#0b1e3f"
+				strokeWidth="5"
+				strokeLinecap="round"
+				opacity=".55"
+			/>
 			<circle
 				cx={ x0 + 66 }
 				cy={ y - 26 }
@@ -334,6 +415,14 @@ function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 			/>
 			{ /* Caixes de peix */ }
 			<g transform={ `translate(${ x0 + caixes } ${ y })` }>
+				<ellipse
+					cx="60"
+					cy="1"
+					rx="66"
+					ry="5"
+					fill="#0b1e3f"
+					opacity=".25"
+				/>
 				<path
 					d="M6-34l10 8 12-10 10 10 12-8"
 					fill="#9fd0e0"
@@ -401,6 +490,9 @@ export function Fons( { disposicio = 'ampla' } ) {
 	const d = DISPOSICIONS[ disposicio ];
 	const cel = useIdSvg( 'nep-cel-' );
 	const { w, h, horitzo } = d;
+	const [ sx, sy ] = d.sol;
+	const id = ( sufix ) => `${ cel }${ sufix }`;
+	const url = ( sufix ) => `url(#${ cel }${ sufix })`;
 	return (
 		<svg
 			className={ `nep-port__fons nep-port__fons--${ disposicio }` }
@@ -416,24 +508,94 @@ export function Fons( { disposicio = 'ampla' } ) {
 					<stop offset=".85" stopColor="#ffe2b8" />
 					<stop offset="1" stopColor="#ffc98f" />
 				</linearGradient>
+				{ /* Resplendor del sol i llum càlida al seu costat */ }
+				<radialGradient id={ id( 'r' ) }>
+					<stop offset="0" stopColor="#fff3c4" stopOpacity=".95" />
+					<stop offset=".35" stopColor="#ffe08a" stopOpacity=".4" />
+					<stop offset="1" stopColor="#ffd27a" stopOpacity="0" />
+				</radialGradient>
+				{ /* Ombra al peu dels turons */ }
+				<linearGradient id={ id( 'o' ) } x1="0" y1="0" x2="0" y2="1">
+					<stop offset=".3" stopColor="#0b3b4a" stopOpacity="0" />
+					<stop offset="1" stopColor="#0b3b4a" stopOpacity=".28" />
+				</linearGradient>
+				{ /* Bruma entre la costa i el mar */ }
+				<linearGradient id={ id( 'b' ) } x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0" stopColor="#f4f8f2" stopOpacity="0" />
+					<stop offset=".75" stopColor="#f4f8f2" stopOpacity=".6" />
+					<stop offset="1" stopColor="#f4f8f2" stopOpacity="0" />
+				</linearGradient>
+				{ /* Càustiques: línies de llum trencades sobre el mar fosc */ }
+				<pattern
+					id={ id( 'c' ) }
+					width="160"
+					height="90"
+					patternUnits="userSpaceOnUse"
+				>
+					<path
+						d="M8 20q24-14 44 0t40 2M96 62q20-12 40 0t20 0M30 78q14-8 30 0"
+						fill="none"
+						stroke="#bfeaf2"
+						strokeWidth="3"
+						strokeLinecap="round"
+					/>
+				</pattern>
 			</defs>
 			<rect
 				width={ w }
 				height={ horitzo + 20 }
 				fill={ `url(#${ cel })` }
 			/>
-			<Sol cx={ d.sol[ 0 ] } cy={ d.sol[ 1 ] } r={ d.sol[ 2 ] } />
+			<g className="nep-port__resplendor">
+				<circle
+					cx={ sx }
+					cy={ sy }
+					r={ sy * 2.4 }
+					fill={ url( 'r' ) }
+				/>
+			</g>
+			<Sol cx={ sx } cy={ sy } r={ d.sol[ 2 ] } />
 			{ d.nuvols.map( ( [ x, y, e ], i ) => (
 				<Nuvol key={ i } x={ x } y={ y } escala={ e } i={ i } />
 			) ) }
-			<path d={ d.turons[ 0 ] } fill="#9cc7b5" { ...T } />
-			<path d={ d.turons[ 1 ] } fill="#6fa894" { ...T } />
-			<Poble
-				cases={ d.cases }
-				campanar={ d.campanar }
-				horitzo={ horitzo }
+			{ /* Tres plans de costa, cada un amb el seu parallax */ }
+			<g className="nep-port__capa nep-port__capa--1">
+				<path d={ d.lluny } fill="#c3dcd6" />
+				<path
+					d={ d.lluny }
+					fill="none"
+					stroke="#e9f4ef"
+					strokeWidth="3"
+				/>
+			</g>
+			<g className="nep-port__capa nep-port__capa--2">
+				<path d={ d.turons[ 0 ] } fill="#9cc7b5" { ...T } />
+				<path d={ d.turons[ 0 ] } fill={ url( 'o' ) } />
+			</g>
+			<g className="nep-port__capa nep-port__capa--3">
+				<path d={ d.turons[ 1 ] } fill="#6fa894" { ...T } />
+				<path d={ d.turons[ 1 ] } fill={ url( 'o' ) } />
+				<Poble
+					cases={ d.cases }
+					campanar={ d.campanar }
+					horitzo={ horitzo }
+				/>
+			</g>
+			<rect
+				x="0"
+				y={ horitzo - 70 }
+				width={ w }
+				height="86"
+				fill={ url( 'b' ) }
 			/>
 			<Far x={ d.far[ 0 ] } y={ d.far[ 1 ] } />
+			<circle
+				cx={ sx }
+				cy={ horitzo }
+				r={ horitzo * 0.9 }
+				fill={ url( 'r' ) }
+				opacity=".4"
+			/>
 			{ d.capes.map( ( y, i ) => (
 				<Onada
 					key={ y }
@@ -446,8 +608,27 @@ export function Fons( { disposicio = 'ampla' } ) {
 					periode={ 120 + i * 40 }
 					fons={ h + 10 }
 					escuma={ i === 0 ? '#fff6e0' : '#ddeff2' }
+					ondes={ i > 0 }
 				/>
 			) ) }
+			<rect
+				className="nep-port__caustica"
+				x="-160"
+				y={ d.capes[ 2 ] + 30 }
+				width={ w + 320 }
+				height={ h - d.capes[ 2 ] }
+				fill={ url( 'c' ) }
+				opacity=".22"
+			/>
+			{ /* Reflex del sol al mar */ }
+			<ellipse
+				className="nep-port__reflex-sol"
+				cx={ sx }
+				cy={ horitzo + 120 }
+				rx="150"
+				ry="190"
+				fill={ url( 'r' ) }
+			/>
 			{ d.brillants.map( ( [ x, y ], i ) => (
 				<path
 					key={ i }

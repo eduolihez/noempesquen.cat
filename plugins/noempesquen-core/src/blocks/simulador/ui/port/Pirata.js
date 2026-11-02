@@ -9,7 +9,8 @@ import { Remei } from '../avatars';
 import { useIdSvg } from '../icones';
 import { GavinaPosada } from './Gavina';
 import { Onada } from './Onada';
-import { trac } from './comu';
+import { banderins, onada, punts, trac } from './comu';
+import { Bota, GradientBuc, MascaraReflex, Reflex } from './Detalls';
 
 const T = trac( 5 );
 const T3 = trac( 3 );
@@ -19,6 +20,17 @@ const LONA = '#f4ead0';
 
 const BUC =
 	'M40 250H180V286H440Q480 282 506 252Q496 340 450 404H96Q56 330 40 250Z';
+const VELA = 'M186 84H410Q436 170 404 262H196Q164 170 186 84Z';
+const BANDERINS = banderins( 299, 34, 512, 252, 8 );
+const REMACHES = punts(
+	[ 200, 240, 280, 320, 360, 400, 440 ]
+		.map( ( x ) => [ x, 292 ] )
+		.concat( [ 60, 100, 140 ].map( ( x ) => [ x, 255 ] ) )
+);
+/* Vetes de la fusta: traços curts i corbats entre les tracas. */
+const VETES =
+	'M120 318q30-4 60 0M260 316q40-5 80 0M390 320q24-3 44 0M90 364q36-4 70 0M210 362q50-5 100 0M360 366q34-3 60 0M150 392q30-3 56 0M300 390q40-4 70 0';
+const ESCUMA = onada( { x0: 110, x1: 440, y: 402, amp: 5, periode: 26 } );
 
 function Cano( { x } ) {
 	return (
@@ -44,6 +56,9 @@ export function Pirata( {
 	classe = '',
 } ) {
 	const buc = useIdSvg( 'nep-bucp-' );
+	const llum = `${ buc }l`;
+	const vela = `${ buc }v`;
+	const reflex = `${ buc }r`;
 	const estat = [
 		'nep-port__barca',
 		'nep-port__barca--pirata',
@@ -64,9 +79,28 @@ export function Pirata( {
 				<clipPath id={ buc }>
 					<path d={ BUC } />
 				</clipPath>
+				<GradientBuc id={ llum } />
+				{ /* Llum lateral a les veles (el sol les toca per l'esquerra) */ }
+				<linearGradient id={ vela } x1="0" y1="0" x2="1" y2="0">
+					<stop offset="0" stopColor="#fff" stopOpacity=".7" />
+					<stop offset=".35" stopColor="#fff" stopOpacity="0" />
+					<stop offset=".75" stopColor="#8a6a3a" stopOpacity="0" />
+					<stop offset="1" stopColor="#8a6a3a" stopOpacity=".22" />
+				</linearGradient>
+				<MascaraReflex id={ reflex } flota={ 400 } alt={ 110 } />
 			</defs>
 			<g className="nep-port__balanc">
 				<path d="M299 34L60 250M299 34L512 252" fill="none" { ...T3 } />
+				{ [ '#d9392b', '#f4ead0', '#f2b705' ].map( ( c, i ) => (
+					<path
+						key={ c }
+						d={ BANDERINS[ i ] }
+						fill={ c }
+						stroke="#0b1e3f"
+						strokeWidth="2"
+						strokeLinejoin="round"
+					/>
+				) ) }
 				{ /* Bandera */ }
 				<g transform="translate(305 8)">
 					<g className="nep-port__bandera">
@@ -101,6 +135,11 @@ export function Pirata( {
 				<g className="nep-port__vela nep-port__vela--floc">
 					<path d="M312 70L500 254H316Z" fill={ LONA } { ...T } />
 					<path
+						d="M318 136H378M318 196H440"
+						stroke="#d9c9a0"
+						strokeWidth="3"
+					/>
+					<path
 						d="M400 172l18 18-18 6Z"
 						fill="#9fc6d8"
 						{ ...T3 }
@@ -110,17 +149,28 @@ export function Pirata( {
 				{ /* Vela major */ }
 				<path d="M176 78H420" fill="none" { ...T } strokeWidth="9" />
 				<g className="nep-port__vela">
-					<path
-						d="M186 84H410Q436 170 404 262H196Q164 170 186 84Z"
-						fill={ LONA }
-						{ ...T }
-					/>
+					<path d={ VELA } fill={ LONA } { ...T } />
 					<path
 						d="M244 86Q234 170 246 260M356 86Q368 170 354 260"
 						fill="none"
 						stroke="#d9c9a0"
 						strokeWidth="3"
 					/>
+					{ /* Costures horitzontals, amb punts de cosit */ }
+					<path
+						d="M184 120H413M182 160H416M185 200H414M192 236H408"
+						fill="none"
+						stroke="#d9c9a0"
+						strokeWidth="2.5"
+					/>
+					<path
+						d="M184 125H413M182 165H416M185 205H414"
+						fill="none"
+						stroke="#c4b285"
+						strokeWidth="1.5"
+						strokeDasharray="3 6"
+					/>
+					<path d={ VELA } fill={ `url(#${ vela })` } />
 					<rect
 						x="214"
 						y="118"
@@ -193,6 +243,8 @@ export function Pirata( {
 					strokeWidth="4"
 					strokeLinecap="round"
 				/>
+				<Bota x={ 430 } y={ 286 } />
+				<Bota x={ 456 } y={ 284 } />
 				{ /* Buc */ }
 				<path d="M180 270H470" fill="none" { ...T3 } />
 				<path
@@ -221,6 +273,25 @@ export function Pirata( {
 						height="10"
 						fill="#f2b705"
 					/>
+					<path
+						d={ VETES }
+						fill="none"
+						stroke="#a8754a"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+					/>
+					<rect
+						y="250"
+						width="520"
+						height="154"
+						fill={ `url(#${ llum })` }
+					/>
+					<path
+						d={ REMACHES }
+						stroke="#5a3a26"
+						strokeWidth="5"
+						strokeLinecap="round"
+					/>
 				</g>
 				<path d={ BUC } fill="none" { ...T } />
 				<path
@@ -247,6 +318,25 @@ export function Pirata( {
 				amp={ 7 }
 				periode={ 80 }
 				fons={ 440 }
+			/>
+			<Reflex flota={ 400 } mascara={ reflex }>
+				<path d={ BUC } fill={ FUSTA } />
+				<rect
+					y="286"
+					width="520"
+					height="12"
+					fill="#f2b705"
+					clipPath={ `url(#${ buc })` }
+				/>
+			</Reflex>
+			<path
+				className="nep-port__escuma"
+				d={ ESCUMA }
+				fill="none"
+				stroke="#fff"
+				strokeWidth="5"
+				strokeLinecap="round"
+				opacity=".85"
 			/>
 			<ellipse
 				cx="270"

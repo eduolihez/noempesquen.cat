@@ -163,7 +163,9 @@
 .nep-port__cap,
 .nep-port__boia,
 .nep-port__salt,
-.nep-port__fum {
+.nep-port__fum,
+.nep-port__escuma,
+.nep-port__reflex {
 	transform-box: fill-box;
 }
 
@@ -233,7 +235,41 @@
 	transform-origin: 50% 50%;
 }
 
+/* Càustiques: el patró es desplaça exactament un període (160). */
+.nep-port__caustica {
+	animation: nep-port-caustica 18s linear infinite;
+}
+
+.nep-port__reflex-sol {
+	animation: nep-port-llum 5s ease-in-out infinite alternate;
+	opacity: 0.5;
+}
+
+/* Profunditat: els plans de costa es desplacen poc i a ritmes diferents. */
+.nep-port__capa {
+	animation: nep-port-parallax 40s ease-in-out infinite alternate;
+
+	&--1 {
+		--px: -6px;
+		animation-duration: 56s;
+	}
+
+	&--2 {
+		--px: -12px;
+	}
+
+	&--3 {
+		--px: -20px;
+		animation-duration: 30s;
+	}
+}
+
 /* Cel */
+.nep-port__resplendor {
+	animation: nep-port-llum 6s ease-in-out infinite alternate;
+	opacity: 0.85;
+}
+
 .nep-port__raigs {
 	animation: nep-port-gira 60s linear infinite;
 	transform-origin: 50% 50%;
@@ -319,6 +355,16 @@
 	}
 }
 
+.nep-port__escuma {
+	animation: nep-port-escuma 2.4s ease-in-out infinite alternate;
+	transform-origin: 50% 50%;
+}
+
+.nep-port__reflex {
+	animation: nep-port-reflex 3.2s ease-in-out infinite alternate;
+	transform-origin: 50% 0%;
+}
+
 .nep-port__fum {
 	animation: nep-port-fum 3.6s ease-out infinite;
 	fill: #fff;
@@ -364,6 +410,46 @@
 
 	to {
 		transform: translateX(var(--p));
+	}
+}
+
+@keyframes nep-port-caustica {
+
+	to {
+		transform: translateX(160px);
+	}
+}
+
+@keyframes nep-port-parallax {
+
+	to {
+		transform: translateX(var(--px));
+	}
+}
+
+@keyframes nep-port-llum {
+
+	from {
+		opacity: 0.6;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes nep-port-escuma {
+
+	to {
+		opacity: 0.45;
+		transform: translateX(-8px) scaleY(0.7);
+	}
+}
+
+@keyframes nep-port-reflex {
+
+	to {
+		transform: scale(1.02, 0.9);
 	}
 }
 
