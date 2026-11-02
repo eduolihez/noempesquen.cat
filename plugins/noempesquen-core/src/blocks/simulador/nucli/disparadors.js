@@ -274,7 +274,11 @@ export function saltaPassos( missio, estat ) {
 			pas: missio.passos[ i ].id,
 		} );
 	}
-	return { ...actual, pas: missio.passos.length };
+	return {
+		...actual,
+		pas: missio.passos.length,
+		ultimAvanc: actual.temps,
+	};
 }
 
 function executaDisparadors( missio, estat, nom, dades ) {

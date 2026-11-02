@@ -1153,7 +1153,7 @@ const esValorSimple = ( v ) =>
 const tePassos = ( m ) =>
 	m.tutorial === true && Array.isArray( m.passos ) && m.passos.length > 0;
 
-function validaContinua( ref, c, errors ) {
+function validaContinua( ref, c, m, errors ) {
 	if ( c === 'boto' ) {
 		return;
 	}
@@ -1163,13 +1163,25 @@ function validaContinua( ref, c, errors ) {
 	}
 	if ( typeof c.esdeveniment !== 'string' || ! c.esdeveniment ) {
 		errors.push( `${ ref }: continua sense esdeveniment` );
+	} else if (
+		! ESDEVENIMENTS.includes( c.esdeveniment ) ||
+		[ 'pas.entra', 'inici' ].includes( c.esdeveniment )
+	) {
+		// `inici` i `pas.entra` són interns: el jugador mai els emet.
+		errors.push(
+			`${ ref }: continua amb esdeveniment no vàlid: ${ c.esdeveniment }`
+		);
+	}
+	const apps = APPS_MISSIO[ m.dispositiu ];
+	if ( c.app !== undefined && apps && ! apps.includes( c.app ) ) {
+		errors.push( `${ ref }: continua amb app inexistent: ${ c.app }` );
 	}
 	if ( Object.values( c ).some( ( v ) => ! esValorSimple( v ) ) ) {
 		errors.push( `${ ref }: continua amb valors invàlids` );
 	}
 }
 
-function validaPas( p, i, vistos, errors ) {
+function validaPas( p, i, vistos, m, errors ) {
 	if ( ! esObjecte( p ) ) {
 		errors.push( `pas ${ i }: invàlid` );
 		return;
@@ -1197,7 +1209,7 @@ function validaPas( p, i, vistos, errors ) {
 			errors.push( `${ ref }: ${ camp } invàlid (1-${ max } caràcters)` );
 		}
 	} );
-	validaContinua( ref, p.continua, errors );
+	validaContinua( ref, p.continua, m, errors );
 }
 
 /**
@@ -1208,6 +1220,17 @@ function validaPas( p, i, vistos, errors ) {
  * @param {string[]} errors Acumulador d'errors.
  */
 function validaPassos( m, errors ) {
+	const idsPas = new Set( llista( m.passos ).map( ( p ) => p?.id ) );
+	llista( m.disparadors ).forEach( ( d ) => {
+		if (
+			d?.quan?.esdeveniment === 'pas.entra' &&
+			( typeof d.quan.pas !== 'string' || ! idsPas.has( d.quan.pas ) )
+		) {
+			errors.push(
+				`disparador ${ d.id }: pas inexistent: ${ d.quan.pas }`
+			);
+		}
+	} );
 	if ( m.passos === undefined ) {
 		return;
 	}
@@ -1220,17 +1243,7 @@ function validaPassos( m, errors ) {
 		return;
 	}
 	const vistos = new Set();
-	m.passos.forEach( ( p, i ) => validaPas( p, i, vistos, errors ) );
-	llista( m.disparadors ).forEach( ( d ) => {
-		if (
-			d?.quan?.esdeveniment === 'pas.entra' &&
-			! vistos.has( d.quan.pas )
-		) {
-			errors.push(
-				`disparador ${ d.id }: pas inexistent: ${ d.quan.pas }`
-			);
-		}
-	} );
+	m.passos.forEach( ( p, i ) => validaPas( p, i, vistos, m, errors ) );
 }
 
 /**

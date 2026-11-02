@@ -155,9 +155,43 @@ describe( 'validació de passos', () => {
 		expect( amb( ( p ) => delete p.continua ).length ).toBeGreaterThan( 0 );
 	} );
 
+	it( 'rebutja continua amb esdeveniments interns o desconeguts', () => {
+		[ 'pas.entra', 'inici', 'inventat' ].forEach( ( esdeveniment ) => {
+			expect(
+				amb( ( p ) => ( p.continua = { esdeveniment } ) ).length
+			).toBe( 1 );
+		} );
+	} );
+
+	it( 'rebutja una app inexistent a continua', () => {
+		expect(
+			amb(
+				( p ) =>
+					( p.continua = {
+						esdeveniment: 'app.obre',
+						app: 'navgador',
+					} )
+			)
+		).toContain( 'pas b: continua amb app inexistent: navgador' );
+	} );
+
 	it( 'rebutja camps desconeguts al pas', () => {
 		expect( amb( ( p ) => ( p.extra = 1 ) ) ).toContain(
 			'pas b: camp desconegut: extra'
+		);
+	} );
+
+	it( 'pas.entra sense passos o amb pas no text és invàlid', () => {
+		const sense = tutorial( { disparadors: [ mostra( 'k', 'a' ) ] } );
+		delete sense.passos;
+		sense.intro = [ 'Hola' ];
+		expect( validaMissio( sense ) ).toContain(
+			'disparador k: pas inexistent: a'
+		);
+		const d = mostra( 'k', 'a' );
+		d.quan.pas = 5;
+		expect( validaMissio( tutorial( { disparadors: [ d ] } ) ) ).toContain(
+			'disparador k: pas inexistent: 5'
 		);
 	} );
 
@@ -229,15 +263,8 @@ describe( 'motor: passos', () => {
 		expect( e2.pas ).toBe( 2 );
 	} );
 
-	it( 'pas.entra dispara un cop i no es repeteix ni fa bucle', () => {
+	it( 'pas.entra dispara un cop i no es repeteix', () => {
 		const mm = tutorial( {
-			passos: [
-				{
-					...PASSOS()[ 0 ],
-					continua: { esdeveniment: 'pas.entra', pas: 'a' },
-				},
-				PASSOS()[ 2 ],
-			],
 			disparadors: [
 				{
 					id: 'n',
@@ -254,12 +281,21 @@ describe( 'motor: passos', () => {
 			],
 		} );
 		const e = obre( mm );
-		// El sintètic no avança passos encara que `continua` hi coincidiria.
-		expect( e.pas ).toBe( 0 );
 		expect( e.notificacions ).toHaveLength( 1 );
 		expect( e.executats ).toEqual( [ 'n' ] );
 		const e2 = ev( mm, e, 'pas.entra', { pas: 'a' } );
 		expect( e2.notificacions ).toHaveLength( 1 );
+	} );
+
+	it( 'sense bucle: l’esdeveniment sintètic no encadena més d’un pas', () => {
+		const passos = PASSOS();
+		// Només el motor (sense validar): el pas 2 coincidiria amb el sintètic.
+		passos[ 2 ].continua = { esdeveniment: 'pas.entra', pas: 'c' };
+		const mm = tutorial( { passos, disparadors: [ mostra( 'k2', 'c' ) ] } );
+		const e1 = reductor( mm, obre( mm ), { tipus: 'PAS_SEGUENT' } );
+		const e2 = ev( mm, e1, 'app.obre', { app: 'navegador' } );
+		expect( e2.pas ).toBe( 2 );
+		expect( e2.visibles.k2 ).toBe( true );
 	} );
 
 	it( 'PAS_SALTA aplica els pas.entra pendents i acaba el tutorial', () => {
@@ -295,6 +331,18 @@ describe( 'motor: passos', () => {
 		const fi = reductor( mm, e, { tipus: 'PAS_SALTA' } );
 		const despres = avancaTemps( mm, fi, SEGONS_PISTA * 3, SEGONS_PISTA );
 		expect( despres.pistesDonades ).toBe( 1 );
+		// Just després del salt no hi ha pista immediata.
+		const ara = avancaTemps( mm, { ...e, temps: 500 }, 1, SEGONS_PISTA );
+		const salt = reductor(
+			mm,
+			{ ...e, temps: 500 },
+			{ tipus: 'PAS_SALTA' }
+		);
+		expect( ara.pistesDonades ).toBe( 0 );
+		expect( salt.ultimAvanc ).toBe( 500 );
+		expect( avancaTemps( mm, salt, 1, SEGONS_PISTA ).pistesDonades ).toBe(
+			0
+		);
 	} );
 
 	it( 'un esdeveniment del jugador amb el tutorial acabat no avança', () => {

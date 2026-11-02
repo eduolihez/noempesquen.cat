@@ -172,10 +172,12 @@ function afegeixJo( estat, text ) {
 function seguentIntro( missio, estat ) {
 	const jo = afegeixJo(
 		estat,
-		estat.introPas + 1 < missio.intro.length ? TEXT_SEGUENT : TEXT_COMENCA
+		estat.introPas + 1 < ( missio.intro ?? [] ).length
+			? TEXT_SEGUENT
+			: TEXT_COMENCA
 	);
 	const pas = estat.introPas + 1;
-	if ( pas < missio.intro.length ) {
+	if ( pas < ( missio.intro ?? [] ).length ) {
 		return afegeixGuia( { ...jo, introPas: pas }, missio.intro[ pas ] );
 	}
 	return afegeixGuia(
@@ -442,7 +444,7 @@ export function respostesRapides( missio, estat ) {
 		return [];
 	}
 	if ( ! estat.introAcabada ) {
-		const ultim = estat.introPas + 1 >= missio.intro.length;
+		const ultim = estat.introPas + 1 >= ( missio.intro ?? [] ).length;
 		return [
 			{
 				id: 'intro:seguent',
