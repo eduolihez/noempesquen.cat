@@ -182,7 +182,15 @@ export function Selector( {
 	// Què s'ha d'enfocar després del canvi de vista: 'titol' o un dispositiu.
 	const focus = useRef( null );
 
-	const ruta = obert ? rutes[ obert ] : null;
+	const ruta = obert ? ( rutes[ obert ] ?? null ) : null;
+
+	// Si el vaixell obert es queda sense ruta (missions que canvien), es
+	// torna al port: si no, l'escena quedaria ampliada sense mapa.
+	useEffect( () => {
+		if ( obert && ! rutes[ obert ] ) {
+			setObert( null );
+		}
+	}, [ obert, rutes ] );
 
 	const obre = ( d ) => {
 		setDirecte( false );
@@ -229,7 +237,7 @@ export function Selector( {
 
 	// En tornar d'una partida, el focus va al node que s'ha jugat. Si encara
 	// no hi és (missions remotes que arriben després), es reintenta quan
-	// canvia la llista; un cop trobat, no es torna a moure el focus.
+	// canvia la llista o el mapa obert; un cop trobat, no es torna a moure.
 	const pendent = useRef( enfoca );
 	useEffect( () => {
 		if ( ! pendent.current ) {
@@ -242,7 +250,7 @@ export function Selector( {
 			node.focus();
 			pendent.current = null;
 		}
-	}, [ missions.length ] );
+	}, [ missions.length, obert ] );
 
 	const total = dispositius.reduce(
 		( acc, d ) => ( {

@@ -301,6 +301,9 @@ export function App( { config } ) {
 					</p>
 				) }
 				<Selector
+					// `vaixellInicial` només es llegeix en muntar: si canvia
+					// (missions remotes que arriben tard), es torna a muntar.
+					key={ vaixellJugat ?? 'port' }
 					missions={ missions }
 					progres={ progres }
 					preferit={ preferit }
