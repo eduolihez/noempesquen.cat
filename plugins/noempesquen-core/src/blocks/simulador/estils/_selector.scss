@@ -120,6 +120,13 @@
 			margin: 0;
 			padding: 0.3rem 0.9rem;
 		}
+
+		/* Regió viva encara buida (avís de prova): hi és però no es veu. */
+		> :empty {
+			background: none;
+			border: 0;
+			padding: 0;
+		}
 	}
 }
 
@@ -153,9 +160,10 @@
 		background: var(--sel-or);
 	}
 
+	/* Doble anell com el dels vaixells: ≥ 3:1 sobre cel clar i mar fosc. */
 	&:focus-visible {
-		outline: 3px solid var(--sel-or);
-		outline-offset: 2px;
+		box-shadow: 0 0 0 2px var(--sel-or), 0 0 0 5px var(--sel-linia);
+		outline: 0;
 	}
 }
 

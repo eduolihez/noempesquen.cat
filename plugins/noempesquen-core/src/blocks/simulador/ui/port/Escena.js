@@ -13,12 +13,22 @@
  *                 l'integrador posa els <button> dels vaixells.
  *
  * Estructura
- *   .nep-port                 contenidor (container query, overflow hidden)
- *     .nep-port__marc         proporció fixa (16:9; 3:4 per sota de 640 px),
- *                             position: relative; és el que fa el zoom
+ *   .nep-port                 contenidor `nep-port` de tipus size (cal que
+ *                             tingui alçada definida), overflow hidden
+ *     .nep-port__marc         proporció fixa --marc-r (16:9; 3:4 quan el
+ *                             contenidor és més alt que ample, aspect-ratio
+ *                             ≤ 1), absolut i centrat; és el que fa el zoom
  *       svg.nep-port__fons    fons ample i fons alt (només se'n veu un)
  *       svg.nep-port__barca   Pirata i Pesquer, col·locats per CSS
  *       {children}
+ *
+ * Marc «cover» (_port.scss): --marc-w = min(cover, el que deixa veure la
+ * zona segura sencera); --marc-h = --marc-w / --marc-r. Zona segura: el
+ * rectangle central de --zona-w × --zona-h del marc (0,84 × 0,75 en ample,
+ * 0,96 × 0,85 en alt): barcos, cartells i botons hi han de cabre; fora
+ * d'aquí es pot retallar. Si no hi cap amb cover pur, franges de cel (dalt)
+ * i mar (baix). La zona no descompta les barres del selector (dalt ~55-67
+ * px, baix ~50-70 px).
  *
  * Àncores (custom properties a `.nep-port__marc`, en % del marc; canvien
  * soles amb la disposició):
