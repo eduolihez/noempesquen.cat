@@ -11,6 +11,7 @@ import {
 	IconaTanca,
 } from '../../ui/icones';
 import { duradaAvis } from '../../nucli/avisos';
+import { ancoraDelPas } from '../../nucli/ancores';
 import { MAX_TOASTS } from '../../nucli/temps';
 import {
 	RegioAnuncis,
@@ -123,7 +124,11 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 	// centre obert, i en reprendre continua amb el temps que quedava.
 	useTempsRestant(
 		duradaAvis( n.text ),
-		aturat || joc.estat.pausa || sortint,
+		aturat ||
+			joc.estat.pausa ||
+			sortint ||
+			// Un pas del tutorial hi apunta: no caduca fins que se'n surti.
+			ancoraDelPas( joc.missio, joc.estat ) === 'avis',
 		{
 			restes,
 			id: n.id,

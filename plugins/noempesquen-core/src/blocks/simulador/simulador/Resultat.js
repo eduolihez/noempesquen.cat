@@ -184,7 +184,7 @@ export function Resultat( { onReinicia, onSeguent, onSurt, resum } ) {
 								<span className="nep-res__qui">
 									{ nomGuia }
 								</span>
-								{ __( 'Ja estàs a punt.', 'noempesquen' ) }
+								{ __( 'Ara ja saps on mirar.', 'noempesquen' ) }
 							</p>
 						</div>
 					</div>

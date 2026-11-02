@@ -113,17 +113,19 @@ export default function Mobil() {
 		if ( ! dalt ) {
 			return;
 		}
-		emet( 'nav.enrere' );
 		const gestor = gestorsEnrere.current.get( dalt.clau );
 		if ( gestor?.() ) {
 			return;
 		}
 		dispatchP( { tipus: 'ENRERE' } );
+		// Només quan tanca l'app de dalt (no si l'app l'ha gastat per dins).
+		emet( 'nav.enrere' );
 	}, [ emet ] );
 
 	const inici = useCallback( () => {
 		setCentre( false );
 		dispatchP( { tipus: 'INICI' } );
+		// També si ja s'era a l'inici: el pas «nav-inici» hi arriba així.
 		emet( 'nav.inici' );
 	}, [ emet ] );
 

@@ -115,7 +115,7 @@ Camps nous respecte de la v1: `rellotge` (hora inicial), `pistes` (llista d'ajud
 | `finestra.tanca` | `app` (PC: el jugador tanca la finestra d'una app amb la creu) |
 | `senyal.troba` | `senyal` (id del senyal; l'emet el motor la primera vegada que el jugador el marca amb la lupa) |
 | `decisio.pren` | `opcio` (id de l'opció; l'emet el motor quan el jugador tria, abans de la conseqüència) |
-| `nav.inici`, `nav.enrere` | (sense dades) Mòbil: botons Inici i Enrere de la barra de navegació |
+| `nav.inici`, `nav.enrere` | (sense dades) Mòbil: botons Inici i Enrere de la barra de navegació. `nav.enrere` només quan tanca l'app de dalt (no si l'app el gasta per dins, p. ex. tornar a la llista); `nav.inici` sempre que es prem, encara que ja siguis a l'inici |
 | `centre.obre` | (sense dades) Mòbil: el jugador obre el centre de control (toc o lliscament a la barra de dalt) |
 
 `telefon.truca`, `descarrega.fes` i `avis.apareix` no porten mai text escrit pel jugador. Al filtre `quan`, la seva `url` (host o URL, amb la mateixa normalització de `www.`) ha de ser una web `article` de la missió: amb `avis` per a `telefon.truca` i `avis.apareix`, i amb `avis.instal_la` o `barra` per a `descarrega.fes`.
@@ -185,7 +185,7 @@ El validador exigeix: `versio` 2, senyals referenciats existents (a correus, xat
 Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el sistema simulat i no puntua.
 
 - **Validació**: `tutorial` ha de ser booleà (`tutorial invàlid`). Si és `true`, `decisio.opcions` ha de tenir **una sola opció** i amb `valor: "correcta"` (p. ex. «Ja ho tinc clar», sense penalització possible); `senyals` ha de ser una llista, que pot ser buida (si el guió fa servir la lupa, hi ha d'haver almenys un senyal referenciat); no cal cap efecte `pescat`. Les missions normals es validen igual que abans.
-- **No puntua**: ni estrelles ni punts a la pantalla final («Ja estàs a punt» i, si n'hi ha, `tancament.consell`), ni estadístiques: el client no envia res a `POST /resultat` i el servidor rebutja un resultat d'un tutorial (400 `nep_missio_tutorial`).
+- **No puntua**: ni estrelles ni punts a la pantalla final («Ara ja saps on mirar» i, si n'hi ha, `tancament.consell`), ni estadístiques: el client no envia res a `POST /resultat` i el servidor rebutja un resultat d'un tutorial (400 `nep_missio_tutorial`).
 - **Progrés**: un tutorial fet es desa al mateix mapa del progrés (`{ id: 1 }`, local i al compte). L'1 no són estrelles, només vol dir «fet»; així la fusió per màxim i el progrés antic (sense la clau = no fet) funcionen sense canvis.
 - **Passos (`passos`)**: només vàlid amb `tutorial: true`; llista no buida. Cada pas té exactament `id` (únic, `[a-z0-9-]+`), `ancora` (una clau d'`ANCORES`, a `nucli/ancores.js`, o `null` per a una targeta centrada), `titol` (1-60 caràcters), `text` (1-280) i `continua`. Es rebutgen ids duplicats, àncores desconegudes, `continua` mal format, camps desconeguts i textos buits. `ANCORES`: `pantalla`, `escriptori`, `barra`, `inici`, `rellotge`, `lupa`, `app-navegador`, `app-parla`, `finestra-navegador`, `finestra-parla`, `botons-finestra`, `parla-xat`, `parla-respostes`, `avis`, `llista-correus`, `correu-obert`, `remitent`, `enllacos`, `adreca`, `decisio`, `bloqueig`, `dock`, `app-missatges`, `app-parla-mobil`, `banner`, `centre-control`, `nav-enrere`, `nav-inici`, `conversa`, `barra-estat` (mòbil: barra de dalt, obre el centre de control), `llista-sms` (mòbil: llista de converses de Missatges) (la interfície les posa com a `data-tut`).
 

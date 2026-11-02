@@ -399,15 +399,18 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 	return (
 		<div ref={ capa } className="nep-guia">
 			{ live }
-			{ panells( f, geo.cont ).map( ( p, i ) => (
-				<div
-					key={ i }
-					className="nep-guia__vel"
-					aria-hidden="true"
-					style={ estil( p ) }
-					onMouseDown={ atura }
-				/>
-			) ) }
+			{ /* Pas d'acció sense àncora a la vista (un avís descartat):
+			   sense vel, perquè el jugador sempre tingui per on seguir. */ }
+			{ ( explicacio || f ) &&
+				panells( f, geo.cont ).map( ( p, i ) => (
+					<div
+						key={ i }
+						className="nep-guia__vel"
+						aria-hidden="true"
+						style={ estil( p ) }
+						onMouseDown={ atura }
+					/>
+				) ) }
 			{ f && explicacio && (
 				<div
 					className="nep-guia__tapa"

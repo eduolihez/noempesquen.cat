@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { validaMissio } from '../valida.js';
-import { ANCORES } from '../ancores.js';
+import { ANCORES, ancoraDelPas } from '../ancores.js';
 import { estatInicial, reductor, respostesRapides, FASE } from '../motor.js';
 
 const MISSIONS = new URL( '../../../../../missions/', import.meta.url );
@@ -320,5 +320,27 @@ describe( 'tutorial-mobil.json: recorregut amb el reductor', () => {
 		e = decideix( m, e );
 		expect( e.pas ).toBe( m.passos.length );
 		expect( e.fase ).toBe( FASE.CONSEQUENCIA );
+	} );
+} );
+
+// Els avisos no caduquen mentre el pas en curs hi apunta (Toast i Banner
+// aturen el comptador quan ancoraDelPas retorna la seva clau).
+describe( 'ancoraDelPas', () => {
+	it.each( [
+		[ 'tutorial-pc.json', [ 'avis', 'correu-nou' ], 'avis' ],
+		[ 'tutorial-mobil.json', [ 'banner' ], 'banner' ],
+	] )( '%s: els passos d’avís hi apunten', ( f, ids, clau ) => {
+		const m = llegeix( f );
+		for ( const id of ids ) {
+			const pas = m.passos.findIndex( ( p ) => p.id === id );
+			expect( ancoraDelPas( m, { pas } ) ).toBe( clau );
+		}
+	} );
+
+	it( 'null fora del tutorial o quan s’ha acabat', () => {
+		const m = llegeix( 'tutorial-pc.json' );
+		expect( ancoraDelPas( m, { pas: m.passos.length } ) ).toBeNull();
+		expect( ancoraDelPas( { senyals: [] }, { pas: 0 } ) ).toBeNull();
+		expect( ancoraDelPas( m, { pas: 0 } ) ).toBeNull();
 	} );
 } );

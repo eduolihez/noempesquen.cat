@@ -35,3 +35,15 @@ export const ANCORES = [
 	'barra-estat',
 	'llista-sms',
 ];
+
+/**
+ * Àncora del pas del tutorial en curs (null si no n'hi ha o s'ha acabat).
+ * Els avisos (`avis`, `banner`) no caduquen mentre el pas hi apunta.
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat del motor.
+ * @return {?string} Clau d'àncora.
+ */
+export function ancoraDelPas( missio, estat ) {
+	return missio?.passos?.[ estat?.pas ]?.ancora ?? null;
+}
