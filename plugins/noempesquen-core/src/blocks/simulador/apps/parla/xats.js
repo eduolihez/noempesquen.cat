@@ -134,11 +134,12 @@ export function properPas( xat, mostrats, animat ) {
  * @param {number}  noLlegits Missatges del guia sense llegir.
  * @param {?Object} dades     Dades amb què s'ha obert l'app.
  * @param {string}  idGuia    Id del xat del guia.
+ * @param {boolean} tutorial  Cert en un tutorial: sempre el xat del guia (la guia visual hi apunta).
  * @return {?string} Id del xat, o null per a la llista.
  */
-export function xatInicial( noLlegits, dades, idGuia ) {
+export function xatInicial( noLlegits, dades, idGuia, tutorial = false ) {
 	if ( dades?.xat ) {
 		return dades.xat;
 	}
-	return noLlegits > 0 ? idGuia : null;
+	return noLlegits > 0 || tutorial ? idGuia : null;
 }
