@@ -107,8 +107,9 @@ async function pc( page, mida, prefix ) {
 	// En vertical estret el PC no es mostra: petició de girar o d'ampliar.
 	if ( mida.height > mida.width && mida.width < 768 ) {
 		await page.clock.install();
+		const trobada = desbloqueja( page, FACTURA );
 		await page.goto( '/simulador/' );
-		await obreMissio( page, FACTURA );
+		await obreMissio( page, FACTURA, trobada );
 		await expect( page.getByRole( 'alertdialog' ) ).toBeVisible();
 		await revisa( page, `${ prefix }girar`, [ '[role="alertdialog"]' ] );
 		return;
