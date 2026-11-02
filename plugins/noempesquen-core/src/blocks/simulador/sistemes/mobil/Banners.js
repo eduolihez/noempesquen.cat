@@ -48,7 +48,6 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
 		<li
 			ref={ li }
 			className={ `nep-so-m-banner${ sortint ? ' is-sortint' : '' }` }
-			data-tut="banner"
 			inert={ sortint ? '' : undefined }
 			{ ...handlers }
 			onPointerDown={ ( e ) => {
@@ -67,6 +66,7 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
 			<CosNotificacio
 				n={ n }
 				d={ descriu( n, joc ) }
+				tut="banner"
 				onObre={ surt( onObre ) }
 			/>
 			<button

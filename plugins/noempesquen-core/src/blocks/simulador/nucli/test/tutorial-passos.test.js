@@ -35,6 +35,7 @@ const DOM = {
 		'finestra-parla',
 		'botons-finestra',
 		'avis',
+		'correu-primer',
 	],
 	mobil: [
 		...COMUNES,

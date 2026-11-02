@@ -46,7 +46,10 @@
 	border: 1px solid $tok-tinta;
 	border-radius: 12px;
 	box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+	box-sizing: border-box;
 	color: $tok-tinta;
+	display: flex;
+	flex-direction: column;
 	font-size: 1rem;
 	line-height: 1.45;
 	max-height: calc(100% - 16px);
@@ -59,6 +62,23 @@
 	p {
 		margin: 0;
 	}
+
+	> * {
+		flex-shrink: 0;
+	}
+}
+
+/* Targeta retallada (no hi cap sencera sense tapar el forat): només el text
+   fa scroll; el títol i els botons es veuen sempre. */
+.nep-guia__targeta > .nep-guia__text {
+	flex-shrink: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+.nep-guia__text:focus-visible {
+	outline: 3px solid $tok-tinta;
+	outline-offset: 2px;
 }
 
 .nep-guia__comptador {

@@ -143,14 +143,31 @@ describe( 'posicioTargeta', () => {
 		expect( posicioTargeta( tot, CONT, TARGETA ).costat ).toBe( 'centre' );
 	} );
 
+	it( 'apaïsat baix (863×360): retallada a la franja gran, mai sobre el forat', () => {
+		const cont = { amplada: 863, alcada: 360 };
+		const t = { amplada: 360, alcada: 220 };
+		const f = { x: 300, y: 60, amplada: 500, alcada: 150 };
+		const p = posicioTargeta( f, cont, t );
+		expect( p.costat ).toBe( 'sota' );
+		expect( p.y ).toBeGreaterThanOrEqual( f.y + f.alcada );
+		expect( p.y + p.maxAlcada ).toBeLessThanOrEqual( 360 - 8 );
+		const alt = { x: 300, y: 190, amplada: 500, alcada: 120 };
+		const q = posicioTargeta( alt, cont, t );
+		expect( q.costat ).toBe( 'sobre' );
+		expect( q.y ).toBe( 8 );
+		expect( q.y + q.maxAlcada ).toBeLessThanOrEqual( alt.y );
+	} );
+
 	it( 'contenidor petit (mòbil 320 px): dins i sense coordenades negatives', () => {
 		const petit = { amplada: 320, alcada: 480 };
 		const t = { amplada: 304, alcada: 200 };
 		const f = { x: 100, y: 200, amplada: 120, alcada: 80 };
 		const p = posicioTargeta( f, petit, t );
-		expect( p.costat ).toBe( 'centre' );
+		// No hi cap sencera: sota, retallada, sense tapar el forat.
+		expect( p.costat ).toBe( 'sota' );
 		expect( p.x ).toBe( 8 );
-		expect( p.y ).toBeGreaterThanOrEqual( 8 );
+		expect( p.y ).toBe( 292 );
+		expect( p.maxAlcada ).toBe( 180 );
 		const p2 = posicioTargeta(
 			{ x: 0, y: 420, amplada: 320, alcada: 60 },
 			petit,

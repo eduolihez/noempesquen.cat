@@ -40,6 +40,10 @@ const esVisible = ( el ) => {
 	);
 };
 
+// Si l'àncora no hi és, la que la precedeix: abans d'obrir la decisió, el
+// botó «Ja ho tinc clar» (així el pas de decidir no queda tapat).
+const ALTERNATIVA = { decisio: 'parla-respostes' };
+
 /**
  * Element que fa d'àncora d'una clau `data-tut` (vegeu `triaAncora`).
  *
@@ -63,10 +67,6 @@ function resolAncora( arrel, clau ) {
 	}
 	return i >= 0 ? els[ i ] : null;
 }
-
-// Si l'àncora no hi és, la que la precedeix: abans d'obrir la decisió, el
-// botó «Ja ho tinc clar» (així el pas de decidir no queda tapat).
-const ALTERNATIVA = { decisio: 'parla-respostes' };
 
 /**
  * Elements on es pot arribar amb Tab dins d'un contenidor (ell inclòs).
@@ -173,11 +173,15 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 			? forat( relatiu( el.getBoundingClientRect(), origen ), cont )
 			: null;
 		const t = targeta.current;
+		// Alçada natural: amb `maxHeight` el text fa scroll i `offsetHeight`
+		// queda retallat; s'hi suma el que s'amaga perquè no oscil·li.
+		const text = t?.querySelector( '.nep-guia__text' );
+		const amagat = text ? text.scrollHeight - text.clientHeight : 0;
 		const mida = {
 			x: 0,
 			y: 0,
 			amplada: t?.offsetWidth ?? 0,
-			alcada: t?.offsetHeight ?? 0,
+			alcada: ( t?.offsetHeight ?? 0 ) + Math.max( 0, amagat ),
 		};
 		setGeo( ( g ) =>
 			haCanviat( g.cont, cont ) ||
@@ -212,15 +216,10 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 					}
 				} )
 			);
-			mesura();
+			// Només per als nous (cicle de Tab): el bucle rAF ja mesura.
 		} );
 		if ( sistema ) {
-			mo.observe( sistema, {
-				subtree: true,
-				childList: true,
-				attributes: true,
-				attributeFilter: [ 'style', 'class', 'data-tut', 'hidden' ],
-			} );
+			mo.observe( sistema, { subtree: true, childList: true } );
 		}
 		let bucle = 0;
 		const tick = () => {
@@ -435,13 +434,22 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 					left: `${ lloc.x }px`,
 					top: `${ lloc.y }px`,
 					width: amplada ? `${ amplada }px` : undefined,
+					maxHeight: lloc.maxAlcada
+						? `${ lloc.maxAlcada }px`
+						: undefined,
 				} }
 			>
 				<p className="nep-guia__comptador">{ comptador }</p>
 				<h2 ref={ titol } className="nep-guia__titol" tabIndex={ -1 }>
 					{ pas.titol }
 				</h2>
-				<p className="nep-guia__text">{ pas.text }</p>
+				<p
+					className="nep-guia__text"
+					// Retallada: el text fa scroll i s'ha de poder fer amb teclat.
+					tabIndex={ lloc.maxAlcada ? 0 : undefined }
+				>
+					{ pas.text }
+				</p>
 				<div className="nep-guia__botons">
 					{ explicacio && (
 						<button

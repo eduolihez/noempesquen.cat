@@ -12,6 +12,8 @@ export const MARGE_FORAT = 8;
 export const SEPARACIO = 12;
 /** Distància mínima de la targeta a les vores del contenidor. */
 export const VORA = 8;
+/** Alçada mínima útil d'una targeta retallada (títol i botons). */
+export const ALCADA_MINIMA = 120;
 
 /**
  * Rectangle d'un element relatiu al contenidor.
@@ -83,7 +85,8 @@ const limita = ( v, min, max ) => Math.max( min, Math.min( v, max ) );
 
 /**
  * Posició de la targeta: sota el forat si hi cap, si no a sobre, si no al
- * costat (dreta o esquerra) i, si no, centrada. Sempre dins del contenidor.
+ * costat (dreta o esquerra); si no, retallada a la franja amb més espai i,
+ * com a últim recurs, centrada. Sempre dins del contenidor.
  *
  * @param {?Object} f               Forat.
  * @param {Object}  cont            `{ amplada, alcada }`.
@@ -91,7 +94,8 @@ const limita = ( v, min, max ) => Math.max( min, Math.min( v, max ) );
  * @param {Object}  [opc]
  * @param {number}  [opc.separacio] Separació amb el forat.
  * @param {number}  [opc.vora]      Marge amb les vores.
- * @return {{costat:string, x:number, y:number}} Costat i cantonada superior esquerra.
+ * @return {{costat:string, x:number, y:number, maxAlcada:?number}} Costat,
+ *         cantonada superior esquerra i alçada màxima (si s'ha de retallar).
  */
 export function posicioTargeta(
 	f,
@@ -129,7 +133,23 @@ export function posicioTargeta(
 	if ( esquerra >= vora ) {
 		return { costat: 'esquerra', x: esquerra, y: yCentrat() };
 	}
-	return centrada;
+	// No hi cap sencera enlloc: la franja (sota o sobre) amb més espai, amb
+	// l'alçada limitada (`maxAlcada`) perquè no tapi el forat. Només si cap
+	// de les dues arriba al mínim útil, centrada.
+	const espaiSota = H - sota - vora;
+	const espaiSobre = f.y - separacio - vora;
+	if ( Math.max( espaiSota, espaiSobre ) < ALCADA_MINIMA ) {
+		return centrada;
+	}
+	if ( espaiSota >= espaiSobre ) {
+		return { costat: 'sota', x: xCentrat(), y: sota, maxAlcada: espaiSota };
+	}
+	return {
+		costat: 'sobre',
+		x: xCentrat(),
+		y: vora,
+		maxAlcada: espaiSobre,
+	};
 }
 
 /**

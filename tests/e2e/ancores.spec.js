@@ -52,6 +52,7 @@ test.describe( 'Àncores data-tut', () => {
 			'lupa',
 			'adreca',
 			'llista-correus',
+			'correu-primer',
 		] );
 
 		// Només la finestra enfocada duu data-tut-foc i els seus botons hi són dins.

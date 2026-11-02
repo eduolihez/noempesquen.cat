@@ -94,10 +94,16 @@ export function descriu( n, { mon, nomGuia, Avatar } ) {
  * @param {Object}   props.n      Notificació.
  * @param {Object}   props.d      Presentació (vegeu descriu).
  * @param {Function} props.onObre Obre l'app de la notificació.
+ * @param {string}   [props.tut]  Clau `data-tut` (només el toast).
  */
-export function CosNotificacio( { n, d, onObre } ) {
+export function CosNotificacio( { n, d, onObre, tut } ) {
 	return (
-		<button type="button" className="nep-so-notif__cos" onClick={ onObre }>
+		<button
+			type="button"
+			className="nep-so-notif__cos"
+			data-tut={ tut }
+			onClick={ onObre }
+		>
 			{ d.imatge && (
 				<span className="nep-so-notif__imatge">{ d.imatge }</span>
 			) }
@@ -142,7 +148,6 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 			className={ `nep-so-toast nep-so-notif${
 				sortint ? ' is-sortint' : ''
 			}` }
-			data-tut="avis"
 			inert={ sortint ? '' : undefined }
 			{ ...handlers }
 		>
@@ -161,7 +166,13 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 					<IconaTanca />
 				</button>
 			</div>
-			<CosNotificacio n={ n } d={ d } onObre={ surt( onObre ) } />
+			{ /* L'àncora és el cos: la X queda sota el vel del tutorial. */ }
+			<CosNotificacio
+				n={ n }
+				d={ d }
+				tut="avis"
+				onObre={ surt( onObre ) }
+			/>
 		</li>
 	);
 }

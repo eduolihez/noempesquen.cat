@@ -115,7 +115,7 @@
 		},
 		{
 			"id": "obre-correu",
-			"ancora": "llista-correus",
+			"ancora": "correu-primer",
 			"titol": "La safata d'entrada",
 			"text": "Aquí arriben els correus. Fes clic al de Premis Fantasia per llegir-lo.",
 			"continua": {

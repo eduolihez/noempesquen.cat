@@ -18,6 +18,7 @@ export const ANCORES = [
 	'parla-respostes',
 	'avis',
 	'llista-correus',
+	'correu-primer',
 	'correu-obert',
 	'remitent',
 	'enllacos',

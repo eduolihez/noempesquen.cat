@@ -183,9 +183,8 @@ async function comprovaPas( page, passos, i, pc ) {
 const inspeccionaText = ( page, patro ) =>
 	page.getByRole( 'button', { name: patro } ).first();
 
-// El cos de l'avís (no la capçalera), que és el que s'obre amb un clic.
-const cosAvis = ( page ) =>
-	ancora( page, 'avis' ).locator( '.nep-so-notif__cos' );
+// L'àncora `avis` és el cos de l'avís (el botó que l'obre), no la X.
+const cosAvis = ( page ) => ancora( page, 'avis' );
 
 const ACCIONS_PC = {
 	tanca: ( page ) =>
@@ -202,9 +201,9 @@ const ACCIONS_PC = {
 	'obre-correu': ( page ) =>
 		clicAlCentre(
 			page,
-			ancora( page, 'llista-correus' )
-				.getByRole( 'button', { name: /Premis Fantasia/ } )
-				.first()
+			ancora( page, 'correu-primer' ).getByRole( 'button', {
+				name: /Premis Fantasia/,
+			} )
 		),
 	lupa: ( page ) => clicAlCentre( page, ancora( page, 'lupa' ) ),
 	'indici-remitent': ( page ) =>
@@ -479,12 +478,20 @@ test.describe( 'tutorial al PC', () => {
 		await arrencaPc( page );
 		await vesA( page, PASSOS_PC, ACCIONS_PC, true, 'avis' );
 		await expect( page.locator( '.nep-guia__vel' ) ).not.toHaveCount( 0 );
-		await clicAlCentre(
-			page,
-			ancora( page, 'avis' ).getByRole( 'button', {
-				name: 'Descarta la notificació',
-			} )
+		// La X queda fora del forat: a sobre hi ha el vel (o la targeta).
+		const x = page
+			.locator( '.nep-so-toast' )
+			.getByRole( 'button', { name: 'Descarta la notificació' } );
+		const caixa = await x.boundingBox();
+		const tapa = await page.evaluate(
+			( [ px, py ] ) =>
+				document.elementFromPoint( px, py )?.closest( '.nep-guia' ) !==
+				null,
+			[ caixa.x + caixa.width / 2, caixa.y + caixa.height / 2 ]
 		);
+		expect( tapa ).toBe( true );
+		// Si l'avís desapareix igualment (descartat per codi), el vel se'n va.
+		await x.evaluate( ( b ) => b.click() );
 		await expect( page.locator( '.nep-guia__vel' ) ).toHaveCount( 0 );
 		await expect( forat( page ) ).toHaveCount( 0 );
 		await expect( guia( page ) ).toContainText( 'Pas 9 de 22' );

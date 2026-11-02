@@ -33,9 +33,19 @@ function AccioFila( { etiqueta, Icona, onClick } ) {
  * @param {boolean}  props.paperera La fila és a la Paperera (sense «Elimina»).
  * @param {Function} props.onObre   Obre el correu.
  * @param {Function} props.onAccio  (com, correu) per a arxiva/esborra.
+ * @param {boolean}  props.primer   És la primera fila (àncora `correu-primer`).
  * @param {Function} props.onMarca  (correu, canvis) per a llegit/destacat.
  */
-function Fila( { correu, marques, nou, paperera, onObre, onAccio, onMarca } ) {
+function Fila( {
+	correu,
+	marques,
+	nou,
+	paperera,
+	primer,
+	onObre,
+	onAccio,
+	onMarca,
+} ) {
 	const llegit = esLlegit( correu, marques );
 	const destacat = esDestacat( correu, marques );
 	const classes = [
@@ -47,7 +57,10 @@ function Fila( { correu, marques, nou, paperera, onObre, onAccio, onMarca } ) {
 		.join( ' ' );
 
 	return (
-		<li className={ classes }>
+		<li
+			className={ classes }
+			data-tut={ primer ? 'correu-primer' : undefined }
+		>
 			<button
 				type="button"
 				className={ `nep-posta-fila__estrella${
@@ -175,13 +188,14 @@ export function LlistaCorreus( {
 				<p className="nep-posta-safata__buit">{ buit }</p>
 			) : (
 				<ul className="nep-posta-safata__llista">
-					{ correus.map( ( c ) => (
+					{ correus.map( ( c, i ) => (
 						<Fila
 							key={ c.id }
 							correu={ c }
 							marques={ marques }
 							nou={ ! inicials.has( c.id ) }
 							paperera={ carpeta === 'paperera' }
+							primer={ i === 0 }
 							onObre={ onObre }
 							onAccio={ onAccio }
 							onMarca={ onMarca }

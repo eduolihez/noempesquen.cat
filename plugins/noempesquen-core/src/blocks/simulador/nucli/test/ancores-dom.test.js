@@ -21,14 +21,15 @@ function fonts( dir = ARREL ) {
 }
 
 /**
- * Claus posades al DOM: literals `data-tut="x"` i, dins d'una expressió
+ * Claus posades al DOM: literals `data-tut="x"` (o la prop `tut="x"` que un
+ * component passa a `data-tut`, p. ex. CosNotificacio) i, dins d'una expressió
  * `data-tut={ ... }` o en un objecte `const TUT_X = { ... }`, cada literal
  * entre cometes simples.
  */
 function clausAlCodi() {
 	const claus = new Set();
 	for ( const text of fonts() ) {
-		for ( const m of text.matchAll( /data-tut="([^"]+)"/g ) ) {
+		for ( const m of text.matchAll( /(?:data-tut|\btut)="([^"]+)"/g ) ) {
 			claus.add( m[ 1 ] );
 		}
 		for ( const m of text.matchAll(
