@@ -157,6 +157,9 @@
 		border-radius: 6px;
 		color: #fff;
 		cursor: default;
+
+		/* Escalat a pantalla baixa, el text no baixa de 14 px reals. */
+		font-size: max(14px, calc(14px / var(--so-escala, 1)));
 		margin-top: 8px;
 		min-height: var(--so-tactil, 0);
 		min-width: var(--so-tactil, 0);
