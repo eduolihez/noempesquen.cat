@@ -202,11 +202,17 @@
 
 /* Cartell de fusta clara amb el nom i el progrés: penja damunt del vaixell
    (en estret, el del Pesquer no hi cap sense tapar el Pirata). */
+
+/* En ample, per sobre de la punta del pal (no tapa bandera ni tripulant). */
 .nep-sel-barco {
-	--cartell-y: calc(-100% + 0.75rem);
+	--cartell-y: calc(-100% - 0.5rem);
 }
 
 @container (max-width: 639px) {
+
+	.nep-sel-barco {
+		--cartell-y: calc(-100% + 0.75rem);
+	}
 
 	.nep-sel-barco--pc {
 		--cartell-y: 0%;
