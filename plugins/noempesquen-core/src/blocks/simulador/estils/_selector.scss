@@ -47,6 +47,54 @@
 	}
 }
 
+/* Botó «Pausa animacions» (WCAG 2.2.2): visible al port i al mapa. */
+.wp-block-noempesquen-simulador .nep-sel-pausa,
+.nep-sel-pausa {
+	align-items: center;
+	align-self: center;
+	background: #fff;
+	border: 2px solid var(--sel-linia);
+	border-radius: 999px;
+	color: var(--sel-linia);
+	cursor: pointer;
+	display: inline-flex;
+	font-size: 0.95rem;
+	font-weight: 700;
+	gap: 0.4rem;
+	min-height: 44px;
+	min-width: 44px;
+	padding: 0.3rem 0.9rem 0.3rem 0.7rem;
+
+	&[aria-pressed="true"] {
+		background: var(--sel-or);
+	}
+
+	&:focus-visible {
+		outline: 3px solid var(--sel-anell);
+		outline-offset: 2px;
+	}
+}
+
+/* Animacions aturades: el port es congela on és; el mapa queda en l'estat
+   final (les entrades tenen retard i `both`: en pausa els nodes es
+   quedarien invisibles). Amb el mapa obert, l'escena de darrere també
+   s'atura sola. `!important`: hi ha regles que redefineixen `animation`. */
+.nep-sel--pausat .nep-port *,
+.nep-sel--pausat .nep-port *::before,
+.nep-sel--pausat .nep-port *::after,
+.nep-sel--mapa .nep-port *,
+.nep-sel--mapa .nep-port *::before,
+.nep-sel--mapa .nep-port *::after {
+	animation-play-state: paused !important;
+}
+
+.nep-sel--pausat .nep-mapa *,
+.nep-sel--pausat .nep-mapa *::before,
+.nep-sel--pausat .nep-mapa *::after {
+	animation: none !important;
+	transition: none !important;
+}
+
 /* El tema no posa marge lateral: sense això, en pantalles estretes el
    selector toca les vores (la capçalera deixa 16 px). */
 @media (max-width: 1180px) {

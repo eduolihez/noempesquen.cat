@@ -36,6 +36,18 @@ const IconaGira = ( p ) => (
 	</Glif>
 );
 
+/* Pausa (dues barres) i reprèn (triangle). */
+const IconaPausa = ( p ) => (
+	<Glif { ...p } strokeWidth="2.2">
+		<path d="M7.5 5v10M12.5 5v10" />
+	</Glif>
+);
+const IconaPlay = ( p ) => (
+	<Glif { ...p } strokeWidth="2">
+		<path d="M7 5v10l8-5Z" />
+	</Glif>
+);
+
 const vaixells = () => ( {
 	pc: {
 		nom: __( 'el Pesquer', 'noempesquen' ),
@@ -179,6 +191,8 @@ export function Selector( {
 	// Obert en muntar (tornant d'una partida): sense animació d'entrada.
 	const [ directe, setDirecte ] = useState( () => !! obert );
 	const [ anunci, setAnunci ] = useState( '' );
+	// Atura les animacions del port i del mapa (WCAG 2.2.2). No es desa.
+	const [ pausat, setPausat ] = useState( false );
 	// Què s'ha d'enfocar després del canvi de vista: 'titol' o un dispositiu.
 	const focus = useRef( null );
 
@@ -274,6 +288,7 @@ export function Selector( {
 		'nep-selector',
 		ruta ? 'nep-sel--mapa' : 'nep-sel--port',
 		directe && 'nep-sel--directe',
+		pausat && 'nep-sel--pausat',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -303,6 +318,19 @@ export function Selector( {
 						) }
 					</p>
 				) }
+				<button
+					type="button"
+					className="nep-sel-pausa"
+					aria-pressed={ pausat }
+					onClick={ () => setPausat( ( p ) => ! p ) }
+				>
+					{ pausat ? (
+						<IconaPlay mida={ 20 } />
+					) : (
+						<IconaPausa mida={ 20 } />
+					) }
+					{ __( 'Pausa animacions', 'noempesquen' ) }
+				</button>
 			</header>
 
 			<p className="screen-reader-text" aria-live="polite">
