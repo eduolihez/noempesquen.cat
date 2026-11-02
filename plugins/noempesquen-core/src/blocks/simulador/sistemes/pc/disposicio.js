@@ -31,7 +31,9 @@ function disposicioSola( { amplada, alcada }, id ) {
 /**
  * Reparteix l'àrea entre les finestres visibles. Amb navegador i Parla:
  * navegador a l'esquerra (~60 %) i Parla a la dreta (~40 %, mínim 420).
- * Amb una sola finestra, la seva mida i posició per defecte. Les altres
+ * Amb àrees estretes no caben Parla 420 i Navegador 480: guanya no
+ * solapar, Parla conserva 420 i el navegador pren el que queda (a 800 px
+ * d'ample, 356). Amb una sola finestra, la seva mida i posició per defecte. Les altres
  * finestres no tenen entrada (van en cascada).
  *
  * @param {Object}   p

@@ -48,34 +48,47 @@ function enfoca( estat, id, canvis = {} ) {
 }
 
 /**
- * Col·loca la finestra nova (ja afegida a `finestres`) i, si cap finestra
- * és manual, reparteix també les existents.
+ * Recalcula la disposició automàtica després d'obrir, restaurar, tancar o
+ * minimitzar. Si hi ha finestres manuals ocupant l'àrea, només la finestra
+ * `id` (la que acaba d'aparèixer) es col·loca a la mitja lliure; una manual
+ * minimitzada també compta com a ocupada. Si no, es reparteix l'àrea entre
+ * les visibles no manuals; una de sola torna a la mida per defecte (rect null).
  *
- * @param {Object[]} finestres Finestres amb la nova al final.
+ * @param {Object[]} finestres Finestres.
  * @param {Object}   area      { amplada, alcada } o undefined.
- * @return {Object[]} Finestres amb `rect` assignat.
+ * @param {?string}  id        Finestra que acaba d'aparèixer, si n'hi ha.
+ * @return {Object[]} Finestres amb `rect` actualitzat.
  */
-function reparteix( finestres, area ) {
+function recoloca( finestres, area, id = null ) {
 	if ( ! area ) {
 		return finestres;
 	}
-	const nova = finestres[ finestres.length - 1 ];
-	const altres = finestres.slice( 0, -1 );
-	const visibles = altres.filter(
+	const manuals = finestres.filter(
+		( f ) => f.manual && f.rect && ! f.maximitzada && f.id !== id
+	);
+	const objectiu = finestres.find( ( f ) => f.id === id );
+	if ( manuals.length ) {
+		if ( ! objectiu || objectiu.manual ) {
+			return finestres;
+		}
+		const lliure = mitatLliure(
+			area,
+			manuals.map( ( f ) => f.rect )
+		);
+		return finestres.map( ( f ) =>
+			f.id === id ? { ...f, rect: lliure } : f
+		);
+	}
+	const visibles = finestres.filter(
 		( f ) => ! f.minimitzada && ! f.maximitzada
 	);
-	if ( ! visibles.length ) {
+	if ( visibles.some( ( f ) => f.manual ) ) {
 		return finestres;
 	}
-	if ( visibles.some( ( f ) => f.manual ) ) {
-		const ocupades = visibles
-			.filter( ( f ) => f.rect )
-			.map( ( f ) => f.rect );
-		const lliure =
-			ocupades.length === visibles.length
-				? mitatLliure( area, ocupades )
-				: null;
-		return lliure ? [ ...altres, { ...nova, rect: lliure } ] : finestres;
+	if ( visibles.length === 1 ) {
+		return finestres.map( ( f ) =>
+			f.id === visibles[ 0 ].id && f.rect ? { ...f, rect: null } : f
+		);
 	}
 	const disp = disposicioInicial( { ...area, finestres } );
 	return finestres.map( ( f ) =>
@@ -83,8 +96,9 @@ function reparteix( finestres, area ) {
 	);
 }
 
-function obre( estat, app, dades, area ) {
-	if ( estat.finestres.some( ( f ) => f.id === app ) ) {
+function obre( estat, app, dades ) {
+	const existent = estat.finestres.find( ( f ) => f.id === app );
+	if ( existent ) {
 		return enfoca( estat, app, dades === undefined ? {} : { dades } );
 	}
 	const finestra = {
@@ -99,7 +113,7 @@ function obre( estat, app, dades, area ) {
 	};
 	return {
 		...estat,
-		finestres: reparteix( [ ...estat.finestres, finestra ], area ),
+		finestres: [ ...estat.finestres, finestra ],
 		focus: app,
 	};
 }
@@ -143,12 +157,30 @@ const PER_ID = {
 
 /**
  * @param {Object} estat Estat de les finestres.
- * @param {Object} accio { tipus: 'OBRE', app, dades?, area? { amplada, alcada } } | { tipus: 'MOU', id, rect } | { tipus: 'TANCA'|'ENFOCA'|'MINIMITZA'|'MAXIMITZA', id } | { tipus: 'REINICIA' }.
+ * @param {Object} accio { tipus: 'OBRE', app, dades?, area? { amplada, alcada } } | { tipus: 'MOU', id, rect } | { tipus: 'TANCA'|'ENFOCA'|'MINIMITZA'|'MAXIMITZA', id, area? } | { tipus: 'REINICIA' }.
  * @return {Object} Nou estat (el mateix objecte si l'acció no fa res).
  */
 export function finestresReductor( estat, accio ) {
+	const nou = reductorBase( estat, accio );
+	if ( nou === estat || ! accio.area ) {
+		return nou;
+	}
+	const id = accio.tipus === 'OBRE' ? accio.app : accio.id;
+	const abans = estat.finestres.find( ( f ) => f.id === id );
+	// Només apareix (es col·loca) si és nova o estava minimitzada/maximitzada.
+	const apareix =
+		accio.tipus !== 'TANCA' &&
+		accio.tipus !== 'MINIMITZA' &&
+		( ! abans || abans.minimitzada || abans.maximitzada );
+	return {
+		...nou,
+		finestres: recoloca( nou.finestres, accio.area, apareix ? id : null ),
+	};
+}
+
+function reductorBase( estat, accio ) {
 	if ( accio.tipus === 'OBRE' ) {
-		return obre( estat, accio.app, accio.dades, accio.area );
+		return obre( estat, accio.app, accio.dades );
 	}
 	if ( accio.tipus === 'REINICIA' ) {
 		return ESTAT_FINESTRES;

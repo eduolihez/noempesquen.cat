@@ -48,22 +48,29 @@ export default function Pc() {
 	const faseAnterior = useRef( estat.fase );
 	const bloquejat = estat.fase === FASE.BLOQUEIG;
 
+	// Les accions de finestra porten l'àrea (mides lògiques) per a la disposició.
+	const envia = useCallback( ( accio ) => {
+		const zona = refFinestres.current;
+		dispatchF( {
+			...accio,
+			area: zona
+				? { amplada: zona.clientWidth, alcada: zona.clientHeight }
+				: undefined,
+		} );
+	}, [] );
+
 	// `app.obre` només quan l'obre el jugador (no el desbloqueig automàtic).
 	const obreApp = useCallback(
 		( app, dades, { automatica = false } = {} ) => {
 			if ( APPS[ app ] ) {
 				setPanell( null );
-				const zona = refFinestres.current;
-				const area = zona
-					? { amplada: zona.clientWidth, alcada: zona.clientHeight }
-					: undefined;
-				dispatchF( { tipus: 'OBRE', app, dades, area } );
+				envia( { tipus: 'OBRE', app, dades } );
 				if ( ! automatica ) {
 					emet( 'app.obre', { app } );
 				}
 			}
 		},
-		[ emet ]
+		[ emet, envia ]
 	);
 
 	const obreNotificacio = useCallback(
@@ -138,9 +145,9 @@ export default function Pc() {
 		if ( ! finestra ) {
 			obreApp( app );
 		} else if ( f.focus === finestra.id ) {
-			dispatchF( { tipus: 'MINIMITZA', id: finestra.id } );
+			envia( { tipus: 'MINIMITZA', id: finestra.id } );
 		} else {
-			dispatchF( { tipus: 'ENFOCA', id: finestra.id } );
+			envia( { tipus: 'ENFOCA', id: finestra.id } );
 		}
 	};
 
@@ -160,7 +167,7 @@ export default function Pc() {
 					<div ref={ refFinestres } className="nep-so-pc__finestres">
 						{ f.finestres.map( ( finestra, i ) => {
 							const accio = ( tipus ) => () =>
-								dispatchF( { tipus, id: finestra.id } );
+								envia( { tipus, id: finestra.id } );
 							return (
 								<Finestra
 									key={ finestra.id }
@@ -171,6 +178,13 @@ export default function Pc() {
 									onMinimitza={ accio( 'MINIMITZA' ) }
 									onMaximitza={ accio( 'MAXIMITZA' ) }
 									onTanca={ accio( 'TANCA' ) }
+									onMou={ ( rect ) =>
+										dispatchF( {
+											tipus: 'MOU',
+											id: finestra.id,
+											rect,
+										} )
+									}
 								/>
 							);
 						} ) }

@@ -69,6 +69,16 @@ describe( 'disposicioInicial', () => {
 		expect( n.amplada ).toBe( 580 );
 	} );
 
+	it( 'a 800 guanya no solapar: Parla 420 i navegador 356 (< 480)', () => {
+		const { navegador: n, parla: p } = disposicioInicial( {
+			...AREES[ 2 ],
+			finestres: [ NAV, PARLA ],
+		} );
+		expect( p.amplada ).toBe( 420 );
+		expect( n.amplada ).toBe( 356 );
+		expect( n.x + n.amplada + 8 ).toBe( p.x );
+	} );
+
 	it( 'maximitzades i minimitzades no compten', () => {
 		const area = AREES[ 0 ];
 		const d = disposicioInicial( {
@@ -141,5 +151,60 @@ describe( 'finestres: disposició i manual', () => {
 		e = obre( e, 'parla' );
 		expect( e.finestres[ 0 ].rect ).toEqual( rect );
 		expect( e.finestres[ 1 ].rect ).toBeNull();
+	} );
+} );
+
+describe( 'finestres: tancar, minimitzar i restaurar', () => {
+	const area = AREES[ 0 ];
+	const a = ( e, accio ) => finestresReductor( e, { ...accio, area } );
+	const dues = () =>
+		a( a( ESTAT_FINESTRES, { tipus: 'OBRE', app: 'navegador' } ), {
+			tipus: 'OBRE',
+			app: 'parla',
+		} );
+	const solapen = ( e ) => {
+		const [ n, p ] = e.finestres.map( ( f ) => f.rect );
+		return n.x + n.amplada > p.x && p.x + p.amplada > n.x;
+	};
+
+	it( 'en tancar una, la resta (no manual) torna a rect null', () => {
+		const e = a( dues(), { tipus: 'TANCA', id: 'parla' } );
+		expect( e.finestres ).toHaveLength( 1 );
+		expect( e.finestres[ 0 ].rect ).toBeNull();
+	} );
+
+	it( 'en tancar una, la manual conserva el seu rect', () => {
+		const rect = { x: 40, y: 20, amplada: 600, alcada: 500 };
+		let e = finestresReductor( dues(), {
+			tipus: 'MOU',
+			id: 'navegador',
+			rect,
+		} );
+		e = a( e, { tipus: 'TANCA', id: 'parla' } );
+		expect( e.finestres[ 0 ].rect ).toEqual( rect );
+	} );
+
+	it( 'restaurar una minimitzada no solapa', () => {
+		let e = a( dues(), { tipus: 'MINIMITZA', id: 'parla' } );
+		expect( e.finestres[ 0 ].rect ).toBeNull();
+		e = a( e, { tipus: 'ENFOCA', id: 'parla' } );
+		expect( solapen( e ) ).toBe( false );
+	} );
+
+	it( 'restaurar una maximitzada no solapa', () => {
+		let e = a( dues(), { tipus: 'MAXIMITZA', id: 'navegador' } );
+		e = a( e, { tipus: 'MINIMITZA', id: 'parla' } );
+		e = a( e, { tipus: 'MAXIMITZA', id: 'navegador' } );
+		e = a( e, { tipus: 'ENFOCA', id: 'parla' } );
+		expect( solapen( e ) ).toBe( false );
+	} );
+
+	it( 'obrir amb la manual minimitzada i manual usa la mitat lliure', () => {
+		const rect = { x: 8, y: 8, amplada: 600, alcada: 656 };
+		let e = a( ESTAT_FINESTRES, { tipus: 'OBRE', app: 'navegador' } );
+		e = finestresReductor( e, { tipus: 'MOU', id: 'navegador', rect } );
+		e = a( e, { tipus: 'MINIMITZA', id: 'navegador' } );
+		e = a( e, { tipus: 'OBRE', app: 'parla' } );
+		expect( e.finestres[ 1 ].rect.x ).toBe( 616 );
 	} );
 } );

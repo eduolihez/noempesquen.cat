@@ -106,13 +106,23 @@ export function Finestra( {
 		);
 	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
 
-	// Reajust automàtic (s'ha obert una altra finestra): només si no és manual.
-	const clau = rect ? `${ rect.x },${ rect.y }` : '';
+	// Reajust automàtic (s'ha obert, restaurat o tancat una altra finestra):
+	// només si no és manual. Sense rect, torna a la posició per defecte.
+	const clau = rect
+		? `${ rect.x },${ rect.y },${ rect.amplada },${ rect.alcada }`
+		: '';
+	const teRect = useRef( !! rect );
 	useLayoutEffect( () => {
-		if ( rect && ! manual ) {
-			setPos( { x: rect.x, y: rect.y } );
+		if ( manual ) {
+			return;
 		}
-	}, [ clau ] ); // eslint-disable-line react-hooks/exhaustive-deps
+		if ( rect ) {
+			setPos( { x: rect.x, y: rect.y } );
+		} else if ( teRect.current ) {
+			setPos( posicioInicial( arrel.current, 0 ) );
+		}
+		teRect.current = !! rect;
+	}, [ clau, manual ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Focus al contingut quan passa a ser activa, si no hi és ja (un clic
 	// a dins no s'ha de perdre).
@@ -152,20 +162,21 @@ export function Finestra( {
 				e.clientY - d.py,
 				escala
 			);
-			setPos(
-				limita( arrel.current, {
-					x: d.x + dx,
-					y: d.y + dy,
-				} )
-			);
+			const nova = limita( arrel.current, {
+				x: d.x + dx,
+				y: d.y + dy,
+			} );
+			d.actual = nova;
+			setPos( nova );
 		}
 	};
 	const deixa = () => {
-		if ( arrossega.current && mogut.current && pos ) {
+		const d = arrossega.current;
+		if ( d?.actual && mogut.current ) {
 			const el = arrel.current;
 			onMou( {
-				x: pos.x,
-				y: pos.y,
+				x: d.actual.x,
+				y: d.actual.y,
 				amplada: el.offsetWidth,
 				alcada: el.offsetHeight,
 			} );
