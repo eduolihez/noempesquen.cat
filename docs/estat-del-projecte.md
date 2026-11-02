@@ -22,8 +22,9 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Pulido · corte B | Lupa replanteada: botón visible con contador «Indicis n/N», chip inline, cursor compartido, evento `lupa.activa` | **Hecho en `master` (`1245bf2`, 2026-11-01), sin desplegar** (lint, unit 792, build ok; Playwright 299 pasan y 1 falla ajena) |
 | Pulido · corte C | Tutoriales `tutorial-pc` y `tutorial-mobil` (`tutorial: true`, sin puntuación, saltables, grupo «Tutorial» en el selector, «Fet» y «Ja estàs a punt») | **Hecho en `master` (8d0be97, 2026-11-02), sin desplegar** (lint, unit 816, build ok; Playwright 306 pasan, 0 fallos) |
 | Pulido · corte E | Retardos en ms (`retard_ms`, el validador rechaza `retard`), puerta de intro (`MS_TRAS_INTRO`, solo avisos programados desde `inici`), mínimos por nivel, tono «alerta» en trampas; tabla en `docs/superpowers/plans/2026-11-02-retards-taula.md`. Cambio de ritmo: si la intro dura más de ~6,5 s los avisos de `inici` se desplazan en bloque | **Hecho en `master` (bd07d02, 2026-11-02), sin desplegar** (lint 0 errores, unit 837, build y PHP ok; Playwright 305 pasan + 1 falla ajena `resum-estadistiques`) |
-| Pulido · corte D | Toast del PC compacto (ya no tapa respuestas de Parla), cabecera de Parla móvil apaisada más baja, chip de lupa dentro de la barra móvil, tarjeta del bloqueo móvil dentro de pantalla. Pendiente: barra de título táctil del PC a 915x412 se queda en 44 px (lo exige pc-mobil.spec), texto del botón de entrada del bloqueo PC ~8 px reales en pantalla baja, PC vertical 768x1024 sin tocar | **Hecho en `master` (d87b923, 2026-11-02), sin desplegar** (lint 0 errores, unit 837, build ok; Playwright 305 pasan + 1 falla ajena `resum-estadistiques`) |
+| Pulido · corte D | Toast del PC compacto (ya no tapa respuestas de Parla), cabecera de Parla móvil apaisada más baja, chip de lupa dentro de la barra móvil, tarjeta del bloqueo móvil dentro de pantalla. Comprobaciones finales (2026-11-02): barra de título táctil a 44 px reales, botón de entrada del bloqueo PC a 14 px reales, PC vertical 768x1024 escalado sin desbordamiento, banner móvil con fondo opaco (antes transparentaba la cabecera de la app abierta), reloj del bloqueo con pila de fuentes genérica. Sin pendientes | **Hecho en `master` (d87b923, 2026-11-02), sin desplegar** (lint 0 errores, unit 837, build ok; Playwright 305 pasan + 1 falla ajena `resum-estadistiques`) |
 | Pulido · corte F | Ilustración vectorial propia (trazo único azul mar, color plano, simétrica): Llissa y Remei con 4 estados (`ui/avatars.js`), pez de la home, hilo y anzuelo nuevos. Las 16 escenas de `ilustracions.js` se dejan como están (hacen de foto en las webs simuladas). Remei pierde el parche (chocaba con las gafas) | **Hecho en `master` (63bf70a) y desplegado en producción (2026-11-02)** (lint 0 errores, unit 837, build ok; Playwright 306 pasan) |
+| Post-despliegue F | Log de la causa del rechazo del alta (`nep_compte_log_alta`, sin datos personales; el alta fallaba por usar el correo del admin, anti-enumeración), fuente genérica del reloj, banner móvil opaco | **Hecho en `master` (`09ced1a`, `990a9f0` y el commit del banner), sin desplegar** |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
@@ -58,7 +59,7 @@ Pendiente tras 3B:
 
 - Verificación de email y recuperación de contraseña (decisión D1: fuera de 3B) -> posible 3C.
 - Gestión de jugadores desde wp-admin (hoy el rol no tiene acceso).
-- Probar un alta/borrado real en `/compte/` con una cuenta de prueba (lo hace Edu: crear cuentas y contraseñas no lo hace Claude).
+- Probar un alta/borrado real en `/compte/` con una cuenta de prueba y un correo distinto al del admin (lo hace Edu: crear cuentas y contraseñas no lo hace Claude).
 - `uninstall.php` en multisite sigue sin probar.
 
 ### Pendiente tras la entrega 3A
