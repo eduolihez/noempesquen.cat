@@ -48,3 +48,21 @@ export const ANCORES = [
 export function ancoraDelPas( missio, estat ) {
 	return missio?.passos?.[ estat?.pas ]?.ancora ?? null;
 }
+
+/**
+ * Àncores que cap avís no pot tapar mentre el pas hi apunta: el botó per
+ * decidir queda al racó on surten els avisos del PC.
+ */
+const ANCORES_SENSE_AVISOS = [ 'decisio' ];
+
+/**
+ * Cert si el pas del tutorial en curs demana que els avisos s'amaguin (no es
+ * perden: queden a la campana i en tornar mostren el temps que els quedava).
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat del motor.
+ * @return {boolean} Cert si s'han d'amagar els avisos.
+ */
+export function pasSenseAvisos( missio, estat ) {
+	return ANCORES_SENSE_AVISOS.includes( ancoraDelPas( missio, estat ) );
+}

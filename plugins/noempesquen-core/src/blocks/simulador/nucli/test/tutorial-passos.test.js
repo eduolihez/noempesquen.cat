@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { validaMissio, MAX_PASSOS } from '../valida.js';
-import { ANCORES, ancoraDelPas } from '../ancores.js';
+import { ANCORES, ancoraDelPas, pasSenseAvisos } from '../ancores.js';
 import { estatInicial, reductor, respostesRapides, FASE } from '../motor.js';
 
 const MISSIONS = new URL( '../../../../../missions/', import.meta.url );
@@ -336,6 +336,21 @@ describe( 'ancoraDelPas', () => {
 			const pas = m.passos.findIndex( ( p ) => p.id === id );
 			expect( ancoraDelPas( m, { pas } ) ).toBe( clau );
 		}
+	} );
+
+	it( 'pasSenseAvisos: només el pas de decidir amaga els avisos', () => {
+		for ( const f of [ 'tutorial-pc.json', 'tutorial-mobil.json' ] ) {
+			const m = llegeix( f );
+			m.passos.forEach( ( p, pas ) => {
+				expect( pasSenseAvisos( m, { pas } ), `${ f }:${ p.id }` ).toBe(
+					p.id === 'decisio'
+				);
+			} );
+			expect( pasSenseAvisos( m, { pas: m.passos.length } ) ).toBe(
+				false
+			);
+		}
+		expect( pasSenseAvisos( { senyals: [] }, { pas: 0 } ) ).toBe( false );
 	} );
 
 	it( 'null fora del tutorial o quan s’ha acabat', () => {

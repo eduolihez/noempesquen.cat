@@ -177,6 +177,29 @@ async function comprovaPas( page, passos, i, pc ) {
 	}
 }
 
+/**
+ * El botó no té res a sobre (avisos, banners, vel): l'element que hi ha al
+ * centre és ell mateix o un descendent. No fa servir `click()`, que espera i
+ * amaga el solapament.
+ *
+ * @param {import('@playwright/test').Page}    page
+ * @param {import('@playwright/test').Locator} boto Botó a comprovar.
+ */
+async function senseTapar( page, boto ) {
+	await expect( boto ).toBeVisible();
+	const caixa = await boto.boundingBox();
+	const tapat = await boto.evaluate(
+		( el, [ x, y ] ) => {
+			const dalt = el.ownerDocument.elementFromPoint( x, y );
+			return dalt === null || ! el.contains( dalt )
+				? `${ dalt?.className } | ${ dalt?.textContent?.slice( 0, 40 ) }`
+				: null;
+		},
+		[ caixa.x + caixa.width / 2, caixa.y + caixa.height / 2 ]
+	);
+	expect( tapat, 'el botó de decidir és tapat per' ).toBeNull();
+}
+
 const inspeccionaText = ( page, patro ) =>
 	page.getByRole( 'button', { name: patro } ).first();
 
@@ -216,24 +239,18 @@ const ACCIONS_PC = {
 	'indici-enllac': ( page ) =>
 		clicAlCentre( page, inspeccionaText( page, /^Inspecciona: Reclama/ ) ),
 	decisio: async ( page ) => {
-		// Amb el rellotge fals, un avís de la Llissa pot quedar sobre el botó:
-		// el primer clic l'obre (i porta Parla al davant), el segon el prem.
-		const opcio = page.getByRole( 'button', {
-			name: /^Ja ho tinc clar: és un correu/,
-		} );
+		// Cap avís (p. ex. la reacció de la Llissa) no pot tapar el botó.
 		const respon = page.getByRole( 'button', {
 			name: 'Ja ho tinc clar',
 			exact: true,
 		} );
-		for ( let i = 0; i < 3 && ( await opcio.count() ) === 0; i++ ) {
-			await clicAlCentre( page, respon );
-		}
-		await clicAlCentre(
-			page,
-			page.getByRole( 'button', {
-				name: /^Ja ho tinc clar: és un correu/,
-			} )
-		);
+		await senseTapar( page, respon );
+		await clicAlCentre( page, respon );
+		const opcio = page.getByRole( 'button', {
+			name: /^Ja ho tinc clar: és un correu/,
+		} );
+		await senseTapar( page, opcio );
+		await clicAlCentre( page, opcio );
 	},
 };
 
@@ -281,19 +298,17 @@ const ACCIONS_MOBIL = {
 			true
 		),
 	decisio: async ( page ) => {
-		await clicAlCentre(
-			page,
-			page.getByRole( 'button', {
-				name: 'Ja ho tinc clar',
-				exact: true,
-			} ),
-			true
-		);
-		await clicAlCentre(
-			page,
-			page.getByRole( 'button', { name: /^Ja ho tinc clar: és un SMS/ } ),
-			true
-		);
+		const respon = page.getByRole( 'button', {
+			name: 'Ja ho tinc clar',
+			exact: true,
+		} );
+		await senseTapar( page, respon );
+		await clicAlCentre( page, respon, true );
+		const opcio = page.getByRole( 'button', {
+			name: /^Ja ho tinc clar: és un SMS/,
+		} );
+		await senseTapar( page, opcio );
+		await clicAlCentre( page, opcio, true );
 	},
 };
 

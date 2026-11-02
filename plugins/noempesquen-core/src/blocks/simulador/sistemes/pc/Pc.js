@@ -8,6 +8,7 @@ import {
 } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
+import { pasSenseAvisos } from '../../nucli/ancores';
 import { recuperaFocus } from '../../simulador/aillament';
 import { APPS } from '../../apps/registre';
 import { SistemaContext } from './context';
@@ -228,7 +229,10 @@ export default function Pc() {
 					<Toasts
 						onObre={ obreNotificacio }
 						parlaActiva={ parlaActiva }
-						amagats={ panell === 'notificacions' }
+						amagats={
+							panell === 'notificacions' ||
+							pasSenseAvisos( missio, estat )
+						}
 						silenci={ ambBloqueig }
 					/>
 					<BarraTasques
