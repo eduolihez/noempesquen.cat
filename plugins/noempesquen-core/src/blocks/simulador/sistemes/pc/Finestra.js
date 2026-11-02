@@ -74,6 +74,7 @@ function limita( el, { x, y } ) {
  * @param {Function} props.onMinimitza Minimitza-la.
  * @param {Function} props.onMaximitza Alterna maximitzada/restaurada.
  * @param {Function} props.onTanca     Tanca-la (després de l'animació).
+ * @param {Function} props.onMou       Avisa que el jugador l'ha moguda (rect).
  */
 export function Finestra( {
 	finestra,
@@ -83,6 +84,7 @@ export function Finestra( {
 	onMinimitza,
 	onMaximitza,
 	onTanca,
+	onMou,
 } ) {
 	const { nom, Icona, Component } = APPS[ finestra.app ];
 	const arrel = useRef( null );
@@ -93,11 +95,24 @@ export function Finestra( {
 	const [ titol, setTitol ] = useState( nom );
 	const [ tancant, setTancant ] = useState( false );
 	const ctx = useMemo( () => ( { posaTitol: setTitol } ), [] );
-	const { minimitzada, maximitzada } = finestra;
+	const { minimitzada, maximitzada, manual, rect } = finestra;
+	const mogut = useRef( false );
 
 	useLayoutEffect( () => {
-		setPos( posicioInicial( arrel.current, ordre ) );
+		setPos(
+			rect
+				? { x: rect.x, y: rect.y }
+				: posicioInicial( arrel.current, ordre )
+		);
 	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Reajust automàtic (s'ha obert una altra finestra): només si no és manual.
+	const clau = rect ? `${ rect.x },${ rect.y }` : '';
+	useLayoutEffect( () => {
+		if ( rect && ! manual ) {
+			setPos( { x: rect.x, y: rect.y } );
+		}
+	}, [ clau ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Focus al contingut quan passa a ser activa, si no hi és ja (un clic
 	// a dins no s'ha de perdre).
@@ -125,11 +140,13 @@ export function Finestra( {
 			return;
 		}
 		e.currentTarget.setPointerCapture?.( e.pointerId );
+		mogut.current = false;
 		arrossega.current = { px: e.clientX, py: e.clientY, ...pos };
 	};
 	const mou = ( e ) => {
 		const d = arrossega.current;
 		if ( d ) {
+			mogut.current = true;
 			const { dx, dy } = delta(
 				e.clientX - d.px,
 				e.clientY - d.py,
@@ -144,6 +161,16 @@ export function Finestra( {
 		}
 	};
 	const deixa = () => {
+		if ( arrossega.current && mogut.current && pos ) {
+			const el = arrel.current;
+			onMou( {
+				x: pos.x,
+				y: pos.y,
+				amplada: el.offsetWidth,
+				alcada: el.offsetHeight,
+			} );
+		}
+		mogut.current = false;
 		arrossega.current = null;
 	};
 
@@ -167,6 +194,8 @@ export function Finestra( {
 				zIndex: finestra.z,
 				left: maximitzada ? undefined : pos?.x,
 				top: maximitzada ? undefined : pos?.y,
+				width: maximitzada ? undefined : rect?.amplada,
+				height: maximitzada ? undefined : rect?.alcada,
 			} }
 			inert={ minimitzada || tancant ? '' : undefined }
 			onPointerDownCapture={ enfocada ? undefined : onEnfoca }

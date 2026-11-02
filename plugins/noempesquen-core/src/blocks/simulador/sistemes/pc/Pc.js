@@ -44,6 +44,7 @@ export default function Pc() {
 	);
 	const refInici = useRef( null );
 	const refRellotge = useRef( null );
+	const refFinestres = useRef( null );
 	const faseAnterior = useRef( estat.fase );
 	const bloquejat = estat.fase === FASE.BLOQUEIG;
 
@@ -52,7 +53,11 @@ export default function Pc() {
 		( app, dades, { automatica = false } = {} ) => {
 			if ( APPS[ app ] ) {
 				setPanell( null );
-				dispatchF( { tipus: 'OBRE', app, dades } );
+				const zona = refFinestres.current;
+				const area = zona
+					? { amplada: zona.clientWidth, alcada: zona.clientHeight }
+					: undefined;
+				dispatchF( { tipus: 'OBRE', app, dades, area } );
 				if ( ! automatica ) {
 					emet( 'app.obre', { app } );
 				}
@@ -152,7 +157,7 @@ export default function Pc() {
 					inert={ bloquejat ? '' : undefined }
 				>
 					<Escriptori onObre={ obreApp } />
-					<div className="nep-so-pc__finestres">
+					<div ref={ refFinestres } className="nep-so-pc__finestres">
 						{ f.finestres.map( ( finestra, i ) => {
 							const accio = ( tipus ) => () =>
 								dispatchF( { tipus, id: finestra.id } );
