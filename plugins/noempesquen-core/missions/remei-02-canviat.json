@@ -99,7 +99,7 @@
 			"quan": {
 				"esdeveniment": "inici"
 			},
-			"retard": 8,
+			"retard_ms": 8000,
 			"efectes": [
 				{
 					"tipus": "mostra",
@@ -120,7 +120,7 @@
 			"quan": {
 				"esdeveniment": "inici"
 			},
-			"retard": 22,
+			"retard_ms": 22000,
 			"efectes": [
 				{
 					"tipus": "mostra",
@@ -137,7 +137,7 @@
 			"quan": {
 				"esdeveniment": "inici"
 			},
-			"retard": 38,
+			"retard_ms": 38000,
 			"efectes": [
 				{
 					"tipus": "mostra",
@@ -153,6 +153,7 @@
 				},
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "parla",
 					"titol": "+44 7700 900461",
 					"text": "Em pots fer una transferència de 380 € ara?",

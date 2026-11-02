@@ -137,7 +137,7 @@
 		{
 			"id": "arriba-0",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 6,
+			"retard_ms": 6000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "venda-0" },
 				{
@@ -153,7 +153,7 @@
 		{
 			"id": "arriba-1",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 20,
+			"retard_ms": 20000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "venda-1" },
 				{
@@ -169,11 +169,12 @@
 		{
 			"id": "arriba-2",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 34,
+			"retard_ms": 34000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "venda-2" },
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "revenda",
 					"titol": "Jordi M.",
 					"text": "Et pago ara per Revenda Cobra; t'envio un enllaç...",
@@ -185,7 +186,7 @@
 		{
 			"id": "arriba-3",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 46,
+			"retard_ms": 46000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "venda-3" },
 				{

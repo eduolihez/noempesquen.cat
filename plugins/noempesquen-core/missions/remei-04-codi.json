@@ -77,7 +77,7 @@
 		{
 			"id": "arriba-1",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 8,
+			"retard_ms": 8000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "codi-1" },
 				{
@@ -93,7 +93,7 @@
 		{
 			"id": "arriba-sms",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 18,
+			"retard_ms": 18000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "sms-codi" },
 				{
@@ -108,11 +108,12 @@
 		{
 			"id": "arriba-2",
 			"quan": { "esdeveniment": "inici" },
-			"retard": 30,
+			"retard_ms": 30000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "codi-2" },
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "parla",
 					"titol": "Marta",
 					"text": "T'ha arribat un codi per SMS? Me'l passes?...",

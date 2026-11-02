@@ -74,7 +74,7 @@
 		{
 			"id": "avis-guia",
 			"quan": { "esdeveniment": "app.obre", "app": "navegador" },
-			"retard": 6,
+			"retard_ms": 6000,
 			"efectes": [
 				{ "tipus": "mostra", "id": "c1" },
 				{
@@ -106,10 +106,11 @@
 				"app": "parla",
 				"visible": "c1"
 			},
-			"retard": 5,
+			"retard_ms": 5000,
 			"efectes": [
 				{
 					"tipus": "notifica",
+					"so": "alerta",
 					"app": "posta",
 					"titol": "Premis Fantasia",
 					"text": "Enhorabona! Has guanyat un iot"

@@ -77,7 +77,7 @@
 				}
 			],
 			"avis": {
-				"retard": 8000,
+				"retard_ms": 8000,
 				"titol": "Virus detectat! El teu ordinador està en perill",
 				"cos": [
 					[
