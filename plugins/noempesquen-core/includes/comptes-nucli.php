@@ -158,6 +158,9 @@ function nep_token_hash( $secret, $sal ) {
  * @return array
  */
 function nep_token_registre( $secret, $sal, $ara, $ttl ) {
+	if ( ! is_int( $ara ) || ! is_int( $ttl ) || '' === nep_token_hash( $secret, $sal ) ) {
+		return array();
+	}
 	return array(
 		'hash'   => nep_token_hash( $secret, $sal ),
 		'caduca' => $ara + $ttl,
@@ -175,7 +178,8 @@ function nep_token_registre( $secret, $sal, $ara, $ttl ) {
  */
 function nep_token_valid( $registre, $secret, $sal, $ara ) {
 	if ( ! is_array( $registre ) || ! isset( $registre['hash'], $registre['caduca'] )
-		|| ! is_string( $registre['hash'] ) || ! is_int( $registre['caduca'] ) || $ara > $registre['caduca'] ) {
+		|| ! is_string( $registre['hash'] ) || ! is_int( $registre['caduca'] )
+		|| ! is_int( $ara ) || ! is_string( $secret ) || $ara > $registre['caduca'] ) {
 		return false;
 	}
 	$esperat = nep_token_hash( $secret, $sal );

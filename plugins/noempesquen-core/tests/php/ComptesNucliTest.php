@@ -186,6 +186,13 @@ final class ComptesNucliTest extends TestCase {
 		$this->assertFalse( nep_token_valid( $r, 'mal', 'sal', 1000 ) );
 		$this->assertFalse( nep_token_valid( $r, 'sec', '', 1000 ) );
 		$this->assertFalse( nep_token_valid( null, 'sec', 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( $r, 'sec', 'sal', null ) );
+		$this->assertFalse( nep_token_valid( $r, 'sec', 'sal', '1000' ) );
+		$this->assertFalse( nep_token_valid( $r, null, 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( array( 'hash' => 'abc', 'caduca' => 5000 ), 'sec', 'sal', 1000 ) );
+		$this->assertSame( array(), nep_token_registre( 'sec', '', 1000, 60 ) );
+		$this->assertSame( array(), nep_token_registre( 'sec', 'sal', '1000', 60 ) );
+		$this->assertSame( array(), nep_token_registre( 'sec', 'sal', 1000, null ) );
 		$this->assertFalse( nep_token_valid( array( 'hash' => $r['hash'] ), 'sec', 'sal', 1000 ) );
 		$this->assertFalse( nep_token_valid( array( 'hash' => 1, 'caduca' => 5000 ), 'sec', 'sal', 1000 ) );
 		$this->assertFalse( nep_token_valid( array( 'hash' => $r['hash'], 'caduca' => '5000' ), 'sec', 'sal', 1000 ) );
