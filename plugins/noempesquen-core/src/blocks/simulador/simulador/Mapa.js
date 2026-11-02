@@ -14,16 +14,23 @@
  *               focus en entrar al mapa.
  * - classe:     classes extra per a l'arrel.
  *
- * Disposició: container query a `.nep-mapa`. Des de 640 px, camí en S
- * horitzontal; per sota, serpentina vertical. Els nodes es pinten un sol cop
- * (data-missio únic) amb la posició dels dos modes en custom properties.
+ * Tema (data-tema): 'carta' (Pesquer, carta nàutica de dia) o 'tresor'
+ * (Pirata, mapa del tresor de nit). Decoració i dibuix dels nodes a ui/mapa.
+ *
+ * Disposició: container query a la vista (`.nep-mapa__vista`). Des de 640 px,
+ * camí en S horitzontal ('ample', o 'baix' si la vista fa menys de 300 px
+ * d'alt); per sota, serpentina vertical. Els nodes es pinten un sol cop
+ * (data-missio únic) amb la posició dels tres modes en custom properties.
  */
 import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { caminSvg, midaVista, posicionsNodes } from '../nucli/mapaGeom';
 import { Estrella, Glif, useIdSvg } from '../ui/icones';
+import { ArtNode } from '../ui/mapa/ArtNode';
+import { Cel, Decorat, PeixEspina } from '../ui/mapa/Decorat';
 
-const MODES = [ 'ample', 'estret' ];
+const MODES = [ 'ample', 'baix', 'estret' ];
+const LLETRA = { ample: 'a', baix: 'b', estret: 'e' };
 
 const IconaBrujola = ( p ) => (
 	<Glif { ...p }>
@@ -112,6 +119,10 @@ function Estrelles( { estrelles } ) {
 	);
 }
 
+/*
+ * Camí: la màscara el dibuixa sencer (pendent i fet) en entrar. Els traços
+ * visibles no porten pathLength perquè cada tema els ratlla a la seva manera.
+ */
 function Cami( { punts, recorregut, mode } ) {
 	const mascara = useIdSvg( `nep-mapa-${ mode }-` );
 	const { w, h } = midaVista( punts.length, mode );
@@ -131,30 +142,25 @@ function Cami( { punts, recorregut, mode } ) {
 					d={ sencer }
 					pathLength="1"
 					stroke="#fff"
-					strokeWidth="40"
+					strokeWidth="44"
 					fill="none"
 				/>
 			</mask>
-			<path
-				className="nep-mapa__estela"
-				d={ sencer }
-				mask={ `url(#${ mascara })` }
-			/>
-			{ fet && (
-				<>
-					<path className="nep-mapa__fet-vora" d={ fet } />
-					<path
-						className="nep-mapa__fet nep-mapa__traca"
-						d={ fet }
-						pathLength="1"
-					/>
-				</>
-			) }
+			<g mask={ `url(#${ mascara })` }>
+				<path className="nep-mapa__milles" d={ sencer } />
+				<path className="nep-mapa__estela" d={ sencer } />
+				{ fet && (
+					<>
+						<path className="nep-mapa__fet-vora" d={ fet } />
+						<path className="nep-mapa__fet" d={ fet } />
+					</>
+				) }
+			</g>
 		</svg>
 	);
 }
 
-function Node( { node, i, pos, titolDe, onTria, onBloquejat, avisat } ) {
+function Node( { node, i, pos, tema, titolDe, onTria, onBloquejat, avisat } ) {
 	const titolId = `nep-mapa-${ node.id }-titol`;
 	const motiuId = `nep-mapa-${ node.id }-motiu`;
 	const infoId = `nep-mapa-${ node.id }-info`;
@@ -171,7 +177,7 @@ function Node( { node, i, pos, titolDe, onTria, onBloquejat, avisat } ) {
 	MODES.forEach( ( mode ) => {
 		const { w, h } = midaVista( pos[ mode ].length, mode );
 		const { x, y } = pos[ mode ][ i ];
-		const lletra = mode === 'ample' ? 'a' : 'e';
+		const lletra = LLETRA[ mode ];
 		estil[ `--x${ lletra }` ] = `${ ( x / w ) * 100 }%`;
 		estil[ `--y${ lletra }` ] = `${ ( y / h ) * 100 }%`;
 	} );
@@ -203,6 +209,7 @@ function Node( { node, i, pos, titolDe, onTria, onBloquejat, avisat } ) {
 				} }
 			>
 				<span className="nep-mapa__boia" aria-hidden="true">
+					<ArtNode tema={ tema } estat={ node.estat } />
 					<span className="nep-mapa__num">{ node.indes }</span>
 					{ node.tutorial && (
 						<span className="nep-mapa__insignia nep-mapa__insignia--tutorial">
@@ -273,23 +280,23 @@ export function Mapa( {
 		onBloquejat?.( id, motiu );
 	};
 	const vaixell = vaixells()[ dispositiu ] ?? vaixells().pc;
-	const pos = {
-		ample: posicionsNodes( nodes.length, 'ample' ),
-		estret: posicionsNodes( nodes.length, 'estret' ),
-	};
+	const tema = dispositiu === 'mobil' ? 'tresor' : 'carta';
+	const pos = {};
+	MODES.forEach( ( mode ) => {
+		pos[ mode ] = posicionsNodes( nodes.length, mode );
+	} );
 	// Tram daurat: des del principi fins al primer node no fet (un progrés
 	// desordenat no pinta or damunt de nodes pendents).
 	const primerPendent = nodes.findIndex( ( n ) => n.estat !== 'feta' );
 	const recorregut =
 		primerPendent === -1 ? nodes.length - 1 : primerPendent - 1;
 	const titolDe = ( id ) => nodes.find( ( n ) => n.id === id )?.titol ?? '';
-	const a = midaVista( nodes.length, 'ample' );
-	const e = midaVista( nodes.length, 'estret' );
-	const escenari = {
-		'--n': nodes.length,
-		'--ra-a': `${ a.w } / ${ a.h }`,
-		'--ra-e': `${ e.w } / ${ e.h }`,
-	};
+	const escenari = { '--n': nodes.length };
+	MODES.forEach( ( mode ) => {
+		const { w, h } = midaVista( nodes.length, mode );
+		escenari[ `--ra-${ LLETRA[ mode ] }` ] = `${ w } / ${ h }`;
+		escenari[ `--rn-${ LLETRA[ mode ] }` ] = w / h;
+	} );
 	const titolId = `nep-mapa-${ dispositiu }-cap`;
 	return (
 		<section
@@ -297,6 +304,7 @@ export function Mapa( {
 				.filter( Boolean )
 				.join( ' ' ) }
 			aria-labelledby={ titolId }
+			data-tema={ tema }
 		>
 			<header className="nep-mapa__cap">
 				<button
@@ -308,6 +316,9 @@ export function Mapa( {
 					{ __( 'Torna al port', 'noempesquen' ) }
 				</button>
 				<div className="nep-mapa__rotul">
+					{ tema === 'tresor' && (
+						<PeixEspina className="nep-mapa__espina--cap" />
+					) }
 					<h3
 						id={ titolId }
 						className="nep-mapa__titol-cap"
@@ -344,29 +355,34 @@ export function Mapa( {
 				</p>
 			</header>
 			<div className="nep-mapa__mar">
-				<div className="nep-mapa__escenari" style={ escenari }>
-					{ MODES.map( ( mode ) => (
-						<Cami
-							key={ mode }
-							mode={ mode }
-							punts={ pos[ mode ] }
-							recorregut={ recorregut }
-						/>
-					) ) }
-					<ol className="nep-mapa__nodes">
-						{ nodes.map( ( node, i ) => (
-							<Node
-								key={ node.id }
-								node={ node }
-								i={ i }
-								pos={ pos }
-								titolDe={ titolDe }
-								onTria={ onTria }
-								onBloquejat={ bloquejat }
-								avisat={ avisat?.id === node.id }
+				{ tema === 'tresor' && <Cel /> }
+				<div className="nep-mapa__vista">
+					<div className="nep-mapa__escenari" style={ escenari }>
+						<Decorat tema={ tema } pos={ pos } />
+						{ MODES.map( ( mode ) => (
+							<Cami
+								key={ mode }
+								mode={ mode }
+								punts={ pos[ mode ] }
+								recorregut={ recorregut }
 							/>
 						) ) }
-					</ol>
+						<ol className="nep-mapa__nodes">
+							{ nodes.map( ( node, i ) => (
+								<Node
+									key={ node.id }
+									node={ node }
+									i={ i }
+									pos={ pos }
+									tema={ tema }
+									titolDe={ titolDe }
+									onTria={ onTria }
+									onBloquejat={ bloquejat }
+									avisat={ avisat?.id === node.id }
+								/>
+							) ) }
+						</ol>
+					</div>
 				</div>
 			</div>
 		</section>

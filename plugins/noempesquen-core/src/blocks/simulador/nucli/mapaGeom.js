@@ -3,10 +3,13 @@
  *
  * Unitats del viewBox de cada mode:
  * - 'ample':  camí en S horitzontal (nodes alternant amunt i avall).
+ * - 'baix':   com l'ample però més pla, per a mapes de poca alçada (mòbil
+ *             en horitzontal): la pila fixa bandera + node + cartell hi cap.
  * - 'estret': serpentina vertical (nodes alternant esquerra i dreta).
  * L'alçada de l'estret i l'amplada de l'ample creixen amb el nombre de nodes.
  */
 const AMPLE = { marge: 90, pas: 170, alt: 420, dalt: 150, baix: 270 };
+const BAIX = { marge: 90, pas: 170, alt: 210, dalt: 74, baix: 104 };
 const ESTRET = { ample: 360, esq: 95, dre: 265, marge: 80, baix: 70, pas: 175 };
 
 const arrodoneix = ( v ) => Math.round( v * 10 ) / 10;
@@ -16,7 +19,7 @@ const quants = ( n ) => ( Number.isFinite( n ) && n > 0 ? Math.floor( n ) : 0 );
  * Mida del viewBox per a `n` nodes.
  *
  * @param {number} n    Nombre de nodes.
- * @param {string} mode 'ample' o 'estret'.
+ * @param {string} mode 'ample', 'baix' o 'estret'.
  * @return {{w:number,h:number}} Amplada i alçada.
  */
 export function midaVista( n, mode ) {
@@ -27,14 +30,15 @@ export function midaVista( n, mode ) {
 			h: ESTRET.marge * 2 + ESTRET.baix + ( k - 1 ) * ESTRET.pas,
 		};
 	}
-	return { w: AMPLE.marge * 2 + ( k - 1 ) * AMPLE.pas, h: AMPLE.alt };
+	const g = mode === 'baix' ? BAIX : AMPLE;
+	return { w: g.marge * 2 + ( k - 1 ) * g.pas, h: g.alt };
 }
 
 /**
  * Posició del centre de cada node.
  *
  * @param {number} n    Nombre de nodes.
- * @param {string} mode 'ample' o 'estret'.
+ * @param {string} mode 'ample', 'baix' o 'estret'.
  * @return {Array<{x:number,y:number}>} Punts en unitats del viewBox.
  */
 export function posicionsNodes( n, mode ) {
@@ -46,9 +50,10 @@ export function posicionsNodes( n, mode ) {
 				y: ESTRET.marge + i * ESTRET.pas,
 			};
 		}
+		const g = mode === 'baix' ? BAIX : AMPLE;
 		return {
-			x: AMPLE.marge + i * AMPLE.pas,
-			y: parell ? AMPLE.baix : AMPLE.dalt,
+			x: g.marge + i * g.pas,
+			y: parell ? g.baix : g.dalt,
 		};
 	} );
 }

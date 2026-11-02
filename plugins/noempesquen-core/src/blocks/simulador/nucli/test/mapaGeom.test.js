@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { posicionsNodes, caminSvg, midaVista } from '../mapaGeom.js';
 
-const MODES = [ 'ample', 'estret' ];
+const MODES = [ 'ample', 'baix', 'estret' ];
 
 describe( 'posicionsNodes', () => {
 	it( 'torna tants punts com nodes, i cap amb n buit o invàlid', () => {
@@ -26,12 +26,21 @@ describe( 'posicionsNodes', () => {
 		}
 	} );
 
-	it( 'ample avança cap a la dreta i alterna amunt i avall', () => {
-		const p = posicionsNodes( 5, 'ample' );
-		for ( let i = 1; i < p.length; i++ ) {
-			expect( p[ i ].x ).toBeGreaterThan( p[ i - 1 ].x );
-			expect( p[ i ].y ).not.toBe( p[ i - 1 ].y );
+	it( 'ample i baix avancen cap a la dreta i alternen amunt i avall', () => {
+		for ( const mode of [ 'ample', 'baix' ] ) {
+			const p = posicionsNodes( 5, mode );
+			for ( let i = 1; i < p.length; i++ ) {
+				expect( p[ i ].x ).toBeGreaterThan( p[ i - 1 ].x );
+				expect( p[ i ].y ).not.toBe( p[ i - 1 ].y );
+			}
 		}
+	} );
+
+	it( 'baix és més pla que l’ample i amb la mateixa amplada', () => {
+		const a = midaVista( 6, 'ample' );
+		const b = midaVista( 6, 'baix' );
+		expect( b.w ).toBe( a.w );
+		expect( b.w / b.h ).toBeGreaterThan( a.w / a.h );
 	} );
 
 	it( 'estret baixa sempre i alterna esquerra i dreta', () => {
