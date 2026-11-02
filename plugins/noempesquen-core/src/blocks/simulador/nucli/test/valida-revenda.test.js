@@ -126,6 +126,7 @@ describe( 'validaMissio: apps.revenda', () => {
 		const m = fixture();
 		m.disparadors.push( {
 			quan: { esdeveniment: 'inici' },
+			retard_ms: 1500,
 			efectes: [ { tipus: 'mostra', id: 'r2' } ],
 		} );
 		expect( errors( m ) ).toEqual( [] );
@@ -193,6 +194,7 @@ describe( 'validaMissio: plantilles, senyals de web i cruces', () => {
 		};
 		m.disparadors.push( {
 			quan: { esdeveniment: 'inici' },
+			retard_ms: 1500,
 			efectes: [ efecte ],
 		} );
 		expect( errors( m ) ).toEqual( [] );

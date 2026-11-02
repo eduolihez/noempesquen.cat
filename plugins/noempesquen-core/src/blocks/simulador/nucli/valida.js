@@ -319,17 +319,14 @@ function validaRetardDisparador( d, errors ) {
 			`${ ref }: «retard» ja no s'accepta: usa retard_ms (mil·lisegons)`
 		);
 	}
-	if ( d.retard_ms === undefined ) {
-		return;
-	}
-	if ( ! esRetardMs( d.retard_ms ) ) {
+	if ( d.retard_ms !== undefined && ! esRetardMs( d.retard_ms ) ) {
 		errors.push( `${ ref }: «retard_ms» ha de ser un enter ≥ 0` );
 		return;
 	}
 	if (
 		d.quan?.esdeveniment === 'inici' &&
 		esAvis( d ) &&
-		d.retard_ms < MS_TRAS_INTRO
+		( d.retard_ms ?? 0 ) < MS_TRAS_INTRO
 	) {
 		errors.push(
 			`${ ref }: un avís d'inici necessita retard_ms ≥ ${ MS_TRAS_INTRO } (després de la intro)`
@@ -351,9 +348,16 @@ function validaRitmeAvisos( m, errors ) {
 			: MS_MIN_AVISOS_NIVELL_1;
 	const grups = new Map();
 	llista( m.disparadors )
-		.filter( ( d ) => d && typeof d === 'object' && esAvis( d ) )
+		.filter(
+			( d ) =>
+				d &&
+				typeof d === 'object' &&
+				esAvis( d ) &&
+				esRetardMs( d.retard_ms ) &&
+				d.retard_ms > 0
+		)
 		.forEach( ( d ) => {
-			const ms = esRetardMs( d.retard_ms ) ? d.retard_ms : 0;
+			const ms = d.retard_ms;
 			const clau = JSON.stringify( d.quan ?? null );
 			grups.set( clau, [ ...( grups.get( clau ) ?? [] ), { d, ms } ] );
 		} );

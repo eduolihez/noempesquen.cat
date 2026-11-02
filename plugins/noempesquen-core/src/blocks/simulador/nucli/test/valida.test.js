@@ -61,6 +61,7 @@ describe( 'validaMissio v2', () => {
 		m.disparadors.push( {
 			id: 'x',
 			quan: { esdeveniment: 'inici' },
+			retard_ms: 1500,
 			efectes: [ { tipus: 'decideix', opcio: 'z' } ],
 		} );
 		expect( validaMissio( m ) ).toContain( 'opció inexistent: z' );
@@ -194,6 +195,7 @@ describe( 'validaMissio v2', () => {
 		m.disparadors.push( {
 			id: 'mx',
 			quan: { esdeveniment: 'inici' },
+			retard_ms: 1500,
 			efectes: [ { tipus: 'mostra', id: 'no-hi-es' } ],
 		} );
 		expect( validaMissio( m ) ).toContain(
@@ -207,6 +209,7 @@ describe( 'validaMissio v2', () => {
 			m.disparadors.push( {
 				id: 'nx',
 				quan: { esdeveniment: 'inici' },
+				retard_ms: 1500,
 				efectes: [ { tipus: 'notifica', app, titol: 't', text: 'x' } ],
 			} );
 			return validaMissio( m );
@@ -269,6 +272,7 @@ describe( 'validaMissio v2', () => {
 		const n = copia();
 		n.disparadors.push( {
 			quan: { esdeveniment: 'inici' },
+			retard_ms: 1500,
 			efectes: [ { tipus: 'notifica', app: 'missatges', titol: 'x' } ],
 		} );
 		expect( validaMissio( n ) ).toContain(
@@ -282,6 +286,7 @@ describe( 'validaMissio v2', () => {
 			m.disparadors.push( {
 				id: 'x',
 				quan: { esdeveniment: 'inici' },
+				retard_ms: 1500,
 				efectes: [
 					{ tipus: 'notifica', titol: 't', text: 'x', ...efecte },
 				],
@@ -352,6 +357,7 @@ describe( 'validaMissio: webs banc-solid i formularis', () => {
 		disparadors: [
 			{
 				quan: { esdeveniment: 'inici' },
+				retard_ms: 1500,
 				efectes: [ { tipus: 'pescat' } ],
 			},
 		],

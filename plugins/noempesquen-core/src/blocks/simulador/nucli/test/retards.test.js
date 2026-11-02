@@ -54,6 +54,14 @@ describe( 'retard_ms al validador', () => {
 		} );
 	} );
 
+	it( "un avís d'inici sense retard_ms també es rebutja", () => {
+		const m = factura();
+		delete disp( m, 'arriba-trampa' ).retard_ms;
+		expect( errors( m ).join( '\n' ) ).toContain(
+			"disparador arriba-trampa: un avís d'inici necessita retard_ms"
+		);
+	} );
+
 	it( "un avís d'inici no pot sortir abans de MS_TRAS_INTRO", () => {
 		const m = factura();
 		disp( m, 'arriba-trampa' ).retard_ms = MS_TRAS_INTRO - 1;
