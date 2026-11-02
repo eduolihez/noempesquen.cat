@@ -7,6 +7,8 @@ import {
 	processaEsdeveniment,
 	avancaTemps,
 	desplacaPendents,
+	entraPas,
+	saltaPassos,
 } from './disparadors.js';
 import { senseWww } from '../apps/navegador/historial.js';
 import { SEGONS_PISTA } from './temps.js';
@@ -83,6 +85,9 @@ function anotaEsdeveniment( estat, nom, dades ) {
 	return { ...estat, [ camp ]: [ ...estat[ camp ], id ] };
 }
 
+const tePassos = ( missio ) =>
+	Array.isArray( missio?.passos ) && missio.passos.length > 0;
+
 export function estatInicial( missio ) {
 	return {
 		missioId: missio?.id ?? null,
@@ -91,7 +96,10 @@ export function estatInicial( missio ) {
 		pausa: false,
 		temps: 0,
 		introPas: 0,
-		introAcabada: false,
+		// Amb `passos` l'overlay substitueix la intro per xat.
+		introAcabada: tePassos( missio ),
+		// Índex del pas actual del tutorial; == passos.length vol dir acabat.
+		pas: 0,
 		lupa: false,
 		lupaUsada: false,
 		// Resultat de l'última inspecció (mai text del jugador): `clau` puja a
@@ -313,18 +321,44 @@ function tancaWeb( estat, url, element ) {
 		: { ...estat, tancats: [ ...estat.tancats, clau ] };
 }
 
+function desbloqueja( missio, estat ) {
+	const joc = { ...estat, fase: FASE.JOC };
+	const inici = processaEsdeveniment(
+		missio,
+		missio.intro?.[ 0 ] && ! tePassos( missio )
+			? afegeixGuia( joc, missio.intro[ 0 ] )
+			: joc,
+		'inici',
+		{}
+	);
+	// El pas 0 també «entra» en començar (dispara els seus `pas.entra`).
+	return tePassos( missio ) && inici.pas === 0
+		? entraPas( missio, inici, 0 )
+		: inici;
+}
+
 export function reductor( missio, estat, accio ) {
 	switch ( accio.tipus ) {
 		case 'DESBLOQUEJA':
 			if ( estat.fase !== FASE.BLOQUEIG ) {
 				return estat;
 			}
-			return processaEsdeveniment(
-				missio,
-				afegeixGuia( { ...estat, fase: FASE.JOC }, missio.intro[ 0 ] ),
-				'inici',
-				{}
-			);
+			return desbloqueja( missio, estat );
+
+		case 'PAS_SEGUENT':
+			return estat.fase === FASE.JOC &&
+				! estat.pausa &&
+				missio.passos?.[ estat.pas ]?.continua === 'boto'
+				? entraPas( missio, estat, estat.pas + 1 )
+				: estat;
+
+		case 'PAS_SALTA':
+			return estat.fase === FASE.JOC &&
+				! estat.pausa &&
+				tePassos( missio ) &&
+				estat.pas < missio.passos.length
+				? saltaPassos( missio, estat )
+				: estat;
 
 		case 'ESDEVENIMENT':
 			return processaEsdeveniment(

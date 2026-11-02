@@ -1,0 +1,35 @@
+/**
+ * Claus d'àncora (`data-tut`) vàlides per als `passos` d'un tutorial.
+ * Mòdul pur: el validador les comprova i la interfície les posa al DOM.
+ */
+export const ANCORES = [
+	'pantalla',
+	'escriptori',
+	'barra',
+	'inici',
+	'rellotge',
+	'lupa',
+	'app-navegador',
+	'app-parla',
+	'finestra-navegador',
+	'finestra-parla',
+	'botons-finestra',
+	'parla-xat',
+	'parla-respostes',
+	'avis',
+	'llista-correus',
+	'correu-obert',
+	'remitent',
+	'enllacos',
+	'adreca',
+	'decisio',
+	'bloqueig',
+	'dock',
+	'app-missatges',
+	'app-parla-mobil',
+	'banner',
+	'centre-control',
+	'nav-enrere',
+	'nav-inici',
+	'conversa',
+];
