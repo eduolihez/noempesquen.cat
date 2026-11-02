@@ -83,7 +83,8 @@ const rutaDe = ( dispositiu ) => {
 /**
  * Sembra el progrés (1 estrella) de totes les misions anteriors de la ruta
  * de la missió demanada, perquè el mapa la deixi jugar. No sembra res si és
- * el tutorial o si el títol no és d'una missió inclosa. Cal cridar-la abans
+ * el tutorial. Si el títol no és d'una missió inclosa (remota), se suposa
+ * del PC i se sembra tota la ruta. Cal cridar-la abans
  * de `page.goto`. No trepitja el progrés que el spec ja hagi sembrat.
  *
  * @param {import('@playwright/test').Page} page
@@ -91,14 +92,19 @@ const rutaDe = ( dispositiu ) => {
  * @return {Object|null} La missió trobada (amb `dispositiu`) o null.
  */
 function desbloqueja( page, titol ) {
-	const missio = INCLOSES.find( ( m ) => coincideix( titol, m ) ) ?? null;
-	if ( ! missio ) {
-		return null;
+	let missio = INCLOSES.find( ( m ) => coincideix( titol, m ) ) ?? null;
+	let anteriors;
+	if ( missio ) {
+		const ruta = rutaDe( missio.dispositiu );
+		anteriors = ruta
+			.slice( 0, ruta.findIndex( ( m ) => m.id === missio.id ) )
+			.map( ( m ) => m.id );
+	} else {
+		// Missió remota (publicada pels specs): va al final de la ruta del PC
+		// (són còpies de la factura). Se sembren totes les incloses.
+		missio = { dispositiu: 'pc' };
+		anteriors = rutaDe( 'pc' ).map( ( m ) => m.id );
 	}
-	const ruta = rutaDe( missio.dispositiu );
-	const anteriors = ruta
-		.slice( 0, ruta.findIndex( ( m ) => m.id === missio.id ) )
-		.map( ( m ) => m.id );
 	if ( anteriors.length ) {
 		page.addInitScript(
 			( [ clau, ids ] ) => {
