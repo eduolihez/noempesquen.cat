@@ -212,10 +212,7 @@ test.describe( 'So de les notificacions', () => {
 			.getByRole( 'button', { name: bloqueig } )
 			.dispatchEvent( 'click' );
 		await expect( page.locator( '.nep-so__sistema' ) ).toBeVisible();
-		await page
-			.getByRole( 'button', { name: 'Salta la presentació' } )
-			.first()
-			.dispatchEvent( 'click' );
+		await saltaIntro( page, { nomesClick: true } );
 		await page.clock.runFor( 9000 );
 		await expect( avis( page ) ).toContainText(
 			TRAMPA[ isMobile ? 'mobil' : 'escriptori' ]

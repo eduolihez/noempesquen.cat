@@ -1,5 +1,10 @@
 const { test, expect } = require( './ajudes' );
-const { greusAxe, inspecciona, iniciaMissio } = require( './ajudes' );
+const {
+	greusAxe,
+	inspecciona,
+	iniciaMissio,
+	saltaIntro,
+} = require( './ajudes' );
 
 const MISSIO = /El paquet retingut/;
 const BLOQUEIG = /Llisca cap amunt/;
@@ -15,6 +20,8 @@ async function entra( page ) {
 	await iniciaMissio( page, MISSIO, BLOQUEIG );
 	await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 	await expect( dock( page ) ).toBeVisible();
+	// Cap avís de l'inici surt abans de la fi de la intro.
+	await saltaIntro( page );
 }
 
 /** Obre Missatges i l'SMS trampa (arriba als 8 s de joc). */
@@ -305,6 +312,7 @@ test.describe( 'El paquet retingut', () => {
 		await page.getByRole( 'button', { name: BLOQUEIG } ).click();
 		await expect( dock( page ) ).toBeVisible();
 		expect( await petits() ).toEqual( [] );
+		await saltaIntro( page );
 		await obreMissatges( page );
 		expect( await petits() ).toEqual( [] );
 		await obreMenuSms( page );
