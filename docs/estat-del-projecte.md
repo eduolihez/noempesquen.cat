@@ -21,7 +21,8 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Pulido · corte A | Base de tiempos (`nucli/temps.js`, `avisos.js`), avisos escalonados con duración dinámica y salida animada, escala de capas y movimiento, tokens de color; hook `useCuaAvisos` | **Hecho en `master` (`84167ea`, 2026-11-01), sin desplegar** (lint, unit 781, build ok; Playwright 297 pasan y 1 falla ajena: `resum-estadistiques.spec.js:107` cuenta filas acumuladas en la BD de wp-env; plan `docs/superpowers/plans/2026-10-31-pulit-interficies-i-tutorial.md`) |
 | Pulido · corte B | Lupa replanteada: botón visible con contador «Indicis n/N», chip inline, cursor compartido, evento `lupa.activa` | **Hecho en `master` (`1245bf2`, 2026-11-01), sin desplegar** (lint, unit 792, build ok; Playwright 299 pasan y 1 falla ajena) |
 | Pulido · corte C | Tutoriales `tutorial-pc` y `tutorial-mobil` (`tutorial: true`, sin puntuación, saltables, grupo «Tutorial» en el selector, «Fet» y «Ja estàs a punt») | **Hecho en `master` (8d0be97, 2026-11-02), sin desplegar** (lint, unit 816, build ok; Playwright 306 pasan, 0 fallos) |
-| Pulido · cortes E, D | Retardos de misiones en ms, pulido visual | Pendiente, en ese orden |
+| Pulido · corte E | Retardos en ms (`retard_ms`, el validador rechaza `retard`), puerta de intro (`MS_TRAS_INTRO`, solo avisos programados desde `inici`), mínimos por nivel, tono «alerta» en trampas; tabla en `docs/superpowers/plans/2026-11-02-retards-taula.md`. Cambio de ritmo: si la intro dura más de ~6,5 s los avisos de `inici` se desplazan en bloque | **Hecho en `master` (bd07d02, 2026-11-02), sin desplegar** (lint 0 errores, unit 837, build y PHP ok; Playwright 305 pasan + 1 falla ajena `resum-estadistiques`) |
+| Pulido · corte D | Pulido visual de PC y móvil | Pendiente |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
