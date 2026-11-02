@@ -134,12 +134,10 @@ function Node( { node, i, pos, titolDe, onTria } ) {
 		estil[ `--x${ lletra }` ] = `${ ( x / w ) * 100 }%`;
 		estil[ `--y${ lletra }` ] = `${ ( y / h ) * 100 }%`;
 	} );
-	const costat = pos.estret[ i ].x < 180 ? 'dreta' : 'esquerra';
 	const classes = [
 		'nep-mapa__node',
 		`nep-mapa__node--${ node.estat }`,
 		node.tutorial && 'nep-mapa__node--tutorial',
-		`nep-mapa__node--${ costat }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );

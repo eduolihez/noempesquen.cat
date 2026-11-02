@@ -194,7 +194,7 @@
 	width: 0;
 }
 
-/* Node: el botó és la boia (≥ 44 px); l'etiqueta penja a sota o al costat. */
+/* Node: el botó és la boia (≥ 44 px); l'etiqueta penja a sota. */
 .wp-block-noempesquen-simulador .nep-mapa__node,
 .nep-mapa__node {
 	animation: nep-mapa-salta 0.75s cubic-bezier(0.3, 0.7, 0.4, 1) both;
@@ -405,7 +405,7 @@
 	width: auto;
 }
 
-/* Estret: serpentina vertical; etiquetes al costat alternant. */
+/* Estret: serpentina vertical; etiquetes a sota, més estretes. */
 @container (max-width: 639px) {
 
 	.nep-mapa__escenari {
@@ -428,18 +428,7 @@
 	}
 
 	.nep-mapa__etiqueta {
-		top: 50%;
-		transform: translateY(-50%);
-		width: min(10.5rem, 52cqi);
-	}
-
-	.nep-mapa__node--dreta .nep-mapa__etiqueta {
-		left: calc(100% + 12px);
-	}
-
-	.nep-mapa__node--esquerra .nep-mapa__etiqueta {
-		left: auto;
-		right: calc(100% + 12px);
+		width: min(9.5rem, 44cqi);
 	}
 }
 

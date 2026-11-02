@@ -7,7 +7,7 @@
  * L'alçada de l'estret i l'amplada de l'ample creixen amb el nombre de nodes.
  */
 const AMPLE = { marge: 90, pas: 170, alt: 420, dalt: 150, baix: 270 };
-const ESTRET = { ample: 360, esq: 100, dre: 260, marge: 90, pas: 160 };
+const ESTRET = { ample: 360, esq: 95, dre: 265, marge: 80, baix: 70, pas: 175 };
 
 const arrodoneix = ( v ) => Math.round( v * 10 ) / 10;
 const quants = ( n ) => ( Number.isFinite( n ) && n > 0 ? Math.floor( n ) : 0 );
@@ -24,7 +24,7 @@ export function midaVista( n, mode ) {
 	if ( mode === 'estret' ) {
 		return {
 			w: ESTRET.ample,
-			h: ESTRET.marge * 2 + ( k - 1 ) * ESTRET.pas,
+			h: ESTRET.marge * 2 + ESTRET.baix + ( k - 1 ) * ESTRET.pas,
 		};
 	}
 	return { w: AMPLE.marge * 2 + ( k - 1 ) * AMPLE.pas, h: AMPLE.alt };
