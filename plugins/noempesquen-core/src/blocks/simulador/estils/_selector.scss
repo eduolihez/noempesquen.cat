@@ -299,8 +299,9 @@
 		--cartell-y: calc(-100% + 0.75rem);
 	}
 
+	/* Penja damunt del pal, sense tapar la cabina (el Pirata és més amunt). */
 	.nep-sel-barco--pc {
-		--cartell-y: 0%;
+		--cartell-y: calc(-100% + 1rem);
 	}
 }
 

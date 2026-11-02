@@ -77,7 +77,14 @@ export const DISPOSICIONS = {
 			[ 120, 640 ],
 			[ 160, 880 ],
 		],
-		moll: { x0: -20, x1: 310, y: 984, peus: [ 30, 130, 230, 280 ] },
+		moll: {
+			x0: -20,
+			x1: 310,
+			y: 984,
+			peus: [ 30, 130, 230, 280 ],
+			caixes: 150,
+			corda: null,
+		},
 		amarra: 'M274 962Q310 1024 346 990',
 		gavines: [
 			[ 420, 140, 1.4, 'nep-port__gavina--creua' ],
@@ -256,7 +263,7 @@ function Boia( { x, y, i } ) {
 	);
 }
 
-function Moll( { x0, x1, y, peus } ) {
+function Moll( { x0, x1, y, peus, caixes = 170, corda = -112 } ) {
 	const ample = x1 - x0;
 	return (
 		<g>
@@ -326,7 +333,7 @@ function Moll( { x0, x1, y, peus } ) {
 				{ ...T3 }
 			/>
 			{ /* Caixes de peix */ }
-			<g transform={ `translate(${ x0 + 170 } ${ y })` }>
+			<g transform={ `translate(${ x0 + caixes } ${ y })` }>
 				<path
 					d="M6-34l10 8 12-10 10 10 12-8"
 					fill="#9fd0e0"
@@ -361,16 +368,18 @@ function Moll( { x0, x1, y, peus } ) {
 				/>
 				<path d="M44-58q10-12 22 0" fill="#9fd0e0" { ...T3 } />
 			</g>
-			{ /* Corda enrotllada */ }
-			<g
-				transform={ `translate(${ x1 - 112 } ${ y - 6 })` }
-				fill="none"
-				{ ...T3 }
-			>
-				<ellipse rx="22" ry="8" fill="#e3c27a" />
-				<ellipse rx="14" ry="5" />
-				<ellipse cy="-6" rx="20" ry="7" />
-			</g>
+			{ /* Corda enrotllada (en alt no hi cap) */ }
+			{ corda !== null && (
+				<g
+					transform={ `translate(${ x1 + corda } ${ y - 6 })` }
+					fill="none"
+					{ ...T3 }
+				>
+					<ellipse rx="22" ry="8" fill="#e3c27a" />
+					<ellipse rx="14" ry="5" />
+					<ellipse cy="-6" rx="20" ry="7" />
+				</g>
+			) }
 			{ /* Noray */ }
 			<g transform={ `translate(${ x1 - 36 } ${ y })` }>
 				<path d="M-10 0V-18H10V0Z" fill="#14213d" { ...T3 } />

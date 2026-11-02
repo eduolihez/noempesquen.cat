@@ -56,10 +56,15 @@
 	--marc-w: min(max(100cqw, 100cqh * var(--marc-r)), 100cqw / var(--zona-w), 100cqh * var(--marc-r) / var(--zona-h));
 	--marc-h: calc(var(--marc-w) / var(--marc-r));
 
+	/* Quina part del retall vertical cau a dalt (0,5 = centrat). En ample es
+	   retalla més cel que mar: el casc del Pesquer queda per sobre de la
+	   píndola de baix en finestres molt amples (844×390, 2560×1080). */
+	--marc-ay: 0.78;
+
 	height: var(--marc-h);
 	left: calc((100cqw - var(--marc-w)) / 2);
 	position: absolute;
-	top: calc((100cqh - var(--marc-h)) / 2);
+	top: calc((100cqh - var(--marc-h)) * var(--marc-ay));
 	transform-origin: var(--cam-x) var(--cam-y);
 	transition:
 		transform 0.9s cubic-bezier(0.65, 0, 0.3, 1),
@@ -107,8 +112,9 @@
 
 	.nep-port__marc {
 
-		@include ancores(900, 1200, (300 710 560 470.4), (360 215 520 520));
+		@include ancores(900, 1200, (300 710 560 470.4), (360 150 520 520));
 		--aigua-pesquer: #0b5e7a;
+		--marc-ay: 0.5;
 		--zoom: var(--port-zoom, 1.5);
 		--marc-r: calc(3 / 4);
 		--zona-w: 0.96;
