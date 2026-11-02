@@ -129,4 +129,65 @@ final class ComptesNucliTest extends TestCase {
 		$this->assertFalse( nep_consentiment_valid( null ) );
 		$this->assertSame( '2026-10-31', NEP_VERSIO_CONSENTIMENT );
 	}
+
+	public function test_token_genera() {
+		$b = str_repeat( "", 32 );
+		$this->assertSame( '7.' . str_repeat( '01', 32 ), nep_token_genera( 7, $b ) );
+		$this->assertSame( '', nep_token_genera( 0, $b ) );
+		$this->assertSame( '', nep_token_genera( 7, str_repeat( 'a', 31 ) ) );
+		$this->assertSame( '', nep_token_genera( 7, str_repeat( 'a', 33 ) ) );
+	}
+
+	public function test_token_parseja() {
+		$h = str_repeat( 'ab', 32 );
+		$this->assertSame(
+			array(
+				'id'     => 42,
+				'secret' => $h,
+			),
+			nep_token_parseja( '42.' . $h )
+		);
+		$invalids = array(
+			'',
+			null,
+			array( '42.' . $h ),
+			'42.' . strtoupper( $h ),
+			'42.' . substr( $h, 1 ),
+			'42.' . $h . 'a',
+			'007.' . $h,
+			'0.' . $h,
+			'12345678901.' . $h,
+			' 42.' . $h,
+			'42.' . $h . "
+",
+			'42' . $h,
+		);
+		foreach ( $invalids as $i ) {
+			$this->assertNull( nep_token_parseja( $i ) );
+		}
+	}
+
+	public function test_token_hash() {
+		$this->assertSame( hash_hmac( 'sha256', 's', 'sal' ), nep_token_hash( 's', 'sal' ) );
+		$this->assertSame( nep_token_hash( 's', 'sal' ), nep_token_hash( 's', 'sal' ) );
+		$this->assertNotSame( nep_token_hash( 's', 'sal' ), nep_token_hash( 's', 'altra' ) );
+		$this->assertSame( '', nep_token_hash( 's', '' ) );
+	}
+
+	public function test_token_registre_i_valid() {
+		$this->assertSame( 172800, NEP_TTL_VERIFICA );
+		$this->assertSame( 3600, NEP_TTL_RECUPERA );
+		$r = nep_token_registre( 'sec', 'sal', 1000, NEP_TTL_RECUPERA );
+		$this->assertSame( 4600, $r['caduca'] );
+		$this->assertSame( nep_token_hash( 'sec', 'sal' ), $r['hash'] );
+		$this->assertTrue( nep_token_valid( $r, 'sec', 'sal', 1000 ) );
+		$this->assertTrue( nep_token_valid( $r, 'sec', 'sal', 4600 ) );
+		$this->assertFalse( nep_token_valid( $r, 'sec', 'sal', 4601 ) );
+		$this->assertFalse( nep_token_valid( $r, 'mal', 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( $r, 'sec', '', 1000 ) );
+		$this->assertFalse( nep_token_valid( null, 'sec', 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( array( 'hash' => $r['hash'] ), 'sec', 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( array( 'hash' => 1, 'caduca' => 5000 ), 'sec', 'sal', 1000 ) );
+		$this->assertFalse( nep_token_valid( array( 'hash' => $r['hash'], 'caduca' => '5000' ), 'sec', 'sal', 1000 ) );
+	}
 }
