@@ -16,6 +16,8 @@ Simulador de estafas digitales para los Premis Wapps .cat 2026/27. WordPress (te
 | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `SIM/nucli/`                         | Motor puro (sin JSX): `motor.js` (reductor), `disparadors.js` (eventos → efectos), `valida.js`, `missions.js`, `progres.js` |
 | `SIM/simulador/`                     | Carcasa: pantalla completa, pausa, contexto `useJoc()`, consecuencia y resultado, aislamiento de foco                       |
+| `SIM/simulador/Selector.js`, `Mapa.js` | Selector «Port»: puerto con un barco por dispositivo y mapa lineal de misiones (modelo puro en `SIM/nucli/ruta.js` y `mapaGeom.js`) |
+| `SIM/ui/port/`                       | Escena SVG del puerto, barcos Pesquer y Pirata (animación solo CSS, estilos en `estils/_port.scss`)                         |
 | `SIM/sistemes/pc/`                   | Ordenador simulado: bloqueo, escritorio, barra de tareas, ventanas, notificaciones                                          |
 | `SIM/sistemes/mobil/`                | Móvil simulado: bloqueo, inicio, centro de control, banners, barra de navegación, pila de apps (`pila.js`)                  |
 | `SIM/apps/`                          | Apps del sistema (`navegador`, `parla`, `missatges`; cada una con versión PC y/o móvil) y su registro `registre.js` (`APPS_PC`, `APPS_MOBIL`) |
