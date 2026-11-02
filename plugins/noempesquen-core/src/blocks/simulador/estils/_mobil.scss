@@ -219,6 +219,7 @@ button.nep-so-m-estat {
 	display: grid;
 	flex: 0 0 auto;
 	grid-template-columns: minmax(0, 1fr) auto minmax(min-content, 1fr);
+	padding-block: 2px;
 
 	.nep-so-m-nav {
 		background: none;
