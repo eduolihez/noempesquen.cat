@@ -182,6 +182,26 @@ Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el 
 - **Validació**: `tutorial` ha de ser booleà (`tutorial invàlid`). Si és `true`, `decisio.opcions` ha de tenir **una sola opció** i amb `valor: "correcta"` (p. ex. «Ja ho tinc clar», sense penalització possible); `senyals` ha de ser una llista, que pot ser buida (si el guió fa servir la lupa, hi ha d'haver almenys un senyal referenciat); no cal cap efecte `pescat`. Les missions normals es validen igual que abans.
 - **No puntua**: ni estrelles ni punts a la pantalla final («Ja estàs a punt» i, si n'hi ha, `tancament.consell`), ni estadístiques: el client no envia res a `POST /resultat` i el servidor rebutja un resultat d'un tutorial (400 `nep_missio_tutorial`).
 - **Progrés**: un tutorial fet es desa al mateix mapa del progrés (`{ id: 1 }`, local i al compte). L'1 no són estrelles, només vol dir «fet»; així la fusió per màxim i el progrés antic (sense la clau = no fet) funcionen sense canvis.
+- **Passos (`passos`)**: només vàlid amb `tutorial: true`; llista no buida. Cada pas té exactament `id` (únic, `[a-z0-9-]+`), `ancora` (una clau d'`ANCORES`, a `nucli/ancores.js`, o `null` per a una targeta centrada), `titol` (1-60 caràcters), `text` (1-280) i `continua`. Es rebutgen ids duplicats, àncores desconegudes, `continua` mal format, camps desconeguts i textos buits. `ANCORES`: `pantalla`, `escriptori`, `barra`, `inici`, `rellotge`, `lupa`, `app-navegador`, `app-parla`, `finestra-navegador`, `finestra-parla`, `botons-finestra`, `parla-xat`, `parla-respostes`, `avis`, `llista-correus`, `correu-obert`, `remitent`, `enllacos`, `adreca`, `decisio`, `bloqueig`, `dock`, `app-missatges`, `app-parla-mobil`, `banner`, `centre-control`, `nav-enrere`, `nav-inici`, `conversa` (la interfície les posa com a `data-tut`).
+  - **`continua`**: `"boto"` (l'acció `PAS_SEGUENT` avança) o `{ "esdeveniment": "...", ...claus }` amb la mateixa semàntica que `quan` dels disparadors (`PAS_SEGUENT` no avança un pas d'esdeveniment). Un esdeveniment del jugador que hi coincideix avança com a màxim un pas.
+  - **Estat**: `estat.pas` és l'índex del pas actual (comença a 0); `estat.pas === passos.length` vol dir acabat. `PAS_SALTA` acaba el tutorial.
+  - **Esdeveniment `pas.entra`**: en entrar en un pas (el 0 en desbloquejar, i en cada avanç) el motor processa `{ esdeveniment: "pas.entra", pas: "<id>" }` contra els disparadors; així `quan: { "esdeveniment": "pas.entra", "pas": "x" }` pot fer `mostra`, `notifica`, `guia-diu`... Aquest esdeveniment sintètic no avança passos (no hi ha bucles). El `pas` d'un disparador ha d'existir.
+  - **Salt**: `PAS_SALTA` aplica, en ordre, els `pas.entra` dels passos que quedaven perquè el correu, les notificacions, etc. existeixin (cada disparador només s'executa una vegada) i deixa `pas = passos.length`.
+  - **Intro opcional**: amb `passos`, `intro` pot faltar o ser buida (la substitueix l'overlay); el motor arrenca amb `introAcabada = true` i no mostra `intro[0]` pel xat. Sense `passos`, `intro` continua sent obligatòria.
+  - **Pistes**: mentre `pas < passos.length` no hi ha pistes automàtiques per temps.
+
+  ```json
+  "passos": [
+    { "id": "barra", "ancora": "barra", "titol": "La barra", "text": "Aquí tens les teves apps.", "continua": "boto" },
+    { "id": "obre-navegador", "ancora": "app-navegador", "titol": "Obre el navegador", "text": "Fes clic a la icona.",
+      "continua": { "esdeveniment": "app.obre", "app": "navegador" } }
+  ],
+  "disparadors": [
+    { "id": "correu", "quan": { "esdeveniment": "pas.entra", "pas": "obre-navegador" },
+      "efectes": [ { "tipus": "mostra", "id": "correu-benvinguda" } ] }
+  ]
+  ```
+
 - **Selector**: els tutorials surten primer, al grup «Tutorial» (el del dispositiu en ús abans). La primera vegada (cap tutorial fet i cap missió jugada) es recomana el tutorial del dispositiu («Comença per aquí»); després ja no. No compten al resum d'estrelles. Un tutorial fet mostra «Fet». Sempre es pot jugar qualsevol missió sense fer el tutorial, i a la pausa hi ha «Salta el tutorial».
 
 ## Mons compartits (`mon.json`)
