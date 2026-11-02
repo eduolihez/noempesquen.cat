@@ -96,10 +96,13 @@ test.describe( 'Selector de missions', () => {
 				.getByRole( 'heading', { level: 2 } )
 				.allTextContents()
 		).toEqual( [ 'Tria una missió' ] );
+		// El recompte de la secció (decoratiu, aria-hidden) no compta com a títol.
 		expect(
 			await selector( page )
 				.getByRole( 'heading', { level: 3 } )
-				.allTextContents()
+				.evaluateAll( ( hs ) =>
+					hs.map( ( h ) => h.firstChild.textContent )
+				)
 		).toEqual( [
 			'Comença per aquí',
 			'Tutorial',

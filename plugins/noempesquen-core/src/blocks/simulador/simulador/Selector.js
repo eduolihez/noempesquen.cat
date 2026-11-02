@@ -113,7 +113,11 @@ function Targeta( { missio, estrelles, horitzontal, destacada, onTria } ) {
 							) }
 						</span>
 						<span className="nep-sel-xip nep-sel-xip--nom">
-							{ nom }
+							{ sprintf(
+								/* translators: %s: nom del personatge guia */
+								__( 'Amb %s', 'noempesquen' ),
+								nom
+							) }
 						</span>
 					</span>
 					<span className="nep-sel-targeta__resum">
@@ -125,19 +129,23 @@ function Targeta( { missio, estrelles, horitzontal, destacada, onTria } ) {
 							{ __( 'Millor en horitzontal', 'noempesquen' ) }
 						</span>
 					) }
-					{ esTutorial ? (
-						estrelles > 0 && (
-							<span className="nep-sel-xip">
-								{ __( 'Fet', 'noempesquen' ) }
-							</span>
-						)
-					) : (
-						<Estrelles estrelles={ estrelles } />
-					) }
 				</span>
-				<span className="nep-sel-targeta__accio" aria-hidden="true">
-					{ accio }
-					<IconaFletxa mida={ 18 } />
+				<span className="nep-sel-targeta__peu">
+					<span className="nep-sel-targeta__estat">
+						{ esTutorial ? (
+							estrelles > 0 && (
+								<span className="nep-sel-xip nep-sel-xip--fet">
+									{ __( 'Fet', 'noempesquen' ) }
+								</span>
+							)
+						) : (
+							<Estrelles estrelles={ estrelles } />
+						) }
+					</span>
+					<span className="nep-sel-targeta__accio" aria-hidden="true">
+						{ accio }
+						<IconaFletxa mida={ 18 } />
+					</span>
 				</span>
 			</span>
 		</button>
@@ -152,6 +160,9 @@ function Seccio( { id, titol, missions, pinta } ) {
 		<div role="group" className="nep-sel-seccio" aria-labelledby={ id }>
 			<h3 id={ id } className="nep-sel-seccio__titol">
 				{ titol }
+				<span className="nep-sel-seccio__compte" aria-hidden="true">
+					{ missions.length }
+				</span>
 			</h3>
 			<ul className="nep-sel-graella">
 				{ missions.map( ( m ) => (

@@ -126,6 +126,18 @@
 	}
 }
 
+.nep-sel-seccio__compte {
+	background: var(--sel-escuma);
+	border-radius: 999px;
+	color: var(--sel-mar-fosc);
+	font-size: 0.8rem;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0;
+	line-height: 1;
+	order: 1;
+	padding: 0.25rem 0.5rem;
+}
+
 .nep-sel-graella {
 	display: grid;
 	gap: 1rem;
@@ -181,6 +193,7 @@
 }
 
 .nep-sel-targeta__cos {
+	align-self: stretch;
 	display: flex;
 	flex: 1;
 	flex-direction: column;
@@ -224,6 +237,7 @@
 
 	&--nom {
 		border-color: transparent;
+		font-weight: 500;
 		padding-inline: 0.2rem;
 	}
 }
@@ -255,14 +269,31 @@
 	line-height: 0;
 }
 
+/* Peu: estat (estrelles o «Fet») a l'esquerra, acció a la dreta; tots els peus
+   queden a la mateixa alçada dins de la fila de la graella. */
+.nep-sel-targeta__peu {
+	align-items: center;
+	border-top: 1px solid var(--sel-filet);
+	display: flex;
+	gap: 0.75rem;
+	justify-content: space-between;
+	margin-top: auto;
+	padding-top: 0.75rem;
+}
+
+.nep-sel-targeta__estat {
+	align-items: center;
+	display: inline-flex;
+	min-height: 24px;
+}
+
 .nep-sel-targeta__accio {
 	align-items: center;
-	align-self: flex-end;
 	color: var(--sel-accent);
 	display: inline-flex;
 	font-weight: 700;
 	gap: 0.3rem;
-	margin-top: auto;
+	margin-left: auto;
 
 	svg {
 		transition: transform 0.18s ease;
@@ -337,12 +368,17 @@
 		color: #5c4500;
 	}
 
+	.nep-sel-targeta__peu {
+		border-top: 0;
+		justify-content: flex-start;
+		padding-top: 0.25rem;
+	}
+
 	.nep-sel-targeta__accio {
-		align-self: flex-start;
 		background: var(--sel-or);
 		border-radius: 999px;
 		color: var(--sel-tinta);
-		margin-top: 0.25rem;
+		margin-left: 0;
 		min-height: 44px;
 		padding: 0.6rem 1.1rem 0.6rem 1.25rem;
 	}
