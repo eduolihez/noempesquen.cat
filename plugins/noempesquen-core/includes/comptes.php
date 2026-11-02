@@ -593,6 +593,8 @@ function nep_rest_compte_verifica( WP_REST_Request $request ) {
 	if ( null === $token ) {
 		return $generic;
 	}
+	// El hash es calcula sempre (també sense usuari ni meta) per igualar el temps.
+	nep_token_hash( $token['secret'], wp_salt( 'auth' ) );
 	$usuari   = get_userdata( $token['id'] );
 	$registre = $usuari instanceof WP_User ? get_user_meta( $usuari->ID, 'nep_token_verifica', true ) : null;
 	if ( ! $usuari instanceof WP_User || ! nep_es_jugador( $usuari ) || ! nep_token_valid( $registre, $token['secret'], wp_salt( 'auth' ), time() ) ) {
@@ -618,8 +620,13 @@ function nep_rest_compte_reenvia_verificacio() {
 		return nep_compte_massa_intents();
 	}
 	nep_compte_suma_intent( $clau, NEP_COMPTE_FINESTRA_REENVIA );
-	nep_compte_envia_verificacio( $id );
-	return rest_ensure_response( array( 'verificat' => false ) );
+	$enviat = nep_compte_envia_verificacio( $id );
+	return rest_ensure_response(
+		array(
+			'verificat' => false,
+			'enviat'    => $enviat,
+		)
+	);
 }
 
 /**

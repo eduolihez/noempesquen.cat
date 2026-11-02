@@ -355,7 +355,7 @@ $nep_comprova( ! metadata_exists( 'user', $nep_v->ID, 'nep_email_verificat' ), '
 // Reenviament: invalida l'anterior, límit de 3 per hora.
 $r1     = $nep_reenvia();
 $nep_t2 = $nep_token_de( end( $nep_mails ) );
-$nep_comprova( 200 === $r1->get_status() && false === $r1->get_data()['verificat'] && 2 === count( $nep_mails ) && '' !== $nep_t2 && $nep_t2 !== $nep_t1, 'reenvia: envia un token nou' );
+$nep_comprova( 200 === $r1->get_status() && false === $r1->get_data()['verificat'] && true === $r1->get_data()['enviat'] && 2 === count( $nep_mails ) && '' !== $nep_t2 && $nep_t2 !== $nep_t1, 'reenvia: envia un token nou' );
 $nep_msgs   = array();
 $nep_msgs[] = $nep_resum( $nep_verifica( $nep_t1 ) );
 $nep_comprova( 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'reenvia: el token anterior queda invalidat' );
@@ -364,6 +364,19 @@ $r3     = $nep_reenvia();
 $nep_t3 = $nep_token_de( end( $nep_mails ) );
 $r4     = $nep_reenvia();
 $nep_comprova( 200 === $r3->get_status() && 4 === count( $nep_mails ) && 429 === $r4->get_status() && 'nep_massa_intents' === $r4->get_data()['code'], 'reenvia: el quart de l\'hora → 429 i no envia' );
+
+// Si wp_mail falla, el reenviament torna 200 amb enviat=false.
+$nep_nova_ip();
+$nep_email_g = 'g' . $nep_email1;
+$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_g ) );
+$nep_g = get_user_by( 'email', $nep_email_g );
+wp_set_current_user( $nep_g->ID );
+$nep_mail_falla = true;
+$r              = $nep_reenvia();
+$nep_mail_falla = false;
+$nep_comprova( 200 === $r->get_status() && false === $r->get_data()['verificat'] && false === $r->get_data()['enviat'], 'reenvia: si el correu falla → 200 amb enviat=false' );
+wp_delete_user( $nep_g->ID );
+wp_set_current_user( $nep_v->ID );
 
 // Tokens invàlids: tots amb el mateix 400.
 $nep_nova_ip();
@@ -379,7 +392,6 @@ $nep_mal = array(
 	'manipulat'     => substr( $nep_t3, 0, -1 ) . ( '0' === substr( $nep_t3, -1 ) ? '1' : '0' ),
 	'altre usuari'  => $nep_v->ID . '.' . $nep_secret_w,
 	'id inexistent' => '999999999.' . $nep_secret_v,
-	'no jugador'    => '1.' . $nep_secret_v,
 	'format'        => 'no-es-un-token',
 	'buit'          => '',
 	'no cadena'     => array( 'x' ),
@@ -387,12 +399,25 @@ $nep_mal = array(
 foreach ( $nep_mal as $nep_t ) {
 	$nep_msgs[] = $nep_resum( $nep_verifica( $nep_t ) );
 }
+// Usuari NO jugador (editor) amb un registre vàlid i el token real: rebutjat per rol.
+$nep_ed_id = (int) wp_insert_user(
+	array(
+		'user_login' => 'nep_ed_' . wp_rand( 10000, 99999 ),
+		'user_pass'  => wp_generate_password(),
+		'role'       => 'editor',
+	)
+);
+$nep_ed_sec = bin2hex( random_bytes( 32 ) );
+update_user_meta( $nep_ed_id, 'nep_token_verifica', nep_token_registre( $nep_ed_sec, wp_salt( 'auth' ), time(), NEP_TTL_VERIFICA ) );
+$nep_msgs[] = $nep_resum( $nep_verifica( $nep_ed_id . '.' . $nep_ed_sec ) );
+$nep_comprova( ! metadata_exists( 'user', $nep_ed_id, 'nep_email_verificat' ) && metadata_exists( 'user', $nep_ed_id, 'nep_token_verifica' ), 'verifica: usuari no jugador amb token real no es verifica' );
+wp_delete_user( $nep_ed_id );
 // Caducat (manipulant el meta).
 $nep_reg_w           = get_user_meta( $nep_w->ID, 'nep_token_verifica', true );
 $nep_reg_w['caduca'] = time() - 1;
 update_user_meta( $nep_w->ID, 'nep_token_verifica', $nep_reg_w );
 $nep_msgs[] = $nep_resum( $nep_verifica( $nep_tw ) );
-$nep_comprova( count( $nep_msgs ) === count( $nep_mal ) + 2 && 1 === count( array_unique( array_map( 'wp_json_encode', $nep_msgs ) ) ) && 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'verifica: manipulat, d\'un altre usuari, inexistent, no jugador, caducat, mal format o antic → mateix 400' );
+$nep_comprova( count( $nep_msgs ) === count( $nep_mal ) + 3 && 1 === count( array_unique( array_map( 'wp_json_encode', $nep_msgs ) ) ) && 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'verifica: manipulat, d\'un altre usuari, inexistent, no jugador (token real), caducat, mal format o antic → mateix 400' );
 $nep_comprova( ! metadata_exists( 'user', $nep_v->ID, 'nep_email_verificat' ) && ! metadata_exists( 'user', $nep_w->ID, 'nep_email_verificat' ), 'verifica: cap intent invàlid verifica res' );
 
 // Correcte i d'un sol ús; no inicia sessió.
