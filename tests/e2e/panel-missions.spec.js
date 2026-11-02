@@ -14,7 +14,7 @@ test.describe.configure( { mode: 'serial' } );
 const creades = [];
 
 async function entra( page ) {
-	await page.goto( '/wp-login.php' );
+	await page.goto( '/admin/' );
 	await page.locator( '#user_login' ).fill( 'admin' );
 	await page.locator( '#user_pass' ).fill( 'password' );
 	await page.locator( '#wp-submit' ).click();
@@ -304,7 +304,7 @@ test( 'un Editor no veu «Missions» ni pot crear-ne per REST', async ( { page, 
 	const context = await browser.newContext();
 	try {
 		const editor = await context.newPage();
-		await editor.goto( '/wp-login.php' );
+		await editor.goto( '/admin/' );
 		await editor.locator( '#user_login' ).fill( login );
 		await editor.locator( '#user_pass' ).fill( contrasenya );
 		await editor.locator( '#wp-submit' ).click();

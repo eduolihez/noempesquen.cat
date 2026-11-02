@@ -14,3 +14,4 @@ require_once dirname( __DIR__, 2 ) . '/includes/validacio-missio.php';
 require_once dirname( __DIR__, 2 ) . '/includes/estadistiques.php';
 require_once dirname( __DIR__, 2 ) . '/includes/comptes-nucli.php';
 require_once dirname( __DIR__, 2 ) . '/includes/contacte-nucli.php';
+require_once dirname( __DIR__, 2 ) . '/includes/acces-admin-nucli.php';

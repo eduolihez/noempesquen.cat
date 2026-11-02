@@ -91,7 +91,7 @@ test( 'una partida acabada envia un sol resultat amb missio, estrelles i decisio
 test( 'el panell mostra la taula i amaga les missions amb poques partides', async ( {
 	page,
 } ) => {
-	await page.goto( '/wp-login.php' );
+	await page.goto( '/admin/' );
 	await page.locator( '#user_login' ).fill( 'admin' );
 	await page.locator( '#user_pass' ).fill( 'password' );
 	await page.locator( '#wp-submit' ).click();
@@ -160,7 +160,7 @@ test( 'amb dades demo el panell avisa i mostra barres accessibles; en esborrar-l
 	page,
 } ) => {
 	test.setTimeout( 240000 );
-	await page.goto( '/wp-login.php' );
+	await page.goto( '/admin/' );
 	await page.locator( '#user_login' ).fill( 'admin' );
 	await page.locator( '#user_pass' ).fill( 'password' );
 	await page.locator( '#wp-submit' ).click();
