@@ -58,8 +58,16 @@ module.exports = defineConfig( {
 		{
 			name: 'panell-estadistiques',
 			use: { ...devices[ 'Desktop Chrome' ] },
-			testMatch: /estadistiques\.spec\.js$/,
+			testMatch: /(?<!resum-)estadistiques\.spec\.js$/,
 			dependencies: [ 'panell' ],
+		},
+		// Després de les estadístiques: les seves dades demo toquen totes les
+		// missions jugables, també la de prova que publica aquest spec.
+		{
+			name: 'panell-resum',
+			use: { ...devices[ 'Desktop Chrome' ] },
+			testMatch: /resum-estadistiques\.spec\.js$/,
+			dependencies: [ 'panell-estadistiques' ],
 		},
 		{
 			name: 'compte',
