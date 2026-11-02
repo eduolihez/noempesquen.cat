@@ -29,6 +29,14 @@
 	}
 }
 
+/* Apaïsat: capçalera més baixa perquè quedi més xat. */
+@media (max-height: 500px) {
+
+	.nep-so .nep-parla-mobil .nep-parla-conversa__cap {
+		flex-basis: 48px;
+	}
+}
+
 .nep-so .nep-parla-conversa__enrere {
 	align-items: center;
 	background: transparent;

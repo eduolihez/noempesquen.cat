@@ -38,8 +38,10 @@
 		font-size: 17px;
 	}
 
-	&__avis {
+	/* La targeta té width 100%: sense restar el marge se sortia per la dreta. */
+	.nep-so &__avis.nep-so-m-notif {
 		margin: 0 12px;
+		width: calc(100% - 24px);
 	}
 
 	.nep-so &__entra {

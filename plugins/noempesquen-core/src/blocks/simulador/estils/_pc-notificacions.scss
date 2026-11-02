@@ -127,7 +127,7 @@
 	position: absolute;
 	max-width: calc(100% - 24px);
 	right: 12px;
-	width: 364px;
+	width: 300px;
 	z-index: $capa-toast;
 }
 
@@ -192,7 +192,7 @@
 		color: inherit;
 		display: flex;
 		gap: 12px;
-		padding: 4px 16px 16px 14px;
+		padding: 4px 14px 16px;
 		text-align: left;
 		width: 100%;
 
@@ -218,10 +218,10 @@
 		background: #dcf1f5;
 		border-radius: 50%;
 		display: flex;
-		height: 48px;
+		height: 40px;
 		justify-content: center;
 		overflow: hidden;
-		width: 48px;
+		width: 40px;
 	}
 
 	&__text {
@@ -240,7 +240,7 @@
 		-webkit-box-orient: vertical;
 		color: #3b3b3b;
 		display: -webkit-box;
-		-webkit-line-clamp: 3;
+		-webkit-line-clamp: 2;
 		line-height: 20px;
 		overflow: hidden;
 	}
