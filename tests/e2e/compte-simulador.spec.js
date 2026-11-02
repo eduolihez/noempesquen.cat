@@ -288,8 +288,12 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 		.getByRole( 'button', { name: new RegExp( `^${ escapa( text ) }` ) } )
 		.click();
 
+	// Amb el progrés sembrat ja hi ha hagut un PUT en carregar: espera el de la missió.
 	const puja = page.waitForResponse(
-		( r ) => PROGRES.test( r.url() ) && r.request().method() === 'PUT'
+		( r ) =>
+			PROGRES.test( r.url() ) &&
+			r.request().method() === 'PUT' &&
+			!! r.request().postDataJSON()?.progres?.[ MISSIO_JSON.id ]
 	);
 	await page
 		.getByRole( 'dialog' )
