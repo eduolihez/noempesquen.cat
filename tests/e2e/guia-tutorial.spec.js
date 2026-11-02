@@ -7,7 +7,6 @@ const {
 	senseFullscreen,
 	esHoritzontal,
 } = require( './ajudes' );
-const { devices } = require( '@playwright/test' );
 const { guiaPc, guiaMobil } = require( './missions-guia' );
 
 const BLOQUEIG_PC = /Clica o prem/;
@@ -87,6 +86,22 @@ async function targetaDins( page ) {
 }
 
 /**
+ * Cert si el focus és dins de l'àncora o de la targeta (mai a <body>).
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string}                          clau Clau data-tut.
+ * @return {Promise<boolean>} Cert si és dins.
+ */
+const focusDins = ( page, clau ) =>
+	page.evaluate( ( c ) => {
+		const a = document.body.ownerDocument.activeElement;
+		return !! (
+			a?.closest( `[data-tut="${ c }"]` ) ||
+			a?.closest( '.nep-guia__targeta' )
+		);
+	}, clau );
+
+/**
  * Clic real (ratolí) al centre d'un element.
  *
  * @param {import('@playwright/test').Page}    page
@@ -130,11 +145,14 @@ async function fluxPc( page, escalat, info ) {
 		'inert',
 		''
 	);
-	await expect(
-		page.locator( '[aria-live="polite"]', {
-			has: page.getByText( 'Pas 1 de 3' ),
-		} )
-	).toHaveCount( 1 );
+	// Zona live: comptador + títol + text (s'omple després de muntar).
+	await expect( page.locator( '.nep-guia__anunci' ) ).toHaveAttribute(
+		'aria-live',
+		'polite'
+	);
+	await expect( page.locator( '.nep-guia__anunci' ) ).toHaveText(
+		/^Pas 1 de 3\. Benvingut\./
+	);
 	expect(
 		await ( isMobile ? greusAxePc( page ) : greusAxe( page ) )
 	).toEqual( [] );
@@ -147,6 +165,11 @@ async function fluxPc( page, escalat, info ) {
 
 	// Pas 1: acció sobre la icona del Navegador.
 	await expect( g ).toContainText( 'Pas 2 de 3' );
+	await expect( page.locator( '.nep-guia__anunci' ) ).toHaveText(
+		/^Pas 2 de 3\. Obre el Navegador\./
+	);
+	// El focus no cau a <body>: va a l'àncora (o a la targeta).
+	expect( await focusDins( page, 'app-navegador' ) ).toBe( true );
 	await expect( g.getByRole( 'button', { name: 'Entès' } ) ).toHaveCount( 0 );
 	await expect(
 		g.getByRole( 'button', { name: 'Salta el tutorial' } )
@@ -166,9 +189,16 @@ async function fluxPc( page, escalat, info ) {
 		} );
 	}
 
-	// Clic fora del forat (icona de Parla): no passa res.
+	// Clic fora del forat (icona de Parla, sota un panell del vel): no passa res.
 	const parla = ancora( page, 'app-parla' );
 	const etiqueta = await parla.getAttribute( 'aria-label' );
+	const caixa = await parla.boundingBox();
+	expect(
+		await page.evaluate(
+			( [ x, y ] ) => document.elementFromPoint( x, y )?.className ?? '',
+			[ caixa.x + caixa.width / 2, caixa.y + caixa.height / 2 ]
+		)
+	).toContain( 'nep-guia__vel' );
 	await clicAlCentre( page, parla );
 	await expect( g ).toContainText( 'Pas 2 de 3' );
 	await expect( parla ).toHaveAttribute( 'aria-label', etiqueta );
@@ -176,14 +206,10 @@ async function fluxPc( page, escalat, info ) {
 	// Tab no surt del forat i la targeta.
 	for ( let i = 0; i < 4; i++ ) {
 		await page.keyboard.press( 'Tab' );
-		const dins = await page.evaluate( () => {
-			const a = document.body.ownerDocument.activeElement;
-			return !! (
-				a?.closest( '[data-tut="app-navegador"]' ) ||
-				a?.closest( '.nep-guia__targeta' )
-			);
-		} );
-		expect( dins, `Tab ${ i + 1 }` ).toBe( true );
+		expect(
+			await focusDins( page, 'app-navegador' ),
+			`Tab ${ i + 1 }`
+		).toBe( true );
 	}
 
 	// Perquè el clic a la icona obri el Navegador, cal que estigui tancat:
@@ -210,6 +236,9 @@ async function fluxPc( page, escalat, info ) {
 	await targetaDins( page );
 	await expect( g.getByRole( 'button', { name: 'Entès' } ) ).toBeFocused();
 	await expect( page.locator( '.nep-guia__tapa' ) ).toHaveCount( 1 );
+	expect(
+		await ( isMobile ? greusAxePc( page ) : greusAxe( page ) )
+	).toEqual( [] );
 	const etiquetaParla = await parla.getAttribute( 'aria-label' );
 	await clicAlCentre( page, parla );
 	await expect( parla ).toHaveAttribute( 'aria-label', etiquetaParla );
@@ -241,14 +270,23 @@ async function fluxPc( page, escalat, info ) {
 
 test.describe( 'Overlay del tutorial (PC)', () => {
 	test.beforeEach( async ( { page, isMobile } ) => {
-		test.skip( isMobile, 'PC: escriptori (l’horitzontal té el seu bloc)' );
+		test.skip(
+			isMobile && ! esHoritzontal( page ),
+			'PC: escriptori o mòbil horitzontal (PC escalat)'
+		);
 		await entraPc( page );
 	} );
 
 	test( 'passos: explicació, acció, aïllament i reposicionat', async ( {
 		page,
+		isMobile,
 	}, info ) => {
-		await fluxPc( page, false, info );
+		await fluxPc( page, isMobile, info );
+		if ( isMobile ) {
+			await page.screenshot( {
+				path: info.outputPath( 'guia-horitzontal-final.png' ),
+			} );
+		}
 	} );
 
 	test( 'reposicionat en canviar el viewport en un pas d’acció', async ( {
@@ -346,21 +384,38 @@ test.describe( 'Overlay del tutorial (mòbil)', () => {
 	} );
 } );
 
-// El projecte `mobil-horitzontal` només corre una llista tancada de specs:
-// l'horitzontal (PC escalat) es prova aquí, només des del projecte `mobil`.
-const { defaultBrowserType, ...horitzontal } = devices[ 'Pixel 7 landscape' ];
-test.describe( 'Overlay del tutorial (mòbil horitzontal, PC escalat)', () => {
-	test.use( horitzontal );
+test.describe( 'Overlay del tutorial a 320 px', () => {
+	test.use( { viewport: { width: 320, height: 640 } } );
 
-	test( 'passos amb el PC escalat', async ( { page }, info ) => {
-		test.skip(
-			info.project.name !== 'mobil',
-			'Només des del projecte mobil'
-		);
-		await entraPc( page );
-		await fluxPc( page, true, info );
+	test( 'targeta sencera, sense retalls ni desbordament', async ( {
+		page,
+		isMobile,
+	}, info ) => {
+		test.skip( ! isMobile, 'Només al projecte mobil' );
+		await serveix( page, guiaMobil() );
+		await iniciaMissio( page, /^Aprèn a jugar al mòbil/, BLOQUEIG_MOBIL );
+		await page.getByRole( 'button', { name: BLOQUEIG_MOBIL } ).click();
+		const g = guia( page );
+		for ( const pas of [ 'Pas 1 de 3', 'Pas 2 de 3' ] ) {
+			await expect( g ).toContainText( pas );
+			await targetaDins( page );
+			const desborda = await g.evaluate(
+				( el ) =>
+					el.scrollWidth > el.clientWidth + 1 ||
+					el.scrollHeight > el.clientHeight + 1
+			);
+			expect( desborda, pas ).toBe( false );
+			for ( const b of await g.getByRole( 'button' ).all() ) {
+				const caixa = await b.boundingBox();
+				expect( caixa.height ).toBeGreaterThanOrEqual( 44 );
+				expect( caixa.x + caixa.width ).toBeLessThanOrEqual( 320 );
+			}
+			if ( pas === 'Pas 1 de 3' ) {
+				await g.getByRole( 'button', { name: 'Entès' } ).click();
+			}
+		}
 		await page.screenshot( {
-			path: info.outputPath( 'guia-horitzontal-final.png' ),
+			path: info.outputPath( 'guia-mobil-320.png' ),
 		} );
 	} );
 } );

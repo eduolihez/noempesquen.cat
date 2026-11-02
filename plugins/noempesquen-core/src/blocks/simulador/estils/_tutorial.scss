@@ -28,16 +28,17 @@
 	border-radius: 8px;
 }
 
-/* Anell doble (groc clar + gris fosc): ≥ 3:1 sobre qualsevol fons. */
+/*
+ * Anell doble: blanc per fora (contrast amb el vel) i fosc per dins (contrast
+ * amb el contingut clar). Sense ombra interior: no tapa el focus de l'àncora.
+ * Sense transició: ha de seguir l'àncora a l'instant (finestra arrossegada).
+ */
 .nep-guia__forat {
-	border: 3px solid #ffd23f;
+	border: 3px solid $tok-tinta;
 	border-radius: 8px;
-	box-shadow:
-		0 0 0 2px $tok-tinta,
-		inset 0 0 0 2px $tok-tinta;
+	box-shadow: 0 0 0 2px #fff;
 	pointer-events: none;
 	position: absolute;
-	transition: left 0.12s ease-out, top 0.12s ease-out, width 0.12s ease-out, height 0.12s ease-out;
 }
 
 .nep-guia__targeta {
@@ -54,7 +55,6 @@
 	padding: 1rem 1.125rem;
 	pointer-events: auto;
 	position: absolute;
-	transition: left 0.12s ease-out, top 0.12s ease-out;
 
 	p {
 		margin: 0;
@@ -103,10 +103,11 @@
 	outline-offset: 2px;
 }
 
-@media (prefers-reduced-motion: reduce) {
+.nep-guia__titol:focus {
+	outline: none;
+}
 
-	.nep-guia__forat,
-	.nep-guia__targeta {
-		transition: none;
-	}
+.nep-guia__titol:focus-visible {
+	outline: 3px solid $tok-tinta;
+	outline-offset: 2px;
 }

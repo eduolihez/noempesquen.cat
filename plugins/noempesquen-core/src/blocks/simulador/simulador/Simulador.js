@@ -285,7 +285,7 @@ export function Simulador( { missio, mon, onSurt, onAcaba, seguent, api } ) {
 						</Pantalla>
 					</div>
 				) }
-				<GuiaTutorial />
+				<GuiaTutorial girar={ girar } />
 				{ enConsequencia && (
 					<Consequencia
 						onResultat={ () =>

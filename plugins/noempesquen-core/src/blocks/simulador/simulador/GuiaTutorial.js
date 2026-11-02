@@ -104,14 +104,15 @@ const BUIT = {
  * Aïllament: en els passos d'explicació (`continua: "boto"`) el sistema és
  * `inert` (ho fa `Simulador`) i una tapa transparent cobreix el forat; només
  * funciona la targeta. En els passos d'acció el sistema queda operable: els
- * panells aturen el clic fora del forat i Tab només dona la volta entre els
- * elements de l'àncora i els de la targeta. Esc no es captura: obre la pausa.
+ * panells aturen el clic fora del forat i Tab (només dins de `.nep-so`) dona
+ * la volta entre l'àncora, el que s'hagi obert al sistema durant el pas
+ * (menús, popovers) i la targeta. Esc no es captura: obre la pausa.
  *
  * @param {Object}   props
  * @param {Object}   props.pas      Pas actual.
  * @param {number}   props.index    Índex del pas.
  * @param {number}   props.total    Nombre de passos.
- * @param {boolean}  props.actiu    Cert si es mostra (fals en pausa).
+ * @param {boolean}  props.actiu    Cert si es mostra (fals en pausa o girar).
  * @param {Function} props.dispatch Dispatch del motor.
  */
 function Guia( { pas, index, total, actiu, dispatch } ) {
@@ -119,10 +120,21 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 	const targeta = useRef( null );
 	const boto = useRef( null );
 	const ancora = useRef( null );
+	const titol = useRef( null );
 	const anterior = useRef( null );
+	const arrelRef = useRef( null );
+	const nous = useRef( new Set() );
 	const observador = useRef( null );
 	const [ geo, setGeo ] = useState( BUIT );
+	const [ anunci, setAnunci ] = useState( '' );
 	const explicacio = pas.continua === 'boto';
+	const comptador = sprintf(
+		/* translators: 1: pas actual, 2: nombre de passos */
+		__( 'Pas %1$d de %2$d', 'noempesquen' ),
+		index + 1,
+		total
+	);
+	const textAnunci = `${ comptador }. ${ pas.titol }. ${ pas.text }`;
 
 	const mesura = useCallback( () => {
 		const arrel = capa.current?.parentElement;
@@ -185,7 +197,16 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 			ro.observe( targeta.current );
 		}
 		const sistema = arrel.querySelector( '.nep-so__sistema' );
-		const mo = new vista.MutationObserver( () => mesura() );
+		const mo = new vista.MutationObserver( ( mutacions ) => {
+			mutacions.forEach( ( m ) =>
+				m.addedNodes.forEach( ( n ) => {
+					if ( n.nodeType === 1 ) {
+						nous.current.add( n );
+					}
+				} )
+			);
+			mesura();
+		} );
 		if ( sistema ) {
 			mo.observe( sistema, {
 				subtree: true,
@@ -215,48 +236,111 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 		};
 	}, [ actiu, mesura ] );
 
-	// Passos d'explicació: el focus va a «Entès» (guardem on era per tornar-l'hi).
+	// En muntar: on era el focus (per tornar-l'hi en acabar).
 	useEffect( () => {
-		if ( ! actiu || ! explicacio || ! boto.current ) {
-			return;
-		}
-		const actual = boto.current.ownerDocument.activeElement;
-		if ( actual && ! capa.current?.contains( actual ) ) {
+		const arrel = capa.current?.parentElement ?? null;
+		arrelRef.current = arrel;
+		const actual = arrel?.ownerDocument.activeElement;
+		if (
+			actual &&
+			actual !== arrel.ownerDocument.body &&
+			! capa.current.contains( actual )
+		) {
 			anterior.current = actual;
 		}
-		boto.current.focus( { preventScroll: true } );
+	}, [] );
+
+	// Cada pas comença sense elements «nous» del sistema.
+	useEffect( () => {
+		nous.current = new Set();
+	}, [ index ] );
+
+	// Anunci: buit i, un moment després, ple (també en tornar de la pausa).
+	useEffect( () => {
+		setAnunci( '' );
+		if ( ! actiu ) {
+			return undefined;
+		}
+		const id = setTimeout( () => setAnunci( textAnunci ), 100 );
+		return () => clearTimeout( id );
+	}, [ actiu, textAnunci ] );
+
+	// Focus en entrar en un pas: «Entès» en els d'explicació; en els d'acció,
+	// si el focus és fora de l'àncora i la targeta, el primer tabulable de
+	// l'àncora o, si no n'hi ha, el títol de la targeta.
+	useLayoutEffect( () => {
+		if ( ! actiu ) {
+			return;
+		}
+		if ( explicacio ) {
+			boto.current?.focus( { preventScroll: true } );
+			return;
+		}
+		const doc = capa.current.ownerDocument;
+		const actual = doc.activeElement;
+		const dins =
+			actual &&
+			( ancora.current?.contains( actual ) ||
+				targeta.current?.contains( actual ) );
+		if ( ! dins ) {
+			( tabulables( ancora.current )[ 0 ] ?? titol.current )?.focus( {
+				preventScroll: true,
+			} );
+		}
 	}, [ actiu, explicacio, index ] );
 
 	// En acabar o saltar el tutorial: si el focus s'ha perdut amb la targeta,
-	// torna on era abans.
+	// torna on era abans o, si ja no hi és, a `.nep-so`.
 	useEffect(
 		() => () => {
-			const el = anterior.current;
-			const doc = el?.ownerDocument;
+			const arrel = arrelRef.current;
+			const doc = arrel?.ownerDocument;
 			if (
-				el?.isConnected &&
-				( ! doc.activeElement || doc.activeElement === doc.body ) &&
-				! el.closest( '[inert]' )
+				! doc ||
+				( doc.activeElement && doc.activeElement !== doc.body )
 			) {
+				return;
+			}
+			const el = anterior.current;
+			if ( el?.isConnected && ! el.closest( '[inert]' ) ) {
 				el.focus( { preventScroll: true } );
+			} else if ( arrel?.isConnected ) {
+				arrel.focus( { preventScroll: true } );
 			}
 		},
 		[]
 	);
 
-	// Passos d'acció: Tab no surt del forat (àncora) i la targeta.
+	// Passos d'acció: Tab (dins de `.nep-so`) no surt de l'àncora, del que
+	// s'hagi obert durant el pas i de la targeta.
 	useEffect( () => {
 		if ( ! actiu || explicacio ) {
 			return undefined;
 		}
-		const doc = capa.current.ownerDocument;
+		const arrel = capa.current.parentElement;
+		const doc = arrel.ownerDocument;
 		const onKeyDown = ( e ) => {
-			if ( e.key !== 'Tab' || e.altKey || e.ctrlKey || e.metaKey ) {
+			if (
+				e.key !== 'Tab' ||
+				e.altKey ||
+				e.ctrlKey ||
+				e.metaKey ||
+				! arrel.contains( e.target )
+			) {
 				return;
 			}
+			const nousVius = [ ...nous.current ].filter(
+				( n ) =>
+					n.isConnected &&
+					! ancora.current?.contains( n ) &&
+					! capa.current?.contains( n )
+			);
 			const llista = [
-				...tabulables( ancora.current ),
-				...tabulables( targeta.current ),
+				...new Set( [
+					...tabulables( ancora.current ),
+					...nousVius.flatMap( tabulables ),
+					...tabulables( targeta.current ),
+				] ),
 			];
 			if ( ! llista.length ) {
 				return;
@@ -276,8 +360,22 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 		return () => doc.removeEventListener( 'keydown', onKeyDown, true );
 	}, [ actiu, explicacio ] );
 
+	const live = (
+		<div
+			className="nep-guia__anunci screen-reader-text"
+			aria-live="polite"
+			aria-atomic="true"
+		>
+			{ anunci }
+		</div>
+	);
+
 	if ( ! actiu ) {
-		return <div ref={ capa } hidden />;
+		return (
+			<div ref={ capa } className="nep-guia nep-guia--amagada">
+				{ live }
+			</div>
+		);
 	}
 
 	const f = geo.forat;
@@ -293,6 +391,7 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 
 	return (
 		<div ref={ capa } className="nep-guia">
+			{ live }
 			{ panells( f, geo.cont ).map( ( p, i ) => (
 				<div
 					key={ i }
@@ -328,18 +427,11 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
 					width: amplada ? `${ amplada }px` : undefined,
 				} }
 			>
-				<div aria-live="polite" aria-atomic="true">
-					<p className="nep-guia__comptador">
-						{ sprintf(
-							/* translators: 1: pas actual, 2: nombre de passos */
-							__( 'Pas %1$d de %2$d', 'noempesquen' ),
-							index + 1,
-							total
-						) }
-					</p>
-					<h2 className="nep-guia__titol">{ pas.titol }</h2>
-					<p className="nep-guia__text">{ pas.text }</p>
-				</div>
+				<p className="nep-guia__comptador">{ comptador }</p>
+				<h2 ref={ titol } className="nep-guia__titol" tabIndex={ -1 }>
+					{ pas.titol }
+				</h2>
+				<p className="nep-guia__text">{ pas.text }</p>
 				<div className="nep-guia__botons">
 					{ explicacio && (
 						<button
@@ -370,8 +462,11 @@ function Guia( { pas, index, total, actiu, dispatch } ) {
  * Overlay del tutorial (germà de `.nep-so__sistema` dins de `.nep-so`).
  * Només amb `passos`, durant el joc i mentre queden passos. En pausa (o amb
  * la petició de girar) queda muntat però amagat.
+ *
+ * @param {Object}  props
+ * @param {boolean} props.girar Cert si hi ha la petició de girar el mòbil.
  */
-export function GuiaTutorial() {
+export function GuiaTutorial( { girar = false } ) {
 	const { missio, estat, dispatch } = useJoc();
 	const passos = Array.isArray( missio.passos ) ? missio.passos : [];
 	const pas = passos[ estat.pas ];
@@ -383,7 +478,7 @@ export function GuiaTutorial() {
 			pas={ pas }
 			index={ estat.pas }
 			total={ passos.length }
-			actiu={ ! estat.pausa }
+			actiu={ ! estat.pausa && ! girar }
 			dispatch={ dispatch }
 		/>
 	);
