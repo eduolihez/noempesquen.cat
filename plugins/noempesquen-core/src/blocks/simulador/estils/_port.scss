@@ -21,8 +21,22 @@
 	}
 }
 
+/*
+ * Marc «cover»: `.nep-port` és un contenidor de mida (cal que tingui alçada
+ * definida) i el marc, de proporció fixa (--marc-r: 16:9 ample, 3:4 alt),
+ * l'omple sencer i es retalla per les vores. L'escala és
+ *   min( cover, la que encara deixa veure la zona segura sencera )
+ * Zona segura: rectangle central del marc de --zona-w × --zona-h (fraccions;
+ * 0,84 × 0,75 en ample, 0,96 × 0,85 en alt). El que hi ha a dins es veu
+ * sempre (barcos, cartells, botons); el de fora es pot retallar. Si la zona
+ * no hi cap amb cover pur, queden franges de cel (dalt) i de mar (baix): el
+ * fons de `.nep-port`.
+ * Composició alta quan el contenidor és més alt que ample (aspect-ratio ≤ 1).
+ */
 .nep-port {
-	container-type: inline-size;
+	background: linear-gradient(180deg, #9fd6e4 50%, #0b5e7a 50%);
+	container: nep-port / size;
+	height: 100%;
 	overflow: hidden;
 	position: relative;
 }
@@ -36,13 +50,21 @@
 	--zoom: var(--port-zoom, 2);
 	--aigua-pesquer: #2384a1;
 	--aigua-pirata: #4fa6bf;
+	--marc-r: calc(16 / 9);
+	--zona-w: 0.84;
+	--zona-h: 0.75;
+	--marc-w: min(max(100cqw, 100cqh * var(--marc-r)), 100cqw / var(--zona-w), 100cqh * var(--marc-r) / var(--zona-h));
+	--marc-h: calc(var(--marc-w) / var(--marc-r));
 
-	aspect-ratio: 16 / 9;
-	position: relative;
+	height: var(--marc-h);
+	left: calc((100cqw - var(--marc-w)) / 2);
+	position: absolute;
+	top: calc((100cqh - var(--marc-h)) / 2);
 	transform-origin: var(--cam-x) var(--cam-y);
 	transition:
 		transform 0.9s cubic-bezier(0.65, 0, 0.3, 1),
 		transform-origin 0.9s cubic-bezier(0.65, 0, 0.3, 1);
+	width: var(--marc-w);
 }
 
 .nep-port__fons {
@@ -81,15 +103,16 @@
 	}
 }
 
-@container (max-width: 639px) {
+@container nep-port (aspect-ratio <= 1) {
 
 	.nep-port__marc {
 
 		@include ancores(900, 1200, (300 710 560 470.4), (360 215 520 520));
 		--aigua-pesquer: #0b5e7a;
 		--zoom: var(--port-zoom, 1.5);
-
-		aspect-ratio: 3 / 4;
+		--marc-r: calc(3 / 4);
+		--zona-w: 0.96;
+		--zona-h: 0.85;
 	}
 
 	.nep-port__fons--ampla {

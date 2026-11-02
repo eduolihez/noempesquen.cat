@@ -4,74 +4,175 @@
  * simulat: fa servir la marca del joc (mar, escuma i or).
  */
 @use "tokens" as *;
+@use "capes" as *;
 
+/* Capa fixa a tota la finestra, per sobre de capçalera, peu i barra
+   d'administració. Graella: barra de dalt, cel·la del mapa, barra de baix;
+   l'escena ocupa les tres files per darrere. */
 .nep-selector {
 	--sel-tinta: var(--nep-text, #14213d);
 	--sel-suau: #3a4661;
 	--sel-linia: #0b1e3f;
 	--sel-or: #ffd54a;
 	--sel-anell: #12355b;
+	--sel-paper: #fffdf6;
+	--sel-marge: clamp(0.5rem, 1.5vmin, 1rem);
 	--sel-display: var(--wp--preset--font-family--rotulacio, "Bahnschrift"), "DIN Alternate", "Avenir Next Condensed", "Roboto Condensed", system-ui, sans-serif;
 
+	background: #0b5e7a;
+	box-sizing: border-box;
 	color: var(--sel-tinta);
-	display: flex;
-	flex-direction: column;
-	gap: 1.25rem;
-	min-width: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	inset: 0;
+	overflow: hidden;
+	position: fixed;
+	z-index: $capa-selector;
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	&:focus {
+		outline: none;
+	}
 
 	&__cap {
-		align-items: baseline;
-		border-bottom: 3px solid var(--sel-tinta);
+		align-items: flex-start;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.25rem 1.5rem;
+		gap: 0.5rem;
+		grid-area: 1 / 1;
 		justify-content: space-between;
-		padding-bottom: 0.75rem;
+		padding:
+			max(var(--sel-marge), env(safe-area-inset-top))
+			max(var(--sel-marge), env(safe-area-inset-right))
+			0
+			max(var(--sel-marge), env(safe-area-inset-left));
+		pointer-events: none;
+		position: relative;
+		z-index: 2;
+
+		> * {
+			pointer-events: auto;
+		}
+	}
+
+	/* Rètol del títol: placa de paper perquè el contrast no depengui del cel. */
+	&__rotul {
+		background: var(--sel-paper);
+		border: 3px solid var(--sel-linia);
+		border-radius: 14px;
+		box-shadow: 0 3px 0 var(--sel-linia);
+		margin-inline-end: auto;
+		min-width: 0;
+		padding: 0.35rem 0.85rem;
 	}
 
 	h2.nep-selector__titol {
 		font-family: var(--sel-display);
-		font-size: clamp(1.75rem, 3vw + 1rem, 2.75rem);
+		font-size: clamp(1.25rem, 1.5vw + 0.9rem, 2rem);
 		font-stretch: 87.5%;
 		font-weight: 700;
 		letter-spacing: -0.01em;
-		line-height: 1;
+		line-height: 1.05;
 		margin: 0;
 	}
 
 	&__resum {
 		color: var(--sel-suau);
-		font-size: 0.95rem;
+		font-size: 0.85rem;
 		font-variant-numeric: tabular-nums;
-		margin: 0;
+		margin: 0.15rem 0 0;
+	}
+
+	&__accions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	/* Barra de baix: compte i avisos, damunt del mar. */
+	&__peu {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		grid-area: 3 / 1;
+		justify-content: center;
+		padding:
+			0
+			max(var(--sel-marge), env(safe-area-inset-right))
+			max(var(--sel-marge), env(safe-area-inset-bottom))
+			max(var(--sel-marge), env(safe-area-inset-left));
+		position: relative;
+		z-index: 2;
+
+		&:empty {
+			padding: 0;
+		}
+
+		> * {
+			background: rgb(255 253 246 / 94%);
+			border: 2px solid var(--sel-linia);
+			border-radius: 999px;
+			margin: 0;
+			padding: 0.3rem 0.9rem;
+		}
 	}
 }
 
-/* Botó «Pausa animacions» (WCAG 2.2.2): visible al port i al mapa. */
-.wp-block-noempesquen-simulador .nep-sel-pausa,
-.nep-sel-pausa {
+/* Controls de les cantonades: «Surt», «Pausa animacions», «Pantalla
+   completa». En estret només la icona (el nom accessible es manté). */
+.wp-block-noempesquen-simulador .nep-sel-control,
+.nep-sel-control {
 	align-items: center;
-	align-self: center;
-	background: #fff;
+	background: var(--sel-paper);
 	border: 2px solid var(--sel-linia);
 	border-radius: 999px;
+	box-shadow: 0 3px 0 var(--sel-linia);
 	color: var(--sel-linia);
 	cursor: pointer;
 	display: inline-flex;
 	font-size: 0.95rem;
 	font-weight: 700;
 	gap: 0.4rem;
+	justify-content: center;
+	line-height: 1.1;
 	min-height: 44px;
 	min-width: 44px;
 	padding: 0.3rem 0.9rem 0.3rem 0.7rem;
+	text-decoration: none;
+
+	&:hover {
+		background: #fff;
+	}
 
 	&[aria-pressed="true"] {
 		background: var(--sel-or);
 	}
 
 	&:focus-visible {
-		outline: 3px solid var(--sel-anell);
+		outline: 3px solid var(--sel-or);
 		outline-offset: 2px;
+	}
+}
+
+@media (max-width: 719px), (max-height: 500px) {
+
+	.wp-block-noempesquen-simulador .nep-sel-control,
+	.nep-sel-control {
+		padding: 0.3rem;
+	}
+
+	.nep-sel-control__text {
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
 	}
 }
 
@@ -95,20 +196,11 @@
 	transition: none !important;
 }
 
-/* El tema no posa marge lateral: sense això, en pantalles estretes el
-   selector toca les vores (la capçalera deixa 16 px). */
-@media (max-width: 1180px) {
-
-	.nep-selector {
-		padding-inline: 1rem;
-	}
-}
-
-/* Estat del compte, sota el selector: discret, contrast AA sobre blanc. */
+/* Estat del compte, a la barra de baix: contrast AA sobre el paper. */
 .nep-estat-compte {
 	color: #3a4661;
 	font-size: 0.95rem;
-	margin: 1.5rem 0 0;
+	margin: 0;
 
 	&__enllac {
 		align-items: center;
@@ -130,34 +222,19 @@
 	}
 }
 
-@media (max-width: 1180px) {
-
-	.nep-estat-compte {
-		padding-inline: 1rem;
-	}
-}
-
-/* Port: l'escena i, germana seva, la capa del mapa (fora del marc que fa el
-   zoom, perquè el mapa no s'escali). Totes dues a la mateixa cel·la: si el
-   mapa és més alt que l'escena, el que sobra és mar. */
+/* Port: l'escena omple tota la finestra (les tres files, per darrere de les
+   barres). El mapa, germà seu i fora del marc que fa el zoom, ocupa la fila
+   del mig. */
 .nep-sel-port {
-	background: #0b5e7a;
-	border: 3px solid var(--sel-linia);
-	border-radius: 18px;
-	container-type: inline-size;
-	display: grid;
-	overflow: hidden;
-	position: relative;
-}
-
-.nep-sel-port__escena,
-.nep-sel-mapa {
-	grid-area: 1 / 1;
+	grid-area: 1 / 1 / -1 / -1;
+	min-height: 0;
 	min-width: 0;
+	position: relative;
+	z-index: 0;
 }
 
 .nep-sel-port__escena {
-	align-self: start;
+	height: 100%;
 }
 
 /* Botó damunt de cada vaixell: ocupa el rectangle de l'àncora. */
@@ -208,7 +285,7 @@
 	--cartell-y: calc(-100% - 0.5rem);
 }
 
-@container (max-width: 639px) {
+@container nep-port (aspect-ratio <= 1) {
 
 	.nep-sel-barco {
 		--cartell-y: calc(-100% + 0.75rem);
@@ -293,12 +370,31 @@
 	padding: 0.05rem 0.45rem;
 }
 
-/* Mapa: apareix quan la càmera ja s'ha acostat (només CSS, sense timers). */
+/* Mapa: apareix quan la càmera ja s'ha acostat (només CSS, sense timers).
+   Ocupa la cel·la entre les dues barres; si no hi cap, el mar del mapa fa
+   scroll per dins (la capçalera del mapa queda fixa a dalt). */
 .nep-sel-mapa {
 	animation: nep-sel-apareix 0.4s ease-out 0.45s both;
 	background: rgb(11 94 122 / 55%);
-	padding: clamp(0.5rem, 2cqi, 1rem);
+	border-radius: 18px;
+	display: flex;
+	flex-direction: column;
+	grid-area: 2 / 1;
+	margin:
+		var(--sel-marge)
+		max(var(--sel-marge), env(safe-area-inset-right))
+		var(--sel-marge)
+		max(var(--sel-marge), env(safe-area-inset-left));
+	min-height: 0;
+	min-width: 0;
+	padding: var(--sel-marge);
 	position: relative;
+	z-index: 1;
+
+	> .nep-mapa {
+		--mapa-alt-max: 100%;
+		flex: 1 1 auto;
+	}
 
 	/* Els nodes salten un cop el mapa ja és visible. */
 	.nep-mapa__node {
@@ -318,14 +414,6 @@
 	.nep-mapa__traca,
 	.nep-mapa__fet-vora {
 		animation-delay: 0s;
-	}
-}
-
-/* En apaisat, el mapa cap a la pantalla i el mar fa scroll per dins. */
-@media (orientation: landscape) {
-
-	.nep-sel-mapa .nep-mapa {
-		--mapa-alt-max: max(22rem, calc(100svh - 6rem));
 	}
 }
 

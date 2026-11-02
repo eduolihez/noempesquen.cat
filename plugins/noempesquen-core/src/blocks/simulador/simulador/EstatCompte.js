@@ -1,5 +1,5 @@
 /**
- * Estat del compte sota el selector (fora del sistema simulat): convida a
+ * Estat del compte a la barra inferior del selector (fora del sistema simulat): convida a
  * crear un compte o confirma que el progrés es desa. Mai dins d'una missió.
  */
 import { __ } from '@wordpress/i18n';

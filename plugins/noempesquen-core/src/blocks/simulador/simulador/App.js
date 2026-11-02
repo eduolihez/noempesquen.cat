@@ -288,8 +288,21 @@ export function App( { config } ) {
 	};
 
 	if ( ! missio ) {
+		// L'avís de prova i l'estat del compte van a la barra inferior del
+		// selector: és a pantalla completa i taparia res que quedés fora.
 		return (
-			<>
+			<Selector
+				// `vaixellInicial` només es llegeix en muntar: si canvia
+				// (missions remotes que arriben tard), es torna a muntar.
+				key={ vaixellJugat ?? 'port' }
+				missions={ missions }
+				progres={ progres }
+				preferit={ preferit }
+				onTria={ tria }
+				enfoca={ jugada.current }
+				vaixellInicial={ vaixellJugat }
+				inici={ config.inici || '/' }
+			>
 				{ !! config.previsualitza && (
 					<p className="nep-sim-avis" role="status">
 						{ fallaPrevi
@@ -300,24 +313,13 @@ export function App( { config } ) {
 							: '' }
 					</p>
 				) }
-				<Selector
-					// `vaixellInicial` només es llegeix en muntar: si canvia
-					// (missions remotes que arriben tard), es torna a muntar.
-					key={ vaixellJugat ?? 'port' }
-					missions={ missions }
-					progres={ progres }
-					preferit={ preferit }
-					onTria={ tria }
-					enfoca={ jugada.current }
-					vaixellInicial={ vaixellJugat }
-				/>
 				{ ! config.previsualitza && !! config.compte && (
 					<EstatCompte
 						connectat={ connectat }
 						url={ config.compte.url || '' }
 					/>
 				) }
-			</>
+			</Selector>
 		);
 	}
 

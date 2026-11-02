@@ -8,10 +8,17 @@
  * - mapa: escena ampliada + capa germana amb <Mapa> (fora del marc que fa el
  *   zoom). «Torna al port» i Esc tornen al port i el focus va al vaixell.
  *
+ * Ocupa tota la finestra (capa fixa per sobre del tema, sense scroll de
+ * pàgina, la resta de la pàgina inert). Cantonades: «Surt» (a `inici`), el
+ * títol, «Pausa animacions» i «Pantalla completa» (Fullscreen API sobre
+ * <html>: la partida hi anida la seva i, en sortir-ne, s'hi torna).
+ *
  * Props
  * - missions, progres, preferit, onTria: com sempre.
  * - enfoca:         id de la missió jugada (focus al seu node en tornar).
  * - vaixellInicial: 'pc' | 'mobil' | null. Obre directament aquest mapa.
+ * - inici:          URL de la portada del web (enllaç «Surt»).
+ * - children:       barra inferior (estat del compte, avisos).
  */
 import {
 	useContext,
@@ -24,8 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import { construeixRuta, dispositiusAmbRuta } from '../nucli/ruta';
 import { Escena } from '../ui/port/Escena';
 import { Estrella, Glif } from '../ui/icones';
+import { useAillament } from './aillament';
 import { JocContext } from './context';
 import { Mapa } from './Mapa';
+import { CLASSE_SCROLL } from './usePantallaCompleta';
 
 /* Mòbil que gira cap a horitzontal (fletxa en arc). */
 const IconaGira = ( p ) => (
@@ -47,6 +56,63 @@ const IconaPlay = ( p ) => (
 		<path d="M7 5v10l8-5Z" />
 	</Glif>
 );
+
+/* Porta amb fletxa cap a fora (surt al web). */
+const IconaSurt = ( p ) => (
+	<Glif { ...p } strokeWidth="2">
+		<path d="M8 4H4.5v12H8" />
+		<path d="M8.5 10H17M13.5 6.5 17 10l-3.5 3.5" />
+	</Glif>
+);
+
+/* Quatre cantonades cap a fora (entra) o cap a dins (surt). */
+const IconaAmplia = ( p ) => (
+	<Glif { ...p } strokeWidth="2">
+		<path d="M3.5 7.5v-4h4M12.5 3.5h4v4M16.5 12.5v4h-4M7.5 16.5h-4v-4" />
+	</Glif>
+);
+const IconaRedueix = ( p ) => (
+	<Glif { ...p } strokeWidth="2">
+		<path d="M7.5 3.5v4h-4M16.5 7.5h-4v-4M12.5 16.5v-4h4M3.5 12.5h4v4" />
+	</Glif>
+);
+
+/**
+ * Pantalla completa real de la pàgina (<html>), només per gest d'usuari.
+ * `pot` és fals si el navegador no té l'API (el botó no es mostra).
+ *
+ * @return {{pot: boolean, actiu: boolean, commuta: Function}} Control.
+ */
+function usePantallaCompletaPagina() {
+	const doc = window.document;
+	const pot =
+		!! doc.fullscreenEnabled && !! doc.documentElement.requestFullscreen;
+	const [ actiu, setActiu ] = useState( () => !! doc.fullscreenElement );
+	useEffect( () => {
+		const onChange = () => setActiu( !! doc.fullscreenElement );
+		doc.addEventListener( 'fullscreenchange', onChange );
+		return () => doc.removeEventListener( 'fullscreenchange', onChange );
+	}, [ doc ] );
+	const commuta = () => {
+		const peticio = doc.fullscreenElement
+			? doc.exitFullscreen()
+			: doc.documentElement.requestFullscreen();
+		peticio?.catch?.( () => {} );
+	};
+	return { pot, actiu, commuta };
+}
+
+/**
+ * Sense scroll de pàgina mentre el selector és muntat (mateixa classe que la
+ * capa fixa del joc; el joc la torna a posar si la necessita).
+ */
+function useSenseScroll() {
+	useEffect( () => {
+		const html = window.document.documentElement;
+		html.classList.add( CLASSE_SCROLL );
+		return () => html.classList.remove( CLASSE_SCROLL );
+	}, [] );
+}
 
 const vaixells = () => ( {
 	pc: {
@@ -166,8 +232,13 @@ export function Selector( {
 	onTria,
 	enfoca,
 	vaixellInicial = null,
+	inici = '/',
+	children,
 } ) {
 	const arrel = useRef( null );
+	const completa = usePantallaCompletaPagina();
+	useSenseScroll();
+	useAillament( arrel );
 	const escena = useRef( null );
 	const titolMapa = useRef( null );
 	const botons = { pc: useRef( null ), mobil: useRef( null ) };
@@ -298,39 +369,73 @@ export function Selector( {
 			ref={ arrel }
 			className={ classes }
 			aria-labelledby="nep-selector-titol"
+			tabIndex={ -1 }
 		>
 			<header className="nep-selector__cap">
-				<h2 id="nep-selector-titol" className="nep-selector__titol">
-					{ __( 'Tria una missió', 'noempesquen' ) }
-				</h2>
-				{ total.fetes > 0 && (
-					<p className="nep-selector__resum">
-						{ sprintf(
-							/* translators: 1: missions fetes, 2: total de missions, 3: estrelles guanyades, 4: estrelles possibles */
-							__(
-								'%1$d de %2$d missions fetes · %3$d de %4$d estrelles',
-								'noempesquen'
-							),
-							total.fetes,
-							total.total,
-							total.estrelles,
-							total.max
-						) }
-					</p>
-				) }
-				<button
-					type="button"
-					className="nep-sel-pausa"
-					aria-pressed={ pausat }
-					onClick={ () => setPausat( ( p ) => ! p ) }
-				>
-					{ pausat ? (
-						<IconaPlay mida={ 20 } />
-					) : (
-						<IconaPausa mida={ 20 } />
+				<a className="nep-sel-control nep-sel-surt" href={ inici }>
+					<IconaSurt mida={ 20 } />
+					<span className="nep-sel-control__text">
+						{ __( 'Surt', 'noempesquen' ) }
+					</span>
+				</a>
+				<div className="nep-selector__rotul">
+					<h2 id="nep-selector-titol" className="nep-selector__titol">
+						{ __( 'Tria una missió', 'noempesquen' ) }
+					</h2>
+					{ total.fetes > 0 && (
+						<p className="nep-selector__resum">
+							{ sprintf(
+								/* translators: 1: missions fetes, 2: total de missions, 3: estrelles guanyades, 4: estrelles possibles */
+								__(
+									'%1$d de %2$d missions fetes · %3$d de %4$d estrelles',
+									'noempesquen'
+								),
+								total.fetes,
+								total.total,
+								total.estrelles,
+								total.max
+							) }
+						</p>
 					) }
-					{ __( 'Pausa animacions', 'noempesquen' ) }
-				</button>
+				</div>
+				<div className="nep-selector__accions">
+					<button
+						type="button"
+						className="nep-sel-control nep-sel-pausa"
+						aria-pressed={ pausat }
+						onClick={ () => setPausat( ( p ) => ! p ) }
+					>
+						{ pausat ? (
+							<IconaPlay mida={ 20 } />
+						) : (
+							<IconaPausa mida={ 20 } />
+						) }
+						<span className="nep-sel-control__text">
+							{ __( 'Pausa animacions', 'noempesquen' ) }
+						</span>
+					</button>
+					{ completa.pot && (
+						<button
+							type="button"
+							className="nep-sel-control nep-sel-completa"
+							onClick={ completa.commuta }
+						>
+							{ completa.actiu ? (
+								<IconaRedueix mida={ 20 } />
+							) : (
+								<IconaAmplia mida={ 20 } />
+							) }
+							<span className="nep-sel-control__text">
+								{ completa.actiu
+									? __(
+											'Surt de pantalla completa',
+											'noempesquen'
+										)
+									: __( 'Pantalla completa', 'noempesquen' ) }
+							</span>
+						</button>
+					) }
+				</div>
 			</header>
 
 			<p className="screen-reader-text" aria-live="polite">
@@ -356,19 +461,20 @@ export function Selector( {
 							) ) }
 					</Escena>
 				</div>
-				{ ruta && (
-					<div className="nep-sel-mapa">
-						<Mapa
-							ruta={ ruta }
-							dispositiu={ obert }
-							onTria={ onTria }
-							onTorna={ torna }
-							onBloquejat={ bloquejat }
-							titolRef={ titolMapa }
-						/>
-					</div>
-				) }
 			</div>
+			{ ruta && (
+				<div className="nep-sel-mapa">
+					<Mapa
+						ruta={ ruta }
+						dispositiu={ obert }
+						onTria={ onTria }
+						onTorna={ torna }
+						onBloquejat={ bloquejat }
+						titolRef={ titolMapa }
+					/>
+				</div>
+			) }
+			<div className="nep-selector__peu">{ children }</div>
 		</section>
 	);
 }
