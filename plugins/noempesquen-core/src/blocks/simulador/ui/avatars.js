@@ -1,147 +1,249 @@
 /**
- * Personatges dibuixats en SVG (disseny propi).
+ * Personatges dibuixats en SVG (disseny propi, estil «Llotja»).
+ * Traç únic de 4 unitats en blau mar, color pla i formes simètriques.
  * estat: 'normal' | 'alerta' | 'contenta' | 'trista'
  */
+import { useId } from '@wordpress/element';
 
-function Boca( { estat, x, y, ample = 14 } ) {
-	if ( estat === 'contenta' ) {
-		return (
-			<path
-				d={ `M${ x - ample / 2 } ${ y } q${ ample / 2 } ${ ample / 2 } ${ ample } 0` }
-				fill="none"
-				stroke="#1b2a3a"
-				strokeWidth="3"
-				strokeLinecap="round"
-			/>
-		);
-	}
-	if ( estat === 'trista' ) {
-		return (
-			<path
-				d={ `M${ x - ample / 2 } ${ y + 4 } q${ ample / 2 } -${ ample / 2 } ${ ample } 0` }
-				fill="none"
-				stroke="#1b2a3a"
-				strokeWidth="3"
-				strokeLinecap="round"
-			/>
-		);
-	}
-	if ( estat === 'alerta' ) {
-		return <ellipse cx={ x } cy={ y + 1 } rx="4" ry="5" fill="#1b2a3a" />;
-	}
-	return (
-		<path
-			d={ `M${ x - ample / 2 } ${ y } h${ ample }` }
-			stroke="#1b2a3a"
-			strokeWidth="3"
-			strokeLinecap="round"
-		/>
-	);
-}
+const TINTA = '#0b1e3f';
+const TRAC = {
+	stroke: TINTA,
+	strokeWidth: 4,
+	strokeLinejoin: 'round',
+	strokeLinecap: 'round',
+};
+
+const COS_LLISSA =
+	'M24 74C24 44 52 28 88 28s64 18 64 44-28 42-64 42S24 104 24 74Z';
 
 export function Llissa( { estat = 'normal', mida = 72 } ) {
+	const id = useId();
+	const alerta = estat === 'alerta';
+	const trista = estat === 'trista';
+	const contenta = estat === 'contenta';
 	return (
 		<svg
-			viewBox="0 0 120 100"
+			viewBox="0 0 200 140"
 			width={ mida }
-			height={ mida * 0.83 }
+			height={ mida * 0.7 }
 			aria-hidden="true"
 			focusable="false"
 		>
-			{ /* cua */ }
-			<path d="M95 50 L118 30 L112 50 L118 70 Z" fill="#5b8fa3" />
-			{ /* cos */ }
-			<ellipse cx="58" cy="50" rx="44" ry="32" fill="#7fb3c4" />
-			<ellipse cx="54" cy="60" rx="32" ry="16" fill="#cfe6ec" />
-			{ /* aleta */ }
-			<path d="M50 20 q15 -14 30 2 z" fill="#5b8fa3" />
-			<path d="M60 58 q10 10 22 4 q-10 -2 -14 -12 z" fill="#5b8fa3" />
-			{ /* ull */ }
-			<circle cx="34" cy="40" r="9" fill="#fff" />
-			<circle
-				cx={ estat === 'alerta' ? 36 : 34 }
-				cy="40"
-				r="4.5"
-				fill="#1b2a3a"
-			/>
-			{ estat === 'alerta' && (
-				<path
-					d="M24 28 l18 4"
-					stroke="#1b2a3a"
-					strokeWidth="3"
-					strokeLinecap="round"
-				/>
-			) }
-			{ /* boca i cicatriu de l'ham */ }
-			<Boca estat={ estat } x={ 22 } y={ 58 } ample={ 12 } />
 			<path
-				d="M14 52 l6 4 M16 50 l4 7"
-				stroke="#d9667a"
-				strokeWidth="2"
-				strokeLinecap="round"
+				d="M146 72L186 40Q196 33 196 46V98Q196 111 186 104Z"
+				fill="#3f86a6"
+				{ ...TRAC }
 			/>
+			<path d="M66 32Q84 6 118 34Z" fill="#3f86a6" { ...TRAC } />
+			<clipPath id={ id }>
+				<path d={ COS_LLISSA } />
+			</clipPath>
+			<path d={ COS_LLISSA } fill="#7ec4dc" />
+			<g clipPath={ `url(#${ id })` }>
+				<path d="M10 86Q88 112 170 82V130H10Z" fill="#dff3f8" />
+			</g>
+			<path d={ COS_LLISSA } fill="none" { ...TRAC } />
+			<path
+				d="M102 56Q124 50 142 58"
+				stroke="#fff"
+				strokeWidth="5"
+				strokeLinecap="round"
+				fill="none"
+				opacity=".7"
+			/>
+			<path d="M72 44Q62 72 72 104" fill="none" { ...TRAC } />
+			<path
+				d="M100 78Q108 100 128 92Q122 78 100 78Z"
+				fill="#3f86a6"
+				{ ...TRAC }
+			/>
+			<circle
+				cx="44"
+				cy="62"
+				r={ alerta ? 16 : 14 }
+				fill="#fff"
+				{ ...TRAC }
+			/>
+			<circle
+				cx={ alerta ? 46 : 47 }
+				cy={ trista ? 65 : 63 }
+				r={ alerta ? 4.5 : 7 }
+				fill={ TINTA }
+			/>
+			<circle
+				cx={ alerta ? 47.5 : 49.5 }
+				cy={ ( alerta ? 61.5 : 60 ) + ( trista ? 3 : 0 ) }
+				r="2"
+				fill="#fff"
+			/>
+			{ alerta && <path d="M26 40L60 48" { ...TRAC } /> }
+			{ trista && <path d="M28 52L60 44" { ...TRAC } fill="none" /> }
+			{ alerta && (
+				<ellipse cx="36" cy="90" rx="5" ry="6.5" fill={ TINTA } />
+			) }
+			{ contenta && (
+				<path d="M30 84Q40 98 52 86" fill="none" { ...TRAC } />
+			) }
+			{ trista && (
+				<path d="M32 94Q40 85 50 91" fill="none" { ...TRAC } />
+			) }
+			{ ! alerta && ! contenta && ! trista && (
+				<path d="M32 86Q40 94 50 88" fill="none" { ...TRAC } />
+			) }
 		</svg>
 	);
 }
 
 export function Remei( { estat = 'normal', mida = 72 } ) {
+	const alerta = estat === 'alerta';
+	const trista = estat === 'trista';
+	const contenta = estat === 'contenta';
+	const radi = alerta ? 13 : 11.5;
+	const pupila = alerta ? 3.5 : 5;
+	const baixa = trista ? 3 : 0;
 	return (
 		<svg
-			viewBox="0 0 100 100"
+			viewBox="0 -4 140 154"
 			width={ mida }
-			height={ mida }
+			height={ mida * 1.1 }
 			aria-hidden="true"
 			focusable="false"
 		>
-			{ /* monyo */ }
-			<circle cx="50" cy="16" r="12" fill="#d7d7d7" />
-			{ /* cara */ }
-			<circle cx="50" cy="54" r="34" fill="#f2c9a5" />
-			{ /* mocador pirata */ }
-			<path d="M16 46 q34 -34 68 0 q-34 -10 -68 0 z" fill="#b42318" />
-			<circle cx="34" cy="36" r="2.2" fill="#fff" />
-			<circle cx="50" cy="31" r="2.2" fill="#fff" />
-			<circle cx="66" cy="36" r="2.2" fill="#fff" />
-			<path d="M82 44 l12 6 l-10 4 z" fill="#b42318" />
-			{ /* pegat a l'ull */ }
-			<path d="M22 44 L78 62" stroke="#1b2a3a" strokeWidth="2" />
-			<ellipse cx="38" cy="54" rx="9" ry="7" fill="#1b2a3a" />
-			{ /* ulleres i ull */ }
+			<ellipse
+				cx="31"
+				cy="56"
+				rx="8"
+				ry="13"
+				fill="#e3e7ec"
+				{ ...TRAC }
+			/>
+			<ellipse
+				cx="109"
+				cy="56"
+				rx="8"
+				ry="13"
+				fill="#e3e7ec"
+				{ ...TRAC }
+			/>
+			<circle cx="70" cy="14" r="14" fill="#e3e7ec" { ...TRAC } />
+			<path
+				d="M14 150Q14 112 70 112T126 150Z"
+				fill="#8e5aa8"
+				{ ...TRAC }
+			/>
+			<path d="M56 94h28v20Q70 124 56 114Z" fill="#f2c6a0" { ...TRAC } />
+			<path d="M54 113L70 134L86 113Z" fill="#fff" { ...TRAC } />
+			<circle cx="31" cy="72" r="7" fill="#f7d3b1" { ...TRAC } />
+			<circle cx="109" cy="72" r="7" fill="#f7d3b1" { ...TRAC } />
+			<ellipse
+				cx="70"
+				cy="66"
+				rx="40"
+				ry="42"
+				fill="#f7d3b1"
+				{ ...TRAC }
+			/>
+			<ellipse
+				cx="108"
+				cy="42"
+				rx="12"
+				ry="6.5"
+				transform="rotate(-28 108 42)"
+				fill="#d9392b"
+				{ ...TRAC }
+			/>
+			<ellipse
+				cx="108"
+				cy="56"
+				rx="12"
+				ry="6.5"
+				transform="rotate(28 108 56)"
+				fill="#d9392b"
+				{ ...TRAC }
+			/>
+			<path
+				d="M30 58Q28 22 70 22T110 58Q70 44 30 58Z"
+				fill="#d9392b"
+				{ ...TRAC }
+			/>
+			<g fill="#fff">
+				<circle cx="46" cy="38" r="3.2" />
+				<circle cx="70" cy="33" r="3.2" />
+				<circle cx="94" cy="38" r="3.2" />
+			</g>
+			<circle cx="107" cy="49" r="6" fill="#b82a1f" { ...TRAC } />
+			<path d="M63 68h14" fill="none" { ...TRAC } strokeWidth="3.5" />
 			<circle
-				cx="63"
-				cy="54"
-				r="9"
+				cx="52"
+				cy="70"
+				r={ radi }
 				fill="#fff"
-				stroke="#6b4f2a"
-				strokeWidth="2.5"
+				{ ...TRAC }
+				strokeWidth="3.5"
 			/>
 			<circle
-				cx={ estat === 'alerta' ? 65 : 63 }
-				cy="54"
-				r="3.5"
-				fill="#1b2a3a"
+				cx="88"
+				cy="70"
+				r={ radi }
+				fill="#fff"
+				{ ...TRAC }
+				strokeWidth="3.5"
 			/>
-			{ estat === 'alerta' && (
-				<path
-					d="M54 42 l16 -2"
-					stroke="#8a8a8a"
-					strokeWidth="3"
-					strokeLinecap="round"
-				/>
-			) }
-			{ /* arracada */ }
-			<circle
-				cx="18"
-				cy="64"
-				r="4"
+			<circle cx="52" cy={ 71 + baixa } r={ pupila } fill={ TINTA } />
+			<circle cx="88" cy={ 71 + baixa } r={ pupila } fill={ TINTA } />
+			<circle cx="53.6" cy={ 69.2 + baixa } r="1.6" fill="#fff" />
+			<circle cx="89.6" cy={ 69.2 + baixa } r="1.6" fill="#fff" />
+			<path
+				d="M68 78Q64 85 71 86"
 				fill="none"
-				stroke="#d4a017"
-				strokeWidth="2.5"
+				stroke="#d09a74"
+				strokeWidth="3.5"
+				strokeLinecap="round"
 			/>
-			{ /* galtes i boca */ }
-			<circle cx="40" cy="70" r="5" fill="#eaa38a" opacity="0.6" />
-			<circle cx="70" cy="70" r="5" fill="#eaa38a" opacity="0.6" />
-			<Boca estat={ estat } x={ 55 } y={ 74 } ample={ 16 } />
+			<ellipse
+				cx="42"
+				cy="90"
+				rx="7"
+				ry="5"
+				fill="#f19b86"
+				opacity=".55"
+			/>
+			<ellipse
+				cx="98"
+				cy="90"
+				rx="7"
+				ry="5"
+				fill="#f19b86"
+				opacity=".55"
+			/>
+			{ alerta && (
+				<>
+					<ellipse
+						cx="70"
+						cy="98"
+						rx="5.5"
+						ry="7"
+						fill="#7a2f26"
+						{ ...TRAC }
+						strokeWidth="3.5"
+					/>
+					<path
+						d="M122 74q-7 9 0 14q7-5 0-14Z"
+						fill="#7ec4dc"
+						{ ...TRAC }
+						strokeWidth="3"
+					/>
+				</>
+			) }
+			{ contenta && (
+				<path d="M55 92Q70 110 85 92Z" fill="#fff" { ...TRAC } />
+			) }
+			{ trista && (
+				<path d="M58 100Q70 90 82 100" fill="none" { ...TRAC } />
+			) }
+			{ ! alerta && ! contenta && ! trista && (
+				<path d="M57 93Q70 105 83 93" fill="none" { ...TRAC } />
+			) }
 		</svg>
 	);
 }
