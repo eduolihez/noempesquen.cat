@@ -194,7 +194,21 @@ const senseFullscreen = ( page ) =>
 			Promise.reject( new Error( 'test' ) );
 	} );
 
+/**
+ * Salta la presentació de la guia (cap avís programat surt abans de la fi de
+ * la intro + MS_TRAS_INTRO).
+ *
+ * @param {import('@playwright/test').Page} page
+ */
+async function saltaIntro( page ) {
+	await page
+		.getByRole( 'button', { name: 'Salta la presentació' } )
+		.first()
+		.click();
+}
+
 module.exports = {
+	saltaIntro,
 	test,
 	expect,
 	RESULTAT,
