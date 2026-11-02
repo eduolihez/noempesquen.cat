@@ -78,6 +78,31 @@ if ( ! defined( 'NEP_COMPTE_FINESTRA_REENVIA' ) ) {
 	define( 'NEP_COMPTE_FINESTRA_REENVIA', HOUR_IN_SECONDS );
 }
 
+/** Sol·licituds de recuperació per IP i finestra. */
+if ( ! defined( 'NEP_COMPTE_LIMIT_RECUPERA_IP' ) ) {
+	define( 'NEP_COMPTE_LIMIT_RECUPERA_IP', 5 );
+}
+
+/** Sol·licituds de recuperació per correu i finestra. */
+if ( ! defined( 'NEP_COMPTE_LIMIT_RECUPERA_EMAIL' ) ) {
+	define( 'NEP_COMPTE_LIMIT_RECUPERA_EMAIL', 3 );
+}
+
+/** Finestra del límit de sol·licitud de recuperació, en segons. */
+if ( ! defined( 'NEP_COMPTE_FINESTRA_RECUPERA' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_RECUPERA', HOUR_IN_SECONDS );
+}
+
+/** Intents de restabliment per IP i finestra. */
+if ( ! defined( 'NEP_COMPTE_LIMIT_RESTABLEIX' ) ) {
+	define( 'NEP_COMPTE_LIMIT_RESTABLEIX', 10 );
+}
+
+/** Finestra del límit de restabliment, en segons. */
+if ( ! defined( 'NEP_COMPTE_FINESTRA_RESTABLEIX' ) ) {
+	define( 'NEP_COMPTE_FINESTRA_RESTABLEIX', 15 * MINUTE_IN_SECONDS );
+}
+
 add_action(
 	'rest_api_init',
 	static function () {
@@ -115,6 +140,24 @@ add_action(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'permission_callback' => 'nep_compte_permis',
 				'callback'            => 'nep_rest_compte_reenvia_verificacio',
+			)
+		);
+		register_rest_route(
+			'noempesquen/v1',
+			'/compte/recupera',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => '__return_true',
+				'callback'            => 'nep_rest_compte_recupera',
+			)
+		);
+		register_rest_route(
+			'noempesquen/v1',
+			'/compte/restableix',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => '__return_true',
+				'callback'            => 'nep_rest_compte_restableix',
 			)
 		);
 		register_rest_route(
@@ -627,6 +670,114 @@ function nep_rest_compte_reenvia_verificacio() {
 			'enviat'    => $enviat,
 		)
 	);
+}
+
+/**
+ * Genera un token de recuperació nou (invalida l'anterior), el desa com a hash
+ * i envia el correu. Torna si el correu s'ha enviat.
+ *
+ * @param int $id Usuari.
+ * @return bool
+ */
+function nep_compte_envia_recuperacio( int $id ): bool {
+	$token    = nep_token_genera( $id, random_bytes( 32 ) );
+	$parsejat = nep_token_parseja( $token );
+	if ( null === $parsejat ) {
+		return false;
+	}
+	$registre = nep_token_registre( $parsejat['secret'], wp_salt( 'auth' ), time(), NEP_TTL_RECUPERA );
+	if ( array() === $registre ) {
+		return false;
+	}
+	update_user_meta( $id, 'nep_token_recupera', $registre );
+	return nep_correu_recuperacio( $id, $token );
+}
+
+/**
+ * Demana l'enllaç de recuperació (POST /compte/recupera). La resposta és sempre
+ * la mateixa: no revela si el correu existeix, és d'un jugador o està verificat.
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_compte_recupera( WP_REST_Request $request ) {
+	$resposta = static fn() => rest_ensure_response( array( 'enviat' => true ) );
+	if ( nep_compte_massa_gran( $request ) ) {
+		return $resposta();
+	}
+	$cos = nep_compte_cos_json( $request );
+	if ( is_wp_error( $cos ) ) {
+		return $cos;
+	}
+	$email      = $cos['email'] ?? null;
+	$email      = is_string( $email ) ? strtolower( trim( $email ) ) : '';
+	$clau_ip    = nep_clau_limit( 'recupera|' . nep_ip_client() );
+	$clau_email = nep_clau_limit( 'recupera-email|' . $email );
+	if ( nep_compte_limit_ple( $clau_ip, (int) NEP_COMPTE_LIMIT_RECUPERA_IP ) || nep_compte_limit_ple( $clau_email, (int) NEP_COMPTE_LIMIT_RECUPERA_EMAIL ) ) {
+		return nep_compte_massa_intents();
+	}
+	// Es compten tots els intents, existeixi o no el correu.
+	nep_compte_suma_intent( $clau_ip, (int) NEP_COMPTE_FINESTRA_RECUPERA );
+	nep_compte_suma_intent( $clau_email, (int) NEP_COMPTE_FINESTRA_RECUPERA );
+
+	$usuari = nep_valida_email( $email ) ? get_user_by( 'email', $email ) : false;
+	if ( $usuari instanceof WP_User && nep_es_jugador( $usuari ) && nep_compte_verificat( (int) $usuari->ID ) ) {
+		nep_compte_envia_recuperacio( (int) $usuari->ID );
+	} else {
+		// Treball equivalent (token, hash i cost de contrasenya) sense desar ni enviar res.
+		$fals = nep_token_parseja( nep_token_genera( 1, random_bytes( 32 ) ) );
+		nep_token_registre( $fals['secret'] ?? '', wp_salt( 'auth' ), time(), NEP_TTL_RECUPERA );
+		wp_check_password( '', nep_compte_hash_fals() );
+	}
+	return $resposta();
+}
+
+/**
+ * Canvia la contrasenya amb el token de l'enllaç (POST /compte/restableix).
+ * No inicia sessió: el jugador entra després amb /compte/entra.
+ *
+ * @param WP_REST_Request $request Petició.
+ * @return WP_REST_Response|WP_Error
+ */
+function nep_rest_compte_restableix( WP_REST_Request $request ) {
+	$generic = nep_compte_error( 'nep_token_invalid', __( 'L\'enllaç no és vàlid o ha caducat.', 'noempesquen' ), 400 );
+	if ( nep_compte_massa_gran( $request ) ) {
+		return $generic;
+	}
+	$cos = nep_compte_cos_json( $request );
+	if ( is_wp_error( $cos ) ) {
+		return $cos;
+	}
+	$clau = nep_clau_limit( 'restableix|' . nep_ip_client() );
+	if ( nep_compte_limit_ple( $clau, (int) NEP_COMPTE_LIMIT_RESTABLEIX ) ) {
+		return nep_compte_massa_intents();
+	}
+	nep_compte_suma_intent( $clau, (int) NEP_COMPTE_FINESTRA_RESTABLEIX );
+
+	// La contrasenya es valida abans de tocar el token: una de curta no el consumeix.
+	$pass = $cos['contrasenya'] ?? null;
+	if ( ! nep_valida_contrasenya( $pass ) ) {
+		return nep_compte_error( 'nep_contrasenya_invalida', __( 'La contrasenya ha de tenir entre 10 i 128 caràcters.', 'noempesquen' ), 400 );
+	}
+	$token = nep_token_parseja( $cos['token'] ?? null );
+	if ( null === $token ) {
+		return $generic;
+	}
+	// El hash es calcula sempre per igualar el temps.
+	nep_token_hash( $token['secret'], wp_salt( 'auth' ) );
+	$usuari   = get_userdata( $token['id'] );
+	$registre = $usuari instanceof WP_User ? get_user_meta( $usuari->ID, 'nep_token_recupera', true ) : null;
+	if ( ! $usuari instanceof WP_User || ! nep_es_jugador( $usuari ) || ! nep_token_valid( $registre, $token['secret'], wp_salt( 'auth' ), time() ) ) {
+		return $generic;
+	}
+	$id = (int) $usuari->ID;
+	wp_set_password( $pass, $id );
+	delete_user_meta( $id, 'nep_token_recupera' );
+	delete_user_meta( $id, 'nep_token_verifica' );
+	update_user_meta( $id, 'nep_email_verificat', time() );
+	// Cap sessió anterior (ni d'aquest navegador ni d'altres) continua vàlida.
+	WP_Session_Tokens::get_instance( $id )->destroy_all();
+	return rest_ensure_response( array( 'restablert' => true ) );
 }
 
 /**

@@ -61,3 +61,25 @@ function nep_correu_verificacio( $id_usuari, $token ): bool {
 		. __( 'Si no has creat tu el compte, ignora aquest missatge: no passarà res.', 'noempesquen' ) . "\n";
 	return nep_correu_envia( $usuari->user_email, __( 'Confirma el teu correu a No em pesquen', 'noempesquen' ), $cos );
 }
+
+/**
+ * Envia el correu de recuperació de contrasenya amb l'enllaç del token.
+ * No esmenta la contrasenya actual.
+ *
+ * @param int    $id_usuari Usuari.
+ * @param string $token     Token "<id>.<hex>".
+ * @return bool
+ */
+function nep_correu_recuperacio( $id_usuari, $token ): bool {
+	$usuari = get_userdata( (int) $id_usuari );
+	if ( ! $usuari instanceof WP_User || ! is_string( $token ) || '' === $token ) {
+		return false;
+	}
+	$enllac = home_url( '/compte/?restableix=' . $token );
+	$cos    = __( 'Hola!', 'noempesquen' ) . "\n\n"
+		. __( 'Has demanat restablir la contrasenya del teu compte a No em pesquen. Tria\'n una de nova amb aquest enllaç:', 'noempesquen' ) . "\n\n"
+		. $enllac . "\n\n"
+		. __( 'L\'enllaç caduca d\'aquí a 1 hora i només es pot fer servir un cop.', 'noempesquen' ) . "\n\n"
+		. __( 'Si no ho has demanat tu, ignora aquest missatge: no passarà res.', 'noempesquen' ) . "\n";
+	return nep_correu_envia( $usuari->user_email, __( 'Restableix la contrasenya a No em pesquen', 'noempesquen' ), $cos );
+}
