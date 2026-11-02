@@ -341,6 +341,16 @@ function nep_compte_resposta_connectat( array $progres ): WP_REST_Response {
 }
 
 /**
+ * Registra al log del servidor per què s'ha rebutjat una alta (només un codi, mai dades).
+ *
+ * @param string $causa Codi curt de la causa.
+ */
+function nep_compte_log_alta( $causa ) {
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	error_log( '[noempesquen] alta rebutjada: ' . preg_replace( '/[^a-z0-9_]/i', '', (string) $causa ) );
+}
+
+/**
  * Alta d'un compte de jugador (POST /compte/registre).
  *
  * @param WP_REST_Request $request Petició.
@@ -349,10 +359,12 @@ function nep_compte_resposta_connectat( array $progres ): WP_REST_Response {
 function nep_rest_compte_registre( WP_REST_Request $request ) {
 	$generic = nep_compte_error( 'nep_alta_invalida', __( 'No s\'ha pogut crear el compte. Revisa les dades.', 'noempesquen' ), 400 );
 	if ( nep_compte_massa_gran( $request ) ) {
+		nep_compte_log_alta( 'cos_gran' );
 		return $generic;
 	}
 	$cos = nep_compte_cos_json( $request );
 	if ( is_wp_error( $cos ) ) {
+		nep_compte_log_alta( 'cos_no_json' );
 		return $cos;
 	}
 	$clau_ip     = nep_clau_limit( 'registre|' . nep_ip_client() );
@@ -368,7 +380,16 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		'acepta'       => $cos['acepta'] ?? null,
 		'majoria_edat' => $cos['majoria_edat'] ?? null,
 	);
-	if ( ! nep_valida_email( $email ) || ! nep_valida_contrasenya( $pass ) || ! nep_consentiment_valid( $dades ) ) {
+	if ( ! nep_valida_email( $email ) ) {
+		nep_compte_log_alta( 'email_invalid' );
+		return $generic;
+	}
+	if ( ! nep_valida_contrasenya( $pass ) ) {
+		nep_compte_log_alta( 'contrasenya_invalida' );
+		return $generic;
+	}
+	if ( ! nep_consentiment_valid( $dades ) ) {
+		nep_compte_log_alta( 'consentiment_invalid' );
 		return $generic;
 	}
 	// El comptador global només suma cossos vàlids (les peticions buides no l'omplen).
@@ -376,6 +397,7 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 	if ( email_exists( $email ) ) {
 		// Mateix cost que una alta real: el temps no revela si el correu existeix.
 		wp_hash_password( $pass );
+		nep_compte_log_alta( 'email_existent' );
 		return $generic;
 	}
 
@@ -387,6 +409,7 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		}
 	}
 	if ( '' === $login ) {
+		nep_compte_log_alta( 'sense_login' );
 		return $generic;
 	}
 	$id = wp_insert_user(
@@ -398,6 +421,7 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		)
 	);
 	if ( is_wp_error( $id ) ) {
+		nep_compte_log_alta( 'insert_' . $id->get_error_code() );
 		return $generic;
 	}
 	update_user_meta(
@@ -411,6 +435,7 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 	$destrueix_previa = nep_compte_sessio_previa();
 	$usuari           = nep_compte_inicia_sessio( (int) $id );
 	if ( is_wp_error( $usuari ) ) {
+		nep_compte_log_alta( 'sessio_' . $usuari->get_error_code() );
 		return $generic;
 	}
 	$destrueix_previa();
