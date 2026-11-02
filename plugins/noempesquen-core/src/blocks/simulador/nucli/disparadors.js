@@ -19,19 +19,22 @@ export function segonsDeMs( ms ) {
 }
 
 /**
- * En acabar la intro, endarrereix tots els pendents el mateix (si cal) perquè
- * el primer no surti abans de `temps + MS_TRAS_INTRO`. Desplaçar-los junts
- * conserva el ritme entre avisos (no s'amunteguen).
+ * En acabar la intro, endarrereix tots els pendents d'`inici` el mateix (si
+ * cal) perquè el primer no surti abans de `temps + MS_TRAS_INTRO`.
+ * Desplaçar-los junts conserva el ritme entre avisos (no s'amunteguen). Els
+ * pendents d'altres esdeveniments (p. ex. els dels tutorials, que guien el
+ * jugador abans de la presentació) no s'esperen a la intro.
  *
  * @param {Object} estat Estat en el moment d'acabar la intro.
  * @return {Object} Nou estat.
  */
 export function desplacaPendents( estat ) {
 	const pendents = estat.pendents ?? [];
-	if ( ! pendents.length ) {
+	const dInici = pendents.filter( ( p ) => p.inici );
+	if ( ! dInici.length ) {
 		return estat;
 	}
-	const primer = Math.min( ...pendents.map( ( p ) => p.quan ) );
+	const primer = Math.min( ...dInici.map( ( p ) => p.quan ) );
 	const minim = estat.temps + segonsDeMs( MS_TRAS_INTRO );
 	const delta = minim - primer;
 	if ( delta <= 0 ) {
@@ -39,7 +42,9 @@ export function desplacaPendents( estat ) {
 	}
 	return {
 		...estat,
-		pendents: pendents.map( ( p ) => ( { ...p, quan: p.quan + delta } ) ),
+		pendents: pendents.map( ( p ) =>
+			p.inici ? { ...p, quan: p.quan + delta } : p
+		),
 	};
 }
 
@@ -232,7 +237,11 @@ export function processaEsdeveniment( missio, estat, nom, dades = {} ) {
 				...actual,
 				pendents: [
 					...actual.pendents,
-					{ id: d.id, quan: actual.temps + espera },
+					{
+						id: d.id,
+						quan: actual.temps + espera,
+						...( nom === 'inici' ? { inici: true } : {} ),
+					},
 				],
 			};
 		} else {
@@ -257,9 +266,10 @@ export function avancaTemps( missio, estat, segons, limit ) {
 	}
 	const temps = estat.temps + segons;
 	let actual = { ...estat, temps };
-	// Durant la intro no surt cap avís programat: s'esperen i, en acabar-la,
-	// `desplacaPendents` els endarrereix el que calgui.
-	const toca = ( p ) => actual.introAcabada && p.quan <= temps;
+	// Durant la intro no surt cap avís programat des de l'`inici`: s'esperen
+	// i, en acabar-la, `desplacaPendents` els endarrereix el que calgui.
+	const toca = ( p ) =>
+		( actual.introAcabada || ! p.inici ) && p.quan <= temps;
 	const vencuts = actual.pendents.filter( toca );
 	actual = {
 		...actual,

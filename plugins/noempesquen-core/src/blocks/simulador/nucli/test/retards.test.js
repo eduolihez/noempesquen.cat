@@ -108,20 +108,22 @@ describe( "moment d'un avís", () => {
 		const e = desplacaPendents( {
 			temps: 30,
 			pendents: [
-				{ id: 'a', quan: 8 },
-				{ id: 'b', quan: 22 },
-				{ id: 'c', quan: 38 },
+				{ id: 'a', quan: 8, inici: true },
+				{ id: 'b', quan: 22, inici: true },
+				{ id: 'c', quan: 38, inici: true },
+				{ id: 'd', quan: 31 },
 			],
 		} );
 		expect( e.pendents.map( ( p ) => p.quan ) ).toEqual( [
 			30 + MARGE,
 			44 + MARGE,
 			60 + MARGE,
+			31,
 		] );
 	} );
 
 	it( 'si ja surten prou tard, no els toca', () => {
-		const e = { temps: 1, pendents: [ { id: 'a', quan: 8 } ] };
+		const e = { temps: 1, pendents: [ { id: 'a', quan: 8, inici: true } ] };
 		expect( desplacaPendents( e ) ).toBe( e );
 	} );
 } );
