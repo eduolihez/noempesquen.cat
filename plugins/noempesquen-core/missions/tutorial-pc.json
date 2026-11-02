@@ -56,14 +56,14 @@
 			"id": "botons-finestra",
 			"ancora": "botons-finestra",
 			"titol": "Els botons de la finestra",
-			"text": "Cada finestra té tres botons a dalt a la dreta. La ratlla l'amaga a la barra. El quadre la fa gran. La creu la tanca.",
+			"text": "Cada finestra té tres botons a dalt a la dreta: Minimitza (la ratlla) l'amaga a la barra, Maximitza (el quadre) la fa gran i Tanca (la creu) la tanca.",
 			"continua": "boto"
 		},
 		{
 			"id": "tanca",
 			"ancora": "finestra-navegador",
 			"titol": "Tanca una finestra",
-			"text": "Prova-ho: tanca el Navegador amb la creu de dalt a la dreta.",
+			"text": "Prova-ho: tanca el Navegador amb el botó Tanca, la creu de dalt a la dreta. Si fas servir el teclat: Tab per moure't, Esc per pausar.",
 			"continua": {
 				"esdeveniment": "finestra.tanca",
 				"app": "navegador"
@@ -110,7 +110,7 @@
 			"id": "campana",
 			"ancora": "rellotge",
 			"titol": "La campana",
-			"text": "Els avisos marxen sols al cap d'una estona. Si se t'escapa algun, el trobaràs aquí, a la campana.",
+			"text": "Els avisos marxen sols al cap d'una estona. Si se t'escapa algun, el trobaràs a la campana, al costat de l'hora, a baix a la dreta.",
 			"continua": "boto"
 		},
 		{
@@ -142,7 +142,7 @@
 			"id": "enllac",
 			"ancora": "enllacos",
 			"titol": "Els enllaços",
-			"text": "Els enllaços porten a una altra web. Si hi passes el ratolí per sobre, a baix del Navegador veuràs on porten de veritat.",
+			"text": "Els enllaços porten a una altra web. Si hi passes el ratolí per sobre, o hi arribes amb Tab, a baix del Navegador veuràs on porten de veritat.",
 			"continua": "boto"
 		},
 		{
@@ -195,7 +195,7 @@
 			"id": "decisio",
 			"ancora": "decisio",
 			"titol": "Decideix",
-			"text": "Fes clic a «Ja ho tinc clar» i tria què en fas. A les missions, decidir bé dona més punts que trobar indicis; aquí no puntua.",
+			"text": "Fes clic a «Ja ho tinc clar» i després a l'opció que surt, «Ja ho tinc clar: és un correu de mentida». A les missions, decidir bé dona més punts que trobar indicis; aquí no puntua.",
 			"continua": {
 				"esdeveniment": "decisio.pren"
 			}
