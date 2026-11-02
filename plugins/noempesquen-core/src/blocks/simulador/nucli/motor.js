@@ -3,7 +3,11 @@
  * Reductor immutable.
  */
 
-import { processaEsdeveniment, avancaTemps } from './disparadors.js';
+import {
+	processaEsdeveniment,
+	avancaTemps,
+	desplacaPendents,
+} from './disparadors.js';
 import { senseWww } from '../apps/navegador/historial.js';
 import { SEGONS_PISTA } from './temps.js';
 
@@ -166,12 +170,18 @@ function seguentIntro( missio, estat ) {
 	if ( pas < missio.intro.length ) {
 		return afegeixGuia( { ...jo, introPas: pas }, missio.intro[ pas ] );
 	}
-	return afegeixGuia( { ...jo, introAcabada: true }, missio.instruccions );
+	return afegeixGuia(
+		desplacaPendents( { ...jo, introAcabada: true } ),
+		missio.instruccions
+	);
 }
 
 function saltaIntro( missio, estat ) {
 	return afegeixGuia(
-		{ ...afegeixJo( estat, TEXT_SALTA ), introAcabada: true },
+		desplacaPendents( {
+			...afegeixJo( estat, TEXT_SALTA ),
+			introAcabada: true,
+		} ),
 		missio.instruccions
 	);
 }

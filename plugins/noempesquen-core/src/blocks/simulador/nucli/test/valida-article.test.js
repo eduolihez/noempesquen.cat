@@ -34,7 +34,7 @@ const web = () => ( {
 		},
 	],
 	avis: {
-		retard: 4000,
+		retard_ms: 4000,
 		titol: 'Virus detectat!',
 		cos: [ { t: 'El teu ordinador està en perill.', senyal: 'alarma' } ],
 		telefon: '900 000 000',
@@ -171,14 +171,22 @@ describe( 'validaMissio: plantilla article', () => {
 		);
 	} );
 
-	it( 'retard ha de ser un nombre ≥ 0', () => {
-		[ -1, '4000', undefined, Infinity ].forEach( ( retard ) => {
+	it( 'retard_ms ha de ser un enter ≥ 0', () => {
+		[ -1, '4000', undefined, Infinity, 1.5 ].forEach( ( retard ) => {
 			const m = fixture();
-			w( m ).avis.retard = retard;
+			w( m ).avis.retard_ms = retard;
 			expect( errors( m ) ).toContain(
-				`article ${ DOMINI }.avis: «retard» ha de ser un nombre ≥ 0`
+				`article ${ DOMINI }.avis: «retard_ms» ha de ser un enter ≥ 0`
 			);
 		} );
+	} );
+
+	it( 'rebutja el camp vell retard (usa retard_ms)', () => {
+		const m = fixture();
+		w( m ).avis.retard = 4000;
+		expect( errors( m ) ).toContain(
+			`article ${ DOMINI }.avis: «retard» ja no s'accepta: usa retard_ms (mil·lisegons)`
+		);
 	} );
 
 	it( 'exigeix els textos de l’avís i un instal_la coherent', () => {

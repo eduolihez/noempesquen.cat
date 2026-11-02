@@ -5,6 +5,11 @@
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
 import { existeixIlustracio } from '../ui/ilustracions-ids';
 import { senseWww } from '../apps/navegador/historial';
+import {
+	MS_TRAS_INTRO,
+	MS_MIN_AVISOS_NIVELL_1,
+	MS_MIN_AVISOS_NIVELL_2_3,
+} from './temps';
 
 export const APPS_PC = CLAUS_APPS_PC;
 export const APPS_MOBIL = CLAUS_APPS_MOBIL;
@@ -267,6 +272,12 @@ function validaEfecte( e, opcions, frases, idsApps, xats, errors ) {
 		} else if ( e.xat !== undefined && ! xats[ e.app ].has( e.xat ) ) {
 			errors.push( `notifica: xat inexistent a ${ e.app }: ${ e.xat }` );
 		}
+		if (
+			e.so !== undefined &&
+			! [ 'missatge', 'alerta' ].includes( e.so )
+		) {
+			errors.push( `notifica: so invàlid: ${ e.so }` );
+		}
 		const font = e.font === 'mobil' ? APPS_MISSIO.mobil : FONTS_NOTIFICACIO;
 		if ( e.font !== undefined && e.font !== 'mobil' ) {
 			errors.push( `notifica: font invàlida: ${ e.font }` );
@@ -284,6 +295,79 @@ function validaEfecte( e, opcions, frases, idsApps, xats, errors ) {
 		}
 	}
 	return e.tipus === 'pescat';
+}
+
+const esRetardMs = ( v ) => Number.isInteger( v ) && v >= 0;
+
+// Un disparador «avisa» si fa aparèixer alguna cosa (notificació o element).
+const esAvis = ( d ) =>
+	llista( d.efectes ).some(
+		( e ) => e?.tipus === 'notifica' || e?.tipus === 'mostra'
+	);
+
+/**
+ * Valida el retard d'un disparador (`retard_ms`): rebutja el camp vell
+ * `retard` i, als d'`inici` que avisen, exigeix el marge de després de la intro.
+ *
+ * @param {Object}   d      Disparador.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaRetardDisparador( d, errors ) {
+	const ref = `disparador ${ d.id }`;
+	if ( Object.hasOwn( d, 'retard' ) ) {
+		errors.push(
+			`${ ref }: «retard» ja no s'accepta: usa retard_ms (mil·lisegons)`
+		);
+	}
+	if ( d.retard_ms === undefined ) {
+		return;
+	}
+	if ( ! esRetardMs( d.retard_ms ) ) {
+		errors.push( `${ ref }: «retard_ms» ha de ser un enter ≥ 0` );
+		return;
+	}
+	if (
+		d.quan?.esdeveniment === 'inici' &&
+		esAvis( d ) &&
+		d.retard_ms < MS_TRAS_INTRO
+	) {
+		errors.push(
+			`${ ref }: un avís d'inici necessita retard_ms ≥ ${ MS_TRAS_INTRO } (després de la intro)`
+		);
+	}
+}
+
+/**
+ * Ritme per nivell: entre avisos consecutius d'un mateix origen (mateix
+ * `quan`) hi ha d'haver almenys el mínim del nivell.
+ *
+ * @param {Object}   m      Missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaRitmeAvisos( m, errors ) {
+	const minim =
+		m.nivell === 2 || m.nivell === 3
+			? MS_MIN_AVISOS_NIVELL_2_3
+			: MS_MIN_AVISOS_NIVELL_1;
+	const grups = new Map();
+	llista( m.disparadors )
+		.filter( ( d ) => d && typeof d === 'object' && esAvis( d ) )
+		.forEach( ( d ) => {
+			const ms = esRetardMs( d.retard_ms ) ? d.retard_ms : 0;
+			const clau = JSON.stringify( d.quan ?? null );
+			grups.set( clau, [ ...( grups.get( clau ) ?? [] ), { d, ms } ] );
+		} );
+	grups.forEach( ( avisos ) => {
+		avisos.sort( ( a, b ) => a.ms - b.ms );
+		for ( let i = 1; i < avisos.length; i++ ) {
+			const dif = avisos[ i ].ms - avisos[ i - 1 ].ms;
+			if ( dif < minim ) {
+				errors.push(
+					`disparador ${ avisos[ i ].d.id }: només ${ dif } ms després de ${ avisos[ i - 1 ].d.id } (mínim del nivell ${ m.nivell }: ${ minim } ms)`
+				);
+			}
+		}
+	} );
 }
 
 function validaDisparadors( m, mon, errors ) {
@@ -315,6 +399,7 @@ function validaDisparadors( m, mon, errors ) {
 			errors.push( 'disparador invàlid' );
 			return;
 		}
+		validaRetardDisparador( d, errors );
 		const ev = d.quan?.esdeveniment;
 		if ( ! ESDEVENIMENTS.includes( ev ) ) {
 			errors.push( `esdeveniment desconegut: ${ ev }` );
@@ -352,6 +437,7 @@ function validaDisparadors( m, mon, errors ) {
 			}
 		} );
 	} );
+	validaRitmeAvisos( m, errors );
 	// Un tutorial no té cap camí de pescat: només ensenya a fer servir el sistema.
 	if ( ! hiHaPescat && m.tutorial !== true ) {
 		errors.push( 'cap camí de pescat' );
@@ -800,12 +886,13 @@ function validaAvisArticle( avis, ref, errors ) {
 		errors.push( `${ ref }: ha de ser un objecte` );
 		return;
 	}
-	if (
-		typeof avis.retard !== 'number' ||
-		! Number.isFinite( avis.retard ) ||
-		avis.retard < 0
-	) {
-		errors.push( `${ ref }: «retard» ha de ser un nombre ≥ 0` );
+	if ( Object.hasOwn( avis, 'retard' ) ) {
+		errors.push(
+			`${ ref }: «retard» ja no s'accepta: usa retard_ms (mil·lisegons)`
+		);
+	}
+	if ( ! esRetardMs( avis.retard_ms ) ) {
+		errors.push( `${ ref }: «retard_ms» ha de ser un enter ≥ 0` );
 	}
 	campsText(
 		avis,

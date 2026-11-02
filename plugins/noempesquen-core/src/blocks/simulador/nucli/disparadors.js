@@ -4,6 +4,44 @@
  */
 import { FASE, afegeixGuia } from './motor.js';
 import { senseWww } from '../apps/navegador/historial.js';
+import { MS_TICK, MS_TRAS_INTRO } from './temps.js';
+
+/**
+ * Segons de joc (ticks) que cal esperar per a un retard en mil·lisegons,
+ * arrodonint amunt: 8000 → 8; 1 → 1; 0 o no vàlid → 0.
+ *
+ * @param {*} ms Retard en ms.
+ * @return {number} Segons de joc.
+ */
+export function segonsDeMs( ms ) {
+	const n = Number( ms );
+	return Number.isFinite( n ) && n > 0 ? Math.ceil( n / MS_TICK ) : 0;
+}
+
+/**
+ * En acabar la intro, endarrereix tots els pendents el mateix (si cal) perquè
+ * el primer no surti abans de `temps + MS_TRAS_INTRO`. Desplaçar-los junts
+ * conserva el ritme entre avisos (no s'amunteguen).
+ *
+ * @param {Object} estat Estat en el moment d'acabar la intro.
+ * @return {Object} Nou estat.
+ */
+export function desplacaPendents( estat ) {
+	const pendents = estat.pendents ?? [];
+	if ( ! pendents.length ) {
+		return estat;
+	}
+	const primer = Math.min( ...pendents.map( ( p ) => p.quan ) );
+	const minim = estat.temps + segonsDeMs( MS_TRAS_INTRO );
+	const delta = minim - primer;
+	if ( delta <= 0 ) {
+		return estat;
+	}
+	return {
+		...estat,
+		pendents: pendents.map( ( p ) => ( { ...p, quan: p.quan + delta } ) ),
+	};
+}
 
 function hostname( valor ) {
 	try {
@@ -100,6 +138,7 @@ function aplicaEfecte( missio, estat, efecte ) {
 						...( efecte.xat ? { xat: efecte.xat } : {} ),
 						llegida: false,
 						...( efecte.font ? { font: efecte.font } : {} ),
+						...( efecte.so ? { so: efecte.so } : {} ),
 					},
 				],
 			};
@@ -187,12 +226,13 @@ export function processaEsdeveniment( missio, estat, nom, dades = {} ) {
 			executats: [ ...actual.executats, d.id ],
 			ultimAvanc: actual.temps,
 		};
-		if ( d.retard > 0 ) {
+		const espera = segonsDeMs( d.retard_ms );
+		if ( espera > 0 ) {
 			actual = {
 				...actual,
 				pendents: [
 					...actual.pendents,
-					{ id: d.id, quan: actual.temps + d.retard },
+					{ id: d.id, quan: actual.temps + espera },
 				],
 			};
 		} else {
@@ -217,10 +257,13 @@ export function avancaTemps( missio, estat, segons, limit ) {
 	}
 	const temps = estat.temps + segons;
 	let actual = { ...estat, temps };
-	const vencuts = actual.pendents.filter( ( p ) => p.quan <= temps );
+	// Durant la intro no surt cap avís programat: s'esperen i, en acabar-la,
+	// `desplacaPendents` els endarrereix el que calgui.
+	const toca = ( p ) => actual.introAcabada && p.quan <= temps;
+	const vencuts = actual.pendents.filter( toca );
 	actual = {
 		...actual,
-		pendents: actual.pendents.filter( ( p ) => p.quan > temps ),
+		pendents: actual.pendents.filter( ( p ) => ! toca( p ) ),
 	};
 	for ( const p of vencuts ) {
 		if ( actual.fase !== FASE.JOC ) {

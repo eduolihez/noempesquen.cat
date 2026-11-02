@@ -15,6 +15,12 @@ export const MAX_TOASTS = 3;
 export const MAX_BANNERS = 2;
 
 export const MS_ENTRE_AVISOS = 700;
+// Cap avís programat surt abans d'acabar la intro + aquest marge.
+export const MS_TRAS_INTRO = 1500;
+// Ritme mínim entre avisos consecutius d'un mateix disparador d'origen
+// (mateix `quan`), per nivell: el nivell 1 respira més.
+export const MS_MIN_AVISOS_NIVELL_1 = 4000;
+export const MS_MIN_AVISOS_NIVELL_2_3 = 2500;
 export const MS_AVIS_BASE = 4000;
 export const MS_AVIS_PER_CARACTER = 60;
 export const MS_AVIS_MAX = 9000;

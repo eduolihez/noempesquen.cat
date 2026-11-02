@@ -1,5 +1,5 @@
 /**
- * Lògica pura del retard de l'avís de la plantilla `article`: sense JSX ni
+ * Lògica pura del retard (`retard_ms`) de l'avís de la plantilla `article`: sense JSX ni
  * DOM. El temps és el del joc (`estat.temps`, en segons), que no avança amb
  * la partida en pausa.
  */
