@@ -188,6 +188,8 @@ Camp opcional booleà. Una missió amb `tutorial: true` ensenya a fer servir el 
   - **Esdeveniment `pas.entra`**: en entrar en un pas (el 0 en desbloquejar, i en cada avanç) el motor processa `{ esdeveniment: "pas.entra", pas: "<id>" }` contra els disparadors; així `quan: { "esdeveniment": "pas.entra", "pas": "x" }` pot fer `mostra`, `notifica`, `guia-diu`... Aquest esdeveniment sintètic no avança passos (no hi ha bucles). El `pas` d'un disparador ha d'existir.
   - **Salt**: `PAS_SALTA` aplica, en ordre, els `pas.entra` dels passos que quedaven perquè el correu, les notificacions, etc. existeixin (cada disparador només s'executa una vegada) i deixa `pas = passos.length`.
   - **Intro opcional**: amb `passos`, `intro` pot faltar o ser buida (la substitueix l'overlay); el motor arrenca amb `introAcabada = true` i no mostra `intro[0]` pel xat. Sense `passos`, `intro` continua sent obligatòria.
+  - **`continua` d'esdeveniment**: ha de ser un esdeveniment que el jugador emet (de `ESDEVENIMENTS`); `inici` i `pas.entra` es rebutgen (el tutorial quedaria encallat; per això el pas 0 no pot esperar `inici`). Si hi ha `app`, ha de ser una app del dispositiu. Un disparador `pas.entra` exigeix `passos` i un `pas` (text) existent.
+  - **Pas saltat**: `PAS_SALTA` no executa els efectes d'esdeveniments reals dels passos saltats; un disparador no ha de dependre d'accions prèvies del jugador.
   - **Pistes**: mentre `pas < passos.length` no hi ha pistes automàtiques per temps.
 
   ```json
