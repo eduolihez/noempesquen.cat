@@ -25,7 +25,7 @@ Decidido en T09c: `/ca/simulador/` es una página nueva y la `/simulador/` de si
 1. **Copia de BD** (phpMyAdmin/panel de Dinahosting: exportar) y copia del `.htaccess` actual y de `wp-content/plugins/noempesquen-core` y `themes/noempesquen`. Anota el hash/zip actual desplegado.
 2. **Zip:** `npm ci && npm run build && npm run empaqueta`. Salida en `dist/`. Guarda aparte el zip anterior (rollback).
 3. **Subir plugin y tema** (wp-admin > Plugins/Temas > «Reemplaza el instalado»; completar el paso de confirmación). Activar el plugin si hace falta.
-4. **Migración de páginas:** automática (ver «Migración de páginas» abajo). Basta con cargar cualquier página o el escritorio de wp-admin una vez tras subir el zip. Comprobar en wp-admin > Páginas que existen los slugs de la tabla y que la página `ca` tiene las seis hijas.
+4. **Migración de páginas:** automática (ver «Migración de páginas» abajo). Tras subir el zip, cargar wp-admin (Escritorio) una vez: las páginas públicas pueden salir de Varnish sin llegar a PHP. Comprobar en wp-admin > Páginas que existen los slugs de la tabla y que la página `ca` tiene las seis hijas.
 5. **Flush de rewrites:** lo hace la migración. Si algo da 404, wp-admin > Ajustes > Enlaces permanentes > Guardar (sin cambiar nada); repetirlo no daña.
 6. **Smoke sin 301:** `node scripts/comprova-i18n.mjs https://noempesquen.cat --sense-301`. Debe salir 0 (aviso DUBTE aceptable). Si falla, no sigas al paso 7.
 7. **Insertar 301:** pegar el bloque `# BEGIN nep-i18n … # END nep-i18n` de `docs/i18n-redireccions.htaccess` en el `.htaccess` de la raíz, antes de `# BEGIN WordPress`.
@@ -46,7 +46,8 @@ Decidido en T09c: `/ca/simulador/` es una página nueva y la `/simulador/` de si
 Código: `plugins/noempesquen-core/includes/migracio-pagines.php`. Mapa de slugs: `nep_pagines()` (`includes/idioma-nucli.php`), la única fuente; el tema la usa vía `nep_tema_pagines()`.
 
 - **Cuándo corre:** en `init` (prioridad 99) si la opción `nep_versio_pagines` es menor que `NEP_VERSIO_PAGINES`, y al activar el plugin. Sin WP-CLI. No va en `plugins_loaded` porque ahí aún no existen los tipos de contenido ni `$wp_rewrite`.
-- **Candado:** la opción `nep_migracio_pagines_bloqueig` evita que dos peticiones simultáneas creen duplicados; caduca a los 5 minutos.
+- **Candado:** la opción `nep_migracio_pagines_bloqueig`, tomada con `INSERT IGNORE` (atómico; `add_option` no lo es), evita que dos peticiones simultáneas creen duplicados. Caduca a los 5 minutos.
+- **Sin kses durante la migración:** la primera petición puede ser anónima; reparentar no debe filtrar el HTML de las páginas existentes.
 - **Qué hace, en orden:**
   1. Crea la página `ca` (plantilla `page-ca.html` por slug) si no existe.
   2. Para cada página CA: si `/ca/<slug>/` ya existe, nada. Si existe la antigua `/<slug>/` en raíz, la mueve bajo `ca` conservando ID y contenido. Si no, la crea.

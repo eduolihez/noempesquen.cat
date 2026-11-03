@@ -47,12 +47,31 @@ $nep_estat_pagines = static function (): array {
 	return $estat;
 };
 
+wp_set_current_user( 1 );
+
+// Primera execució en un lloc buit: es creen totes les pàgines.
+$nep_neteja_pagines();
+update_option( 'show_on_front', 'posts' );
+update_option( 'page_on_front', 0 );
+delete_option( 'nep_versio_pagines' );
+nep_actualitza_pagines();
+$nep_comprova( get_page_by_path( 'ca' ) instanceof WP_Post, 'pàgines (lloc buit): pàgina `ca` creada' );
+foreach ( nep_pagines() as $nep_clau_p => $nep_slugs_p ) {
+	if ( 'inici' !== $nep_clau_p ) {
+		$nep_comprova( get_page_by_path( 'ca/' . $nep_slugs_p['ca'] ) && get_page_by_path( $nep_slugs_p['es'] ), "pàgines (lloc buit): parella $nep_clau_p creada" );
+	}
+}
+$nep_comprova( has_block( 'noempesquen/simulador', get_page_by_path( 'simulador' ) ) && has_block( 'noempesquen/simulador', get_page_by_path( 'ca/simulador' ) ), 'pàgines (lloc buit): bloc del simulador en ES i CA' );
+$nep_comprova( 'page' === get_option( 'show_on_front' ) && get_page_by_path( 'inicio' )->ID === (int) get_option( 'page_on_front' ), 'pàgines (lloc buit): portada = `inicio`' );
+$nep_comprova( NEP_VERSIO_PAGINES === (int) get_option( 'nep_versio_pagines' ), 'pàgines (lloc buit): versió desada' );
+
 // Punt de partida: el lloc català antic (pàgines a l'arrel, portada d'entrades).
 $nep_neteja_pagines();
 $nep_velles = array();
+$nep_html_a_ma = '<!-- wp:html --><iframe src="https://example.org/" title="Prova"></iframe><!-- /wp:html -->';
 foreach ( array(
 	'simulador'         => '<!-- wp:noempesquen/simulador {"align":"wide"} /-->',
-	'com-funciona'      => '',
+	'com-funciona'      => $nep_html_a_ma,
 	'missions'          => '',
 	'compte'            => '<!-- wp:noempesquen/compte /-->',
 	'contacte'          => '',
@@ -64,7 +83,11 @@ update_option( 'show_on_front', 'posts' );
 update_option( 'page_on_front', 0 );
 delete_option( 'nep_versio_pagines' );
 
+// Migra una petició anònima (com a producció): kses no ha de tocar el contingut.
+wp_set_current_user( 0 );
 nep_actualitza_pagines();
+wp_set_current_user( 1 );
+$nep_comprova( get_post_field( 'post_content', $nep_velles['com-funciona'] ) === $nep_html_a_ma, 'pàgines: reparentar en una petició anònima conserva l\'HTML editat a mà' );
 
 $nep_pare = get_page_by_path( 'ca' );
 $nep_comprova( $nep_pare instanceof WP_Post && 0 === (int) $nep_pare->post_parent, 'pàgines: existeix la pàgina pare `ca` a l\'arrel' );

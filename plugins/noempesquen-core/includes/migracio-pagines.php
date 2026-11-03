@@ -190,12 +190,11 @@ function nep_actualitza_pagines(): void {
 		return;
 	}
 	$candau = 'nep_migracio_pagines_bloqueig';
-	if ( ! add_option( $candau, time(), '', false ) ) {
-		if ( time() - (int) get_option( $candau ) < 300 ) {
-			return;
-		}
-		update_option( $candau, time(), false );
+	if ( ! nep_pren_candau( $candau, 300 ) ) {
+		return;
 	}
+	// Sense kses: si migra una petició anònima, reparentar no ha de filtrar el contingut existent.
+	kses_remove_filters();
 	try {
 		$registre = nep_migra_pagines();
 		$errors   = array_filter( $registre, static fn( $r ) => str_starts_with( $r, 'error:' ) );
@@ -211,8 +210,35 @@ function nep_actualitza_pagines(): void {
 			error_log( '[noempesquen] migració de pàgines: ' . implode( ', ', $registre ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Només slugs.
 		}
 	} finally {
+		kses_init();
 		delete_option( $candau );
 	}
+}
+
+/**
+ * Pren un candau atòmic a la taula d'opcions (`add_option` fa `ON DUPLICATE KEY
+ * UPDATE` i no serveix). Un candau més vell que `$caducitat` segons es pot robar.
+ *
+ * @param string $nom       Nom de l'opció.
+ * @param int    $caducitat Segons.
+ * @return bool Si s'ha pres.
+ */
+function nep_pren_candau( string $nom, int $caducitat ): bool {
+	global $wpdb;
+	$ara   = (string) time();
+	$files = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off')", $nom, $ara ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	if ( 1 === $files ) {
+		wp_cache_delete( $nom, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		return true;
+	}
+	$vell = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $nom ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	if ( null === $vell || time() - (int) $vell < $caducitat ) {
+		return false;
+	}
+	$files = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", $ara, $nom, $vell ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	wp_cache_delete( $nom, 'options' );
+	return 1 === $files;
 }
 add_action( 'init', 'nep_actualitza_pagines', 99 );
 
