@@ -1,0 +1,574 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: No em pesquen – Nucli\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: noempesquen\n"
+
+#: themes/noempesquen/patterns/capcalera.php:14 themes/noempesquen/patterns/com-funciona.php:24 themes/noempesquen/patterns/peu.php:14 themes/noempesquen/patterns/portada.php:54
+msgctxt "tema"
+msgid "Com funciona"
+msgstr "Cómo funciona"
+
+#: themes/noempesquen/patterns/capcalera.php:15 themes/noempesquen/patterns/missions.php:49 themes/noempesquen/patterns/peu.php:15
+msgctxt "tema"
+msgid "Missions"
+msgstr "Misiones"
+
+#: themes/noempesquen/patterns/capcalera.php:16 themes/noempesquen/patterns/peu.php:16 themes/noempesquen/patterns/sobre-el-projecte.php:15
+msgctxt "tema"
+msgid "Sobre el projecte"
+msgstr "Sobre el proyecto"
+
+#: themes/noempesquen/patterns/capcalera.php:17 themes/noempesquen/patterns/contacte.php:15 themes/noempesquen/patterns/peu.php:18 themes/noempesquen/patterns/sobre-el-projecte.php:41
+msgctxt "tema"
+msgid "Contacte"
+msgstr "Contacto"
+
+#: themes/noempesquen/patterns/capcalera.php:18 themes/noempesquen/patterns/compte.php:15 themes/noempesquen/patterns/peu.php:19
+msgctxt "tema"
+msgid "El meu compte"
+msgstr "Mi cuenta"
+
+#: themes/noempesquen/patterns/capcalera.php:22
+msgctxt "tema"
+msgid "Salta al contingut"
+msgstr "Saltar al contenido"
+
+#: themes/noempesquen/patterns/capcalera.php:35 themes/noempesquen/patterns/capcalera.php:38 themes/noempesquen/patterns/com-funciona.php:51 themes/noempesquen/patterns/missions.php:69 themes/noempesquen/patterns/portada.php:53 themes/noempesquen/patterns/portada.php:136
+msgctxt "tema"
+msgid "Entra a jugar"
+msgstr "Entra a jugar"
+
+#: themes/noempesquen/patterns/capcalera.php:41
+msgctxt "tema"
+msgid "Idioma"
+msgstr "Idioma"
+
+#: themes/noempesquen/patterns/com-funciona.php:13
+msgctxt "tema"
+msgid "Pressa"
+msgstr "Prisa"
+
+#: themes/noempesquen/patterns/com-funciona.php:13
+msgctxt "tema"
+msgid "Et diuen que ho has de fer ara, avui o en 24 hores."
+msgstr "Te dicen que tienes que hacerlo ya, hoy o en 24 horas."
+
+#: themes/noempesquen/patterns/com-funciona.php:14
+msgctxt "tema"
+msgid "Remitent estrany"
+msgstr "Remitente extraño"
+
+#: themes/noempesquen/patterns/com-funciona.php:14
+msgctxt "tema"
+msgid "Un número o una adreça que no coneixes, o que s'assembla a una de coneguda."
+msgstr "Un número o una dirección que no conoces, o que se parece a una conocida."
+
+#: themes/noempesquen/patterns/com-funciona.php:15
+msgctxt "tema"
+msgid "Enllaç sospitós"
+msgstr "Enlace sospechoso"
+
+#: themes/noempesquen/patterns/com-funciona.php:15
+msgctxt "tema"
+msgid "Una adreça que no és la de l'empresa de debò."
+msgstr "Una dirección que no es la de la empresa de verdad."
+
+#: themes/noempesquen/patterns/com-funciona.php:16
+msgctxt "tema"
+msgid "Demanen diners o codis"
+msgstr "Piden dinero o códigos"
+
+#: themes/noempesquen/patterns/com-funciona.php:16
+msgctxt "tema"
+msgid "Un pagament petit, una despesa d'enviament o el codi que t'ha arribat per SMS."
+msgstr "Un pago pequeño, unos gastos de envío o el código que te ha llegado por SMS."
+
+#: themes/noempesquen/patterns/com-funciona.php:17
+msgctxt "tema"
+msgid "Massa bo per ser veritat"
+msgstr "Demasiado bueno para ser verdad"
+
+#: themes/noempesquen/patterns/com-funciona.php:17
+msgctxt "tema"
+msgid "Premis, inversions que multipliquen els diners, ofertes impossibles."
+msgstr "Premios, inversiones que multiplican el dinero, ofertas imposibles."
+
+#: themes/noempesquen/patterns/com-funciona.php:18
+msgctxt "tema"
+msgid "Por"
+msgstr "Miedo"
+
+#: themes/noempesquen/patterns/com-funciona.php:18
+msgctxt "tema"
+msgid "Et diuen que tens un virus, que et tallaran un servei o que t'han bloquejat el compte."
+msgstr "Te dicen que tienes un virus, que te cortarán un servicio o que te han bloqueado la cuenta."
+
+#: themes/noempesquen/patterns/com-funciona.php:25
+msgctxt "tema"
+msgid "Un simulador per practicar abans que ho necessitis de veritat."
+msgstr "Un simulador para practicar antes de que lo necesites de verdad."
+
+#: themes/noempesquen/patterns/com-funciona.php:30
+msgctxt "tema"
+msgid "Què hi trobaràs"
+msgstr "Qué vas a encontrar"
+
+#: themes/noempesquen/patterns/com-funciona.php:31
+msgctxt "tema"
+msgid "Un ordinador i un mòbil de mentida que s'obren a pantalla completa. Hi arriben correus, SMS, missatges i anuncis que semblen reals. Tu pots obrir-los, respondre, esborrar, bloquejar o denunciar. Cada decisió té una conseqüència, i al final el joc t'explica què havies de mirar."
+msgstr "Un ordenador y un móvil de mentira que se abren a pantalla completa. Llegan correos, SMS, mensajes y anuncios que parecen reales. Puedes abrirlos, responder, borrar, bloquear o denunciar. Cada decisión tiene una consecuencia, y al final el juego te explica en qué tenías que fijarte."
+
+#: themes/noempesquen/patterns/com-funciona.php:32
+msgctxt "tema"
+msgid "Com es juga"
+msgstr "Cómo se juega"
+
+#: themes/noempesquen/patterns/com-funciona.php:34
+msgctxt "tema"
+msgid "Tria una missió. N'hi ha deu, repartides en tres nivells."
+msgstr "Elige una misión. Hay diez, repartidas en tres niveles."
+
+#: themes/noempesquen/patterns/com-funciona.php:35
+msgctxt "tema"
+msgid "Llegeix el missatge amb calma. No hi ha cronòmetre."
+msgstr "Lee el mensaje con calma. No hay cronómetro."
+
+#: themes/noempesquen/patterns/com-funciona.php:36
+msgctxt "tema"
+msgid "Mira els detalls: l'adreça de qui t'escriu, l'enllaç, el to. Ho pots inspeccionar tot."
+msgstr "Fíjate en los detalles: la dirección de quien te escribe, el enlace, el tono. Puedes inspeccionarlo todo."
+
+#: themes/noempesquen/patterns/com-funciona.php:37
+msgctxt "tema"
+msgid "Decideix què fas. El joc et mostra què hauria passat de veritat."
+msgstr "Decide qué haces. El juego te muestra qué habría pasado de verdad."
+
+#: themes/noempesquen/patterns/com-funciona.php:39
+msgctxt "tema"
+msgid "Les pistes que cal aprendre"
+msgstr "Las pistas que hay que aprender"
+
+#: themes/noempesquen/patterns/com-funciona.php:40
+msgctxt "tema"
+msgid "Les estafes canvien de cara, però quasi sempre deixen les mateixes empremtes."
+msgstr "Las estafas cambian de cara, pero casi siempre dejan las mismas huellas."
+
+#: themes/noempesquen/patterns/com-funciona.php:46
+msgctxt "tema"
+msgid "Ordinador i mòbil"
+msgstr "Ordenador y móvil"
+
+#: themes/noempesquen/patterns/com-funciona.php:47
+msgctxt "tema"
+msgid "Algunes missions passen a l'ordinador i d'altres al mòbil. Pots jugar des del telèfon o des d'un ordinador."
+msgstr "Algunas misiones pasan en el ordenador y otras en el móvil. Puedes jugar desde el teléfono o desde un ordenador."
+
+#: themes/noempesquen/patterns/com-funciona.php:48
+msgctxt "tema"
+msgid "<strong>Tot és de mentida.</strong> Les marques, els personatges i les pàgines del joc són inventats. Res del que escrius als formularis falsos es guarda ni s'envia."
+msgstr "<strong>Todo es de mentira.</strong> Las marcas, los personajes y las páginas del juego son inventados. Nada de lo que escribes en los formularios falsos se guarda ni se envía."
+
+#: themes/noempesquen/patterns/com-funciona.php:49
+msgctxt "tema"
+msgid "El teu progrés"
+msgstr "Tu progreso"
+
+#: themes/noempesquen/patterns/com-funciona.php:50
+msgctxt "tema"
+msgid "No cal registrar-se per jugar. Si vols recordar fins on has arribat, pots crear un compte amb el correu. Pots descarregar les dades o esborrar-ho tot quan vulguis."
+msgstr "No hace falta registrarse para jugar. Si quieres recordar hasta dónde has llegado, puedes crear una cuenta con tu correo. Puedes descargar tus datos o borrarlo todo cuando quieras."
+
+#: themes/noempesquen/patterns/compte.php:16
+msgctxt "tema"
+msgid "Opcional. Serveix per recordar fins on has arribat en un altre dispositiu."
+msgstr "Opcional. Sirve para recordar hasta dónde has llegado en otro dispositivo."
+
+#: themes/noempesquen/patterns/contacte.php:16
+msgctxt "tema"
+msgid "Un dubte, un suggeriment o un error que has trobat?"
+msgstr "¿Una duda, una sugerencia o un error que has encontrado?"
+
+#: themes/noempesquen/patterns/contacte.php:16
+msgctxt "tema"
+msgid "Escriu-nos."
+msgstr "Escríbenos."
+
+#: themes/noempesquen/patterns/contacte.php:27
+msgctxt "tema"
+msgid "Abans d'escriure"
+msgstr "Antes de escribir"
+
+#: themes/noempesquen/patterns/contacte.php:28
+msgctxt "tema"
+msgid "No et demanarem mai contrasenyes, dades bancàries ni codis, ni al joc ni per correu."
+msgstr "Nunca te pediremos contraseñas, datos bancarios ni códigos, ni en el juego ni por correo."
+
+#: themes/noempesquen/patterns/contacte.php:34
+msgctxt "tema"
+msgid "Més informació a l'<a href=\"%s\">avís de privacitat</a>."
+msgstr "Más información en el <a href=\"%s\">aviso de privacidad</a>."
+
+#: themes/noempesquen/patterns/missions.php:12 themes/noempesquen/patterns/portada.php:12
+msgctxt "tema"
+msgid "Ordinador"
+msgstr "Ordenador"
+
+#: themes/noempesquen/patterns/missions.php:13 themes/noempesquen/patterns/portada.php:13
+msgctxt "tema"
+msgid "Mòbil"
+msgstr "Móvil"
+
+#: themes/noempesquen/patterns/missions.php:16 themes/noempesquen/patterns/portada.php:16
+msgctxt "tema"
+msgid "Nivell 1"
+msgstr "Nivel 1"
+
+#: themes/noempesquen/patterns/missions.php:17 themes/noempesquen/patterns/portada.php:17
+msgctxt "tema"
+msgid "Per començar"
+msgstr "Para empezar"
+
+#: themes/noempesquen/patterns/missions.php:19 themes/noempesquen/patterns/portada.php:19
+msgctxt "tema"
+msgid "La factura de la llum"
+msgstr "La factura de la luz"
+
+#: themes/noempesquen/patterns/missions.php:19
+msgctxt "tema"
+msgid "Un correu diu que et tallaran la llum avui si no pagues. És de veritat?"
+msgstr "Un correo dice que te cortarán la luz hoy si no pagas. ¿Es de verdad?"
+
+#: themes/noempesquen/patterns/missions.php:20 themes/noempesquen/patterns/portada.php:20
+msgctxt "tema"
+msgid "El paquet retingut"
+msgstr "El paquete retenido"
+
+#: themes/noempesquen/patterns/missions.php:20
+msgctxt "tema"
+msgid "Un SMS diu que tens un paquet retingut i que cal pagar 1,99 €. Ho pagaries?"
+msgstr "Un SMS dice que tienes un paquete retenido y que tienes que pagar 1,99 €. ¿Lo pagarías?"
+
+#: themes/noempesquen/patterns/missions.php:21 themes/noempesquen/patterns/portada.php:21
+msgctxt "tema"
+msgid "Has guanyat un sorteig!"
+msgstr "¡Has ganado un sorteo!"
+
+#: themes/noempesquen/patterns/missions.php:21
+msgctxt "tema"
+msgid "Una publicació d'Ullada diu que has guanyat un premi enorme, però cal pagar unes despeses d'enviament. Ho faries?"
+msgstr "Una publicación de Ullada dice que has ganado un premio enorme, pero hay que pagar unos gastos de envío. ¿Lo harías?"
+
+#: themes/noempesquen/patterns/missions.php:25 themes/noempesquen/patterns/portada.php:25
+msgctxt "tema"
+msgid "Nivell 2"
+msgstr "Nivel 2"
+
+#: themes/noempesquen/patterns/missions.php:26 themes/noempesquen/patterns/portada.php:26
+msgctxt "tema"
+msgid "Per agafar el truc"
+msgstr "Para pillarle el truco"
+
+#: themes/noempesquen/patterns/missions.php:28 themes/noempesquen/patterns/portada.php:28
+msgctxt "tema"
+msgid "El banc et bloqueja el compte"
+msgstr "El banco te bloquea la cuenta"
+
+#: themes/noempesquen/patterns/missions.php:28
+msgctxt "tema"
+msgid "Un correu del banc diu que t'han bloquejat el compte i que tens 24 hores per verificar-lo. Cal fer-ne cas?"
+msgstr "Un correo del banco dice que te han bloqueado la cuenta y que tienes 24 horas para verificarla. ¿Hay que hacerle caso?"
+
+#: themes/noempesquen/patterns/missions.php:29 themes/noempesquen/patterns/portada.php:29
+msgctxt "tema"
+msgid "Hola, he canviat de mòbil"
+msgstr "Hola, he cambiado de móvil"
+
+#: themes/noempesquen/patterns/missions.php:29
+msgctxt "tema"
+msgid "Un número desconegut diu que és el Pau, que ha canviat de mòbil i que necessita 380 € ara mateix. Els hi enviaries?"
+msgstr "Un número desconocido dice que es Pau, que ha cambiado de móvil y que necesita 380 € ahora mismo. ¿Se los enviarías?"
+
+#: themes/noempesquen/patterns/missions.php:30 themes/noempesquen/patterns/portada.php:30
+msgctxt "tema"
+msgid "Em passes el codi?"
+msgstr "¿Me pasas el código?"
+
+#: themes/noempesquen/patterns/missions.php:30
+msgctxt "tema"
+msgid "La Marta et demana per Parla el codi que t'acaba d'arribar per SMS. Li'l passaries?"
+msgstr "Marta te pide por Parla el código que te acaba de llegar por SMS. ¿Se lo pasarías?"
+
+#: themes/noempesquen/patterns/missions.php:31 themes/noempesquen/patterns/portada.php:31
+msgctxt "tema"
+msgid "Compro la teva bici"
+msgstr "Te compro la bici"
+
+#: themes/noempesquen/patterns/missions.php:31
+msgctxt "tema"
+msgid "Vens una bici per Revenda i un comprador te la vol pagar ara mateix amb un enllaç. Hi entraries per cobrar?"
+msgstr "Vendes una bici en Revenda y un comprador te la quiere pagar ahora mismo con un enlace. ¿Entrarías para cobrar?"
+
+#: themes/noempesquen/patterns/missions.php:35 themes/noempesquen/patterns/portada.php:35
+msgctxt "tema"
+msgid "Nivell 3"
+msgstr "Nivel 3"
+
+#: themes/noempesquen/patterns/missions.php:36 themes/noempesquen/patterns/portada.php:36
+msgctxt "tema"
+msgid "Per posar-te a prova"
+msgstr "Para ponerte a prueba"
+
+#: themes/noempesquen/patterns/missions.php:38 themes/noempesquen/patterns/portada.php:38
+msgctxt "tema"
+msgid "El truc d'inversió"
+msgstr "El truco de la inversión"
+
+#: themes/noempesquen/patterns/missions.php:38
+msgctxt "tema"
+msgid "Un anunci al diari diu que una presentadora famosa ha multiplicat els seus diners amb un truc. N'hi posaries 250 €?"
+msgstr "Un anuncio en el periódico dice que una presentadora famosa ha multiplicado su dinero con un truco. ¿Pondrías 250 €?"
+
+#: themes/noempesquen/patterns/missions.php:39 themes/noempesquen/patterns/portada.php:39
+msgctxt "tema"
+msgid "Virus detectat!"
+msgstr "¡Virus detectado!"
+
+#: themes/noempesquen/patterns/missions.php:39
+msgctxt "tema"
+msgid "Estàs mirant una recepta i de cop la pantalla s'omple d'alarmes: diu que tens virus i que truquis ara mateix. Què fas?"
+msgstr "Estás mirando una receta y de golpe la pantalla se llena de alarmas: dice que tienes virus y que llames ahora mismo. ¿Qué haces?"
+
+#: themes/noempesquen/patterns/missions.php:40 themes/noempesquen/patterns/portada.php:40
+msgctxt "tema"
+msgid "Actualitza el navegador"
+msgstr "Actualiza el navegador"
+
+#: themes/noempesquen/patterns/missions.php:40
+msgctxt "tema"
+msgid "Vols mirar quin temps farà i una barra et diu que el navegador està desactualitzat. T'hi descarregaries l'actualització?"
+msgstr "Quieres mirar qué tiempo hará y una barra te dice que el navegador está desactualizado. ¿Te descargarías la actualización?"
+
+#: themes/noempesquen/patterns/missions.php:50
+msgctxt "tema"
+msgid "Deu situacions, tres nivells. Cada una dura entre 4 i 6 minuts."
+msgstr "Diez situaciones, tres niveles. Cada una dura entre 4 y 6 minutos."
+
+#: themes/noempesquen/patterns/peu.php:13
+msgctxt "tema"
+msgid "Simulador"
+msgstr "Simulador"
+
+#: themes/noempesquen/patterns/peu.php:17 themes/noempesquen/patterns/sobre-el-projecte.php:27
+msgctxt "tema"
+msgid "Privacitat"
+msgstr "Privacidad"
+
+#: themes/noempesquen/patterns/peu.php:28
+msgctxt "tema"
+msgid "Tot el que veus al simulador és inventat: les marques, els personatges i les pàgines. Cap és real."
+msgstr "Todo lo que ves en el simulador es inventado: las marcas, los personajes y las páginas. Nada es real."
+
+#: themes/noempesquen/patterns/peu.php:35
+msgctxt "tema"
+msgid "Projecte per als Premis Wapps .cat 2026/27"
+msgstr "Proyecto para los Premis Wapps .cat 2026/27"
+
+#: themes/noempesquen/patterns/portada.php:50
+msgctxt "tema"
+msgid "No et deixis <em>pescar.</em>"
+msgstr "Que no te <em>pesquen.</em>"
+
+#: themes/noempesquen/patterns/portada.php:51
+msgctxt "tema"
+msgid "Un ordinador i un mòbil de mentida, amb missatges, correus i pàgines que semblen reals. Tu decides què fas i veus què passa. Sense risc."
+msgstr "Un ordenador y un móvil de mentira, con mensajes, correos y páginas que parecen reales. Tú decides qué haces y ves qué pasa. Sin riesgo."
+
+#: themes/noempesquen/patterns/portada.php:60
+msgctxt "tema"
+msgid "Número desconegut"
+msgstr "Número desconocido"
+
+#: themes/noempesquen/patterns/portada.php:60
+msgctxt "tema"
+msgid "ara"
+msgstr "ahora"
+
+#: themes/noempesquen/patterns/portada.php:61
+msgctxt "tema"
+msgid "Posta: el teu paquet està retingut. Paga 1,99 € avui o es retornarà. Segueix-lo aquí:"
+msgstr "Posta: tu paquete está retenido. Paga 1,99 € hoy o se devolverá. Síguelo aquí:"
+
+#: themes/noempesquen/patterns/portada.php:61
+msgctxt "tema"
+msgid "posta-seguiment.top/3kd"
+msgstr "posta-seguimiento.top/3kd"
+
+#: themes/noempesquen/patterns/portada.php:68
+msgctxt "tema"
+msgid "Ningú no t'avisa d'un paquet així"
+msgstr "Nadie te avisa así de un paquete"
+
+#: themes/noempesquen/patterns/portada.php:69
+msgctxt "tema"
+msgid "Un enllaç que no és de Posta"
+msgstr "Un enlace que no es de Posta"
+
+#: themes/noempesquen/patterns/portada.php:70
+msgctxt "tema"
+msgid "Pressa: «avui»"
+msgstr "Prisa: «hoy»"
+
+#: themes/noempesquen/patterns/portada.php:83
+msgctxt "tema"
+msgid "Mira l'esquer abans de mossegar"
+msgstr "Mira el cebo antes de morder"
+
+#: themes/noempesquen/patterns/portada.php:84
+msgctxt "tema"
+msgid "Cada missió és una situació que et podria passar demà. Ningú no et diu què és veritat: ho has de descobrir tu."
+msgstr "Cada misión es una situación que te podría pasar mañana. Nadie te dice qué es verdad: lo tienes que descubrir tú."
+
+#: themes/noempesquen/patterns/portada.php:86
+msgctxt "tema"
+msgid "Reps el missatge"
+msgstr "Recibes el mensaje"
+
+#: themes/noempesquen/patterns/portada.php:86
+msgctxt "tema"
+msgid "Un correu, un SMS o un avís al teu ordinador o mòbil de mentida."
+msgstr "Un correo, un SMS o un aviso en tu ordenador o móvil de mentira."
+
+#: themes/noempesquen/patterns/portada.php:87
+msgctxt "tema"
+msgid "Decideixes"
+msgstr "Decides"
+
+#: themes/noempesquen/patterns/portada.php:87
+msgctxt "tema"
+msgid "Obres, esborres, denuncies o bloquejes. També pots mirar cada detall amb lupa."
+msgstr "Abres, borras, denuncias o bloqueas. También puedes mirar cada detalle con lupa."
+
+#: themes/noempesquen/patterns/portada.php:88
+msgctxt "tema"
+msgid "Veus què passa"
+msgstr "Ves qué pasa"
+
+#: themes/noempesquen/patterns/portada.php:88
+msgctxt "tema"
+msgid "El joc t'ensenya la conseqüència i les pistes que et podien haver avisat."
+msgstr "El juego te enseña la consecuencia y las pistas que te podían haber avisado."
+
+#: themes/noempesquen/patterns/portada.php:97
+msgctxt "tema"
+msgid "Deu lots, tres nivells"
+msgstr "Diez lotes, tres niveles"
+
+#: themes/noempesquen/patterns/portada.php:98
+msgctxt "tema"
+msgid "Cada nivell puja una mica la dificultat. Cada missió dura entre 4 i 6 minuts."
+msgstr "Cada nivel sube un poco la dificultad. Cada misión dura entre 4 y 6 minutos."
+
+#: themes/noempesquen/patterns/portada.php:114
+msgctxt "tema"
+msgid "Veure totes les missions"
+msgstr "Ver todas las misiones"
+
+#: themes/noempesquen/patterns/portada.php:122
+msgctxt "tema"
+msgid "Sense risc de veritat"
+msgstr "Sin riesgo de verdad"
+
+#: themes/noempesquen/patterns/portada.php:124
+msgctxt "tema"
+msgid "Tot és de mentida"
+msgstr "Todo es de mentira"
+
+#: themes/noempesquen/patterns/portada.php:124
+msgctxt "tema"
+msgid "Els sistemes, les marques i els personatges són inventats. No hi ha res real que puguis perdre."
+msgstr "Los sistemas, las marcas y los personajes son inventados. No hay nada real que puedas perder."
+
+#: themes/noempesquen/patterns/portada.php:125
+msgctxt "tema"
+msgid "El que escrius no es desa"
+msgstr "Lo que escribes no se guarda"
+
+#: themes/noempesquen/patterns/portada.php:125
+msgctxt "tema"
+msgid "Als formularis falsos pots posar el que vulguis: no es guarda ni s'envia enlloc."
+msgstr "En los formularios falsos puedes poner lo que quieras: no se guarda ni se envía a ningún sitio."
+
+#: themes/noempesquen/patterns/portada.php:126
+msgctxt "tema"
+msgid "El compte és opcional"
+msgstr "La cuenta es opcional"
+
+#: themes/noempesquen/patterns/portada.php:126
+msgctxt "tema"
+msgid "Pots jugar sense registrar-te. El compte només serveix per recordar fins on has arribat."
+msgstr "Puedes jugar sin registrarte. La cuenta solo sirve para recordar hasta dónde has llegado."
+
+#: themes/noempesquen/patterns/portada.php:135
+msgctxt "tema"
+msgid "Prova-ho. És de mentida."
+msgstr "Pruébalo. Es de mentira."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:16
+msgctxt "tema"
+msgid "Un simulador per aprendre a reconèixer estafes sense córrer cap risc."
+msgstr "Un simulador para aprender a reconocer estafas sin correr ningún riesgo."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:21
+msgctxt "tema"
+msgid "Per què existeix"
+msgstr "Por qué existe"
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:22
+msgctxt "tema"
+msgid "Les estafes digitals fan servir la pressa, la por i la confiança. Llegir-ne una explicació no és el mateix que viure-la. No em pesquen et posa dins de la situació, amb la decisió a les teves mans, i et deixa equivocar-te sense conseqüències reals."
+msgstr "Las estafas digitales se aprovechan de la prisa, el miedo y la confianza. Leer una explicación no es lo mismo que vivirla. No em pesquen te mete en la situación, con la decisión en tus manos, y te deja equivocarte sin consecuencias reales."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:23
+msgctxt "tema"
+msgid "Per a qui és"
+msgstr "Para quién es"
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:24
+msgctxt "tema"
+msgid "Per a tothom, i sobretot per a qui no es mou còmode amb la tecnologia. Els textos són clars, els botons grans i el joc es pot fer amb el teclat."
+msgstr "Para todo el mundo, y sobre todo para quien no se siente cómodo con la tecnología. Los textos son claros, los botones grandes y el juego se puede hacer con el teclado."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:25
+msgctxt "tema"
+msgid "Premis Wapps .cat"
+msgstr "Premis Wapps .cat"
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:26
+msgctxt "tema"
+msgid "El projecte es presenta als Premis Wapps .cat 2026/27."
+msgstr "El proyecto se presenta a los Premis Wapps .cat 2026/27."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:28
+msgctxt "tema"
+msgid "<strong>Si jugues sense compte</strong>, no es guarda cap dada personal. El que escrius als formularis falsos del simulador no es desa ni s'envia enlloc. Només es comptabilitzen estadístiques anònimes de les partides (quina missió i quin resultat), sense cap dada teva."
+msgstr "<strong>Si juegas sin cuenta</strong>, no se guarda ningún dato personal. Lo que escribes en los formularios falsos del simulador no se guarda ni se envía a ningún sitio. Solo se cuentan estadísticas anónimas de las partidas (qué misión y qué resultado), sin ningún dato tuyo."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:34
+msgctxt "tema"
+msgid "<strong>Si crees un compte</strong>, es guarda el teu correu electrònic i el teu progrés, perquè el puguis recuperar en un altre dispositiu. Pots descarregar-ho o esborrar-ho tot quan vulguis des d'<a href=\"%s\">El meu compte</a>."
+msgstr "<strong>Si creas una cuenta</strong>, se guardan tu correo electrónico y tu progreso, para que puedas recuperarlo en otro dispositivo. Puedes descargarlo o borrarlo todo cuando quieras desde <a href=\"%s\">Mi cuenta</a>."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:40
+msgctxt "tema"
+msgid "<strong>Si ens escrius pel formulari de contacte</strong>, el missatge arriba per correu a qui gestiona el web i només s'usa per respondre't. No es desa al web."
+msgstr "<strong>Si nos escribes por el formulario de contacto</strong>, el mensaje llega por correo a quien gestiona la web y solo se usa para responderte. No se guarda en la web."
+
+#: themes/noempesquen/patterns/sobre-el-projecte.php:47
+msgctxt "tema"
+msgid "Si tens un dubte, un suggeriment o has trobat un error, escriu-nos des de la pàgina de <a href=\"%s\">Contacte</a>."
+msgstr "Si tienes una duda, una sugerencia o has encontrado un error, escríbenos desde la página de <a href=\"%s\">Contacto</a>."

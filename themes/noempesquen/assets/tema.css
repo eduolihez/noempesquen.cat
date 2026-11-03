@@ -227,6 +227,25 @@ html {
 .nep-capcalera__joc { order: 1; }
 .nep-marca { order: 0; }
 
+/* Selector d'idioma: enllaç estàtic a la pàgina equivalent (sense JS). */
+.nep-idioma { order: 1; }
+
+.nep-idioma__enllac {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+	padding: 0 0.75rem;
+	border: 2px solid var(--nep-blanc);
+	border-radius: 8px;
+	color: var(--nep-blanc);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.nep-idioma__enllac:hover { background: rgb(255 255 255 / 0.16); }
+
 @media (min-width: 40.01rem) and (max-width: 78rem) {
 	.nep-marca { margin-right: auto; }
 	.nep-capcalera__joc { margin-left: 0; }
@@ -240,6 +259,7 @@ html {
 @media (min-width: 78.01rem) {
 	.nep-menu { order: 1; }
 	.nep-capcalera__joc { order: 2; margin-left: 0; }
+	.nep-idioma { order: 3; }
 	.nep-capcalera__dins { column-gap: 1.25rem; }
 	.nep-menu .wp-block-navigation-item__content { font-size: 1.1rem; padding: 0 0.65rem; }
 }
