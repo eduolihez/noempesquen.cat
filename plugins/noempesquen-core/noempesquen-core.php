@@ -19,6 +19,7 @@ define( 'NEP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NEP_URL', plugin_dir_url( __FILE__ ) );
 
 require_once NEP_PATH . 'includes/idioma.php';
+require_once NEP_PATH . 'includes/seo-idioma.php';
 require_once NEP_PATH . 'includes/acces-admin.php';
 require_once NEP_PATH . 'includes/capacitats.php';
 require_once NEP_PATH . 'includes/validacio-missio.php';

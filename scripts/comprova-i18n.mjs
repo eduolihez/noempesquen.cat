@@ -21,7 +21,8 @@ const AYUDA = `Uso: node scripts/comprova-i18n.mjs [baseUrl] [opciones]
 Sale con código 0 si todo pasa y 1 si falla algo. Los avisos (DUBTE) no
 hacen fallar: son URLs pendientes de confirmar.`;
 
-// Pares ES (raíz) <-> CA (/ca/). `dubte`: el slug no está confirmado.
+// Pares ES (raíz) <-> CA (/ca/). Todos confirmados (T09c); `dubte: true` marcaría
+// uno pendiente: avisa en vez de fallar.
 const PARELLS = [
 	{ es: '/', ca: '/ca/' },
 	{ es: '/como-funciona/', ca: '/ca/com-funciona/' },
@@ -29,7 +30,7 @@ const PARELLS = [
 	{ es: '/cuenta/', ca: '/ca/compte/' },
 	{ es: '/contacto/', ca: '/ca/contacte/' },
 	{ es: '/sobre-el-proyecto/', ca: '/ca/sobre-el-projecte/' },
-	{ es: '/simulador/', ca: '/ca/simulador/', dubte: true },
+	{ es: '/simulador/', ca: '/ca/simulador/' },
 ];
 
 // 301 de las URLs catalanas antiguas (raíz) a /ca/…. `/` y `/simulador/` no.
@@ -58,6 +59,7 @@ const base = (
 
 let errors = 0;
 let avisos = 0;
+const taula = [];
 const ok = ( m ) => console.log( `  ok     ${ m }` );
 const ko = ( m ) => {
 	errors++;
@@ -126,10 +128,13 @@ async function comprovaPagina( cami, idioma, parell ) {
 	}
 
 	const enllacos = etiquetes( html, 'link' );
-	const canon = enllacos.find(
+	const canons = enllacos.filter(
 		( l ) => ( attr( l, 'rel' ) || '' ).toLowerCase() === 'canonical'
 	);
-	const canonHref = canon ? attr( canon, 'href' ) : null;
+	const canonHref = canons[ 0 ] ? attr( canons[ 0 ], 'href' ) : null;
+	if ( canons.length > 1 ) {
+		nom( `${ canons.length } <link rel="canonical"> (esperado 1)` );
+	}
 	if ( ! canonHref ) {
 		nom( 'falta <link rel="canonical">' );
 	} else if ( ruta( canonHref ) === cami ) {
@@ -159,6 +164,9 @@ async function comprovaPagina( cami, idioma, parell ) {
 		[ 'hreflang ca', alt.ca, parell.ca ],
 		[ 'hreflang x-default', alt[ 'x-default' ], esperado[ 'x-default' ] ],
 	];
+	taula.push(
+		`| ${ cami } | ${ lang } | ${ canonHref ? ruta( canonHref ) : '-' } | ${ esAlt ?? '-' } | ${ alt.ca ?? '-' } | ${ alt[ 'x-default' ] ?? '-' } |`
+	);
 	for ( const [ etiqueta, real, quiero ] of checks ) {
 		if ( real === quiero ) {
 			ok( `${ etiqueta } → ${ real }` );
@@ -220,6 +228,9 @@ if ( sense301 ) {
 	}
 }
 
+console.log( '\n| URL | html lang | canonical | es | ca | x-default |' );
+console.log( '|---|---|---|---|---|---|' );
+taula.forEach( ( fila ) => console.log( fila ) );
 console.log(
 	`\n${ errors ? 'FALLA' : 'OK' }: ${ errors } error(es), ${ avisos } aviso(s)`
 );
