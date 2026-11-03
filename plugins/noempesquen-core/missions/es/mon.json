@@ -1,15 +1,15 @@
 {
-	"jugador": { "nom": "Àlex Puig", "correu": "alex.puig@posta.cat" },
+	"jugador": { "nom": "Álex Puig", "correu": "alex.puig@posta.es" },
 	"contactes": [
 		{ "id": "llissa", "nom": "Llissa", "rol": "guia" },
 		{ "id": "remei", "nom": "Remei", "rol": "guia" },
 		{ "id": "marta", "nom": "Marta", "rol": "amiga" },
 		{ "id": "pau", "nom": "Pau", "rol": "fill" },
-		{ "id": "mare", "nom": "Mama", "rol": "família" },
-		{ "id": "biblioteca", "nom": "Biblioteca del Barri", "rol": "servei" },
-		{ "id": "farmacia", "nom": "Farmàcia del Barri", "rol": "servei" },
+		{ "id": "mare", "nom": "Mamá", "rol": "família" },
+		{ "id": "biblioteca", "nom": "Biblioteca del Barrio", "rol": "servei" },
+		{ "id": "farmacia", "nom": "Farmacia del Barrio", "rol": "servei" },
 		{ "id": "banc", "nom": "Banc Sòlid", "rol": "servei" },
-		{ "id": "botiga", "nom": "Botiga Verda", "rol": "servei" },
+		{ "id": "botiga", "nom": "Tienda Verde", "rol": "servei" },
 		{ "id": "comprador", "nom": "Jordi M.", "rol": "desconegut" },
 		{
 			"id": "numero_desconegut",
@@ -21,24 +21,24 @@
 		"fils": [
 			{
 				"id": "botiga",
-				"nom": "Botiga Verda",
+				"nom": "Tienda Verde",
 				"missatges": [
-					{ "de": "ella", "text": "Botiga Verda: la teva comanda 20418 ja és en camí i arribarà en 2 o 3 dies feiners. Pots seguir-la a la nostra web oficial, enviat.cat. Mai et demanarem diners per SMS.", "hora": "dl. 10:20" }
+					{ "de": "ella", "text": "Tienda Verde: tu pedido 20418 ya está en camino y llegará en 2 o 3 días laborables. Puedes seguirlo en nuestra web oficial, enviat.es. Nunca te pediremos dinero por SMS.", "hora": "dl. 10:20" }
 				]
 			},
 			{
 				"id": "marta",
 				"nom": "Marta",
 				"missatges": [
-					{ "de": "ella", "text": "Àlex, em passes l'adreça del restaurant de dissabte?", "hora": "ahir 21:10" },
-					{ "de": "jo", "text": "Carrer de la Mar, 12. T'hi espero a les 14 h.", "hora": "ahir 21:15" }
+					{ "de": "ella", "text": "Álex, ¿me pasas la dirección del restaurante del sábado?", "hora": "ahir 21:10" },
+					{ "de": "jo", "text": "Calle del Mar, 12. Te espero allí a las 14 h.", "hora": "ahir 21:15" }
 				]
 			},
 			{
 				"id": "biblioteca",
-				"nom": "Biblioteca del Barri",
+				"nom": "Biblioteca del Barrio",
 				"missatges": [
-					{ "de": "ella", "text": "Biblioteca del Barri: el llibre «Mar endins» s'ha de retornar el dia 7. Gràcies!", "hora": "dl. 09:00" }
+					{ "de": "ella", "text": "Biblioteca del Barrio: el libro «Mar adentro» hay que devolverlo el día 7. ¡Gracias!", "hora": "dl. 09:00" }
 				]
 			},
 			{
@@ -47,23 +47,23 @@
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Diumenge vinc a dinar. Porto les postres!",
+						"text": "El domingo vengo a comer. ¡Llevo yo el postre!",
 						"hora": "18:02"
 					},
 					{
 						"de": "jo",
-						"text": "Perfecte. Aquí us esperem.",
+						"text": "Perfecto. Aquí os esperamos.",
 						"hora": "18:10"
 					}
 				]
 			},
 			{
 				"id": "farmacia",
-				"nom": "Farmàcia del Barri",
+				"nom": "Farmacia del Barrio",
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Bon vespre, Àlex. La teva comanda ja és a punt. Pots passar a recollir-la de 9 a 20 h.",
+						"text": "Buenas tardes, Álex. Tu pedido ya está listo. Puedes pasar a recogerlo de 9 a 20 h.",
 						"hora": "17:30"
 					}
 				]
@@ -74,23 +74,23 @@
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Banc Sòlid: has fet una compra de 24,90 € amb la targeta acabada en 9010. Si no la reconeixes, truca al número que hi ha al dors de la targeta.",
+						"text": "Banc Sòlid: has hecho una compra de 24,90 € con la tarjeta terminada en 9010. Si no la reconoces, llama al número que figura en el reverso de la tarjeta.",
 						"hora": "dl. 11:20"
 					}
 				]
 			},
 			{
 				"id": "mare",
-				"nom": "Mama",
+				"nom": "Mamá",
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Àlex, no t'oblidis del pa per diumenge.",
+						"text": "Álex, no te olvides del pan para el domingo.",
 						"hora": "dl. 21:05"
 					},
 					{
 						"de": "jo",
-						"text": "Tranquil·la, el passo a buscar.",
+						"text": "Tranquila, lo recojo yo.",
 						"hora": "dl. 21:12"
 					}
 				]
@@ -105,38 +105,38 @@
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Ei, Àlex! Dijous a les 11 et va bé per a la reunió?",
+						"text": "¡Eh, Álex! ¿Te va bien el jueves a las 11 para la reunión?",
 						"hora": "ahir 18:40"
 					},
 					{
 						"de": "jo",
-						"text": "Sí, perfecte. Porto jo els papers.",
+						"text": "Sí, perfecto. Los papeles los llevo yo.",
 						"hora": "ahir 18:52"
 					},
 					{
 						"de": "ella",
-						"text": "Genial, gràcies!",
+						"text": "¡Genial, gracias!",
 						"hora": "ahir 18:53"
 					}
 				]
 			},
 			{
 				"id": "familia",
-				"nom": "Família",
+				"nom": "Familia",
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Diumenge dinem tots a casa, que farem arròs.",
+						"text": "El domingo comemos todos en casa, que haremos arroz.",
 						"hora": "dl. 20:15"
 					},
 					{
 						"de": "jo",
-						"text": "Hi serem. Portem el postre.",
+						"text": "Allí estaremos. Llevamos el postre.",
 						"hora": "dl. 20:31"
 					},
 					{
 						"de": "ella",
-						"text": "Això, que sigui de xocolata!",
+						"text": "¡Eso, que sea de chocolate!",
 						"hora": "dl. 20:33"
 					}
 				]
@@ -147,12 +147,12 @@
 				"missatges": [
 					{
 						"de": "ella",
-						"text": "Ja he arribat a l'institut. Fins després!",
+						"text": "Ya he llegado al instituto. ¡Hasta luego!",
 						"hora": "08:05"
 					},
 					{
 						"de": "jo",
-						"text": "Molt bé. Que vagi bé el dia!",
+						"text": "Muy bien. ¡Que tengas buen día!",
 						"hora": "08:07"
 					}
 				]
@@ -168,19 +168,19 @@
 				"llegit": true,
 				"data": "08:32",
 				"remitent": {
-					"nom": "Biblioteca del Barri",
-					"adreca": "avisos@bibliotequesdelbarri.cat"
+					"nom": "Biblioteca del Barrio",
+					"adreca": "avisos@bibliotequesdelbarri.es"
 				},
-				"assumpte": "Recordatori: retorn del llibre",
+				"assumpte": "Recordatorio: devolución del libro",
 				"cos": [
-					[ { "t": "Hola, Àlex:" } ],
+					[ { "t": "Hola, Álex:" } ],
 					[
 						{
-							"t": "Et recordem que el llibre «Mar endins» s'ha de retornar el dia 7. Si el vols allargar, ho pots fer des de la teva àrea de lector o al taulell."
+							"t": "Te recordamos que el libro «Mar adentro» hay que devolverlo el día 7. Si quieres ampliar el plazo, puedes hacerlo desde tu área de lector o en el mostrador."
 						}
 					],
-					[ { "t": "Fins aviat," } ],
-					[ { "t": "Equip de la Biblioteca del Barri" } ]
+					[ { "t": "Hasta pronto," } ],
+					[ { "t": "Equipo de la Biblioteca del Barrioo" } ]
 				]
 			},
 			{
@@ -191,24 +191,24 @@
 				"data": "ahir",
 				"remitent": {
 					"nom": "Banc Sòlid",
-					"adreca": "novetats@bancsolid.cat"
+					"adreca": "novetats@bancsolid.es"
 				},
-				"assumpte": "El butlletí d'aquest mes",
+				"assumpte": "El boletín de este mes",
 				"cos": [
-					[ { "t": "Hola, Àlex:" } ],
+					[ { "t": "Hola, Álex:" } ],
 					[
 						{
-							"t": "Aquest mes al butlletí t'expliquem com estalviar en les despeses de la llar i com activar els avisos de moviments al mòbil."
+							"t": "Este mes en el boletín te explicamos cómo ahorrar en los gastos del hogar y cómo activar los avisos de movimientos en el móvil."
 						}
 					],
 					[
 						{
-							"t": "Pots llegir-lo complet a la teva àrea privada: "
+							"t": "Puedes leerlo completo en tu área privada: "
 						},
 						{
 							"enllac": {
-								"text": "bancsolid.cat",
-								"url": "https://bancsolid.cat/area-clients"
+								"text": "bancsolid.es",
+								"url": "https://bancsolid.es/area-clients"
 							}
 						}
 					],
@@ -223,17 +223,17 @@
 				"data": "ahir",
 				"remitent": {
 					"nom": "Marta Puig",
-					"adreca": "marta.puig@exemple-feina.cat"
+					"adreca": "marta.puig@ejemplo-trabajo.es"
 				},
-				"assumpte": "Reunió de dijous",
+				"assumpte": "Reunión del jueves",
 				"cos": [
-					[ { "t": "Ei, Àlex!" } ],
+					[ { "t": "¡Eh, Álex!" } ],
 					[
 						{
-							"t": "Passem la reunió de dijous a les 11, que a les 10 tinc el dentista. Et va bé? Si no, ho mirem demà al matí."
+							"t": "Pasamos la reunión del jueves a las 11, que a las 10 tengo el dentista. ¿Te viene bien? Si no, lo vemos mañana por la mañana."
 						}
 					],
-					[ { "t": "Gràcies!" } ],
+					[ { "t": "¡Gracias!" } ],
 					[ { "t": "Marta" } ]
 				]
 			},
@@ -244,19 +244,19 @@
 				"llegit": true,
 				"data": "dl.",
 				"remitent": {
-					"nom": "Botiga Verda",
-					"adreca": "comandes@botigaverda.cat"
+					"nom": "Tienda Verde",
+					"adreca": "comandes@botigaverda.es"
 				},
-				"assumpte": "La teva comanda 20418 ja està en camí",
+				"assumpte": "Tu pedido 20418 ya está en camino",
 				"cos": [
-					[ { "t": "Hola, Àlex:" } ],
+					[ { "t": "Hola, Álex:" } ],
 					[
 						{
-							"t": "Hem enviat la teva comanda amb dues plantes d'interior. Arribarà en 2 o 3 dies feiners a l'adreça que vas indicar."
+							"t": "Hemos enviado tu pedido con dos plantas de interior. Llegará en 2 o 3 días laborables a la dirección que indicaste."
 						}
 					],
-					[ { "t": "Gràcies per comprar amb nosaltres," } ],
-					[ { "t": "Botiga Verda" } ]
+					[ { "t": "Gracias por comprar con nosotros," } ],
+					[ { "t": "Tienda Verde" } ]
 				]
 			},
 			{
@@ -266,18 +266,18 @@
 				"llegit": true,
 				"data": "dl.",
 				"remitent": {
-					"nom": "Ajuntament del Barri",
-					"adreca": "informacio@ajuntamentdelbarri.cat"
+					"nom": "Ayuntamiento del Barrio",
+					"adreca": "informacio@ajuntamentdelbarri.es"
 				},
-				"assumpte": "Canvi d'horari de la recollida de vidre",
+				"assumpte": "Cambio de horario de la recogida de vidrio",
 				"cos": [
-					[ { "t": "Estimat veí, estimada veïna:" } ],
+					[ { "t": "Estimado vecino, estimada vecina:" } ],
 					[
 						{
-							"t": "A partir del mes vinent, la recollida de vidre passarà a fer-se els dimarts i els divendres al vespre. Trobaràs tots els horaris a la web de l'Ajuntament."
+							"t": "A partir del mes que viene, la recogida de vidrio pasará a hacerse los martes y los viernes por la tarde. Encontrarás todos los horarios en la web del Ayuntamiento."
 						}
 					],
-					[ { "t": "Regidoria de Serveis Urbans" } ]
+					[ { "t": "Concejalía de Servicios Urbanos" } ]
 				]
 			},
 			{
@@ -288,68 +288,68 @@
 				"data": "dg.",
 				"remitent": {
 					"nom": "El Diari del Barri",
-					"adreca": "butlleti@diaridelbarri.cat"
+					"adreca": "butlleti@diaridelbarri.es"
 				},
-				"assumpte": "El resum de la setmana",
+				"assumpte": "El resumen de la semana",
 				"cos": [
-					[ { "t": "Bon dia, Àlex:" } ],
+					[ { "t": "Buenos días, Álex:" } ],
 					[
 						{
-							"t": "Aquesta setmana al barri: s'inaugura el mercat de pagès, tornen les festes de la plaça i us expliquem com anirà l'obra del carrer Major."
+							"t": "Esta semana en el barrio: se inaugura el mercado de productores, vuelven las fiestas de la plaza y os contamos cómo irá la obra de la calle Mayor."
 						}
 					],
-					[ { "t": "Que tinguis una bona setmana," } ],
-					[ { "t": "La redacció" } ]
+					[ { "t": "Que tengas una buena semana," } ],
+					[ { "t": "La redacción" } ]
 				]
 			}
 		]
 	},
 	"galeria": [
-		{ "id": "g01", "titol": "Platja de Montgat a primera hora", "data": "2026-08-14", "il": "mar-matinal" },
-		{ "id": "g02", "titol": "Excursió a la serra", "data": "2026-07-02", "il": "muntanya" },
-		{ "id": "g03", "titol": "Parada de fruita al mercat", "data": "2026-09-05", "il": "mercat" },
-		{ "id": "g04", "titol": "El gat dormint al sofà", "data": "2026-10-11", "il": "gat" },
-		{ "id": "g05", "titol": "Passeig amb el gos", "data": "2026-09-21", "il": "gos" },
-		{ "id": "g06", "titol": "El carrer de casa", "data": "2026-06-18", "il": "carrer" },
-		{ "id": "g07", "titol": "Dinar de diumenge", "data": "2026-10-04", "il": "plat" },
-		{ "id": "g08", "titol": "Capvespre des del terrat", "data": "2026-08-29", "il": "cel-vespre" },
-		{ "id": "g09", "titol": "Tarda al parc", "data": "2026-05-23", "il": "parc" },
-		{ "id": "g10", "titol": "Volta en bicicleta", "data": "2026-06-07", "il": "bicicleta" },
-		{ "id": "g11", "titol": "Flors del balcó", "data": "2026-04-19", "il": "flors" },
-		{ "id": "g12", "titol": "Pa de pagès acabat de fer", "data": "2026-10-18", "il": "pa" }
+		{ "id": "g01", "titol": "Playa de Montgat a primera hora", "data": "2026-08-14", "il": "mar-matinal" },
+		{ "id": "g02", "titol": "Excursión a la sierra", "data": "2026-07-02", "il": "muntanya" },
+		{ "id": "g03", "titol": "Puesto de fruta en el mercado", "data": "2026-09-05", "il": "mercat" },
+		{ "id": "g04", "titol": "El gato durmiendo en el sofá", "data": "2026-10-11", "il": "gat" },
+		{ "id": "g05", "titol": "Paseo con el perro", "data": "2026-09-21", "il": "gos" },
+		{ "id": "g06", "titol": "La calle de casa", "data": "2026-06-18", "il": "carrer" },
+		{ "id": "g07", "titol": "Comida del domingo", "data": "2026-10-04", "il": "plat" },
+		{ "id": "g08", "titol": "Atardecer desde la azotea", "data": "2026-08-29", "il": "cel-vespre" },
+		{ "id": "g09", "titol": "Tarde en el parque", "data": "2026-05-23", "il": "parc" },
+		{ "id": "g10", "titol": "Vuelta en bicicleta", "data": "2026-06-07", "il": "bicicleta" },
+		{ "id": "g11", "titol": "Flores del balcón", "data": "2026-04-19", "il": "flors" },
+		{ "id": "g12", "titol": "Pan de pueblo recién hecho", "data": "2026-10-18", "il": "pa" }
 	],
 	"diari": [
 		{
 			"id": "d01",
-			"titol": "El mercat del barri estrena horari de tarda",
-			"entradeta": "Les parades obriran també els dijous fins a les set.",
+			"titol": "El mercado del barrio estrena horario de tarde",
+			"entradeta": "Los puestos abrirán también los jueves hasta las siete.",
 			"cos": [
-				"Els paradistes del mercat municipal han acordat ampliar l'horari els dijous a la tarda, una demanda de molts veïns que treballen al matí.",
-				"La mesura es provarà durant tres mesos i després se'n farà balanç amb l'associació de comerciants."
+				"Los placeros del mercado municipal han acordado ampliar el horario los jueves por la tarde, una demanda de muchos vecinos que trabajan por la mañana.",
+				"La medida se probará durante tres meses y después se hará balance con la asociación de comerciantes."
 			],
-			"seccio": "Barri",
+			"seccio": "Barrio",
 			"data": "2026-10-20",
 			"il": "mercat"
 		},
 		{
 			"id": "d02",
-			"titol": "Comencen les obres de la plaça Major",
-			"entradeta": "Es renovarà el paviment i s'hi plantaran arbres nous.",
+			"titol": "Comienzan las obras de la plaza Mayor",
+			"entradeta": "Se renovará el pavimento y se plantarán árboles nuevos.",
 			"cos": [
-				"L'Ajuntament ha començat aquesta setmana la reforma de la plaça Major, que s'allargarà unes sis setmanes.",
-				"Durant les obres, el pas de vianants es farà pel costat de l'església i els bancs es traslladaran temporalment al parc veí."
+				"El Ayuntamiento ha empezado esta semana la reforma de la plaza Mayor, que se alargará unas seis semanas.",
+				"Durante las obras, el paso de peatones se hará por el lado de la iglesia y los bancos se trasladarán temporalmente al parque vecino."
 			],
-			"seccio": "Obres",
+			"seccio": "Obras",
 			"data": "2026-10-22",
 			"il": "carrer"
 		},
 		{
 			"id": "d03",
-			"titol": "La festa major ja té programa",
-			"entradeta": "Concerts, gegants i una mostra de truites per a tothom.",
+			"titol": "La fiesta mayor ya tiene programa",
+			"entradeta": "Conciertos, gigantes y una muestra de tortillas para todos.",
 			"cos": [
-				"Aquest any la festa major omplirà el barri de música durant quatre dies, amb actuacions de colles locals i un correfoc infantil.",
-				"La mostra de truites de patates serà dissabte al migdia i s'hi pot apuntar qualsevol veí."
+				"Este año la fiesta mayor llenará el barrio de música durante cuatro días, con actuaciones de grupos locales y un correfoc infantil.",
+				"La muestra de tortillas de patata será el sábado a mediodía y puede apuntarse cualquier vecino."
 			],
 			"seccio": "Cultura",
 			"data": "2026-10-15",
@@ -357,11 +357,11 @@
 		},
 		{
 			"id": "d04",
-			"titol": "La biblioteca amplia el club de lectura",
-			"entradeta": "Naixen dos grups nous, un per a joves i un en lletra gran.",
+			"titol": "La biblioteca amplía el club de lectura",
+			"entradeta": "Nacen dos grupos nuevos, uno para jóvenes y otro en letra grande.",
 			"cos": [
-				"La Biblioteca del Barri ha rebut més inscripcions de les previstes i obre dos clubs de lectura nous.",
-				"Les trobades seran quinzenals i els llibres es podran agafar en préstec de forma gratuïta."
+				"La Biblioteca del Barrio ha recibido más inscripciones de las previstas y abre dos clubes de lectura nuevos.",
+				"Los encuentros serán quincenales y los libros se podrán coger en préstamo de forma gratuita."
 			],
 			"seccio": "Cultura",
 			"data": "2026-10-10",
@@ -369,49 +369,49 @@
 		},
 		{
 			"id": "d05",
-			"titol": "El club de bàsquet guanya el derbi",
-			"entradeta": "Victòria per 68 a 61 al pavelló davant una graderia plena.",
+			"titol": "El club de baloncesto gana el derbi",
+			"entradeta": "Victoria por 68 a 61 en el pabellón ante una grada llena.",
 			"cos": [
-				"L'equip sènior va remuntar a l'últim quart un partit que havia començat amb deu punts de desavantatge.",
-				"L'entrenador va destacar la feina de l'afició i va convidar els veïns al proper partit a casa."
+				"El equipo sénior remontó en el último cuarto un partido que había empezado con diez puntos de desventaja.",
+				"El entrenador destacó el trabajo de la afición e invitó a los vecinos al próximo partido en casa."
 			],
-			"seccio": "Esports",
+			"seccio": "Deportes",
 			"data": "2026-10-25",
 			"il": "parc"
 		},
 		{
 			"id": "d06",
-			"titol": "Un carril bici connectarà el barri amb la platja",
-			"entradeta": "El nou tram tindrà dos quilòmetres i anirà separat del trànsit.",
+			"titol": "Un carril bici conectará el barrio con la playa",
+			"entradeta": "El nuevo tramo tendrá dos kilómetros e irá separado del tráfico.",
 			"cos": [
-				"El projecte preveu un carril bici segregat que unirà l'avinguda principal amb el passeig marítim.",
-				"Els veïns podran veure el traçat en una exposició oberta al vestíbul del centre cívic."
+				"El proyecto prevé un carril bici segregado que unirá la avenida principal con el paseo marítimo.",
+				"Los vecinos podrán ver el trazado en una exposición abierta en el vestíbulo del centro cívico."
 			],
-			"seccio": "Mobilitat",
+			"seccio": "Movilidad",
 			"data": "2026-10-08",
 			"il": "bicicleta"
 		},
 		{
 			"id": "d07",
-			"titol": "Tornen les jornades de poda al parc",
-			"entradeta": "Voluntaris i jardiners cuidaran els arbres durant el cap de setmana.",
+			"titol": "Vuelven las jornadas de poda en el parque",
+			"entradeta": "Voluntarios y jardineros cuidarán los árboles durante el fin de semana.",
 			"cos": [
-				"L'associació d'amics del parc convoca els veïns a una jornada de poda i neteja el dissabte al matí.",
-				"Es repartiran guants i eines, i en acabar hi haurà esmorzar per a tots els participants."
+				"La asociación de amigos del parque convoca a los vecinos a una jornada de poda y limpieza el sábado por la mañana.",
+				"Se repartirán guantes y herramientas, y al terminar habrá desayuno para todos los participantes."
 			],
-			"seccio": "Barri",
+			"seccio": "Barrio",
 			"data": "2026-10-27",
 			"il": "bosc"
 		},
 		{
 			"id": "d08",
-			"titol": "La font de la plaça torna a rajar",
-			"entradeta": "Després de dos anys seca, la font centenària ha estat restaurada.",
+			"titol": "La fuente de la plaza vuelve a manar",
+			"entradeta": "Tras dos años seca, la fuente centenaria ha sido restaurada.",
 			"cos": [
-				"Un grup d'artesans ha recuperat la font de pedra del segle passat i l'ha tornada a connectar a la xarxa d'aigua.",
-				"La inauguració serà diumenge amb una petita xocolatada per als més menuts."
+				"Un grupo de artesanos ha recuperado la fuente de piedra del siglo pasado y la ha vuelto a conectar a la red de agua.",
+				"La inauguración será el domingo con una pequeña chocolatada para los más pequeños."
 			],
-			"seccio": "Barri",
+			"seccio": "Barrio",
 			"data": "2026-10-28",
 			"il": "font"
 		}
@@ -426,20 +426,20 @@
 			{ "id": "p_biel", "nom": "Biel Costa", "usuari": "bielcosta", "il": "gos" },
 			{ "id": "p_laia", "nom": "Laia Mas", "usuari": "laia.mas", "il": "platja" },
 			{ "id": "p_quim", "nom": "Quim Serra", "usuari": "quimserra", "il": "parc" },
-			{ "id": "p_sorteigs", "nom": "Sorteigs Cal Roig", "usuari": "cal.roig.botlga", "il": "pa" },
-			{ "id": "p_botiga", "nom": "Cal Roig · Botiga", "usuari": "cal.roig.botiga", "il": "pa" }
+			{ "id": "p_sorteigs", "nom": "Sorteos Cal Roig", "usuari": "cal.roig.botlga", "il": "pa" },
+			{ "id": "p_botiga", "nom": "Cal Roig · Tienda", "usuari": "cal.roig.botiga", "il": "pa" }
 		],
 		"publicacions": [
-			{ "id": "u01", "autor": "p_nuria", "text": "Els gira-sols del balcó han florit per fi, després de tant esperar.", "il": "flors", "likes": 34 },
-			{ "id": "u02", "autor": "p_jordi", "text": "Sortida de diumenge, 40 km i unes cames que no sento.", "il": "bicicleta", "likes": 58 },
-			{ "id": "u03", "autor": "p_aina", "text": "La Mimi ha decidit que el meu portàtil és el seu llit.", "il": "gat", "likes": 112 },
-			{ "id": "u04", "autor": "p_oriol", "text": "Hem arribat dalt de tot. Les vistes ho compensen.", "il": "muntanya", "likes": 76 },
-			{ "id": "u05", "autor": "p_carme", "text": "Hornada de pa de dissabte. Es nota que ja ve el fred.", "il": "pa", "likes": 41 },
-			{ "id": "u06", "autor": "p_biel", "text": "Passejada de matinada amb el Trufa.", "il": "gos", "likes": 87 },
-			{ "id": "u07", "autor": "p_laia", "text": "Bany de tardor, l'aigua encara es pot aguantar.", "il": "platja", "likes": 63 },
-			{ "id": "u08", "autor": "p_quim", "text": "Tarda de cartes i berenar al parc amb els amics.", "il": "parc", "likes": 29 },
-			{ "id": "u09", "autor": "p_nuria", "text": "Un cel així no es veu cada dia.", "il": "cel-vespre", "likes": 95 },
-			{ "id": "u10", "autor": "p_oriol", "text": "Bolets al bosc després de la pluja del cap de setmana.", "il": "bosc", "likes": 47 }
+			{ "id": "u01", "autor": "p_nuria", "text": "Los girasoles del balcón han florecido por fin, después de tanto esperar.", "il": "flors", "likes": 34 },
+			{ "id": "u02", "autor": "p_jordi", "text": "Salida del domingo, 40 km y unas piernas que no siento.", "il": "bicicleta", "likes": 58 },
+			{ "id": "u03", "autor": "p_aina", "text": "La Mimi ha decidido que mi portátil es su cama.", "il": "gat", "likes": 112 },
+			{ "id": "u04", "autor": "p_oriol", "text": "Hemos llegado a lo más alto. Las vistas lo compensan.", "il": "muntanya", "likes": 76 },
+			{ "id": "u05", "autor": "p_carme", "text": "Hornada de pan del sábado. Se nota que ya llega el frío.", "il": "pa", "likes": 41 },
+			{ "id": "u06", "autor": "p_biel", "text": "Paseo de madrugada con Trufa.", "il": "gos", "likes": 87 },
+			{ "id": "u07", "autor": "p_laia", "text": "Baño de otoño, el agua todavía se aguanta.", "il": "platja", "likes": 63 },
+			{ "id": "u08", "autor": "p_quim", "text": "Tarde de cartas y merienda en el parque con los amigos.", "il": "parc", "likes": 29 },
+			{ "id": "u09", "autor": "p_nuria", "text": "Un cielo así no se ve todos los días.", "il": "cel-vespre", "likes": 95 },
+			{ "id": "u10", "autor": "p_oriol", "text": "Setas en el bosque después de la lluvia del fin de semana.", "il": "bosc", "likes": 47 }
 		]
 	}
 }

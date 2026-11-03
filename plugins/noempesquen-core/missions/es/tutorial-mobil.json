@@ -2,40 +2,40 @@
 	"id": "tutorial-mobil",
 	"versio": 2,
 	"tutorial": true,
-	"titol": "Aprèn a jugar al mòbil",
-	"resum": "La Pirata Remei t'ensenya pas a pas el mòbil: apps, botons, avisos, SMS, la lupa i com decidir.",
+	"titol": "Aprende a jugar en el móvil",
+	"resum": "La Pirata Remei te enseña paso a paso el móvil: apps, botones, avisos, SMS, la lupa y cómo decidir.",
 	"dispositiu": "mobil",
 	"personatge": "remei",
 	"nivell": 1,
 	"durada_minuts": 3,
 	"rellotge": "18:30",
-	"instruccions": "Segueix la guia pas a pas: et dirà on tocar en cada moment.",
+	"instruccions": "Sigue la guía paso a paso: te dirá dónde tocar en cada momento.",
 	"pistes": [
-		"Toca la icona de Parla, a la pantalla d'inici.",
-		"Toca l'avís de l'SMS. Si ha marxat, toca la barra de dalt de tot i el trobaràs al centre de control.",
-		"Obre l'SMS de Premis Fantasia, activa la lupa i toca el remitent i el premi.",
-		"Quan ho tinguis clar, torna a Parla i toca «Ja ho tinc clar»."
+		"Toca el icono de Parla, en la pantalla de inicio.",
+		"Toca el aviso del SMS. Si ha desaparecido, toca la barra de arriba del todo y lo encontrarás en el centro de control.",
+		"Abre el SMS de Premios Fantasía, activa la lupa y toca el remitente y el premio.",
+		"Cuando lo tengas claro, vuelve a Parla y toca «Ya lo tengo claro»."
 	],
 	"passos": [
 		{
 			"id": "bloqueig",
 			"ancora": null,
-			"titol": "Un mòbil de pràctica",
-			"text": "Aquest mòbil és de pràctica: res del que facis surt d'aquí. Ja has passat la pantalla de bloqueig, la primera que veus en encendre'l.",
+			"titol": "Un móvil de práctica",
+			"text": "Este móvil es de práctica: nada de lo que hagas sale de aquí. Ya has pasado la pantalla de bloqueo, la primera que ves al encenderlo.",
 			"continua": "boto"
 		},
 		{
 			"id": "inici",
 			"ancora": null,
-			"titol": "La pantalla d'inici",
-			"text": "Aquesta és la pantalla d'inici. Hi tens totes les apps: toca'n una o fes-hi clic per obrir-la.",
+			"titol": "La pantalla de inicio",
+			"text": "Esta es la pantalla de inicio. Aquí tienes todas las apps: toca una o haz clic en ella para abrirla.",
 			"continua": "boto"
 		},
 		{
 			"id": "dock",
 			"ancora": "dock",
-			"titol": "Les apps de sota",
-			"text": "A baix tens les apps que més faràs servir. Toca el Navegador o fes-hi clic.",
+			"titol": "Las apps de abajo",
+			"text": "Abajo tienes las apps que más vas a usar. Toca el Navegador o haz clic en él.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "navegador"
@@ -44,8 +44,8 @@
 		{
 			"id": "nav-enrere",
 			"ancora": "nav-enrere",
-			"titol": "El botó Enrere",
-			"text": "Aquest botó et torna a la pantalla d'abans. Toca'l o fes-hi clic.",
+			"titol": "El botón Atrás",
+			"text": "Este botón te devuelve a la pantalla anterior. Tócalo o haz clic en él.",
 			"continua": {
 				"esdeveniment": "nav.enrere"
 			}
@@ -53,8 +53,8 @@
 		{
 			"id": "nav-inici",
 			"ancora": "nav-inici",
-			"titol": "El botó Inici",
-			"text": "Aquest et porta a la pantalla d'inici des d'on siguis. Toca'l o fes-hi clic.",
+			"titol": "El botón Inicio",
+			"text": "Este te lleva a la pantalla de inicio estés donde estés. Tócalo o haz clic en él.",
 			"continua": {
 				"esdeveniment": "nav.inici"
 			}
@@ -62,15 +62,15 @@
 		{
 			"id": "app-missatges",
 			"ancora": "app-missatges",
-			"titol": "Missatges",
-			"text": "Aquesta és Missatges. Aquí t'arriben els SMS, els missatges de text del mòbil.",
+			"titol": "Mensajes",
+			"text": "Esta es Mensajes. Aquí te llegan los SMS, los mensajes de texto del móvil.",
 			"continua": "boto"
 		},
 		{
 			"id": "parla",
 			"ancora": "app-parla-mobil",
-			"titol": "Parla, el xat",
-			"text": "Parla és l'app de xat. Toca-la o fes-hi clic: la Remei t'hi espera per fer-te de guia.",
+			"titol": "Parla, el chat",
+			"text": "Parla es la app de chat. Tócala o haz clic en ella: Remei te espera para hacerte de guía.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "parla"
@@ -79,15 +79,15 @@
 		{
 			"id": "respostes",
 			"ancora": "parla-respostes",
-			"titol": "Respostes ràpides",
-			"text": "Per contestar, toca els botons de sota o fes-hi clic. Ara només hi ha «Ja ho tinc clar»: el faràs servir al final.",
+			"titol": "Respuestas rápidas",
+			"text": "Para contestar, toca los botones de abajo o haz clic en ellos. Ahora solo está «Ya lo tengo claro»: lo usarás al final.",
 			"continua": "boto"
 		},
 		{
 			"id": "banner",
 			"ancora": "banner",
-			"titol": "Un avís",
-			"text": "T'acaba d'arribar un SMS i surt un avís a dalt. Toca'l o fes-hi clic per obrir Missatges.",
+			"titol": "Un aviso",
+			"text": "Te acaba de llegar un SMS y sale un aviso arriba. Tócalo o haz clic en él para abrir Mensajes.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "missatges"
@@ -96,8 +96,8 @@
 		{
 			"id": "missatges",
 			"ancora": "llista-sms",
-			"titol": "Els teus SMS",
-			"text": "Aquí tens els SMS. Toca el de Premis Fantasia o fes-hi clic per llegir-lo.",
+			"titol": "Tus SMS",
+			"text": "Aquí tienes los SMS. Toca el de Premios Fantasía o haz clic en él para leerlo.",
 			"continua": {
 				"esdeveniment": "missatge.obre",
 				"app": "missatges",
@@ -108,7 +108,7 @@
 			"id": "lupa",
 			"ancora": "lupa",
 			"titol": "La lupa",
-			"text": "Toca la lupa o fes-hi clic per encendre-la. Amb la lupa encesa, cada toc o clic marca el que et sembla sospitós.",
+			"text": "Toca la lupa o haz clic en ella para encenderla. Con la lupa encendida, cada toque o clic marca lo que te parece sospechoso.",
 			"continua": {
 				"esdeveniment": "lupa.activa"
 			}
@@ -116,8 +116,8 @@
 		{
 			"id": "indici-remitent",
 			"ancora": "conversa",
-			"titol": "Primer indici: el remitent",
-			"text": "Toca el nom de qui t'escriu, a dalt, o fes-hi clic. Cap empresa de debò es diu «Premis Fantasia».",
+			"titol": "Primer indicio: el remitente",
+			"text": "Toca el nombre de quien te escribe, arriba, o haz clic en él. Ninguna empresa de verdad se llama «Premios Fantasía».",
 			"continua": {
 				"esdeveniment": "senyal.troba",
 				"senyal": "remitent"
@@ -126,8 +126,8 @@
 		{
 			"id": "indici-premi",
 			"ancora": "conversa",
-			"titol": "Segon indici: el premi",
-			"text": "Ara toca la frase del premi o fes-hi clic. Ningú regala un iot per un sorteig on no t'has apuntat.",
+			"titol": "Segundo indicio: el premio",
+			"text": "Ahora toca la frase del premio o haz clic en ella. Nadie regala un yate por un sorteo en el que no te has apuntado.",
 			"continua": {
 				"esdeveniment": "senyal.troba",
 				"senyal": "premi"
@@ -136,8 +136,8 @@
 		{
 			"id": "obre-centre",
 			"ancora": "barra-estat",
-			"titol": "El centre de control",
-			"text": "La Remei t'ha escrit. Toca la barra de dalt de tot o fes-hi clic: s'obre el centre de control, amb tots els avisos.",
+			"titol": "El centro de control",
+			"text": "Remei te ha escrito. Toca la barra de arriba del todo o haz clic en ella: se abre el centro de control, con todos los avisos.",
 			"continua": {
 				"esdeveniment": "centre.obre"
 			}
@@ -145,8 +145,8 @@
 		{
 			"id": "centre-control",
 			"ancora": "centre-control",
-			"titol": "Tots els avisos",
-			"text": "Aquí queden els avisos que se t'escapen. Toca el de la Remei o fes-hi clic per tornar a Parla.",
+			"titol": "Todos los avisos",
+			"text": "Aquí quedan los avisos que se te escapan. Toca el de Remei o haz clic en él para volver a Parla.",
 			"continua": {
 				"esdeveniment": "app.obre",
 				"app": "parla"
@@ -155,8 +155,8 @@
 		{
 			"id": "decisio",
 			"ancora": "decisio",
-			"titol": "Decideix",
-			"text": "Toca «Ja ho tinc clar» o fes-hi clic, i després l'opció que surt, «Ja ho tinc clar: és un SMS de mentida». A les missions, decidir bé dona més punts que trobar indicis; aquí no puntua.",
+			"titol": "Decide",
+			"text": "Toca «Ya lo tengo claro» o haz clic en él, y después la opción que aparece, «Ya lo tengo claro: es un SMS falso». En las misiones, decidir bien da más puntos que encontrar indicios; aquí no puntúa.",
 			"continua": {
 				"esdeveniment": "decisio.pren"
 			}
@@ -170,17 +170,17 @@
 					"objectiu": true,
 					"ocult": true,
 					"remitent": {
-						"nom": "Premis Fantasia",
+						"nom": "Premios Fantasía",
 						"senyal": "remitent"
 					},
 					"hora": "18:32",
 					"cos": [
 						[
 							{
-								"t": "Enhorabona! "
+								"t": "¡Enhorabuena! "
 							},
 							{
-								"t": "Has guanyat un iot de luxe en un sorteig on no t'havies apuntat mai.",
+								"t": "Has ganado un yate de lujo en un sorteo en el que nunca te habías apuntado.",
 								"senyal": "premi"
 							}
 						]
@@ -201,7 +201,7 @@
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "Remei",
-					"text": "Ei, sóc la Remei. Obre Parla i et faig de guia. Res del que veuràs aquí és de veritat."
+					"text": "Eh, soy Remei. Abre Parla y te hago de guía. Nada de lo que verás aquí es de verdad."
 				}
 			]
 		},
@@ -220,8 +220,8 @@
 					"tipus": "notifica",
 					"so": "alerta",
 					"app": "missatges",
-					"titol": "Premis Fantasia",
-					"text": "Enhorabona! Has guanyat un iot de luxe. Obre el missatge per saber com reclamar el premi."
+					"titol": "Premios Fantasía",
+					"text": "¡Enhorabuena! Has ganado un yate de lujo. Abre el mensaje para saber cómo reclamar el premio."
 				}
 			]
 		}
@@ -229,40 +229,40 @@
 	"senyals": [
 		{
 			"id": "remitent",
-			"titol": "Un remitent absurd",
-			"explicacio": "Cap empresa de debò es diu «Premis Fantasia». Mira sempre qui t'escriu abans de creure't res.",
-			"reaccio": "Ben vist. Mira com ha pujat el comptador «Indicis»."
+			"titol": "Un remitente absurdo",
+			"explicacio": "Ninguna empresa de verdad se llama «Premios Fantasía». Mira siempre quién te escribe antes de creerte nada.",
+			"reaccio": "Bien visto. Mira cómo ha subido el contador «Indicios»."
 		},
 		{
 			"id": "premi",
-			"titol": "Un premi que no has demanat",
-			"explicacio": "Ningú regala un iot per un sorteig on no t'has apuntat. Un premi que no has demanat és una manera de fer-te picar.",
-			"reaccio": "Tots trobats. Ara torna a Parla per decidir."
+			"titol": "Un premio que no has pedido",
+			"explicacio": "Nadie regala un yate por un sorteo en el que no te has apuntado. Un premio que no has pedido es una manera de hacerte caer.",
+			"reaccio": "Todos encontrados. Ahora vuelve a Parla para decidir."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això sembla normal. Prova en una altra part del SMS.",
-			"Aquí no hi ha cap trampa."
+			"Eso parece normal. Prueba en otra parte del SMS.",
+			"Aquí no hay ninguna trampa."
 		]
 	},
 	"decisio": {
-		"pregunta": "Què en fas, del SMS de Premis Fantasia?",
+		"pregunta": "¿Qué haces con el SMS de Premios Fantasía?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "Ja ho tinc clar: és un SMS de mentida i no en faig cas.",
+				"text": "Ya lo tengo claro: es un SMS falso y no le hago caso.",
 				"valor": "correcta",
-				"resposta": "Ben fet. Quan decideixes, et dic com ha anat i després veus el resultat. A les missions hi haurà més opcions, i la que triïs és el que més compta a la puntuació."
+				"resposta": "Bien hecho. Cuando decides, te cuento cómo ha ido y después ves el resultado. En las misiones habrá más opciones, y la que elijas es lo que más cuenta en la puntuación."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Enrere fa un pas enrere i Inici et porta a la pantalla d'inici.",
-			"Els avisos et porten a l'app que avisa, i el centre de control els guarda.",
-			"Amb la lupa marques els indicis; a les missions, la decisió final és el que més puntua."
+			"Atrás da un paso atrás e Inicio te lleva a la pantalla de inicio.",
+			"Los avisos te llevan a la app que avisa, y el centro de control los guarda.",
+			"Con la lupa marcas los indicios; en las misiones, la decisión final es lo que más puntúa."
 		],
-		"consell": "Si un missatge et fa pressa o sembla massa bo, para i mira'l amb la lupa."
+		"consell": "Si un mensaje te mete prisa o parece demasiado bueno, para y míralo con la lupa."
 	}
 }
