@@ -5,6 +5,7 @@
  * Esborrats i bloquejats són estat local de la interfície; al motor només
  * li arriben els esdeveniments ({ app, id } o { id } del contacte).
  */
+import { comparador } from '../../nucli/idioma.js';
 import { visible } from '../../nucli/motor.js';
 import { ordenaXats } from '../parla/xats.js';
 
@@ -131,7 +132,7 @@ export function contactesLocalitzables( fils, mon ) {
 		}
 	} );
 	return [ ...vistos.values() ].sort( ( a, b ) =>
-		a.nom.localeCompare( b.nom, 'ca' )
+		comparador()( a.nom, b.nom )
 	);
 }
 

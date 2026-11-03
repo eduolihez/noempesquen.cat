@@ -1,21 +1,7 @@
 /**
  * Lògica pura d'El Diari del Barri: rutes, URL de notícia, seccions i dates.
  */
-
-const MESOS = [
-	'gener',
-	'febrer',
-	'març',
-	'abril',
-	'maig',
-	'juny',
-	'juliol',
-	'agost',
-	'setembre',
-	'octubre',
-	'novembre',
-	'desembre',
-];
+import { formataDataLlarga } from '../../nucli/idioma.js';
 
 export const URL_PORTADA = 'https://diaridelbarri.cat/';
 
@@ -69,7 +55,7 @@ export function seccions( diari ) {
 }
 
 /**
- * Data ISO (AAAA-MM-DD) en català: «12 d'octubre de 2026».
+ * Data ISO (AAAA-MM-DD) segons l'idioma: «12 d'octubre de 2026» / «12 de octubre de 2026».
  *
  * @param {string} iso Data ISO.
  * @return {string} Text; l'original si no és una data vàlida.
@@ -88,7 +74,5 @@ export function formataData( iso ) {
 	) {
 		return iso;
 	}
-	const mes = MESOS[ me - 1 ];
-	const de = /^[aeiouh]/.test( mes ) ? "d'" : 'de ';
-	return `${ d } ${ de }${ mes } de ${ a }`;
+	return formataDataLlarga( a, me, d );
 }

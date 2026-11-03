@@ -5,6 +5,7 @@
  * Marques locals: { [id]: { carpeta?, llegit?, destacat? } }. Són estat de
  * la interfície de Posta; el motor només rep els esdeveniments.
  */
+import { clauDia } from '../../nucli/idioma.js';
 import { visible } from '../../nucli/motor.js';
 
 export const CARPETES = [
@@ -31,7 +32,7 @@ function rang( data ) {
 	if ( HORA.test( data ?? '' ) ) {
 		return 0;
 	}
-	return data === 'ahir' ? 1 : 2;
+	return clauDia( data ) === 'ahir' ? 1 : 2;
 }
 
 function compara( a, b ) {

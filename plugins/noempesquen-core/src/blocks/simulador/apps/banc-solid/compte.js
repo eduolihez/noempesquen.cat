@@ -21,25 +21,7 @@ export const SALDO = 2348.62;
  */
 export const nomPilaJugador = nomPila;
 
-/**
- * Import en format català: «2.348,62 €».
- *
- * @param {number}  valor Import (negatiu = càrrec).
- * @param {boolean} signe Afegeix «+» als positius.
- * @return {string} Text.
- */
-export function formataImport( valor, signe = false ) {
-	const abs = Math.abs( valor );
-	const [ enters, decimals ] = abs.toFixed( 2 ).split( '.' );
-	const grups = enters.replace( /\B(?=(\d{3})+(?!\d))/g, '.' );
-	let prefix = '';
-	if ( valor < 0 ) {
-		prefix = '-';
-	} else if ( signe && valor > 0 ) {
-		prefix = '+';
-	}
-	return `${ prefix }${ grups },${ decimals } €`;
-}
+export { formataImport } from '../../nucli/idioma.js';
 
 /**
  * IBAN emmascarat: només es veuen el país i els quatre darrers dígits.

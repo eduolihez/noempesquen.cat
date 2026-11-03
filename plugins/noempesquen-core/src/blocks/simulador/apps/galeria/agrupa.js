@@ -3,6 +3,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { formataDataLlarga } from '../../nucli/idioma.js';
 
 /** «Avui» del món simulat (no la data real del jugador). */
 export const DATA_MON = '2026-10-29';
@@ -41,13 +42,7 @@ export function etiquetaData( iso, ara = DATA_MON ) {
 		return __( 'Ahir', 'noempesquen' );
 	}
 	const { a, m, d } = partsData( iso );
-	// Només el nom del mes ve d'Intl: el locale «ca» diu «del 2026».
-	const mes = new Intl.DateTimeFormat( 'ca', {
-		month: 'long',
-		timeZone: 'UTC',
-	} ).format( new Date( Date.UTC( a, m - 1, d ) ) );
-	const de = /^[aeiouh]/i.test( mes ) ? "d'" : 'de ';
-	return `${ d } ${ de }${ mes } de ${ a }`;
+	return formataDataLlarga( a, m, d );
 }
 
 /**

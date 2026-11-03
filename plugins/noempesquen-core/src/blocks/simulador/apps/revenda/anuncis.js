@@ -66,22 +66,7 @@ export function idsVisibles( estat ) {
 	return Object.keys( v ).filter( ( id ) => v[ id ] );
 }
 
-/**
- * Preu d'un anunci en euros, en format català («120 €», «12,50 €»).
- *
- * @param {number} preu Preu.
- * @return {string} Preu formatat.
- */
-export function formataPreu( preu ) {
-	if ( typeof preu !== 'number' || ! Number.isFinite( preu ) ) {
-		return '';
-	}
-	const xifra = new Intl.NumberFormat( 'ca-ES', {
-		minimumFractionDigits: Number.isInteger( preu ) ? 0 : 2,
-		maximumFractionDigits: 2,
-	} ).format( preu );
-	return `${ xifra } €`;
-}
+export { formataPreu } from '../../nucli/idioma.js';
 
 /**
  * Text pla d'un missatge (segments `{ t }` i `{ enllac: { text } }`), per a

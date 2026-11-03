@@ -5,6 +5,7 @@ import {
 	useMemo,
 	useRef,
 } from '@wordpress/element';
+import { fixaIdioma } from '../nucli/idioma';
 import { combinaMissions } from '../nucli/missions';
 import { triaConjunt, urlMissions } from '../nucli/conjunt-missions';
 import { seguentDe } from '../nucli/ruta';
@@ -202,6 +203,7 @@ function useMissions( { api, previsualitza, nonce, lang } ) {
 }
 
 export function App( { config } ) {
+	fixaIdioma( config.lang );
 	const { missions, fallaPrevi, mon } = useMissions( config );
 	const esMobil = useEsMobil();
 	let preferit = esMobil ? 'mobil' : 'pc';

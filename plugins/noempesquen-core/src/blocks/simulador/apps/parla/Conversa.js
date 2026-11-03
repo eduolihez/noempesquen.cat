@@ -5,6 +5,7 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { clauDia } from '../../nucli/idioma.js';
 import { IconaCerca, IconaLupa } from '../../ui/icones';
 import { IconaEnrere } from '../missatges/icones';
 import { Inspeccionable } from '../../ui/Inspeccionable';
@@ -36,7 +37,7 @@ function etiquetaDia( dia ) {
 		'ds.': __( 'Dissabte', 'noempesquen' ),
 		'dg.': __( 'Diumenge', 'noempesquen' ),
 	};
-	return dies[ dia ] ?? dia;
+	return dies[ clauDia( dia ) ] ?? dia;
 }
 
 function Bombolla( { m, cua, nom } ) {

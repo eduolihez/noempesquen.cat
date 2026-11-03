@@ -2,6 +2,7 @@
  * Ajudes pures de Parla (sense JSX): hores dels xats de farciment, ordre,
  * cerca, separadors de dia i revelació dels missatges del guia.
  */
+import { clauDia } from '../../nucli/idioma.js';
 
 /**
  * Separa una hora de mon.json («ahir 18:40», «dl. 20:15», «08:05»).
@@ -28,7 +29,7 @@ function antiguitat( dia ) {
 	if ( ! dia ) {
 		return 0;
 	}
-	return dia === 'ahir' ? 1 : 2;
+	return clauDia( dia ) === 'ahir' ? 1 : 2;
 }
 
 function clauRecent( xat ) {
