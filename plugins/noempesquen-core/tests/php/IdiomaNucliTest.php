@@ -68,4 +68,22 @@ final class IdiomaNucliTest extends TestCase {
 		$this->assertSame( '/ca/', nep_ruta_idioma( '/', 'ca' ) );
 		$this->assertSame( '/simulador/', nep_ruta_idioma( 'simulador/', 'es' ) );
 	}
+
+	public function test_majuscules_i_codificacio_donen_es(): void {
+		$this->assertSame( 'es', nep_idioma_de_ruta( '/CA/simulador/', '/' ) );
+		$this->assertSame( 'es', nep_idioma_de_ruta( '/%63a/simulador/', '/' ) );
+	}
+
+	public function test_locale_usuari_a_l_editor(): void {
+		$this->assertTrue( nep_respecta_locale_usuari( 'user' ) );
+		$this->assertFalse( nep_respecta_locale_usuari( 'user', 'ca' ) );
+		$this->assertFalse( nep_respecta_locale_usuari( 'user', null, 'ca' ) );
+		$this->assertFalse( nep_respecta_locale_usuari( 'site' ) );
+		$this->assertFalse( nep_respecta_locale_usuari( null ) );
+	}
+
+	public function test_lang_html(): void {
+		$this->assertSame( 'es-ES', nep_lang_html( 'es_ES' ) );
+		$this->assertSame( 'ca', nep_lang_html( 'ca' ) );
+	}
 }

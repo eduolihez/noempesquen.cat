@@ -53,6 +53,9 @@ function nep_ruta_relativa( string $uri, string $base = '/' ): string {
 /**
  * Idioma segons la ruta: `ca` si comença pel segment `/ca`, si no `es`.
  *
+ * A propòsit, la comparació és literal: `/CA/…` i rutes amb %-encoding
+ * (`/%63a/…`) donen `es` (les URLs canòniques catalanes són sempre `/ca/`).
+ *
  * @param string $uri  REQUEST_URI.
  * @param string $base Ruta de home_url().
  * @return string `es`|`ca`.
@@ -124,4 +127,27 @@ function nep_locale_idioma( string $idioma ): string {
 function nep_ruta_idioma( string $ruta, string $idioma ): string {
 	$ruta = '/' . ltrim( $ruta, '/' );
 	return 'ca' === $idioma ? '/ca' . $ruta : $ruta;
+}
+
+/**
+ * Indica si cal respectar el locale de l'usuari: `?_locale=user` (editor de
+ * blocs) sense `?lang=` ni `X-Nep-Lang`.
+ *
+ * @param mixed       $locale_param Valor de `?_locale=`.
+ * @param mixed       $lang         Valor de `?lang=`.
+ * @param string|null $capcalera    Valor de la capçalera `X-Nep-Lang`.
+ * @return bool
+ */
+function nep_respecta_locale_usuari( $locale_param, $lang = null, ?string $capcalera = null ): bool {
+	return 'user' === $locale_param && null === $lang && null === $capcalera;
+}
+
+/**
+ * Valor de `<html lang>` per a un locale de WordPress (`es_ES` → `es-ES`).
+ *
+ * @param string $locale Locale.
+ * @return string
+ */
+function nep_lang_html( string $locale ): string {
+	return str_replace( '_', '-', $locale );
 }

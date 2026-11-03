@@ -17,6 +17,6 @@
     "WPLANG": "es_ES"
   },
   "lifecycleScripts": {
-    "afterStart": "wp-env run cli wp language core install ca && wp-env run cli wp language core install es_ES --activate &&wp-env run cli wp theme activate noempesquen && wp-env run cli wp rewrite structure /%postname%/"
+    "afterStart": "wp-env run cli wp language core install ca && wp-env run cli wp language core install es_ES --activate && wp-env run cli wp user meta update admin locale ca && wp-env run cli wp theme activate noempesquen && wp-env run cli wp rewrite structure /%postname%/"
   }
 }

@@ -60,17 +60,21 @@ function nep_url( string $ruta, ?string $idioma = null ): string {
  * `html_lang_attribute` per `es`, i SEO (hreflang) vol `es-ES`.
  */
 add_filter(
-	'gettext_default',
-	static function ( $traduccio, $text ) {
-		return 'html_lang_attribute' === $text ? str_replace( '_', '-', determine_locale() ) : $traduccio;
+	'language_attributes',
+	static function ( $sortida, $doctype ) {
+		if ( 'html' !== $doctype ) {
+			return $sortida;
+		}
+		return (string) preg_replace( '/\blang="[^"]*"/', 'lang="' . esc_attr( nep_lang_html( determine_locale() ) ) . '"', (string) $sortida );
 	},
 	10,
 	2
 );
 
 /**
- * Locale per petició.L'administració (fora d'admin-ajax), el login i WP-CLI
- * segueixen el locale de l'usuari o del lloc (`es_ES`).
+ * Locale per petició. L'administració (fora d'admin-ajax), el login i WP-CLI
+ * segueixen el locale de l'usuari o del lloc (`es_ES`). Amb `?_locale=user` (editor
+ * de blocs) i sense `lang`/`X-Nep-Lang`, també es respecta el locale de l'usuari.
  */
 add_filter(
 	'pre_determine_locale',
@@ -79,6 +83,14 @@ add_filter(
 			return $locale;
 		}
 		if ( ( is_admin() && ! wp_doing_ajax() ) || ( isset( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] ) ) {
+			return $locale;
+		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		$locale_param = isset( $_GET['_locale'] ) ? wp_unslash( $_GET['_locale'] ) : null;
+		$lang         = isset( $_GET['lang'] ) ? wp_unslash( $_GET['lang'] ) : null;
+		// phpcs:enable
+		$capcalera = isset( $_SERVER['HTTP_X_NEP_LANG'] ) ? (string) wp_unslash( $_SERVER['HTTP_X_NEP_LANG'] ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		if ( nep_respecta_locale_usuari( $locale_param, $lang, $capcalera ) ) {
 			return $locale;
 		}
 		return nep_locale_idioma( nep_idioma_actual() );
