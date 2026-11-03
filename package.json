@@ -17,6 +17,7 @@
     "format": "wp-scripts format plugins/noempesquen-core/src",
     "i18n:pot": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run cli --env-cwd=wp-content/plugins/noempesquen-core wp i18n make-pot . languages/noempesquen.pot --domain=noempesquen --exclude=build,tests,missions,assets",
     "i18n:json": "node scripts/i18n-json.mjs",
+    "i18n:mo": "node scripts/i18n-mo.mjs",
     "i18n:merge": "node scripts/i18n-merge.mjs",
     "i18n:parts": "node scripts/i18n-parts.mjs",
     "empaqueta": "node scripts/empaqueta.mjs",

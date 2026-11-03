@@ -9,6 +9,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Aquestes comprovacions miren els textos de l'administració en català (msgid): el lloc és es_ES.
+switch_to_locale( 'ca' );
+
 global $wpdb;
 $nep_taula = nep_taula_resultats();
 // La mateixa clau que fa servir l'endpoint (WP-CLI pot definir REMOTE_ADDR).
@@ -334,3 +337,4 @@ $wpdb->query( $wpdb->prepare( "DELETE FROM {$nep_taula} WHERE missio = %s", $nep
 delete_transient( $nep_clau );
 delete_transient( NEP_CLAU_LIMIT_GLOBAL );
 wp_set_current_user( 1 );
+restore_previous_locale();

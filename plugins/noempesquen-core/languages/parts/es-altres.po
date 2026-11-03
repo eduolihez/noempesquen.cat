@@ -1,0 +1,918 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: No em pesquen – Nucli\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: noempesquen\n"
+
+#. Plugin Name of the plugin
+#: noempesquen-core.php
+msgid "No em pesquen – Nucli"
+msgstr "No em pesquen – Núcleo"
+
+#. Description of the plugin
+#: noempesquen-core.php
+msgid "Simulador, missions i comprovador del projecte noempesquen.cat."
+msgstr "Simulador, misiones y comprobador del proyecto noempesquen.cat."
+
+#. Author of the plugin
+#: noempesquen-core.php
+msgid "Eduardo Olivares Hernández"
+msgstr "Eduardo Olivares Hernández"
+
+#: includes/acces-admin.php:37
+msgid "La pàgina que busques no existeix."
+msgstr "La página que buscas no existe."
+
+#: includes/acces-admin.php:38
+msgid "No trobat"
+msgstr "No encontrado"
+
+#: includes/admin-estadistiques.php:19 includes/admin-estadistiques.php:20 includes/admin-estadistiques.php:96
+msgid "Estadístiques"
+msgstr "Estadísticas"
+
+#: includes/admin-estadistiques.php:59
+msgid "No tens permís per veure aquesta pàgina."
+msgstr "No tienes permiso para ver esta página."
+
+#: includes/admin-estadistiques.php:92
+msgid "No s'ha pogut llegir la taula d'estadístiques"
+msgstr "No se ha podido leer la tabla de estadísticas"
+
+#: includes/admin-estadistiques.php:93
+msgid "Dades insuficients (menys de 10 partides)"
+msgstr "Datos insuficientes (menos de 10 partidas)"
+
+#: includes/admin-estadistiques.php:99
+msgid "Avís:"
+msgstr "Aviso:"
+
+#. translators: %s: ordre de WP-CLI.
+#: includes/admin-estadistiques.php:103
+#, php-format
+msgid "Dades de demostració incloses. Esborra-les amb %s abans de publicar."
+msgstr "Se han incluido datos de demostración. Bórralos con %s antes de publicar."
+
+#: includes/admin-estadistiques.php:111
+msgid "No s'ha pogut llegir la taula d'estadístiques."
+msgstr "No se ha podido leer la tabla de estadísticas."
+
+#: includes/admin-estadistiques.php:113
+msgid "Dades indicatives."
+msgstr "Datos orientativos."
+
+#: includes/admin-estadistiques.php:114
+msgid "Recompte anònim de partides acabades: amb els resultats no es desa cap dada de qui juga. Per limitar els enviaments es guarda, com a molt una hora, un seudònim de la IP que no es pot relacionar amb els resultats."
+msgstr "Recuento anónimo de partidas terminadas: con los resultados no se guarda ningún dato de quien juega. Para limitar los envíos se guarda, como máximo una hora, un seudónimo de la IP que no se puede relacionar con los resultados."
+
+#: includes/admin-estadistiques.php:115
+msgid "Perquè no es pugui deduir què ha fet una persona concreta, les xifres són aproximades: les partides es mostren per franges (10-19, 20-49, 50+), el percentatge de la decisió de 10 en 10 punts i la mitjana d'estrelles amb un decimal. En cada període, les missions amb menys de 10 partides no mostren cap xifra. Només compta la versió actual del guió de cada missió."
+msgstr "Para que no se pueda deducir qué ha hecho una persona concreta, las cifras son aproximadas: las partidas se muestran por tramos (10-19, 20-49, 50+), el porcentaje de la decisión de 10 en 10 puntos y la media de estrellas con un decimal. En cada periodo, las misiones con menos de 10 partidas no muestran ninguna cifra. Solo cuenta la versión actual del guion de cada misión."
+
+#. translators: %s: franja de partides (p. ex. «10-19»).
+#: includes/admin-estadistiques.php:120
+#, php-format
+msgid "%s partides de versions anteriors del guió no es compten."
+msgstr "%s partidas de versiones anteriores del guion no se cuentan."
+
+#: includes/admin-estadistiques.php:128
+msgid "Període"
+msgstr "Periodo"
+
+#. translators: %d: nombre de dies.
+#: includes/admin-estadistiques.php:134
+#, php-format
+msgid "Darrers %d dies"
+msgstr "Últimos %d días"
+
+#: includes/admin-estadistiques.php:139
+msgid "Mostra"
+msgstr "Mostrar"
+
+#. translators: %d: nombre de dies.
+#: includes/admin-estadistiques.php:146
+#, php-format
+msgid "Resultats per missió dels darrers %d dies"
+msgstr "Resultados por misión de los últimos %d días"
+
+#: includes/admin-estadistiques.php:151 includes/cpt-missio.php:17
+msgid "Missió"
+msgstr "Misión"
+
+#: includes/admin-estadistiques.php:152
+msgid "Partides"
+msgstr "Partidas"
+
+#: includes/admin-estadistiques.php:153
+msgid "Estrelles mitjanes"
+msgstr "Estrellas medias"
+
+#: includes/admin-estadistiques.php:154
+msgid "Decisió més triada"
+msgstr "Decisión más elegida"
+
+#: includes/admin-estadistiques.php:177
+msgid "Cap decisió"
+msgstr "Ninguna decisión"
+
+#: includes/admin-estadistiques.php:221
+msgid "Repartiment per missió"
+msgstr "Reparto por misión"
+
+#. translators: %s: títol de la missió.
+#: includes/admin-estadistiques.php:229
+#, php-format
+msgid "Estrelles: %s"
+msgstr "Estrellas: %s"
+
+#: includes/admin-estadistiques.php:230
+msgid "Estrelles"
+msgstr "Estrellas"
+
+#. translators: %d: nombre d'estrelles.
+#: includes/admin-estadistiques.php:234
+#, php-format
+msgid "%d estrella"
+msgid_plural "%d estrelles"
+msgstr[0] "%d estrella"
+msgstr[1] "%d estrellas"
+
+#. translators: %s: títol de la missió.
+#: includes/admin-estadistiques.php:242
+#, php-format
+msgid "Decisions: %s"
+msgstr "Decisiones: %s"
+
+#: includes/admin-estadistiques.php:243
+msgid "Decisió"
+msgstr "Decisión"
+
+#. translators: %s: títol de la missió.
+#: includes/admin-estadistiques.php:253
+#, php-format
+msgid "Repartiment: %s"
+msgstr "Reparto: %s"
+
+#: includes/admin-estadistiques.php:262
+msgid "Percentatge de partides"
+msgstr "Porcentaje de partidas"
+
+#: includes/admin-estadistiques.php:263
+msgid "Barra"
+msgstr "Barra"
+
+#: includes/admin-estadistiques.php:271
+msgid "Menys de 10 partides"
+msgstr "Menos de 10 partidas"
+
+#: includes/capacitats.php:68
+msgid "No s'ha pogut crear la taula d'estadístiques de noempesquen. Revisa els permisos de la base de dades."
+msgstr "No se ha podido crear la tabla de estadísticas de noempesquen. Revisa los permisos de la base de datos."
+
+#: includes/capacitats.php:87
+msgid "Jugador"
+msgstr "Jugador"
+
+#: includes/comptes-correu.php:57 includes/comptes-correu.php:79
+msgid "Hola!"
+msgstr "¡Hola!"
+
+#: includes/comptes-correu.php:58
+msgid "Confirma el teu correu per acabar de crear el compte a No em pesquen:"
+msgstr "Confirma tu correo para terminar de crear la cuenta en No em pesquen:"
+
+#: includes/comptes-correu.php:60
+msgid "L'enllaç caduca d'aquí a 48 hores i només es pot fer servir un cop."
+msgstr "El enlace caduca dentro de 48 horas y solo se puede usar una vez."
+
+#: includes/comptes-correu.php:61
+msgid "Si no has creat tu el compte, ignora aquest missatge: no passarà res."
+msgstr "Si no has creado tú la cuenta, ignora este mensaje: no pasará nada."
+
+#: includes/comptes-correu.php:62
+msgid "Confirma el teu correu a No em pesquen"
+msgstr "Confirma tu correo en No em pesquen"
+
+#: includes/comptes-correu.php:80
+msgid "Has demanat restablir la contrasenya del teu compte a No em pesquen. Tria'n una de nova amb aquest enllaç:"
+msgstr "Has pedido restablecer la contraseña de tu cuenta en No em pesquen. Elige una nueva con este enlace:"
+
+#: includes/comptes-correu.php:82
+msgid "L'enllaç caduca d'aquí a 1 hora i només es pot fer servir un cop."
+msgstr "El enlace caduca dentro de 1 hora y solo se puede usar una vez."
+
+#: includes/comptes-correu.php:83
+msgid "Si no ho has demanat tu, ignora aquest missatge: no passarà res."
+msgstr "Si no lo has pedido tú, ignora este mensaje: no pasará nada."
+
+#: includes/comptes-correu.php:84
+msgid "Restableix la contrasenya a No em pesquen"
+msgstr "Restablece la contraseña en No em pesquen"
+
+#: includes/comptes-privacitat.php:19 includes/comptes-privacitat.php:34 includes/comptes-privacitat.php:103
+msgid "Compte del simulador"
+msgstr "Cuenta del simulador"
+
+#: includes/comptes-privacitat.php:75 src/blocks/simulador/webs/llum-clara/AreaClient.js:162
+msgid "Correu electrònic"
+msgstr "Correo electrónico"
+
+#: includes/comptes-privacitat.php:79
+msgid "Data de creació"
+msgstr "Fecha de creación"
+
+#: includes/comptes-privacitat.php:83
+msgid "Versió del consentiment"
+msgstr "Versión del consentimiento"
+
+#: includes/comptes-privacitat.php:87
+msgid "Data del consentiment"
+msgstr "Fecha del consentimiento"
+
+#: includes/comptes-privacitat.php:91
+msgid "Data de verificació del correu"
+msgstr "Fecha de verificación del correo"
+
+#: includes/comptes-privacitat.php:95
+msgid "Progrés (missió: estrelles)"
+msgstr "Progreso (misión: estrellas)"
+
+#: includes/comptes.php:272
+msgid "Massa intents. Torna-ho a provar més tard."
+msgstr "Demasiados intentos. Vuelve a intentarlo más tarde."
+
+#: includes/comptes.php:325
+msgid "Format de petició no admès."
+msgstr "Formato de petición no admitido."
+
+#: includes/comptes.php:409 includes/comptes.php:592 includes/comptes.php:994
+msgid "Correu o contrasenya incorrectes."
+msgstr "Correo o contraseña incorrectos."
+
+#: includes/comptes.php:498
+msgid "No s'ha pogut crear el compte. Revisa les dades."
+msgstr "No se ha podido crear la cuenta. Revisa los datos."
+
+#: includes/comptes.php:644 includes/comptes.php:787
+msgid "L'enllaç no és vàlid o ha caducat."
+msgstr "El enlace no es válido o ha caducado."
+
+#: includes/comptes.php:804
+msgid "La contrasenya ha de tenir entre 10 i 128 caràcters."
+msgstr "La contraseña debe tener entre 10 y 128 caracteres."
+
+#: includes/comptes.php:865
+msgid "Les dades són massa grans."
+msgstr "Los datos son demasiado grandes."
+
+#: includes/comptes.php:903
+msgid "No s'ha pogut esborrar el compte. Revisa la contrasenya."
+msgstr "No se ha podido borrar la cuenta. Revisa la contraseña."
+
+#: includes/comptes.php:935
+msgid "No s'ha pogut esborrar el compte. Torna-ho a provar més tard."
+msgstr "No se ha podido borrar la cuenta. Vuelve a intentarlo más tarde."
+
+#: includes/comptes.php:957
+msgid "No tens permís per fer això."
+msgstr "No tienes permiso para hacer esto."
+
+#: includes/comptes.php:1027
+msgid "No es pot recuperar la contrasenya d'aquest compte des d'aquí."
+msgstr "No se puede recuperar la contraseña de esta cuenta desde aquí."
+
+#: includes/cpt-missio.php:16
+msgid "Missions"
+msgstr "Misiones"
+
+#: includes/cpt-missio.php:18
+msgid "Afegeix una missió"
+msgstr "Añadir una misión"
+
+#: includes/cpt-missio.php:19
+msgid "Edita la missió"
+msgstr "Editar la misión"
+
+#: includes/cpt-missio.php:229
+msgid "El guió ha de ser un text JSON."
+msgstr "El guion debe ser un texto JSON."
+
+#: includes/cpt-missio.php:234
+msgid "No es pot desar la missió:"
+msgstr "No se puede guardar la misión:"
+
+#: includes/cpt-missio.php:254
+msgid "No es pot publicar la missió:"
+msgstr "No se puede publicar la misión:"
+
+#: includes/cpt-missio.php:334
+msgid "No s'ha desat el guió nou i es conserva l'anterior:"
+msgstr "No se ha guardado el guion nuevo y se conserva el anterior:"
+
+#: includes/cpt-missio.php:335
+msgid "La missió s'ha desat com a esborrany perquè el guió no és vàlid:"
+msgstr "La misión se ha guardado como borrador porque el guion no es válido:"
+
+#. translators: %s: títol de la missió
+#: includes/cpt-missio.php:580
+#, php-format
+msgid "Duplica «%s»"
+msgstr "Duplicar «%s»"
+
+#: includes/cpt-missio.php:581
+msgid "Duplica"
+msgstr "Duplicar"
+
+#: includes/cpt-missio.php:596
+msgid "No pots duplicar aquesta missió."
+msgstr "No puedes duplicar esta misión."
+
+#. translators: %s: títol de la missió original
+#: includes/cpt-missio.php:615
+#, php-format
+msgid "%s (còpia)"
+msgstr "%s (copia)"
+
+#. translators: %s: títol de la missió original
+#: includes/cpt-missio.php:665
+#, php-format
+msgid "S'ha creat un esborrany a partir de «%s» amb un id de guió nou. Revisa'l abans de publicar-lo."
+msgstr "Se ha creado un borrador a partir de «%s» con un id de guion nuevo. Revísalo antes de publicarlo."
+
+#: includes/editor-missio.php:21
+msgid "Guió de la missió"
+msgstr "Guion de la misión"
+
+#: includes/editor-missio.php:100
+msgid "Ordinador (pc)"
+msgstr "Ordenador (pc)"
+
+#: includes/editor-missio.php:101
+msgid "Mòbil (mobil)"
+msgstr "Móvil (mobil)"
+
+#: includes/editor-missio.php:104
+msgid "Llissa"
+msgstr "Llissa"
+
+#: includes/editor-missio.php:105
+msgid "Remei"
+msgstr "Remei"
+
+#: includes/editor-missio.php:108
+msgid "Castellà (es)"
+msgstr "Castellano (es)"
+
+#: includes/editor-missio.php:109
+msgid "Català (ca)"
+msgstr "Catalán (ca)"
+
+#: includes/editor-missio.php:118 src/blocks/simulador/index.js:15
+msgid "Dispositiu"
+msgstr "Dispositivo"
+
+#: includes/editor-missio.php:126
+msgid "Personatge"
+msgstr "Personaje"
+
+#: includes/editor-missio.php:134
+msgid "Idioma"
+msgstr "Idioma"
+
+#. translators: %s: codi de l'altre idioma (es o ca)
+#: includes/editor-missio.php:148
+#, php-format
+msgid "Aquesta missió encara no té parella en l'altre idioma (%s) amb el mateix id. Es pot publicar igualment."
+msgstr "Esta misión todavía no tiene pareja en el otro idioma (%s) con el mismo id. Se puede publicar igualmente."
+
+#: includes/editor-missio.php:155
+msgid "Guió (JSON, format v2)"
+msgstr "Guion (JSON, formato v2)"
+
+#: includes/editor-missio.php:159
+msgid "Exporta"
+msgstr "Exportar"
+
+#: includes/editor-missio.php:160
+msgid "Importa"
+msgstr "Importar"
+
+#: includes/editor-missio.php:162
+msgid "Exporta descarrega el guió de l'editor com a fitxer JSON. Importa el posa a l'editor sense desar-lo."
+msgstr "Exportar descarga el guion del editor como archivo JSON. Importar lo pone en el editor sin guardarlo."
+
+#: includes/editor-missio.php:167
+msgid "Nova missió des de plantilla"
+msgstr "Nueva misión desde plantilla"
+
+#: includes/editor-missio.php:168
+msgid "Omple el guió amb una missió d'exemple i un id nou a partir del títol. No desa res."
+msgstr "Rellena el guion con una misión de ejemplo y un id nuevo a partir del título. No guarda nada."
+
+#: includes/editor-missio.php:174
+msgid "Desa l'esborrany per poder provar la missió al simulador."
+msgstr "Guarda el borrador para poder probar la misión en el simulador."
+
+#: includes/editor-missio.php:176
+msgid "Prova-la al simulador"
+msgstr "Pruébala en el simulador"
+
+#: includes/editor-missio.php:177
+msgid "Prova el guió desat (també si és un esborrany). Desa abans els canvis."
+msgstr "Prueba el guion guardado (también si es un borrador). Guarda antes los cambios."
+
+#: includes/editor-missio.php:182
+msgid "Duplica la missió"
+msgstr "Duplicar la misión"
+
+#: includes/editor-missio.php:183
+msgid "Crea un esborrany amb el guió desat i un id nou."
+msgstr "Crea un borrador con el guion guardado y un id nuevo."
+
+#: includes/estadistiques.php:765
+msgid "Massa enviaments. Torna-ho a provar més tard."
+msgstr "Demasiados envíos. Vuelve a intentarlo más tarde."
+
+#: includes/estadistiques.php:771 includes/estadistiques.php:825
+msgid "Missió desconeguda."
+msgstr "Misión desconocida."
+
+#: includes/estadistiques.php:776
+msgid "Els tutorials no tenen resultat."
+msgstr "Los tutoriales no tienen resultado."
+
+#: includes/estadistiques.php:780
+msgid "Decisió desconeguda."
+msgstr "Decisión desconocida."
+
+#: includes/estadistiques.php:787 includes/estadistiques.php:807
+msgid "No s'ha pogut desar el resultat."
+msgstr "No se ha podido guardar el resultado."
+
+#: includes/estadistiques.php:844
+msgid "No s'ha pogut llegir el resum."
+msgstr "No se ha podido leer el resumen."
+
+#: includes/rest.php:58
+msgid "No s'ha trobat la missió."
+msgstr "No se ha encontrado la misión."
+
+#: src/blocks/compte/render.php:22
+msgid "Cal JavaScript per crear un compte o entrar-hi."
+msgstr "Hace falta JavaScript para crear una cuenta o entrar en ella."
+
+#: src/blocks/contacte/render.php:21
+msgid "Cal JavaScript per enviar el formulari de contacte."
+msgstr "Hace falta JavaScript para enviar el formulario de contacto."
+
+#: src/blocks/simulador/render.php:34
+msgid "Cal JavaScript per fer servir el simulador."
+msgstr "Hace falta JavaScript para usar el simulador."
+
+#: src/blocks/compte/index.js:12
+msgid "Pantalla de compte No em pesquen (es mostra a la pàgina publicada)."
+msgstr "Pantalla de cuenta de No em pesquen (se muestra en la página publicada)."
+
+#: src/blocks/contacte/index.js:12
+msgid "Formulari de contacte (es mostra a la pàgina publicada)."
+msgstr "Formulario de contacto (se muestra en la página publicada)."
+
+#: src/blocks/simulador/index.js:17
+msgid "Dispositiu inicial"
+msgstr "Dispositivo inicial"
+
+#: src/blocks/simulador/index.js:21
+msgid "Automàtic segons la pantalla"
+msgstr "Automático según la pantalla"
+
+#: src/blocks/simulador/index.js:28
+msgid "Ordinador"
+msgstr "Ordenador"
+
+#: src/blocks/simulador/index.js:32
+msgid "Mòbil"
+msgstr "Móvil"
+
+#: src/blocks/simulador/index.js:44
+msgid "Simulador No em pesquen (es mostra a la pàgina publicada)."
+msgstr "Simulador de No em pesquen (se muestra en la página publicada)."
+
+#: src/editor-missio/index.js:70
+msgid "Cap error"
+msgstr "Ningún error"
+
+#. translators: %d: nombre d'errors
+#: src/editor-missio/index.js:76
+#, js-format
+msgid "El guió té %d error:"
+msgid_plural "El guió té %d errors:"
+msgstr[0] "El guion tiene %d error:"
+msgstr[1] "El guion tiene %d errores:"
+
+#: src/editor-missio/index.js:100
+msgid "Ves-hi"
+msgstr "Ir"
+
+#. translators: %s: id del guió
+#: src/editor-missio/index.js:239
+#, js-format
+msgid "Guió omplert amb la plantilla i l’id «%s». Revisa’l i desa l’esborrany quan vulguis."
+msgstr "Guion rellenado con la plantilla y el id «%s». Revísalo y guarda el borrador cuando quieras."
+
+#: src/editor-missio/index.js:326
+msgid "Guió importat. Revisa els errors abans de desar."
+msgstr "Guion importado. Revisa los errores antes de guardar."
+
+#: src/blocks/compte/block.json
+msgctxt "block title"
+msgid "Compte No em pesquen"
+msgstr "Cuenta No em pesquen"
+
+#: src/blocks/compte/block.json
+msgctxt "block description"
+msgid "Crear un compte, entrar-hi i gestionar-ne les dades (progrés, descàrrega i esborrat)."
+msgstr "Crear una cuenta, entrar en ella y gestionar sus datos (progreso, descarga y borrado)."
+
+#: src/blocks/contacte/block.json
+msgctxt "block title"
+msgid "Contacte No em pesquen"
+msgstr "Contacto No em pesquen"
+
+#: src/blocks/contacte/block.json
+msgctxt "block description"
+msgid "Formulari de contacte amb validació, camp trampa i enviament per correu."
+msgstr "Formulario de contacto con validación, campo trampa y envío por correo."
+
+#: src/blocks/simulador/block.json
+msgctxt "block title"
+msgid "Simulador No em pesquen"
+msgstr "Simulador No em pesquen"
+
+#: src/blocks/simulador/block.json
+msgctxt "block description"
+msgid "Escriptori i mòbil simulats amb missions per aprendre a detectar estafes."
+msgstr "Escritorio y móvil simulados con misiones para aprender a detectar estafas."
+
+#: src/blocks/compte/textos.js
+msgid "Carregant el teu compte…"
+msgstr "Cargando tu cuenta…"
+
+#: src/blocks/compte/textos.js
+msgid "Accés al compte"
+msgstr "Acceso a la cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "Crea un compte"
+msgstr "Crea una cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "Entra"
+msgstr "Entra"
+
+#: src/blocks/compte/textos.js
+msgid "Contrasenya"
+msgstr "Contraseña"
+
+#: src/blocks/compte/textos.js
+msgid "Entre 10 i 128 caràcters."
+msgstr "Entre 10 y 128 caracteres."
+
+#: src/blocks/compte/textos.js
+msgid "Si perds la contrasenya, només la podràs recuperar si has verificat el correu. T'enviarem un missatge per fer-ho."
+msgstr "Si pierdes la contraseña, solo podrás recuperarla si has verificado el correo. Te enviaremos un mensaje para hacerlo."
+
+#: src/blocks/compte/textos.js
+msgid "Tinc 14 anys o més"
+msgstr "Tengo 14 años o más"
+
+#: src/blocks/compte/textos.js
+msgid "Accepto que es desin el meu correu i el meu progrés per poder recuperar-lo en un altre dispositiu"
+msgstr "Acepto que se guarden mi correo y mi progreso para poder recuperarlo en otro dispositivo"
+
+#: src/blocks/compte/textos.js
+msgid "Quines dades es guarden"
+msgstr "Qué datos se guardan"
+
+#: src/blocks/compte/textos.js
+msgid "Només el teu correu electrònic. L'usem per entrar i per enviar-te els missatges de verificació i de recuperació de la contrasenya, res més."
+msgstr "Solo tu correo electrónico. Lo usamos para entrar y para enviarte los mensajes de verificación y de recuperación de la contraseña, nada más."
+
+#: src/blocks/compte/textos.js
+msgid "La contrasenya, guardada xifrada (amb hash): ningú no la pot llegir."
+msgstr "La contraseña, guardada cifrada (con hash): nadie puede leerla."
+
+#: src/blocks/compte/textos.js
+msgid "El progrés de les missions (les estrelles de cada missió)."
+msgstr "El progreso de las misiones (las estrellas de cada misión)."
+
+#: src/blocks/compte/textos.js
+msgid "La data i la versió del consentiment que acceptes ara."
+msgstr "La fecha y la versión del consentimiento que aceptas ahora."
+
+#: src/blocks/compte/textos.js
+msgid "Res del que escriguis als formularis falsos del simulador: no surt mai del teu navegador."
+msgstr "Nada de lo que escribas en los formularios falsos del simulador: no sale nunca de tu navegador."
+
+#: src/blocks/compte/textos.js
+msgid "Pots descarregar-ho i esborrar-ho tot des d'aquesta pàgina."
+msgstr "Puedes descargarlo y borrarlo todo desde esta página."
+
+#: src/blocks/compte/textos.js
+msgid "Les estadístiques anònimes de les partides són a part i no porten cap dada teva."
+msgstr "Las estadísticas anónimas de las partidas van aparte y no llevan ningún dato tuyo."
+
+#: src/blocks/compte/textos.js
+msgid "Crea el compte"
+msgstr "Crea la cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "Enviant…"
+msgstr "Enviando…"
+
+#: src/blocks/compte/textos.js
+msgid "Escriu un correu electrònic vàlid."
+msgstr "Escribe un correo electrónico válido."
+
+#: src/blocks/compte/textos.js
+msgid "Escriu la contrasenya."
+msgstr "Escribe la contraseña."
+
+#: src/blocks/compte/textos.js
+msgid "Cal que tinguis 14 anys o més per crear un compte."
+msgstr "Tienes que tener 14 años o más para crear una cuenta."
+
+#: src/blocks/compte/textos.js
+msgid "Cal que acceptis que es desin les dades per crear un compte."
+msgstr "Tienes que aceptar que se guarden los datos para crear una cuenta."
+
+#: src/blocks/compte/textos.js
+msgid "Revisa els camps marcats."
+msgstr "Revisa los campos marcados."
+
+#: src/blocks/compte/textos.js
+msgid "Compte creat. Ja tens la sessió iniciada."
+msgstr "Cuenta creada. Ya has iniciado sesión."
+
+#: src/blocks/compte/textos.js
+msgid "Has entrat al teu compte."
+msgstr "Has entrado en tu cuenta."
+
+#: src/blocks/compte/textos.js
+msgid "El teu compte"
+msgstr "Tu cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "Progrés de les missions"
+msgstr "Progreso de las misiones"
+
+#: src/blocks/compte/textos.js
+msgid "Encara no hi ha cap missió desada. Juga al simulador amb la sessió iniciada."
+msgstr "Todavía no hay ninguna misión guardada. Juega en el simulador con la sesión iniciada."
+
+#: src/blocks/compte/textos.js
+msgid "Ves al simulador"
+msgstr "Ve al simulador"
+
+#: src/blocks/compte/textos.js
+msgid "Descarrega les meves dades"
+msgstr "Descargar mis datos"
+
+#: src/blocks/compte/textos.js
+msgid "Dades descarregades."
+msgstr "Datos descargados."
+
+#: src/blocks/compte/textos.js
+msgid "Tanca la sessió"
+msgstr "Cerrar sesión"
+
+#: src/blocks/compte/textos.js
+msgid "Has tancat la sessió."
+msgstr "Has cerrado la sesión."
+
+#: src/blocks/compte/textos.js
+msgid "Esborra el compte"
+msgstr "Borrar la cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "Esborrar el compte"
+msgstr "Borrar la cuenta"
+
+#: src/blocks/compte/textos.js
+msgid "S'esborraran el teu correu, la contrasenya i el progrés. No es pot desfer."
+msgstr "Se borrarán tu correo, la contraseña y el progreso. No se puede deshacer."
+
+#: src/blocks/compte/textos.js
+msgid "Esborra el compte definitivament"
+msgstr "Borrar la cuenta definitivamente"
+
+#: src/blocks/compte/textos.js
+msgid "Cancel·la"
+msgstr "Cancelar"
+
+#: src/blocks/compte/textos.js
+msgid "El compte s'ha esborrat."
+msgstr "La cuenta se ha borrado."
+
+#: src/blocks/compte/textos.js
+msgid "He oblidat la contrasenya"
+msgstr "He olvidado la contraseña"
+
+#: src/blocks/compte/textos.js
+msgid "Recupera la contrasenya"
+msgstr "Recupera la contraseña"
+
+#: src/blocks/compte/textos.js
+msgid "Escriu el correu del teu compte. Si és d'un compte amb el correu verificat, t'hi enviarem un enllaç per triar una contrasenya nova."
+msgstr "Escribe el correo de tu cuenta. Si es de una cuenta con el correo verificado, te enviaremos un enlace para elegir una contraseña nueva."
+
+#: src/blocks/compte/textos.js
+msgid "Envia'm l'enllaç"
+msgstr "Envíame el enlace"
+
+#: src/blocks/compte/textos.js
+msgid "Si hi ha un compte amb aquest correu verificat, t'hem enviat un enllaç. Mira també la carpeta de correu brossa. L'enllaç caduca d'aquí a 1 hora."
+msgstr "Si hay una cuenta con este correo verificado, te hemos enviado un enlace. Mira también la carpeta de correo no deseado. El enlace caduca dentro de 1 hora."
+
+#: src/blocks/compte/textos.js
+msgid "Torna a l'entrada"
+msgstr "Volver a la entrada"
+
+#: src/blocks/compte/textos.js
+msgid "Tria una contrasenya nova"
+msgstr "Elige una contraseña nueva"
+
+#: src/blocks/compte/textos.js
+msgid "Contrasenya nova"
+msgstr "Contraseña nueva"
+
+#: src/blocks/compte/textos.js
+msgid "Desa la contrasenya nova"
+msgstr "Guardar la contraseña nueva"
+
+#: src/blocks/compte/textos.js
+msgid "Contrasenya canviada. Ja pots entrar amb la nova."
+msgstr "Contraseña cambiada. Ya puedes entrar con la nueva."
+
+#: src/blocks/compte/textos.js
+msgid "L'enllaç no és vàlid o ha caducat. Demana'n un de nou."
+msgstr "El enlace no es válido o ha caducado. Pide uno nuevo."
+
+#: src/blocks/compte/textos.js
+msgid "Correu verificat. Gràcies!"
+msgstr "Correo verificado. ¡Gracias!"
+
+#: src/blocks/compte/textos.js
+msgid "Verifica el correu"
+msgstr "Verifica el correo"
+
+#: src/blocks/compte/textos.js
+msgid "T'hem enviat un enllaç per confirmar el correu. Sense verificar, no podràs recuperar la contrasenya si la perds. El compte funciona igualment."
+msgstr "Te hemos enviado un enlace para confirmar el correo. Sin verificar, no podrás recuperar la contraseña si la pierdes. La cuenta funciona igualmente."
+
+#: src/blocks/compte/textos.js
+msgid "Reenvia el correu"
+msgstr "Reenviar el correo"
+
+#: src/blocks/compte/textos.js
+msgid "T'hem tornat a enviar el correu. Mira també la carpeta de correu brossa."
+msgstr "Te hemos vuelto a enviar el correo. Mira también la carpeta de correo no deseado."
+
+#: src/blocks/compte/textos.js
+msgid "No s'ha pogut enviar el correu. Torna-ho a provar més tard."
+msgstr "No se ha podido enviar el correo. Vuelve a intentarlo más tarde."
+
+#: src/blocks/contacte/textos.js
+msgid "Escriu-nos"
+msgstr "Escríbenos"
+
+#: src/blocks/contacte/textos.js
+msgid "Tots els camps són obligatoris."
+msgstr "Todos los campos son obligatorios."
+
+#: src/blocks/contacte/textos.js
+msgid "Nom"
+msgstr "Nombre"
+
+#: src/blocks/contacte/textos.js
+msgid "Només el farem servir per respondre’t."
+msgstr "Solo lo usaremos para responderte."
+
+#: src/blocks/contacte/textos.js
+msgid "Assumpte"
+msgstr "Asunto"
+
+#: src/blocks/contacte/textos.js
+msgid "Tria un assumpte"
+msgstr "Elige un asunto"
+
+#: src/blocks/contacte/textos.js
+msgid "Missatge"
+msgstr "Mensaje"
+
+#: src/blocks/contacte/textos.js
+msgid "Entre 10 i 2000 caràcters."
+msgstr "Entre 10 y 2000 caracteres."
+
+#: src/blocks/contacte/textos.js
+msgid "He llegit l’"
+msgstr "He leído el "
+
+#: src/blocks/contacte/textos.js
+msgid "avís de privacitat"
+msgstr "aviso de privacidad"
+
+#: src/blocks/contacte/textos.js
+msgid "i accepto que s’usin aquestes dades per respondre’m"
+msgstr "y acepto que se usen estos datos para responderme"
+
+#: src/blocks/contacte/textos.js
+msgid "Envia el missatge"
+msgstr "Enviar el mensaje"
+
+#: src/blocks/contacte/textos.js
+msgid "S’està enviant…"
+msgstr "Enviando…"
+
+#: src/blocks/contacte/textos.js
+msgid "Revisa el formulari"
+msgstr "Revisa el formulario"
+
+#: src/blocks/contacte/textos.js
+msgid "No s’ha pogut enviar el missatge. Torna-ho a provar d’aquí una estona."
+msgstr "No se ha podido enviar el mensaje. Vuelve a intentarlo dentro de un rato."
+
+#: src/blocks/contacte/textos.js
+msgid "Has enviat massa missatges. Torna-ho a provar una mica més tard."
+msgstr "Has enviado demasiados mensajes. Vuelve a intentarlo un poco más tarde."
+
+#: src/blocks/contacte/textos.js
+msgid "Missatge enviat"
+msgstr "Mensaje enviado"
+
+#: src/blocks/contacte/textos.js
+msgid "Gràcies! Hem rebut el teu missatge i et respondrem tan aviat com puguem."
+msgstr "¡Gracias! Hemos recibido tu mensaje y te responderemos en cuanto podamos."
+
+#: src/blocks/contacte/textos.js
+msgid "Dubte"
+msgstr "Duda"
+
+#: src/blocks/contacte/textos.js
+msgid "Suggeriment"
+msgstr "Sugerencia"
+
+#: src/blocks/contacte/textos.js
+msgid "He trobat un error"
+msgstr "He encontrado un error"
+
+#: src/blocks/contacte/textos.js
+msgid "Altres"
+msgstr "Otros"
+
+#: src/blocks/contacte/textos.js
+msgid "Escriu el teu nom."
+msgstr "Escribe tu nombre."
+
+#: src/blocks/contacte/textos.js
+msgid "El nom no pot passar de 80 caràcters."
+msgstr "El nombre no puede pasar de 80 caracteres."
+
+#: src/blocks/contacte/textos.js
+msgid "Escriu el teu correu electrònic."
+msgstr "Escribe tu correo electrónico."
+
+#: src/blocks/contacte/textos.js
+msgid "Escriu un correu vàlid, per exemple nom@exemple.cat."
+msgstr "Escribe un correo válido, por ejemplo nombre@ejemplo.es."
+
+#: src/blocks/contacte/textos.js
+msgid "Tria un assumpte de la llista."
+msgstr "Elige un asunto de la lista."
+
+#: src/blocks/contacte/textos.js
+msgid "Escriu el teu missatge."
+msgstr "Escribe tu mensaje."
+
+#: src/blocks/contacte/textos.js
+msgid "El missatge ha de tenir almenys 10 caràcters."
+msgstr "El mensaje debe tener al menos 10 caracteres."
+
+#: src/blocks/contacte/textos.js
+msgid "El missatge no pot passar de 2000 caràcters."
+msgstr "El mensaje no puede pasar de 2000 caracteres."
+
+#: src/blocks/contacte/textos.js
+msgid "Cal que acceptis l’avís de privacitat per poder enviar el missatge."
+msgstr "Tienes que aceptar el aviso de privacidad para poder enviar el mensaje."
+
+#. translators: %d: nombre d'estrelles (de 3).
+#: src/blocks/compte/textos.js
+#, php-format
+msgid "%d estrella de 3"
+msgid_plural "%d estrelles de 3"
+msgstr[0] "%d estrella de 3"
+msgstr[1] "%d estrellas de 3"

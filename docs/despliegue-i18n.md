@@ -75,3 +75,11 @@ Tabla de URLs esperadas (el script la usa tal cual):
 - Insertar los 301 antes de que existan las páginas `/ca/…` deja 404 en URLs indexadas: respeta el orden.
 - `/compte/?verifica=…` y `?restableix=…` llevan token en la query: el 301 la conserva, y `view.js` la limpia al llegar a `/ca/compte/` (ver `docs/decisions.md`). Los correos ya enviados siguen funcionando por el 301.
 - Un `.htaccess` roto da 500 en todo el sitio: tener a mano el acceso por FTP/panel para restaurar la copia.
+
+## Traducciones PHP (`.mo`) y correos (T09b)
+
+- PHP carga `plugins/noempesquen-core/languages/noempesquen-es_ES.mo` (`load_plugin_textdomain` en `init` y filtro `load_textdomain_mofile`, que cubre la recarga tras `switch_to_locale()`). No hace falta WP-CLI ni language packs: el `.mo` viaja en el zip. El catalán es el msgid y no tiene fichero.
+- Generar el `.mo`: `npm run i18n:mo` (compila `noempesquen-es_ES.po`; sin `msgfmt`). Orden tras traducir: `i18n:pot` → `i18n:merge` → `i18n:json` → `i18n:mo`, y commit de `.po`, `.json` y `.mo`.
+- Los view scripts de `compte` y `contacte` usan `wp_set_script_translations` con el mismo JSON que el simulador (todas las cadenas del `.po` van a un solo fichero).
+- Correos de cuenta: idioma = meta de usuario `nep_idioma` (se guarda al registrarse desde la cabecera `X-Nep-Lang` que envía el bloque; sin meta, `ca`, porque las cuentas previas eran catalanas). Se envían con `switch_to_locale()` y el enlace sale de `nep_url_pagina( 'compte', $idioma )`: `/cuenta/` o `/ca/compte/`.
+- Las respuestas REST de `noempesquen/v1` llevan `Vary: X-Nep-Lang`.
