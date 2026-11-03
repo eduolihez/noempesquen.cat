@@ -1,0 +1,807 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: No em pesquen – Nucli\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: noempesquen\n"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:20
+msgid "Particulars"
+msgstr "Particulares"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:21
+msgid "Àrea de clients"
+msgstr "Área de clientes"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:52
+msgid "Banc Sòlid, inici"
+msgstr "Banc Sòlid, inicio"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:62 src/blocks/simulador/webs/llum-clara/LlumClara.js:51
+msgid "Principal"
+msgstr "Principal"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:83
+msgid "Banca en línia"
+msgstr "Banca en línea"
+
+#. translators: %s: nom del client
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:86
+#, js-format
+msgid "Sessió oberta · %s"
+msgstr "Sesión iniciada · %s"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:111 src/blocks/simulador/webs/banc-solid/Falsa.js:45 src/blocks/simulador/webs/banc-solid/Falsa.js:52
+msgid "Connexió segura"
+msgstr "Conexión segura"
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:116
+msgid "© 2026 Banc Sòlid. Tots els drets reservats."
+msgstr "© 2026 Banc Sòlid. Todos los derechos reservados."
+
+#: src/blocks/simulador/webs/banc-solid/BancSolid.js:120
+msgid "© 2026 Banc Sòlid, SA · Entitat inscrita al registre de bancs"
+msgstr "© 2026 Banc Sòlid, SA · Entidad inscrita en el registro de bancos"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:43
+msgid "Accedeix"
+msgstr "Accede"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:44
+msgid "Comprovant les dades…"
+msgstr "Comprobando los datos…"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:50
+msgid "Verifica"
+msgstr "Verifica"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:51
+msgid "Desbloquejant el compte…"
+msgstr "Desbloqueando la cuenta…"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:65
+msgid "El teu compte ha estat bloquejat"
+msgstr "Tu cuenta ha sido bloqueada"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:74
+msgid "Hem detectat un accés no autoritzat. Verifica la teva identitat en menys de 24 hores o el compte es cancel·larà definitivament."
+msgstr "Hemos detectado un acceso no autorizado. Verifica tu identidad en menos de 24 horas o la cuenta se cancelará definitivamente."
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:84
+msgid "Verificació de seguretat"
+msgstr "Verificación de seguridad"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:89
+msgid "Introdueix les teves dades per desbloquejar el conte."
+msgstr "Introduce tus datos para desbloquear la cuenta."
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:101
+msgid "Pas 1 de 2"
+msgstr "Paso 1 de 2"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:102
+msgid "Pas 2 de 2"
+msgstr "Paso 2 de 2"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:106
+msgid "Accés a la banca en línia"
+msgstr "Acceso a la banca en línea"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:107
+msgid "Codi de verificació"
+msgstr "Código de verificación"
+
+#: src/blocks/simulador/webs/banc-solid/Falsa.js:115
+msgid "T'hem enviat un codi per SMS al teu mòbil"
+msgstr "Te hemos enviado un código por SMS a tu móvil"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:10
+msgid "Dilluns, 11:20"
+msgstr "Lunes, 11:20"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:11
+msgid "Compra amb targeta ·· 9010 · Botiga Verda"
+msgstr "Compra con tarjeta ·· 9010 · Botiga Verda"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:21
+msgid "Compra amb targeta ·· 9010 · Farmàcia del Barri"
+msgstr "Compra con tarjeta ·· 9010 · Farmàcia del Barri"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:34
+msgid "Mai et demanarem contrasenyes"
+msgstr "Nunca te pediremos contraseñas"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:35
+msgid "Banc Sòlid no et demanarà mai la contrasenya ni la clau de la banca en línia per correu, SMS, missatge o telèfon."
+msgstr "Banc Sòlid nunca te pedirá la contraseña ni la clave de la banca en línea por correo, SMS, mensaje o teléfono."
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:42
+msgid "Els codis SMS són només teus"
+msgstr "Los códigos SMS son solo tuyos"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:43
+msgid "El codi que reps per SMS serveix per confirmar una operació que has fet tu. No el diguis a ningú, tampoc a qui digui que és del banc."
+msgstr "El código que recibes por SMS sirve para confirmar una operación que has hecho tú. No se lo digas a nadie, tampoco a quien diga que es del banco."
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:50
+msgid "Entra sempre per bancsolid.cat"
+msgstr "Entra siempre por bancsolid.es"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:51
+msgid "Escriu tu l'adreça o fes servir l'app. Si tens cap avís, el veuràs a l'Àrea de clients."
+msgstr "Escribe tú la dirección o usa la app. Si tienes algún aviso, lo verás en el Área de clientes."
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:64
+msgid "La banca de sempre, al costat de casa."
+msgstr "La banca de siempre, al lado de casa."
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:70
+msgid "Compte sense comissions, targeta de dèbit i atenció a la teva oficina del barri."
+msgstr "Cuenta sin comisiones, tarjeta de débito y atención en tu oficina del barrio."
+
+#. translators: %s: nom de pila
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:78
+#, js-format
+msgid "Continua a l'Àrea de clients, %s"
+msgstr "Continúa en el Área de clientes, %s"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:92
+msgid "Banca segura"
+msgstr "Banca segura"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:130
+msgid "No hi ha cap bloqueig ni cap verificació pendent."
+msgstr "No hay ningún bloqueo ni ninguna verificación pendiente."
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:148
+msgid "Saldo disponible · compte acabat en 4821"
+msgstr "Saldo disponible · cuenta acabada en 4821"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:159
+msgid "Targeta de dèbit"
+msgstr "Tarjeta de débito"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:163
+msgid "Activa"
+msgstr "Activa"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:166
+msgid "Acabada en 9010"
+msgstr "Acabada en 9010"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:176
+msgid "Últims moviments"
+msgstr "Últimos movimientos"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:181
+msgid "Data"
+msgstr "Fecha"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:186
+msgid "Import"
+msgstr "Importe"
+
+#: src/blocks/simulador/webs/banc-solid/Oficial.js:211
+msgid "Banc Sòlid no et demanarà mai la contrasenya ni el codi SMS per correu, SMS o telèfon."
+msgstr "Banc Sòlid nunca te pedirá la contraseña ni el código SMS por correo, SMS o teléfono."
+
+#: src/blocks/simulador/webs/cobrament/Cobrament.js:28
+msgid "Revenda Cobra"
+msgstr "Revenda Cobra"
+
+#: src/blocks/simulador/webs/cobrament/Cobrament.js:53
+msgid "Cobra els"
+msgstr "Cobra los"
+
+#: src/blocks/simulador/webs/cobrament/Cobrament.js:61 src/blocks/simulador/webs/llum-clara/Falsa.js:96
+msgid "Dades de la targeta"
+msgstr "Datos de la tarjeta"
+
+#: src/blocks/simulador/webs/cobrament/Cobrament.js:64
+msgid "Introdueix les dades de la targeta per rebre l'ingrés."
+msgstr "Introduce los datos de la tarjeta para recibir el ingreso."
+
+#: src/blocks/simulador/webs/cobrament/Cobrament.js:77
+msgid "Revenda Cobra · Cobraments"
+msgstr "Revenda Cobra · Cobros"
+
+#: src/blocks/simulador/webs/comu/AvisFals.js:169
+msgid "Truca ara"
+msgstr "Llama ahora"
+
+#: src/blocks/simulador/webs/comu/AvisFals.js:174
+msgid "No s'ha pogut tancar"
+msgstr "No se ha podido cerrar"
+
+#: src/blocks/simulador/webs/comu/BarraActualitzacio.js:36
+msgid "Avís del navegador"
+msgstr "Aviso del navegador"
+
+#: src/blocks/simulador/webs/comu/BarraActualitzacio.js:58
+msgid "Tanca la barra"
+msgstr "Cerrar la barra"
+
+#: src/blocks/simulador/webs/comu/CampSuggerit.js:134
+msgid "Dades desades en aquest navegador"
+msgstr "Datos guardados en este navegador"
+
+#: src/blocks/simulador/webs/comu/DescarregaFicticia.js:71
+msgid "Baixada"
+msgstr "Descarga"
+
+#: src/blocks/simulador/webs/comu/DescarregaFicticia.js:76
+msgid "Fitxer"
+msgstr "Archivo"
+
+#: src/blocks/simulador/webs/comu/DescarregaFicticia.js:83
+msgid "Des de"
+msgstr "Desde"
+
+#: src/blocks/simulador/webs/comu/FormulariFals.js:35
+msgid "No tanquis ni actualitzis aquesta pàgina."
+msgstr "No cierres ni actualices esta página."
+
+#: src/blocks/simulador/webs/comu/FormulariFals.js:69
+msgid "Processant el pagament…"
+msgstr "Procesando el pago…"
+
+#: src/blocks/simulador/webs/comu/FormulariFals.js:70
+msgid "Pagament segur i verificat"
+msgstr "Pago seguro y verificado"
+
+#. translators: 1: titular, 2: quatre darreres xifres
+#: src/blocks/simulador/webs/comu/FormulariFals.js:78
+#, js-format
+msgid "%1$s · targeta acabada en %2$s"
+msgstr "%1$s · tarjeta acabada en %2$s"
+
+#. translators: %s: nom del titular
+#: src/blocks/simulador/webs/comu/FormulariFals.js:84
+#, js-format
+msgid "%s · dades desades"
+msgstr "%s · datos guardados"
+
+#: src/blocks/simulador/webs/comu/FormulariFals.js:87
+msgid "Omple aquest camp"
+msgstr "Rellena este campo"
+
+#. translators: %s: etiqueta de l'anunci
+#: src/blocks/simulador/webs/diari/Anunci.js:30
+#, js-format
+msgid "Anunci: %s"
+msgstr "Anuncio: %s"
+
+#: src/blocks/simulador/webs/diari/Anunci.js:58
+msgid "Informa d'aquest anunci"
+msgstr "Informa de este anuncio"
+
+#: src/blocks/simulador/webs/diari/Anunci.js:62
+msgid "Anunci denunciat. Gràcies."
+msgstr "Anuncio denunciado. Gracias."
+
+#: src/blocks/simulador/webs/diari/Diari.js:94
+msgid "No hem trobat aquesta notícia"
+msgstr "No hemos encontrado esta noticia"
+
+#: src/blocks/simulador/webs/diari/Diari.js:101
+msgid "Torna a la portada"
+msgstr "Volver a la portada"
+
+#: src/blocks/simulador/webs/diari/Diari.js:109
+msgid "El Diari del Barri · Notícies de proximitat"
+msgstr "El Diari del Barri · Noticias de proximidad"
+
+#: src/blocks/simulador/webs/diari/Diari.js:124
+msgid "Últimes notícies del barri"
+msgstr "Últimas noticias del barrio"
+
+#: src/blocks/simulador/webs/enviat/Enviat.js:29
+msgid "Envia't · Missatgeria"
+msgstr "Envia't · Mensajería"
+
+#: src/blocks/simulador/webs/enviat/Falsa.js:19
+msgid "Paga les despeses d'entrega"
+msgstr "Paga los gastos de entrega"
+
+#: src/blocks/simulador/webs/enviat/Falsa.js:21
+msgid "El teu paquet és al magatzem. Paga avui per evitar que el retornem al remitent."
+msgstr "Tu paquete está en el almacén. Paga hoy para evitar que lo devolvamos al remitente."
+
+#: src/blocks/simulador/webs/enviat/Falsa.js:28 src/blocks/simulador/webs/llum-clara/Falsa.js:89
+msgid "Total a pagar"
+msgstr "Total a pagar"
+
+#: src/blocks/simulador/webs/enviat/Marca.js:38
+msgid "Envia't"
+msgstr "Envia't"
+
+#: src/blocks/simulador/webs/enviat/Oficial.js:16
+msgid "No hi ha cap paquet amb aquest número"
+msgstr "No hay ningún paquete con este número"
+
+#: src/blocks/simulador/webs/enviat/Oficial.js:20
+msgid "Segueix el teu enviament"
+msgstr "Sigue tu envío"
+
+#: src/blocks/simulador/webs/enviat/Oficial.js:22
+msgid "Escriu el número de seguiment que t'hem donat en lliurar el paquet."
+msgstr "Escribe el número de seguimiento que te dimos al entregar el paquete."
+
+#: src/blocks/simulador/webs/enviat/Oficial.js:36
+msgid "Número de seguiment"
+msgstr "Número de seguimiento"
+
+#: src/blocks/simulador/webs/inversio/Inversio.js:29
+msgid "Invest Rapid"
+msgstr "Invest Rapid"
+
+#: src/blocks/simulador/webs/inversio/Inversio.js:87
+msgid "Què diuen els inversors"
+msgstr "Qué dicen los inversores"
+
+#: src/blocks/simulador/webs/inversio/Inversio.js:113
+msgid "Comença a invertir"
+msgstr "Empieza a invertir"
+
+#: src/blocks/simulador/webs/inversio/Inversio.js:120
+msgid "Invest Rapid · Inversions"
+msgstr "Invest Rapid · Inversiones"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:37
+msgid "Estat dels pagaments"
+msgstr "Estado de los pagos"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:43
+msgid "Tens els pagaments al dia. Cobrem les factures per domiciliació bancària."
+msgstr "Tienes los pagos al día. Cobramos las facturas por domiciliación bancaria."
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:52
+msgid "Última factura"
+msgstr "Última factura"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:56
+msgid "Factura de setembre de 2026"
+msgstr "Factura de septiembre de 2026"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:60
+msgid "Pagada el 5 d'octubre"
+msgstr "Pagada el 5 de octubre"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:65 src/blocks/simulador/webs/llum-clara/Oficial.js:159
+msgid "Tarifa"
+msgstr "Tarifa"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:66
+msgid "Clara 24 h · 4,6 kW"
+msgstr "Clara 24 h · 4,6 kW"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:69
+msgid "Forma de pagament"
+msgstr "Forma de pago"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:71
+msgid "Domiciliació · compte acabat en 4821"
+msgstr "Domiciliación · cuenta acabada en 4821"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:78
+msgid "Propera factura"
+msgstr "Próxima factura"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:79
+msgid "Cap al 6 de novembre"
+msgstr "Hacia el 6 de noviembre"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:85
+msgid "Llum Clara no et demanarà mai les dades de la targeta ni el PIN per correu electrònic, SMS o telèfon."
+msgstr "Llum Clara nunca te pedirá los datos de la tarjeta ni el PIN por correo electrónico, SMS o teléfono."
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:113
+msgid "Contrasenya desada per a llumclara.cat"
+msgstr "Contraseña guardada para llumclara.es"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:153 src/blocks/simulador/webs/llum-clara/LlumClara.js:18
+msgid "Àrea client"
+msgstr "Área cliente"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:155
+msgid "Consulta les factures, els consums i el teu contracte."
+msgstr "Consulta las facturas, los consumos y tu contrato."
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:171
+msgid "Contrasenya"
+msgstr "Contraseña"
+
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:180
+msgid "Entra"
+msgstr "Entra"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:31
+msgid "Avís de tall de subministrament"
+msgstr "Aviso de corte de suministro"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:36
+msgid "No hem pogut cobrar la teva última factura. Si no la pagues avui, el subministrament es tallarà d'aquí a"
+msgstr "No hemos podido cobrar tu última factura. Si no la pagas hoy, el suministro se cortará dentro de"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:49
+msgid "Pagament de factura pendent"
+msgstr "Pago de factura pendiente"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:52
+msgid "Completa el pagament ara per evitar el tall i el cost de reconnexió."
+msgstr "Completa el pago ahora para evitar el corte y el coste de reconexión."
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:61
+msgid "Resum"
+msgstr "Resumen"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:64
+msgid "Titular"
+msgstr "Titular"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:66
+msgid "Client de Llum Clara"
+msgstr "Cliente de Llum Clara"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:71
+msgid "Referència"
+msgstr "Referencia"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:77
+msgid "Factura impagada"
+msgstr "Factura impagada"
+
+#: src/blocks/simulador/webs/llum-clara/Falsa.js:80
+msgid "Data límit"
+msgstr "Fecha límite"
+
+#: src/blocks/simulador/webs/llum-clara/LlumClara.js:17 src/blocks/simulador/webs/llum-clara/Oficial.js:155
+msgid "Tarifes"
+msgstr "Tarifas"
+
+#: src/blocks/simulador/webs/llum-clara/LlumClara.js:19 src/blocks/simulador/webs/llum-clara/Oficial.js:222
+msgid "Ajuda"
+msgstr "Ayuda"
+
+#: src/blocks/simulador/webs/llum-clara/LlumClara.js:46
+msgid "Llum Clara, inici"
+msgstr "Llum Clara, inicio"
+
+#: src/blocks/simulador/webs/llum-clara/LlumClara.js:105
+msgid "© 2026 Llum Clara. Tots els drets reservats."
+msgstr "© 2026 Llum Clara. Todos los derechos reservados."
+
+#: src/blocks/simulador/webs/llum-clara/LlumClara.js:109
+msgid "© 2026 Llum Clara Energia, SA"
+msgstr "© 2026 Llum Clara Energia, SA"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:60
+msgid "Circulen correus falsos amb el nom de Llum Clara. No et demanarem mai la targeta per correu."
+msgstr "Circulan correos falsos con el nombre de Llum Clara. Nunca te pediremos la tarjeta por correo."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:65
+msgid "Com els reconeixes"
+msgstr "Cómo reconocerlos"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:73
+msgid "Llum a un preu que s'entén."
+msgstr "Luz a un precio que se entiende."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:79
+msgid "Tarifa Clara 24 h: el mateix preu a qualsevol hora del dia, sense permanència."
+msgstr "Tarifa Clara 24 h: el mismo precio a cualquier hora del día, sin permanencia."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:87
+msgid "per kWh, IVA no inclòs"
+msgstr "por kWh, IVA no incluido"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:98
+msgid "Mira les tarifes"
+msgstr "Mira las tarifas"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:104
+msgid "Entra a l'àrea client"
+msgstr "Entra en el área cliente"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:113
+msgid "Gestions"
+msgstr "Gestiones"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:118
+msgid "Factures i consums"
+msgstr "Facturas y consumos"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:119
+msgid "Descarrega les factures i mira el consum de cada mes a l'àrea client."
+msgstr "Descarga las facturas y mira el consumo de cada mes en el área cliente."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:126
+msgid "Avaries"
+msgstr "Averías"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:127
+msgid "Si et quedes sense llum, avisa'ns des de l'àrea client a qualsevol hora."
+msgstr "Si te quedas sin luz, avísanos desde el área cliente a cualquier hora."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:134
+msgid "Canvi de tarifa"
+msgstr "Cambio de tarifa"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:135
+msgid "Canvia de tarifa o de potència sense cap cost, un cop l'any."
+msgstr "Cambia de tarifa o de potencia sin ningún coste, una vez al año."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:160
+msgid "Energia"
+msgstr "Energía"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:161
+msgid "Potència"
+msgstr "Potencia"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:167
+msgid "Clara 24 h"
+msgstr "Clara 24 h"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:170
+msgid "0,128 €/kWh tot el dia"
+msgstr "0,128 €/kWh todo el día"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:172 src/blocks/simulador/webs/llum-clara/Oficial.js:184
+msgid "0,11 €/kW i dia"
+msgstr "0,11 €/kW y día"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:176
+msgid "Clara Nit i Dia"
+msgstr "Clara Noche y Día"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:179
+msgid "0,159 €/kWh de dia · 0,089 €/kWh de nit"
+msgstr "0,159 €/kWh de día · 0,089 €/kWh de noche"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:189
+msgid "Preus sense IVA ni impost elèctric."
+msgstr "Precios sin IVA ni impuesto eléctrico."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:197
+msgid "Com sé si un correu és vostre?"
+msgstr "¿Cómo sé si un correo es vuestro?"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:198
+msgid "Els nostres correus arriben sempre d'una adreça acabada en @llumclara.cat. No hi posem enllaços per pagar i mai no et demanarem la targeta ni el PIN."
+msgstr "Nuestros correos llegan siempre de una dirección acabada en @llumclara.es. No incluimos enlaces para pagar y nunca te pediremos la tarjeta ni el PIN."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:204
+msgid "Com pago una factura?"
+msgstr "¿Cómo pago una factura?"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:205
+msgid "Les factures es cobren per domiciliació bancària. Si un cobrament falla, t'avisem per carta i a l'àrea client, i tens com a mínim dos mesos per pagar-la."
+msgstr "Las facturas se cobran por domiciliación bancaria. Si un cobro falla, te avisamos por carta y en el área cliente, y tienes como mínimo dos meses para pagarla."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:211
+msgid "He rebut un correu sospitós, què faig?"
+msgstr "He recibido un correo sospechoso, ¿qué hago?"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:212
+msgid "No facis clic als enllaços. Entra a llumclara.cat escrivint tu l'adreça i mira a l'àrea client si tens res pendent. Després marca el correu com a pesca (phishing)."
+msgstr "No hagas clic en los enlaces. Entra en llumclara.es escribiendo tú la dirección y mira en el área cliente si tienes algo pendiente. Después marca el correo como phishing."
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:234
+msgid "Avís legal"
+msgstr "Aviso legal"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:235
+msgid "Política de privacitat"
+msgstr "Política de privacidad"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:236
+msgid "Galetes"
+msgstr "Cookies"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:237
+msgid "Accessibilitat"
+msgstr "Accesibilidad"
+
+#: src/blocks/simulador/webs/llum-clara/Oficial.js:268
+msgid "Llum Clara Energia, SA tracta les teves dades només per gestionar el contracte de subministrament. Pots exercir els teus drets des de l'àrea client."
+msgstr "Llum Clara Energia, SA trata tus datos solo para gestionar el contrato de suministro. Puedes ejercer tus derechos desde el área cliente."
+
+#: src/blocks/simulador/webs/posta/Denuncia.js:57 src/blocks/simulador/webs/posta/Lectura.js:136
+msgid "Denuncia pesca (phishing)"
+msgstr "Denuncia phishing"
+
+#. translators: %s: adreça del remitent
+#: src/blocks/simulador/webs/posta/Denuncia.js:62
+#, js-format
+msgid "Posta mourà aquest missatge a Brossa i n'enviarà una còpia a l'equip de seguretat perquè pugui frenar els que arribin de %s."
+msgstr "Posta moverá este mensaje a Correo no deseado y enviará una copia al equipo de seguridad para que pueda frenar los que lleguen de %s."
+
+#: src/blocks/simulador/webs/posta/Lectura.js:85
+msgid "Accions del missatge"
+msgstr "Acciones del mensaje"
+
+#. translators: %s: nom de la carpeta
+#: src/blocks/simulador/webs/posta/Lectura.js:90
+#, js-format
+msgid "Torna a %s"
+msgstr "Volver a %s"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:99 src/blocks/simulador/webs/posta/LlistaCorreus.js:109
+msgid "Arxiva"
+msgstr "Archivar"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:106
+msgid "Marca com a brossa"
+msgstr "Marcar como no deseado"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:113 src/blocks/simulador/webs/posta/LlistaCorreus.js:115
+msgid "Elimina"
+msgstr "Eliminar"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:120 src/blocks/simulador/webs/posta/LlistaCorreus.js:123
+msgid "Marca com a no llegit"
+msgstr "Marcar como no leído"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:129
+msgid "Treu el destacat"
+msgstr "Quitar destacado"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:130
+msgid "Destaca"
+msgstr "Destacar"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:188
+msgid "per a mi"
+msgstr "para mí"
+
+#: src/blocks/simulador/webs/posta/Lectura.js:200 src/blocks/simulador/webs/posta/LlistaCorreus.js:70 src/blocks/simulador/webs/posta/LlistaCorreus.js:73
+msgid "Destacat"
+msgstr "Destacado"
+
+#: src/blocks/simulador/webs/posta/LlistaCorreus.js:74
+msgid "No destacat"
+msgstr "No destacado"
+
+#: src/blocks/simulador/webs/posta/LlistaCorreus.js:88
+msgid "No llegit,"
+msgstr "No leído,"
+
+#: src/blocks/simulador/webs/posta/LlistaCorreus.js:124
+msgid "Marca com a llegit"
+msgstr "Marcar como leído"
+
+#. translators: 1: primer, 2: darrer, 3: total
+#: src/blocks/simulador/webs/posta/LlistaCorreus.js:174
+#, js-format
+msgid "%1$d–%2$d de %3$d"
+msgid_plural "%1$d–%2$d de %3$d"
+msgstr[0] "%1$d–%2$d de %3$d"
+msgstr[1] "%1$d–%2$d de %3$d"
+
+#: src/blocks/simulador/webs/posta/MenuMes.js:71 src/blocks/simulador/webs/posta/MenuMes.js:72
+msgid "Més"
+msgstr "Más"
+
+#: src/blocks/simulador/webs/posta/MenuMes.js:83
+msgid "Més accions"
+msgstr "Más acciones"
+
+#: src/blocks/simulador/webs/posta/Posta.js:39
+msgid "Entrada"
+msgstr "Bandeja de entrada"
+
+#: src/blocks/simulador/webs/posta/Posta.js:41
+msgid "No tens cap missatge a l'Entrada."
+msgstr "No tienes ningún mensaje en la bandeja de entrada."
+
+#: src/blocks/simulador/webs/posta/Posta.js:45
+msgid "Destacats"
+msgstr "Destacados"
+
+#: src/blocks/simulador/webs/posta/Posta.js:47
+msgid "Encara no has destacat cap missatge. Fes clic a l'estrella d'un missatge per trobar-lo aquí."
+msgstr "Todavía no has destacado ningún mensaje. Haz clic en la estrella de un mensaje para encontrarlo aquí."
+
+#: src/blocks/simulador/webs/posta/Posta.js:54
+msgid "Enviats"
+msgstr "Enviados"
+
+#: src/blocks/simulador/webs/posta/Posta.js:56
+msgid "Encara no has enviat cap missatge."
+msgstr "Todavía no has enviado ningún mensaje."
+
+#: src/blocks/simulador/webs/posta/Posta.js:60
+msgid "Arxivats"
+msgstr "Archivados"
+
+#: src/blocks/simulador/webs/posta/Posta.js:62
+msgid "No tens cap missatge arxivat."
+msgstr "No tienes ningún mensaje archivado."
+
+#: src/blocks/simulador/webs/posta/Posta.js:66
+msgid "Brossa"
+msgstr "Correo no deseado"
+
+#: src/blocks/simulador/webs/posta/Posta.js:68
+msgid "No hi ha res a Brossa."
+msgstr "No hay nada en Correo no deseado."
+
+#: src/blocks/simulador/webs/posta/Posta.js:74
+msgid "La Paperera és buida."
+msgstr "La papelera está vacía."
+
+#: src/blocks/simulador/webs/posta/Posta.js:79
+msgid "S'ha arxivat el missatge."
+msgstr "Se ha archivado el mensaje."
+
+#: src/blocks/simulador/webs/posta/Posta.js:80
+msgid "S'ha mogut el missatge a la Paperera."
+msgstr "Se ha movido el mensaje a la papelera."
+
+#: src/blocks/simulador/webs/posta/Posta.js:81
+msgid "S'ha marcat el missatge com a brossa."
+msgstr "Se ha marcado el mensaje como no deseado."
+
+#: src/blocks/simulador/webs/posta/Posta.js:82
+msgid "S'ha denunciat el missatge i s'ha mogut a Brossa."
+msgstr "Se ha denunciado el mensaje y se ha movido a Correo no deseado."
+
+#: src/blocks/simulador/webs/posta/Posta.js:229
+msgid "posta"
+msgstr "posta"
+
+#: src/blocks/simulador/webs/posta/Posta.js:234 src/blocks/simulador/webs/posta/Posta.js:241
+msgid "Cerca al correu"
+msgstr "Buscar en el correo"
+
+#: src/blocks/simulador/webs/posta/Posta.js:261
+msgid "Carpetes"
+msgstr "Carpetas"
+
+#: src/blocks/simulador/webs/posta/Posta.js:267
+msgid "No disponible en aquest simulacre"
+msgstr "No disponible en este simulacro"
+
+#: src/blocks/simulador/webs/posta/Posta.js:273
+msgid "Redacta"
+msgstr "Redactar"
+
+#: src/blocks/simulador/webs/posta/Posta.js:334
+msgid "Cap missatge coincideix amb la cerca."
+msgstr "Ningún mensaje coincide con la búsqueda."
+
+#: src/blocks/simulador/webs/sorteig/Marca.js:35
+msgid "Sorteig del Barri"
+msgstr "Sorteig del Barri"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:18
+msgid "Un telèfon mòbil nou"
+msgstr "Un teléfono móvil nuevo"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:21
+msgid "Només et queden 09:41 minuts"
+msgstr "Solo te quedan 09:41 minutos"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:22
+msgid "2,95 €"
+msgstr "2,95 €"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:31
+msgid "Felicitats, has guanyat!"
+msgstr "¡Felicidades, has ganado!"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:41
+msgid "Despeses d'enviament"
+msgstr "Gastos de envío"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:43
+msgid "Paga només les despeses d'enviament per rebre el teu premi:"
+msgstr "Paga solo los gastos de envío para recibir tu premio:"
+
+#: src/blocks/simulador/webs/sorteig/Sorteig.js:55
+msgid "Sorteig del Barri · Sorteigs"
+msgstr "Sorteig del Barri · Sorteos"
