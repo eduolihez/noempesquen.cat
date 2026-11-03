@@ -59,10 +59,15 @@ add_filter(
 
 /**
  * Pàgines del web amb el slug de cada idioma (les catalanes són filles de `/ca/`).
+ * La font és `nep_pagines()` del plugin; la llista d'aquí només és la reserva si
+ * el plugin no està actiu.
  *
  * @return array<string, array{es: string, ca: string}>
  */
 function nep_tema_pagines(): array {
+	if ( function_exists( 'nep_pagines' ) ) {
+		return nep_pagines();
+	}
 	return array(
 		'inici'        => array(
 			'es' => '',

@@ -153,32 +153,60 @@ function nep_lang_html( string $locale ): string {
 }
 
 /**
+ * Pàgines del web amb el slug de cada idioma: font única per al plugin i el tema.
+ *
+ * Les castellanes són a l'arrel; les catalanes, filles de la pàgina `ca`.
+ * `inici` té slug buit (portada `/` i `/ca/`).
+ *
+ * @return array<string, array{es: string, ca: string}>
+ */
+function nep_pagines(): array {
+	return array(
+		'inici'        => array(
+			'es' => '',
+			'ca' => '',
+		),
+		'simulador'    => array(
+			'es' => 'simulador',
+			'ca' => 'simulador',
+		),
+		'com-funciona' => array(
+			'es' => 'como-funciona',
+			'ca' => 'com-funciona',
+		),
+		'missions'     => array(
+			'es' => 'misiones',
+			'ca' => 'missions',
+		),
+		'compte'       => array(
+			'es' => 'cuenta',
+			'ca' => 'compte',
+		),
+		'contacte'     => array(
+			'es' => 'contacto',
+			'ca' => 'contacte',
+		),
+		'projecte'     => array(
+			'es' => 'sobre-el-proyecto',
+			'ca' => 'sobre-el-projecte',
+		),
+	);
+}
+
+/**
  * Ruta (sense prefix d'idioma) d'una pàgina del lloc segons l'idioma.
  *
- * Claus: `compte`, `contacte`, `projecte`, `simulador`. Una clau desconeguda
- * dóna el simulador.
+ * Claus de nep_pagines(); `inici` dóna `/`. Una clau desconeguda dóna el simulador.
  *
  * @param string $clau   Clau de la pàgina.
  * @param string $idioma `es`|`ca`.
  * @return string Ruta amb barres inicial i final.
  */
 function nep_ruta_pagina( string $clau, string $idioma ): string {
-	$rutes = array(
-		'es' => array(
-			'compte'    => '/cuenta/',
-			'contacte'  => '/contacto/',
-			'projecte'  => '/sobre-el-proyecto/',
-			'simulador' => '/simulador/',
-		),
-		'ca' => array(
-			'compte'    => '/compte/',
-			'contacte'  => '/contacte/',
-			'projecte'  => '/sobre-el-projecte/',
-			'simulador' => '/simulador/',
-		),
-	);
-	$taula = $rutes['ca' === $idioma ? 'ca' : 'es'];
-	return $taula[ $clau ] ?? $taula['simulador'];
+	$pagines = nep_pagines();
+	$slugs   = $pagines[ $clau ] ?? $pagines['simulador'];
+	$slug    = $slugs['ca' === $idioma ? 'ca' : 'es'];
+	return '' === $slug ? '/' : '/' . $slug . '/';
 }
 
 /**

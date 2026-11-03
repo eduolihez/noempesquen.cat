@@ -23,10 +23,10 @@ Descartado: el filtro `page_template_hierarchy` (menos visible en el editor de s
 - Se quitó `load_theme_textdomain()`: apuntaba a una carpeta vacía del tema para el mismo dominio y podía tapar el `.mo` del plugin.
 
 ## Enlaces
-- `nep_tema_pagines()` (functions.php) es el mapa clave → slug ES/CA: `inici`, `simulador`, `com-funciona`, `missions`, `compte`, `contacte`, `projecte`.
+- El mapa clave → slug ES/CA (`inici`, `simulador`, `com-funciona`, `missions`, `compte`, `contacte`, `projecte`) vive en UN sitio: `nep_pagines()` del plugin (`includes/idioma-nucli.php`). `nep_ruta_pagina()` y la migración de páginas lo usan.
+- `nep_tema_pagines()` (functions.php) devuelve `nep_pagines()`; su copia local solo sirve de reserva si el plugin no está activo.
 - `nep_tema_url( $clau, $idioma, $ancora )` usa `nep_url()` del plugin, con `home_url` como reserva si el plugin no está activo.
 - No queda ningún slug fijo en plantillas ni patterns.
-- Duplica en parte `nep_ruta_pagina()` del plugin, que no incluye `inici`, `com-funciona` ni `missions`. Pendiente: unificar.
 
 ## Selector de idioma (header)
 - Es un `<nav aria-label="Idioma">` (traducido) con un enlace estático a la página equivalente del otro idioma, que se busca con `nep_tema_clau_actual()`. Si la página no tiene equivalente, el enlace va a la portada del otro idioma.

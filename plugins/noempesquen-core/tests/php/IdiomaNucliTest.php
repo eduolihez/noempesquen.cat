@@ -93,6 +93,20 @@ final class IdiomaNucliTest extends TestCase {
 		$this->assertSame( '/ca/compte/', nep_ruta_idioma( nep_ruta_pagina( 'compte', 'ca' ), 'ca' ) );
 		$this->assertSame( '/sobre-el-proyecto/', nep_ruta_pagina( 'projecte', 'es' ) );
 		$this->assertSame( '/simulador/', nep_ruta_pagina( 'inexistent', 'ca' ) );
+		$this->assertSame( '/', nep_ruta_pagina( 'inici', 'es' ) );
+		$this->assertSame( '/ca/', nep_ruta_idioma( nep_ruta_pagina( 'inici', 'ca' ), 'ca' ) );
+		$this->assertSame( '/como-funciona/', nep_ruta_pagina( 'com-funciona', 'es' ) );
+		$this->assertSame( '/com-funciona/', nep_ruta_pagina( 'com-funciona', 'ca' ) );
+		$this->assertSame( '/misiones/', nep_ruta_pagina( 'missions', 'es' ) );
+		$this->assertSame( '/missions/', nep_ruta_pagina( 'missions', 'ca' ) );
+	}
+
+	public function test_pagines_font_unica(): void {
+		$pagines = nep_pagines();
+		$this->assertSame( array( 'inici', 'simulador', 'com-funciona', 'missions', 'compte', 'contacte', 'projecte' ), array_keys( $pagines ) );
+		foreach ( $pagines as $slugs ) {
+			$this->assertSame( array( 'es', 'ca' ), array_keys( $slugs ) );
+		}
 	}
 
 	public function test_idioma_de_meta_usuari(): void {
