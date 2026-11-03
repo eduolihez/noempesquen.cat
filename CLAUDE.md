@@ -35,6 +35,7 @@ npm run env:start      # WordPress en http://localhost:8888 (admin / password)
 npm run test:unit      # Vitest (solo plugins/**/test/**/*.test.js)
 npm run lint:js && npm run lint:css
 npx playwright test    # e2e; necesita wp-env arrancado y la página /simulador/
+npm run test:e2e:ca    # suite e2e contra /ca/ (NEP_LANG=ca); test:e2e:es: specs de tests/e2e/es/ contra la raíz en español
 ```
 
 Antes de decir que algo está listo: lint, test:unit, build y Playwright, con la salida real.
