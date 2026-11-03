@@ -59,23 +59,23 @@ function wp( ...args ) {
  */
 async function comprovaProgres( p ) {
 	await expect(
-		p.getByRole( 'button', { name: /^Obre el Pesquer:.*3 de 15 estrelles/ } )
+		p.getByRole( 'button', { name: /Obre el Pesquer:.*3 de 15 estrelles/ } )
 	).toBeVisible();
 	await expect(
-		p.getByRole( 'button', { name: /^Obre el Pirata:.*2 de 15 estrelles/ } )
+		p.getByRole( 'button', { name: /Obre el Pirata:.*2 de 15 estrelles/ } )
 	).toBeVisible();
-	await p.getByRole( 'button', { name: /^Obre el Pesquer:/ } ).click();
+	await p.getByRole( 'button', { name: /Obre el Pesquer:/ } ).click();
 	await expect(
 		p.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )
 	).toHaveCount( 1 );
 	await p.getByRole( 'button', { name: 'Torna al port' } ).click();
-	await p.getByRole( 'button', { name: /^Obre el Pirata:/ } ).click();
+	await p.getByRole( 'button', { name: /Obre el Pirata:/ } ).click();
 	await expect(
 		p.getByRole( 'img', { name: 'Millor resultat: 2 de 3 estrelles' } )
 	).toHaveCount( 1 );
 	await p.getByRole( 'button', { name: 'Torna al port' } ).click();
 	await expect(
-		p.getByRole( 'button', { name: /^Obre el Pirata:/ } )
+		p.getByRole( 'button', { name: /Obre el Pirata:/ } )
 	).toBeVisible();
 }
 

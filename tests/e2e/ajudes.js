@@ -140,7 +140,7 @@ async function obreMissio( page, titol, missio = null ) {
 	if ( trobada ) {
 		await page
 			.getByRole( 'button', {
-				name: new RegExp( `^Obre ${ VAIXELL[ trobada.dispositiu ] }:` ),
+				name: new RegExp( `Obre ${ VAIXELL[ trobada.dispositiu ] }:` ),
 			} )
 			.click();
 	}

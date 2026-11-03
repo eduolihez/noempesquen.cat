@@ -15,7 +15,7 @@ const creades = [];
 
 /** Obre el mapa del Pesquer (les missions de prova són de PC) des del port. */
 async function obrePesquer( p ) {
-	await p.getByRole( 'button', { name: /^Obre el Pesquer:/ } ).click();
+	await p.getByRole( 'button', { name: /Obre el Pesquer:/ } ).click();
 	await expect( p.getByRole( 'button', { name: 'Torna al port' } ) ).toBeVisible();
 }
 

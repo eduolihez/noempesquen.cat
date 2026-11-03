@@ -621,7 +621,7 @@ test.describe( 'tutorial al selector', () => {
 		await page.goto( '/simulador/' );
 		await page
 			.getByRole( 'button', {
-				name: mobil ? /^Obre el Pirata:/ : /^Obre el Pesquer:/,
+				name: mobil ? /Obre el Pirata:/ : /Obre el Pesquer:/,
 			} )
 			.click();
 		await expect(

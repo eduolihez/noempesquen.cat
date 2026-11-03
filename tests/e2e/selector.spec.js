@@ -2,7 +2,7 @@ const { test, expect } = require( './ajudes' );
 const { greusAxe, petits, rutaDe } = require( './ajudes' );
 
 const PROGRES = 'noempesquen-progres-v2';
-const NOM = { pc: /^Obre el Pesquer:/, mobil: /^Obre el Pirata:/ };
+const NOM = { pc: /Obre el Pesquer:/, mobil: /Obre el Pirata:/ };
 
 const selector = ( page ) =>
 	page.getByRole( 'region', { name: 'Tria una missió' } );
@@ -85,10 +85,10 @@ test.describe( 'Selector de missions: port', () => {
 		);
 		// Nom accessible amb el recompte de la ruta (sense progrés).
 		await expect( barco( page, 'pc' ) ).toHaveAccessibleName(
-			/^Obre el Pesquer: ordinador amb la Llissa, 0 de 6 missions, 0 de 15 estrelles/
+			/Obre el Pesquer: ordinador amb la Llissa, 0 de 6 missions, 0 de 15 estrelles/
 		);
 		await expect( barco( page, 'mobil' ) ).toHaveAccessibleName(
-			/^Obre el Pirata: mòbil amb la Remei, 0 de 6 missions, 0 de 15 estrelles/
+			/Obre el Pirata: mòbil amb la Remei, 0 de 6 missions, 0 de 15 estrelles/
 		);
 		// «Millor en horitzontal» només al Pesquer vist des d'un mòbil.
 		await expect(
@@ -111,7 +111,7 @@ test.describe( 'Selector de missions: port', () => {
 			'3 de 12 missions fetes · 5 de 30 estrelles'
 		);
 		await expect( barco( page, 'pc' ) ).toHaveAccessibleName(
-			/^Obre el Pesquer: ordinador amb la Llissa, 2 de 6 missions, 2 de 15 estrelles/
+			/Obre el Pesquer: ordinador amb la Llissa, 2 de 6 missions, 2 de 15 estrelles/
 		);
 	} );
 } );

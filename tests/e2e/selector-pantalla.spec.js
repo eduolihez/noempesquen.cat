@@ -5,7 +5,7 @@ const selector = ( page ) =>
 	page.getByRole( 'region', { name: 'Tria una missió' } );
 const barco = ( page, d ) =>
 	page.getByRole( 'button', {
-		name: d === 'pc' ? /^Obre el Pesquer:/ : /^Obre el Pirata:/,
+		name: d === 'pc' ? /Obre el Pesquer:/ : /Obre el Pirata:/,
 	} );
 const mapa = ( page ) => page.locator( '.nep-mapa' );
 const tornaAlPort = ( page ) =>

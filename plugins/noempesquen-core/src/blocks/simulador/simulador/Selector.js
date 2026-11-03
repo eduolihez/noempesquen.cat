@@ -140,7 +140,7 @@ function BotoVaixell( {
 } ) {
 	const { nom, descripcio } = vaixells()[ dispositiu ];
 	const marquesId = `nep-sel-${ dispositiu }-marques`;
-	const etiqueta = sprintf(
+	const frase = sprintf(
 		/* translators: 1: nom del vaixell, 2: dispositiu i guia, 3: missions fetes, 4: total, 5: estrelles, 6: màxim */
 		__(
 			'Obre %1$s: %2$s, %3$d de %4$d missions, %5$d de %6$d estrelles',
@@ -153,42 +153,59 @@ function BotoVaixell( {
 		ruta.estrelles,
 		ruta.max
 	);
+	const xifres = sprintf(
+		/* translators: 1: missions fetes, 2: total */
+		__( '%1$d de %2$d', 'noempesquen' ),
+		ruta.feta,
+		ruta.total
+	);
+	const estrelles = `${ ruta.estrelles }/${ ruta.max }`;
+	const textAqui = __( 'Aquí', 'noempesquen' );
+	const textHoritzontal = __( 'Millor en horitzontal', 'noempesquen' );
+	// WCAG 2.5.3 (axe label-content-name-mismatch): el nom accessible comença
+	// amb tot el text visible del cartell, en el mateix ordre; després, la frase
+	// completa. Els espais entre spans (contenidors flex, no es veuen) fan que
+	// axe no enganxi els fragments.
+	const visible = [
+		nom,
+		xifres,
+		estrelles,
+		aqui && textAqui,
+		horitzontal && textHoritzontal,
+	]
+		.filter( Boolean )
+		.join( ', ' );
+	const etiqueta = `${ visible }. ${ frase }`;
 	return (
 		<button
 			type="button"
 			ref={ refBoto }
 			className={ `nep-sel-barco nep-sel-barco--${ dispositiu }` }
 			aria-label={ etiqueta }
-			aria-describedby={ aqui || horitzontal ? marquesId : undefined }
 			onClick={ () => onObre( dispositiu ) }
 		>
 			<span className="nep-sel-barco__cartell" aria-hidden="true">
-				<span className="nep-sel-barco__nom">{ nom }</span>
+				<span className="nep-sel-barco__nom">{ nom }</span>{ ' ' }
 				<span className="nep-sel-barco__xifres">
-					<span>
-						{ sprintf(
-							/* translators: 1: missions fetes, 2: total */
-							__( '%1$d de %2$d', 'noempesquen' ),
-							ruta.feta,
-							ruta.total
-						) }
-					</span>
+					<span>{ xifres }</span>{ ' ' }
 					<span className="nep-sel-barco__estrelles">
 						<Estrella mida={ 16 } plena />
-						{ `${ ruta.estrelles }/${ ruta.max }` }
+						{ estrelles }
 					</span>
 				</span>
+				{ ( aqui || horitzontal ) && ' ' }
 				{ ( aqui || horitzontal ) && (
 					<span id={ marquesId } className="nep-sel-barco__marques">
 						{ aqui && (
 							<span className="nep-sel-barco__aqui">
-								{ __( 'Aquí', 'noempesquen' ) }
+								{ textAqui }
 							</span>
 						) }
+						{ aqui && horitzontal && ' ' }
 						{ horitzontal && (
 							<span className="nep-sel-horitzontal">
 								<IconaGira mida={ 16 } />
-								{ __( 'Millor en horitzontal', 'noempesquen' ) }
+								{ textHoritzontal }
 							</span>
 						) }
 					</span>
