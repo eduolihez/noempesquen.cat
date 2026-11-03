@@ -30,16 +30,18 @@ add_action( 'add_meta_boxes_nep_missio', 'nep_afegeix_caixa_guio' );
 /**
  * URL de la pàgina que conté el bloc del simulador (o /simulador/ si no se'n troba cap).
  *
- * Amb idioma, afegeix `lang` a l'URL només com a pista: les pàgines `/ca/…`
- * encara no existeixen (T09c), així que la ruta no canvia. La previsualització
- * carrega el guió per id, sigui quin sigui l'idioma.
+ * Amb idioma, la pàgina d'aquell idioma (`/simulador/` o `/ca/simulador/`) amb
+ * `lang` com a pista. La previsualització carrega el guió per id.
  *
  * @param string|null $idioma `es`|`ca` de la missió (opcional).
  * @return string
  */
 function nep_url_simulador( ?string $idioma = null ): string {
-	$url = nep_url_simulador_base();
-	return null === $idioma ? $url : add_query_arg( 'lang', nep_idioma_missio( $idioma ), $url );
+	if ( null === $idioma ) {
+		return nep_url_simulador_base();
+	}
+	$idioma = nep_idioma_missio( $idioma );
+	return add_query_arg( 'lang', $idioma, nep_url_pagina( 'simulador', $idioma ) );
 }
 
 /**
@@ -48,6 +50,10 @@ function nep_url_simulador( ?string $idioma = null ): string {
  * @return string
  */
 function nep_url_simulador_base(): string {
+	$arrel = get_page_by_path( trim( nep_ruta_pagina( 'simulador', 'es' ), '/' ) );
+	if ( $arrel && 'publish' === $arrel->post_status && has_block( 'noempesquen/simulador', $arrel ) ) {
+		return (string) get_permalink( $arrel );
+	}
 	$pagines = get_posts(
 		array(
 			'post_type'      => 'page',

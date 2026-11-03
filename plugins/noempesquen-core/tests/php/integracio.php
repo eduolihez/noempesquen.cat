@@ -459,6 +459,9 @@ foreach ( array( $nep_ca, $nep_es, $nep_es_sol, $nep_par_ca, $nep_par_es ) as $n
 
 // Comptes de jugador: rol, bloqueig de wp-admin i neteja.
 require __DIR__ . '/integracio-comptes.php';
+
+// Migració de pàgines ES/CA (T09c).
+require __DIR__ . '/integracio-pagines.php';
 wp_set_current_user( 1 );
 
 if ( $nep_fallades ) {

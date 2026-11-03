@@ -32,9 +32,11 @@ require_once NEP_PATH . 'includes/comptes.php';
 require_once NEP_PATH . 'includes/comptes-privacitat.php';
 require_once NEP_PATH . 'includes/contacte.php';
 require_once NEP_PATH . 'includes/admin-estadistiques.php';
+require_once NEP_PATH . 'includes/migracio-pagines.php';
 require_once NEP_PATH . 'includes/cli.php';
 
 register_activation_hook( __FILE__, 'nep_actualitza' );
+register_activation_hook( __FILE__, 'nep_actualitza_pagines' );
 
 /**
  * Registra els blocs compilats a /build.
