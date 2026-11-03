@@ -125,6 +125,62 @@ describe( 'validaParella', () => {
 		] );
 	} );
 
+	it( 'les url dels disparadors i navegador.inici han d’existir a les webs del mateix idioma', () => {
+		const ambUrls = ( m, inici, url ) => {
+			m.navegador = { inici: [ `https://${ inici }/` ] };
+			m.disparadors[ 0 ].quan = { esdeveniment: 'web.obre', url };
+			return m;
+		};
+		const mon = ( domini ) => ( { webs: { [ domini ]: {} } } );
+		const ca = {
+			'a.json': ambUrls(
+				missio(),
+				'posta.cat',
+				'llumclara-pagaments.com'
+			),
+			'mon.json': mon( 'posta.cat' ),
+		};
+		expect(
+			validaParella( {
+				ca,
+				es: {
+					'a.json': ambUrls(
+						traduida(),
+						'posta.es',
+						'llumclara-pagos.com'
+					),
+					'mon.json': mon( 'posta.es' ),
+				},
+			} )
+		).toEqual( [] );
+		// Domini que no existeix (p. ex. s'ha deixat el .cat a la versió es).
+		expect(
+			validaParella( {
+				ca,
+				es: {
+					'a.json': ambUrls(
+						traduida(),
+						'posta.es',
+						'llumclara-pagaments.com'
+					),
+					'mon.json': mon( 'posta.es' ),
+				},
+			} )
+		).toEqual( [
+			'a.json: url "llumclara-pagaments.com" (es) no és a webs ni a mon.webs',
+		] );
+		// Existeix però apunta a una altra web que en català.
+		expect(
+			validaParella( {
+				ca,
+				es: {
+					'a.json': ambUrls( traduida(), 'posta.es', 'llumclara.es' ),
+					'mon.json': mon( 'posta.es' ),
+				},
+			} )
+		).toEqual( [ 'a.json: url 1 apunta a webs diferents en ca i es' ] );
+	} );
+
 	it( 'les carpetes reals missions/ca i missions/es són parella', () => {
 		const ca = carpeta( 'ca' );
 		expect( Object.keys( ca ) ).toContain( 'mon.json' );

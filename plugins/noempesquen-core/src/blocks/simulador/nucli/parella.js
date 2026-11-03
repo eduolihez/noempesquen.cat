@@ -11,6 +11,9 @@
  *   `CLAUS_LLIURES` (textos que es tradueixen i dominis/adreces de ficció).
  * - Les claus de `webs` són dominis (`.cat` → `.es`): són lliures, però n'hi ha
  *   d'haver el mateix nombre i es comparen les webs en el mateix ordre.
+ * - Les `url` dels disparadors i `navegador.inici` són lògica: cada una ha
+ *   d'apuntar a una web de la missió o de `mon.json` del MATEIX idioma, i a la
+ *   mateixa posició (missió i després món) en tots dos idiomes.
  */
 
 /** Claus amb text lliure (traduïble o dominis de ficció). La resta de valors s'han de repetir. */
@@ -167,6 +170,71 @@ export function comparaEstructura( ca, es, ruta = '', clau = '' ) {
 }
 
 /**
+ * Domini d'una URL de ficció (`https://posta.cat/x` → `posta.cat`).
+ *
+ * @param {string} url URL o domini.
+ * @return {string} Domini en minúscules.
+ */
+export const dominiDe = ( url ) =>
+	String( url )
+		.replace( /^[a-z]+:\/\//i, '' )
+		.split( /[/?#]/ )[ 0 ]
+		.toLowerCase();
+
+/**
+ * URLs lògiques d'una missió, en ordre: `navegador.inici` i les `url` dels disparadors
+ * (sense les `app://`).
+ *
+ * @param {Object} missio Missió.
+ * @return {string[]} URLs.
+ */
+export function urlsLogiques( missio ) {
+	const urls = [ ...( missio?.navegador?.inici ?? [] ) ];
+	const recorre = ( v ) => {
+		if ( Array.isArray( v ) ) {
+			v.forEach( recorre );
+		} else if ( v && typeof v === 'object' ) {
+			for ( const [ k, x ] of Object.entries( v ) ) {
+				if ( k === 'url' && typeof x === 'string' ) {
+					urls.push( x );
+				} else {
+					recorre( x );
+				}
+			}
+		}
+	};
+	recorre( missio?.disparadors ?? [] );
+	// `app://…` obre una app del sistema, no una web.
+	return urls.filter( ( u ) => ! /^(?!https?:)[a-z]+:\/\//i.test( u ) );
+}
+
+/**
+ * Posició de cada URL lògica dins de les webs disponibles (missió i després món).
+ *
+ * @param {Object}   missio Missió.
+ * @param {Object}   mon    Món del mateix idioma.
+ * @param {string}   nom    Fitxer (per als missatges).
+ * @param {string}   idioma Idioma (per als missatges).
+ * @param {string[]} errors On s'afegeixen els errors.
+ * @return {number[]} Posicions (-1 = no existeix).
+ */
+function posicionsUrls( missio, mon, nom, idioma, errors ) {
+	const dominis = [
+		...Object.keys( missio?.webs ?? {} ),
+		...Object.keys( mon?.webs ?? {} ),
+	].map( dominiDe );
+	return urlsLogiques( missio ).map( ( url ) => {
+		const i = dominis.indexOf( dominiDe( url ) );
+		if ( i < 0 ) {
+			errors.push(
+				`${ nom }: url "${ url }" (${ idioma }) no és a webs ni a mon.webs`
+			);
+		}
+		return i;
+	} );
+}
+
+/**
  * Valida la parella de carpetes.
  *
  * @param {{ca: Object<string, *>, es: Object<string, *>}} conjunts JSON per nom de fitxer i idioma.
@@ -188,6 +256,29 @@ export function validaParella( { ca = {}, es = {} } ) {
 					( e ) => `${ nom }: ${ e }`
 				)
 			);
+			if ( nom !== 'mon.json' ) {
+				const pCa = posicionsUrls(
+					ca[ nom ],
+					ca[ 'mon.json' ],
+					nom,
+					'ca',
+					errors
+				);
+				const pEs = posicionsUrls(
+					es[ nom ],
+					es[ 'mon.json' ],
+					nom,
+					'es',
+					errors
+				);
+				pCa.forEach( ( p, i ) => {
+					if ( p >= 0 && pEs[ i ] >= 0 && p !== pEs[ i ] ) {
+						errors.push(
+							`${ nom }: url ${ i } apunta a webs diferents en ca i es`
+						);
+					}
+				} );
+			}
 		}
 	}
 	return errors;
