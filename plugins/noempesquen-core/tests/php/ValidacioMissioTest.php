@@ -80,6 +80,35 @@ final class ValidacioMissioTest extends TestCase {
 		$this->assertContains( 'llissa-01-factura.json', $noms );
 	}
 
+	public function test_idioma_de_missio_sense_meta_es_ca(): void {
+		$this->assertSame( 'ca', nep_idioma_missio( '' ) );
+		$this->assertSame( 'ca', nep_idioma_missio( null ) );
+		$this->assertSame( 'ca', nep_idioma_missio( 'en' ) );
+		$this->assertSame( 'es', nep_idioma_missio( ' ES ' ) );
+		$this->assertSame( 'ca', nep_idioma_missio( 'ca' ) );
+		$this->assertSame( 'ca', nep_idioma_altre( 'es' ) );
+		$this->assertSame( 'es', nep_idioma_altre( 'ca' ) );
+		$this->assertSame( '/m/es/', nep_carpeta_missions( '/m/', 'es' ) );
+		$this->assertSame( '/m/ca/', nep_carpeta_missions( '/m/', 'xx' ) );
+	}
+
+	public function test_meta_query_idioma_compta_sense_meta_com_a_ca(): void {
+		$es = nep_meta_query_idioma( 'es' );
+		$this->assertSame( array( array( 'key' => 'nep_idioma', 'value' => 'es' ) ), $es );
+		$ca = nep_meta_query_idioma( 'ca' );
+		$this->assertSame( 'OR', $ca['relation'] );
+		$this->assertSame( 'NOT EXISTS', $ca[1]['compare'] );
+	}
+
+	public function test_carpetes_es_i_ca_tenen_els_mateixos_ids(): void {
+		$ids = static fn( string $idioma ): array => array_map(
+			static fn( $f ) => self::llegeix( $f )['id'],
+			nep_fitxers_missions_incloses( nep_carpeta_missions( self::MISSIONS, $idioma ) )
+		);
+		$this->assertCount( 12, $ids( 'ca' ) );
+		$this->assertSame( $ids( 'ca' ), $ids( 'es' ) );
+	}
+
 	public function test_proposa_id_unic_i_valid(): void {
 		$this->assertSame( 'llissa-01-factura-copia', nep_proposa_id_missio( 'llissa-01-factura-copia', array( 'llissa-01-factura' ) ) );
 		$this->assertSame( 'prova-3', nep_proposa_id_missio( 'Prova', array( 'prova', 'prova-2' ) ) );
@@ -153,7 +182,7 @@ final class ValidacioMissioTest extends TestCase {
 	}
 
 	public function test_versio_ha_de_ser_el_numero_2(): void {
-		$guio = self::llegeix( self::MISSIONS . 'llissa-01-factura.json' );
+		$guio = self::llegeix( self::MISSIONS . 'ca/llissa-01-factura.json' );
 		foreach ( array( '2', 1, 2.5, null, true ) as $versio ) {
 			$guio['versio'] = $versio;
 			$this->assertNotEmpty( nep_valida_guio( $guio, 'pc', 'llissa', array() ), var_export( $versio, true ) );
@@ -163,7 +192,7 @@ final class ValidacioMissioTest extends TestCase {
 	}
 
 	public function test_passos_del_tutorial(): void {
-		$guio = self::llegeix( self::MISSIONS . 'tutorial-pc.json' );
+		$guio = self::llegeix( self::MISSIONS . 'ca/tutorial-pc.json' );
 		$this->assertSame( array(), nep_valida_guio( $guio, 'pc', $guio['personatge'], array() ) );
 		$pas  = $guio['passos'][0];
 		$casos = array(
@@ -184,7 +213,7 @@ final class ValidacioMissioTest extends TestCase {
 	}
 
 	public function test_id_amb_salt_de_linia_final_falla(): void {
-		$guio       = self::llegeix( self::MISSIONS . 'llissa-01-factura.json' );
+		$guio       = self::llegeix( self::MISSIONS . 'ca/llissa-01-factura.json' );
 		$guio['id'] = $guio['id'] . "\n";
 		$this->assertNotEmpty( nep_valida_guio( $guio, 'pc', 'llissa', array() ) );
 	}

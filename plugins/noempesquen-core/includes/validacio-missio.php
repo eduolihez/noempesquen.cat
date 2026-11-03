@@ -172,6 +172,41 @@ function nep_idioma_missio( $valor ): string {
 }
 
 /**
+ * L'altre idioma de les missions (el de la parella).
+ *
+ * @param string $idioma `es`|`ca`.
+ * @return string
+ */
+function nep_idioma_altre( string $idioma ): string {
+	return 'es' === nep_idioma_missio( $idioma ) ? 'ca' : 'es';
+}
+
+/**
+ * Arguments de `get_posts` per filtrar les missions d'un idioma (sense meta = `ca`).
+ *
+ * @param string $idioma `es`|`ca`.
+ * @return array `meta_query`.
+ */
+function nep_meta_query_idioma( string $idioma ): array {
+	$idioma = nep_idioma_missio( $idioma );
+	$igual  = array(
+		'key'   => 'nep_idioma',
+		'value' => $idioma,
+	);
+	if ( NEP_IDIOMA_MISSIO_PER_DEFECTE !== $idioma ) {
+		return array( $igual );
+	}
+	return array(
+		'relation' => 'OR',
+		$igual,
+		array(
+			'key'     => 'nep_idioma',
+			'compare' => 'NOT EXISTS',
+		),
+	);
+}
+
+/**
  * Carpeta de les missions incloses d'un idioma (amb la barra final).
  *
  * @param string $arrel  Carpeta `missions/` del plugin (amb la barra final).

@@ -353,6 +353,69 @@ delete_transient( 'nepaltre_prova' );
 nep_actualitza();
 $nep_comprova( NEP_DB_VERSION === get_option( 'nep_db_version' ), 'uninstall: restaurat amb nep_actualitza()' );
 
+// Missions per idioma (T04): nep_idioma, unicitat per (id, idioma), REST ?lang=, migració.
+wp_set_current_user( 1 );
+$nep_idioma_guio = $nep_valida;
+$nep_idioma_guio['id'] = 'prova-idioma-t04';
+$nep_crea_idioma = static function ( ?string $idioma ) use ( $nep_idioma_guio, &$nep_creades ): WP_REST_Response {
+	$meta = array(
+		'nep_dispositiu' => $nep_idioma_guio['dispositiu'],
+		'nep_personatge' => $nep_idioma_guio['personatge'],
+		'nep_guio'       => wp_json_encode( $nep_idioma_guio, JSON_UNESCAPED_UNICODE ),
+	);
+	if ( null !== $idioma ) {
+		$meta = array( 'nep_idioma' => $idioma ) + $meta;
+	}
+	$peticio = new WP_REST_Request( 'POST', '/wp/v2/nep_missio' );
+	$peticio->set_body_params(
+		array(
+			'title'  => 'Prova idioma',
+			'status' => 'publish',
+			'meta'   => $meta,
+		)
+	);
+	$resposta = rest_do_request( $peticio );
+	if ( isset( $resposta->get_data()['id'] ) ) {
+		$nep_creades[] = (int) $resposta->get_data()['id'];
+	}
+	return $resposta;
+};
+$nep_ids_rest = static function ( ?string $lang ): array {
+	$peticio = new WP_REST_Request( 'GET', '/noempesquen/v1/missions' );
+	if ( null !== $lang ) {
+		$peticio->set_query_params( array( 'lang' => $lang ) );
+	}
+	return array_map( static fn( $m ) => (int) $m['id'], (array) rest_do_request( $peticio )->get_data() );
+};
+
+$nep_r_ca = $nep_crea_idioma( null );
+$nep_ca   = (int) ( $nep_r_ca->get_data()['id'] ?? 0 );
+$nep_comprova( 201 === $nep_r_ca->get_status() && 'ca' === nep_idioma_de_missio( $nep_ca ), 'idioma: sense nep_idioma la missió és ca' );
+$nep_comprova( ! metadata_exists( 'post', $nep_ca, 'nep_idioma' ), 'idioma: (la meta encara no existeix: cas de migració)' );
+$nep_r_es = $nep_crea_idioma( 'es' );
+$nep_es   = (int) ( $nep_r_es->get_data()['id'] ?? 0 );
+$nep_comprova( 201 === $nep_r_es->get_status() && 'es' === get_post_meta( $nep_es, 'nep_idioma', true ), 'idioma: la parella es amb el mateix id es publica (' . $nep_r_es->get_status() . ')' );
+$nep_r_dup = $nep_crea_idioma( 'ca' );
+$nep_comprova( 400 === $nep_r_dup->get_status() && str_contains( (string) ( $nep_r_dup->get_data()['message'] ?? '' ), 'prova-idioma-t04' ), 'idioma: dues ca amb el mateix id → 400' );
+$nep_comprova( 400 === $nep_crea_idioma( 'es' )->get_status(), 'idioma: dues es amb el mateix id → 400' );
+$nep_comprova( true === nep_missio_te_parella( $nep_ca ) && true === nep_missio_te_parella( $nep_es ), 'idioma: totes dues tenen parella' );
+// NEP_VALIDA_CLI fa que el filtre clàssic deixi en esborrany les creades per rest_do_request.
+wp_publish_post( $nep_ca );
+wp_publish_post( $nep_es );
+$nep_es_ids = $nep_ids_rest( 'es' );
+$nep_ca_ids = $nep_ids_rest( 'ca' );
+$nep_comprova( in_array( $nep_es, $nep_es_ids, true ) && ! in_array( $nep_ca, $nep_es_ids, true ), 'REST ?lang=es: només la es' );
+$nep_comprova( in_array( $nep_ca, $nep_ca_ids, true ) && ! in_array( $nep_es, $nep_ca_ids, true ), 'REST ?lang=ca: només la ca (també sense meta)' );
+$nep_comprova( $nep_ids_rest( 'xx' ) === $nep_es_ids && $nep_ids_rest( null ) === $nep_es_ids, 'REST sense lang o amb lang desconegut: es' );
+delete_option( 'nep_versio_missions' );
+nep_migra_missions();
+nep_migra_missions();
+$nep_comprova( array( 'ca' ) === get_post_meta( $nep_ca, 'nep_idioma' ) && array( 'es' ) === get_post_meta( $nep_es, 'nep_idioma' ), 'migració: posa ca a les que no en tenen, una sola vegada' );
+$nep_comprova( NEP_VERSIO_MISSIONS === (int) get_option( 'nep_versio_missions' ), 'migració: desa la versió' );
+foreach ( array( $nep_ca, $nep_es ) as $nep_id_t04 ) {
+	wp_delete_post( $nep_id_t04, true );
+}
+
 // Comptes de jugador: rol, bloqueig de wp-admin i neteja.
 require __DIR__ . '/integracio-comptes.php';
 wp_set_current_user( 1 );

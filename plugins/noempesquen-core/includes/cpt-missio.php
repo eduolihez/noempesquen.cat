@@ -35,6 +35,11 @@ add_action(
 			'nep_dispositiu' => array( 'type' => 'string', 'default' => 'pc' ),     // pc | mobil.
 			'nep_personatge' => array( 'type' => 'string', 'default' => 'llissa' ), // llissa | remei.
 			'nep_guio'       => array( 'type' => 'string', 'default' => '{}' ),     // Guió JSON.
+			'nep_idioma'     => array( 'type' => 'string', 'default' => NEP_IDIOMA_MISSIO_PER_DEFECTE ), // es | ca (sense meta: ca).
+		);
+		$sanejadors = array(
+			'nep_guio'   => 'nep_sanitize_guio',
+			'nep_idioma' => 'nep_idioma_missio',
 		);
 
 		foreach ( $meta as $key => $args ) {
@@ -46,7 +51,7 @@ add_action(
 					'default'           => $args['default'],
 					'single'            => true,
 					'show_in_rest'      => true,
-					'sanitize_callback' => 'nep_guio' === $key ? 'nep_sanitize_guio' : 'sanitize_key',
+					'sanitize_callback' => $sanejadors[ $key ] ?? 'sanitize_key',
 					// El tipus ja exigeix `nep_gestiona_missions` (vegeu `nep_capacitats_missio`); aquí es repeteix com a defensa.
 					'auth_callback'     => static fn( $allowed, $meta_key, $post_id ) => current_user_can( 'edit_post', $post_id ) && current_user_can( 'nep_gestiona_missions' ),
 				)
@@ -95,18 +100,39 @@ function nep_estat_publica( string $estat ): bool {
 /**
  * Ids de guió de les altres entrades `nep_missio` (qualsevol estat excepte paperera).
  *
- * Una sola consulta; els guions massa grans o mal formats s'ignoren.
+ * L'id és únic per `(id, idioma)`: amb `$idioma` només compten les entrades
+ * d'aquest idioma (sense meta `nep_idioma`, `ca`).
  *
- * @param int $exclou Id de l'entrada que s'està desant.
+ * @param int         $exclou Id de l'entrada que s'està desant.
+ * @param string|null $idioma `es`|`ca`, o null per a tots els idiomes.
  * @return string[]
  */
-function nep_ids_missions_existents( int $exclou ): array {
+function nep_ids_missions_existents( int $exclou, ?string $idioma = null ): array {
+	$ids = array();
+	foreach ( nep_idiomes_ids_missions( $exclou ) as $id => $idiomes ) {
+		if ( null === $idioma || in_array( nep_idioma_missio( $idioma ), $idiomes, true ) ) {
+			$ids[] = (string) $id;
+		}
+	}
+	return $ids;
+}
+
+/**
+ * Idiomes en què existeix cada id de guió (altres entrades, qualsevol estat excepte paperera).
+ *
+ * Una sola consulta; els guions massa grans o mal formats s'ignoren.
+ *
+ * @param int $exclou Id de l'entrada que s'exclou.
+ * @return array<string, string[]> Idiomes per id.
+ */
+function nep_idiomes_ids_missions( int $exclou ): array {
 	global $wpdb;
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Una sola consulta en lloc d'una per entrada; no es pot fer cau (ha de ser al dia en desar).
-	$guions = $wpdb->get_col(
+	$files = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+			"SELECT pm.meta_value AS guio, pi.meta_value AS idioma FROM {$wpdb->postmeta} pm
 			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			LEFT JOIN {$wpdb->postmeta} pi ON pi.post_id = p.ID AND pi.meta_key = 'nep_idioma'
 			WHERE p.post_type = 'nep_missio'
 			AND p.post_status IN ( 'publish', 'future', 'draft', 'pending', 'private' )
 			AND pm.meta_key = 'nep_guio'
@@ -114,11 +140,11 @@ function nep_ids_missions_existents( int $exclou ): array {
 			$exclou
 		)
 	);
-	$ids    = array();
-	foreach ( $guions as $json ) {
-		$guio = nep_descodifica_guio( (string) $json );
+	$ids = array();
+	foreach ( (array) $files as $fila ) {
+		$guio = nep_descodifica_guio( (string) $fila->guio );
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
-			$ids[] = $guio['id'];
+			$ids[ $guio['id'] ][] = nep_idioma_missio( $fila->idioma );
 		}
 	}
 	return $ids;
@@ -131,9 +157,10 @@ function nep_ids_missions_existents( int $exclou ): array {
  * @param string|null $json       Guió candidat (null = el desat).
  * @param string|null $dispositiu Dispositiu candidat (null = el desat).
  * @param string|null $personatge Personatge candidat (null = el desat).
+ * @param string|null $idioma     Idioma candidat (null = el desat; sense meta, `ca`).
  * @return string[]
  */
-function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?string $personatge ): array {
+function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?string $personatge, ?string $idioma = null ): array {
 	// `get_post_meta` torna el valor per defecte registrat encara que la meta no existeixi: cal `metadata_exists`.
 	$desat = static function ( string $clau ) use ( $post_id ): string {
 		if ( ! $post_id || ! metadata_exists( 'post', $post_id, $clau ) ) {
@@ -146,6 +173,7 @@ function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?s
 	$json       = $json ?? $desat( 'nep_guio' );
 	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu' ) );
 	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge' ) );
+	$idioma     = nep_idioma_missio( $idioma ?? $desat( 'nep_idioma' ) );
 
 	$errors = array();
 	if ( '' === $dispositiu ) {
@@ -166,7 +194,7 @@ function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?s
 			$guio,
 			'' === $dispositiu ? (string) ( $guio['dispositiu'] ?? '' ) : $dispositiu,
 			'' === $personatge ? (string) ( $guio['personatge'] ?? '' ) : $personatge,
-			nep_ids_missions_existents( $post_id )
+			nep_ids_missions_existents( $post_id, $idioma )
 		)
 	);
 }
@@ -213,7 +241,8 @@ function nep_valida_rest_missio( $prepared_post, $request ) {
 		$post_id,
 		nep_valor_text( $meta, 'nep_guio' ),
 		nep_valor_text( $meta, 'nep_dispositiu' ),
-		nep_valor_text( $meta, 'nep_personatge' )
+		nep_valor_text( $meta, 'nep_personatge' ),
+		nep_valor_text( $meta, 'nep_idioma' )
 	);
 	if ( ! $errors ) {
 		return $prepared_post;
@@ -253,7 +282,8 @@ function nep_valida_missio_classica( $data, $postarr ) {
 		(int) ( $postarr['ID'] ?? 0 ),
 		nep_valor_text( $postarr, 'nep_guio' ),
 		nep_valor_text( $postarr, 'nep_dispositiu' ),
-		nep_valor_text( $postarr, 'nep_personatge' )
+		nep_valor_text( $postarr, 'nep_personatge' ),
+		nep_valor_text( $postarr, 'nep_idioma' )
 	);
 	if ( $errors ) {
 		$data['post_status'] = 'draft';
@@ -482,11 +512,12 @@ add_filter( 'delete_post_metadata_by_mid', 'nep_protegeix_esborrat_guio_per_mid'
 /**
  * Ids de les missions incloses al plugin (`missions/ca/*.json`, sense el món; els ids són els mateixos a `es/`).
  *
+ * @param string $idioma `es`|`ca` (els ids són els mateixos als dos).
  * @return string[]
  */
-function nep_ids_missions_incloses(): array {
+function nep_ids_missions_incloses( string $idioma = NEP_IDIOMA_MISSIO_PER_DEFECTE ): array {
 	$ids = array();
-	foreach ( nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', 'ca' ) ) as $fitxer ) {
+	foreach ( nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', $idioma ) ) as $fitxer ) {
 		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
 			$ids[] = $guio['id'];
@@ -590,8 +621,8 @@ function nep_duplica_missio(): void {
 		wp_die( esc_html( $nou->get_error_message() ) );
 	}
 
-	// Dispositiu i personatge abans del guió (les proteccions validen el guió amb els desats).
-	foreach ( array( 'nep_dispositiu', 'nep_personatge' ) as $clau ) {
+	// Dispositiu, personatge i idioma abans del guió (les proteccions validen el guió amb els desats).
+	foreach ( array( 'nep_dispositiu', 'nep_personatge', 'nep_idioma' ) as $clau ) {
 		if ( metadata_exists( 'post', $original, $clau ) ) {
 			update_post_meta( $nou, $clau, wp_slash( (string) get_post_meta( $original, $clau, true ) ) );
 		}
@@ -636,3 +667,69 @@ function nep_avis_missio_duplicada(): void {
 	);
 }
 add_action( 'admin_notices', 'nep_avis_missio_duplicada' );
+
+/**
+ * Idioma desat d'una missió (sense meta, `ca`).
+ *
+ * @param int $post_id Id de l'entrada.
+ * @return string `es`|`ca`.
+ */
+function nep_idioma_de_missio( int $post_id ): string {
+	return nep_idioma_missio( metadata_exists( 'post', $post_id, 'nep_idioma' ) ? get_post_meta( $post_id, 'nep_idioma', true ) : '' );
+}
+
+/**
+ * Si la missió té parella en l'altre idioma (mateix id de guió): una altra
+ * entrada del panell o una missió inclosa (`missions/<idioma>/`). Només avisa.
+ *
+ * @param int $post_id Id de l'entrada.
+ * @return bool|null Null si el guió encara no té id.
+ */
+function nep_missio_te_parella( int $post_id ): ?bool {
+	$guio = nep_descodifica_guio( (string) get_post_meta( $post_id, 'nep_guio', true ) );
+	if ( ! $guio || ! isset( $guio['id'] ) || ! is_string( $guio['id'] ) || '' === $guio['id'] ) {
+		return null;
+	}
+	$altre = nep_idioma_altre( nep_idioma_de_missio( $post_id ) );
+	return in_array( $guio['id'], nep_ids_missions_incloses( $altre ), true )
+		|| in_array( $guio['id'], nep_ids_missions_existents( $post_id, $altre ), true );
+}
+
+/** Versió de les dades de les missions (migracions de `nep_migra_missions`, a part de `nep_actualitza`, que és a capacitats.php). */
+const NEP_VERSIO_MISSIONS = 1;
+
+/**
+ * Migracions idempotents i versionades de les dades (opció `nep_versio_missions`).
+ *
+ * 1: les missions del panell sense `nep_idioma` passen a `ca` (abans només n'hi havia en català).
+ */
+function nep_migra_missions(): void {
+	$versio = (int) get_option( 'nep_versio_missions', 0 );
+	if ( $versio >= NEP_VERSIO_MISSIONS ) {
+		return;
+	}
+	if ( $versio < 1 ) {
+		$sense = get_posts(
+			array(
+				'post_type'      => 'nep_missio',
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Migració d'una sola vegada.
+				'meta_query'     => array(
+					array(
+						'key'     => 'nep_idioma',
+						'compare' => 'NOT EXISTS',
+					),
+				),
+			)
+		);
+		foreach ( $sense as $post_id ) {
+			// Únic: si una altra petició ja l'ha afegit, no es duplica.
+			add_post_meta( (int) $post_id, 'nep_idioma', NEP_IDIOMA_MISSIO_PER_DEFECTE, true );
+		}
+	}
+	update_option( 'nep_versio_missions', NEP_VERSIO_MISSIONS );
+}
+add_action( 'init', 'nep_migra_missions', 20 );

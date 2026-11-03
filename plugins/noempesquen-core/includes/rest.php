@@ -19,6 +19,10 @@ add_action(
 				'methods'             => WP_REST_Server::READABLE,
 				'permission_callback' => '__return_true',
 				'callback'            => 'nep_rest_missions',
+				'args'                => array(
+					// Sense `enum`: un idioma desconegut no falla, cau a l'idioma de la petició.
+					'lang' => array( 'type' => 'string' ),
+				),
 			)
 		);
 
@@ -65,18 +69,25 @@ function nep_rest_previsualitza( WP_REST_Request $request ) {
 }
 
 /**
- * Retorna les missions publicades amb el seu guió.
+ * Retorna les missions publicades d'un idioma amb el seu guió.
  *
+ * L'idioma surt de `?lang=` (llista blanca) i, si no hi és o no és vàlid, de
+ * l'idioma de la petició (`X-Nep-Lang` o `es`). Sense meta `nep_idioma`, `ca`.
+ *
+ * @param WP_REST_Request|null $request Petició.
  * @return WP_REST_Response
  */
-function nep_rest_missions(): WP_REST_Response {
-	$posts = get_posts(
+function nep_rest_missions( ?WP_REST_Request $request = null ): WP_REST_Response {
+	$idioma = nep_idioma_valid( $request ? $request->get_param( 'lang' ) : null ) ?? nep_idioma_actual();
+	$posts  = get_posts(
 		array(
 			'post_type'      => 'nep_missio',
 			'post_status'    => 'publish',
 			'posts_per_page' => 50,
 			'orderby'        => 'menu_order',
 			'order'          => 'ASC',
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Poques missions; filtre per idioma.
+			'meta_query'     => nep_meta_query_idioma( $idioma ),
 		)
 	);
 
@@ -87,6 +98,7 @@ function nep_rest_missions(): WP_REST_Response {
 			'resum'       => get_the_excerpt( $p ),
 			'dispositiu'  => get_post_meta( $p->ID, 'nep_dispositiu', true ),
 			'personatge'  => get_post_meta( $p->ID, 'nep_personatge', true ),
+			'idioma'      => $idioma,
 			'guio'        => json_decode( get_post_meta( $p->ID, 'nep_guio', true ) ?: '{}', true ),
 		),
 		$posts

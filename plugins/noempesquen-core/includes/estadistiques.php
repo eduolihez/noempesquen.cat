@@ -535,6 +535,9 @@ function nep_missions_jugables(): array {
 			'order'          => 'ASC',
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
+			// Les dues versions d'una missió tenen el mateix id; el hash de versió és el de la catalana.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Poques missions; resultat en transient.
+			'meta_query'     => nep_meta_query_idioma( 'ca' ),
 		)
 	);
 	foreach ( $posts as $post_id ) {

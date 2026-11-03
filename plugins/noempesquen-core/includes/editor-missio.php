@@ -30,9 +30,24 @@ add_action( 'add_meta_boxes_nep_missio', 'nep_afegeix_caixa_guio' );
 /**
  * URL de la pàgina que conté el bloc del simulador (o /simulador/ si no se'n troba cap).
  *
+ * Amb idioma, afegeix `lang` a l'URL només com a pista: les pàgines `/ca/…`
+ * encara no existeixen (T09c), així que la ruta no canvia. La previsualització
+ * carrega el guió per id, sigui quin sigui l'idioma.
+ *
+ * @param string|null $idioma `es`|`ca` de la missió (opcional).
  * @return string
  */
-function nep_url_simulador(): string {
+function nep_url_simulador( ?string $idioma = null ): string {
+	$url = nep_url_simulador_base();
+	return null === $idioma ? $url : add_query_arg( 'lang', nep_idioma_missio( $idioma ), $url );
+}
+
+/**
+ * URL de la pàgina del simulador sense idioma.
+ *
+ * @return string
+ */
+function nep_url_simulador_base(): string {
 	$pagines = get_posts(
 		array(
 			'post_type'      => 'page',
@@ -89,6 +104,13 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 		'llissa' => __( 'Llissa', 'noempesquen' ),
 		'remei'  => __( 'Remei', 'noempesquen' ),
 	);
+	$idiomes     = array(
+		'es' => __( 'Castellà (es)', 'noempesquen' ),
+		'ca' => __( 'Català (ca)', 'noempesquen' ),
+	);
+	// Les noves, en castellà (l'idioma principal); les anteriors sense meta, en català.
+	$idioma  = 'auto-draft' === $post->post_status ? 'es' : nep_idioma_de_missio( $post->ID );
+	$parella = 'auto-draft' === $post->post_status ? null : nep_missio_te_parella( $post->ID );
 	wp_nonce_field( 'nep_desa_guio', 'nep_guio_nonce' );
 	?>
 	<div class="nep-guio-camps">
@@ -108,7 +130,28 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 				<?php endforeach; ?>
 			</select>
 		</p>
+		<p>
+			<label for="nep-idioma"><?php esc_html_e( 'Idioma', 'noempesquen' ); ?></label>
+			<select id="nep-idioma" name="nep_idioma">
+				<?php foreach ( $idiomes as $valor => $text ) : ?>
+					<option value="<?php echo esc_attr( $valor ); ?>" <?php selected( $idioma, $valor ); ?>><?php echo esc_html( $text ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
 	</div>
+	<?php if ( false === $parella ) : ?>
+		<p class="nep-guio-parella notice notice-warning inline">
+			<?php
+			echo esc_html(
+				sprintf(
+					/* translators: %s: codi de l'altre idioma (es o ca) */
+					__( 'Aquesta missió encara no té parella en l\'altre idioma (%s) amb el mateix id. Es pot publicar igualment.', 'noempesquen' ),
+					nep_idioma_altre( $idioma )
+				)
+			);
+			?>
+		</p>
+	<?php endif; ?>
 	<label id="nep-guio-etiqueta" class="nep-guio-etiqueta" for="nep-guio"><?php esc_html_e( 'Guió (JSON, format v2)', 'noempesquen' ); ?></label>
 	<textarea id="nep-guio" name="nep_guio" rows="20" spellcheck="false" aria-describedby="nep-guio-diagnostic"><?php echo esc_textarea( $guio ); ?></textarea>
 	<div id="nep-guio-diagnostic" class="nep-guio-diagnostic" role="status" aria-live="polite"></div>
@@ -130,7 +173,7 @@ function nep_pinta_caixa_guio( WP_Post $post ): void {
 		<?php if ( 'auto-draft' === $post->post_status ) : ?>
 			<?php esc_html_e( 'Desa l\'esborrany per poder provar la missió al simulador.', 'noempesquen' ); ?>
 		<?php else : ?>
-			<a class="button" href="<?php echo esc_url( add_query_arg( 'previsualitza', $post->ID, nep_url_simulador() ) ); ?>"><?php esc_html_e( 'Prova-la al simulador', 'noempesquen' ); ?></a>
+			<a class="button" href="<?php echo esc_url( add_query_arg( 'previsualitza', $post->ID, nep_url_simulador( $idioma ) ) ); ?>"><?php esc_html_e( 'Prova-la al simulador', 'noempesquen' ); ?></a>
 			<span class="description"><?php esc_html_e( 'Prova el guió desat (també si és un esborrany). Desa abans els canvis.', 'noempesquen' ); ?></span>
 		<?php endif; ?>
 	</p>
@@ -166,6 +209,7 @@ function nep_desa_caixa_guio( int $post_id ): void {
 	$valors = array(
 		'nep_dispositiu' => array( 'pc', 'mobil' ),
 		'nep_personatge' => array( 'llissa', 'remei' ),
+		'nep_idioma'     => nep_idiomes_missio(),
 	);
 	foreach ( $valors as $clau => $permesos ) {
 		$valor = isset( $_POST[ $clau ] ) ? sanitize_key( wp_unslash( $_POST[ $clau ] ) ) : '';
@@ -223,7 +267,8 @@ function nep_encua_editor_missio( string $hook ): void {
 		'window.nepEditorMissio = ' . wp_json_encode(
 			array(
 				'codeEditor'   => $code_editor,
-				'idsExistents' => nep_ids_missions_existents( $post_id ),
+				// Unicitat per `(id, idioma)`: la parella de l'altre idioma no és un duplicat.
+				'idsExistents' => nep_ids_missions_existents( $post_id, $post_id ? nep_idioma_de_missio( $post_id ) : 'es' ),
 				'idsInclosos'  => nep_ids_missions_incloses(),
 			)
 		) . ';',
