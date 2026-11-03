@@ -100,28 +100,28 @@ function nep_contacte_valida( $dades ): array {
 	$errors = array();
 
 	if ( '' === $net['nom'] ) {
-		$errors['nom'] = 'Escriu el teu nom.';
+		$errors['nom'] = __( 'Escriu el teu nom.', 'noempesquen' );
 	} elseif ( mb_strlen( $net['nom'] ) > NEP_CONTACTE_NOM_MAX ) {
-		$errors['nom'] = 'El nom no pot passar de 80 caràcters.';
+		$errors['nom'] = __( 'El nom no pot passar de 80 caràcters.', 'noempesquen' );
 	}
 
 	if ( '' === $net['correu'] ) {
-		$errors['correu'] = 'Escriu el teu correu electrònic.';
+		$errors['correu'] = __( 'Escriu el teu correu electrònic.', 'noempesquen' );
 	} elseif ( ! nep_contacte_email_valid( $net['correu'] ) ) {
-		$errors['correu'] = 'Escriu un correu vàlid, per exemple nom@exemple.cat.';
+		$errors['correu'] = __( 'Escriu un correu vàlid, per exemple nom@exemple.cat.', 'noempesquen' );
 	}
 
 	if ( ! in_array( $net['assumpte'], nep_contacte_assumptes(), true ) ) {
-		$errors['assumpte'] = 'Tria un assumpte de la llista.';
+		$errors['assumpte'] = __( 'Tria un assumpte de la llista.', 'noempesquen' );
 	}
 
 	$llarg = mb_strlen( $net['missatge'] );
 	if ( 0 === $llarg ) {
-		$errors['missatge'] = 'Escriu el teu missatge.';
+		$errors['missatge'] = __( 'Escriu el teu missatge.', 'noempesquen' );
 	} elseif ( $llarg < NEP_CONTACTE_MISSATGE_MIN ) {
-		$errors['missatge'] = 'El missatge ha de tenir almenys 10 caràcters.';
+		$errors['missatge'] = __( 'El missatge ha de tenir almenys 10 caràcters.', 'noempesquen' );
 	} elseif ( $llarg > NEP_CONTACTE_MISSATGE_MAX ) {
-		$errors['missatge'] = 'El missatge no pot passar de 2000 caràcters.';
+		$errors['missatge'] = __( 'El missatge no pot passar de 2000 caràcters.', 'noempesquen' );
 	}
 
 	if ( ! isset( $dades['privacitat'] ) || true !== $dades['privacitat'] ) {

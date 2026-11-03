@@ -151,3 +151,43 @@ function nep_respecta_locale_usuari( $locale_param, $lang = null, ?string $capca
 function nep_lang_html( string $locale ): string {
 	return str_replace( '_', '-', $locale );
 }
+
+/**
+ * Ruta (sense prefix d'idioma) d'una pàgina del lloc segons l'idioma.
+ *
+ * Claus: `compte`, `contacte`, `projecte`, `simulador`. Una clau desconeguda
+ * dóna el simulador.
+ *
+ * @param string $clau   Clau de la pàgina.
+ * @param string $idioma `es`|`ca`.
+ * @return string Ruta amb barres inicial i final.
+ */
+function nep_ruta_pagina( string $clau, string $idioma ): string {
+	$rutes = array(
+		'es' => array(
+			'compte'    => '/cuenta/',
+			'contacte'  => '/contacto/',
+			'projecte'  => '/sobre-el-proyecto/',
+			'simulador' => '/simulador/',
+		),
+		'ca' => array(
+			'compte'    => '/compte/',
+			'contacte'  => '/contacte/',
+			'projecte'  => '/sobre-el-projecte/',
+			'simulador' => '/simulador/',
+		),
+	);
+	$taula = $rutes['ca' === $idioma ? 'ca' : 'es'];
+	return $taula[ $clau ] ?? $taula['simulador'];
+}
+
+/**
+ * Idioma d'un compte a partir de la seva meta `nep_idioma`: sense meta o amb un
+ * valor no vàlid, `ca` (els comptes anteriors al canvi d'idiomes eren catalans).
+ *
+ * @param mixed $meta Valor de la meta.
+ * @return string `es`|`ca`.
+ */
+function nep_idioma_de_meta_usuari( $meta ): string {
+	return nep_idioma_valid( $meta ) ?? 'ca';
+}

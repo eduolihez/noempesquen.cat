@@ -36,9 +36,10 @@ async function llegeixJson( resposta ) {
  * @param {string}       opcions.api     URL base de noempesquen/v1/ (amb barra final).
  * @param {string}       opcions.ajaxUrl URL d'admin-ajax.php.
  * @param {typeof fetch} opcions.fetchFn Implementació de fetch.
+ * @param {string=}      opcions.lang    Idioma (`es`|`ca`) per a la capçalera `X-Nep-Lang`.
  * @return {Object} Client.
  */
-export function creaClient( { api, ajaxUrl, fetchFn } ) {
+export function creaClient( { api, ajaxUrl, fetchFn, lang } ) {
 	const base = api.endsWith( '/' ) ? api : `${ api }/`;
 	let nonce = null;
 
@@ -55,6 +56,9 @@ export function creaClient( { api, ajaxUrl, fetchFn } ) {
 	 */
 	async function peticio( metode, ruta, cos, opc = {} ) {
 		const capcaleres = { Accept: 'application/json' };
+		if ( lang ) {
+			capcaleres[ 'X-Nep-Lang' ] = lang;
+		}
 		if ( cos !== undefined ) {
 			capcaleres[ 'Content-Type' ] = 'application/json';
 		}

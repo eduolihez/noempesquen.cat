@@ -13,8 +13,9 @@ defined( 'ABSPATH' ) || exit;
 $nep_config = array(
 	'api'                => esc_url_raw( rest_url( 'noempesquen/v1/' ) ),
 	'ajaxUrl'            => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-	'urlSimulador'       => esc_url_raw( home_url( '/simulador/' ) ),
+	'urlSimulador'       => esc_url_raw( nep_url_pagina( 'simulador' ) ),
 	'versioConsentiment' => NEP_VERSIO_CONSENTIMENT,
+	'lang'               => nep_idioma_actual(),
 );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'nep-compte' ) ); ?>

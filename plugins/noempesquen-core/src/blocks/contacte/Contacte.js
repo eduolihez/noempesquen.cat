@@ -103,6 +103,9 @@ export function Contacte( { config } ) {
 		setEstat( 'enviant' );
 		try {
 			const capcaleres = { 'Content-Type': 'application/json' };
+			if ( config.lang ) {
+				capcaleres[ 'X-Nep-Lang' ] = config.lang;
+			}
 			const nonce = await demanaNonce( ajaxUrl );
 			if ( nonce ) {
 				capcaleres[ 'X-WP-Nonce' ] = nonce;
@@ -262,8 +265,8 @@ export function Contacte( { config } ) {
 				>
 					<option value="">{ T.triaAssumpte }</option>
 					{ T.assumptes.map( ( a ) => (
-						<option key={ a } value={ a }>
-							{ a }
+						<option key={ a.valor } value={ a.valor }>
+							{ a.text }
 						</option>
 					) ) }
 				</select>
@@ -320,7 +323,7 @@ export function Contacte( { config } ) {
 						}
 					>
 						{ T.privacitatEnllac }
-					</a>
+					</a>{ ' ' }
 					{ T.privacitatFinal }
 				</label>
 				<ErrorCamp

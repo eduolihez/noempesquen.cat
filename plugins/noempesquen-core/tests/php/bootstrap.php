@@ -16,3 +16,16 @@ require_once dirname( __DIR__, 2 ) . '/includes/comptes-nucli.php';
 require_once dirname( __DIR__, 2 ) . '/includes/contacte-nucli.php';
 require_once dirname( __DIR__, 2 ) . '/includes/acces-admin-nucli.php';
 require_once dirname( __DIR__, 2 ) . '/includes/idioma-nucli.php';
+
+if ( ! function_exists( '__' ) ) {
+	/**
+	 * Sense WordPress, la traducció és la identitat (el català és l'msgid).
+	 *
+	 * @param string $text    Text.
+	 * @param string $domini  Domini.
+	 * @return string
+	 */
+	function __( $text, $domini = 'default' ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames
+		return $text;
+	}
+}

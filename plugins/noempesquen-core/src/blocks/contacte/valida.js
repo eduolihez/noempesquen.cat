@@ -34,7 +34,7 @@ export function valida( v ) {
 	} else if ( ! CORREU.test( correu ) || llargada( correu ) > 100 ) {
 		errors.correu = T.errors.correuFormat;
 	}
-	if ( ! T.assumptes.includes( v.assumpte ) ) {
+	if ( ! T.assumptes.some( ( a ) => a.valor === v.assumpte ) ) {
 		errors.assumpte = T.errors.assumpte;
 	}
 	if ( ! missatge ) {

@@ -13,7 +13,8 @@ defined( 'ABSPATH' ) || exit;
 $nep_config = array(
 	'api'            => esc_url_raw( rest_url( 'noempesquen/v1/' ) ),
 	'ajaxUrl'        => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-	'urlPrivacitat'  => esc_url_raw( home_url( '/sobre-el-projecte/#privacitat' ) ),
+	'lang'           => nep_idioma_actual(),
+	'urlPrivacitat'  => esc_url_raw( nep_url_pagina( 'projecte', null, '#privacitat' ) ),
 );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'nep-contacte' ) ); ?>

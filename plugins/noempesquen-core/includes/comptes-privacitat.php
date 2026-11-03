@@ -141,7 +141,7 @@ function nep_esborra_dades_personals( $email, $pagina = 1 ) {
 function nep_esborra_metes_compte( $id ): bool {
 	$id = (int) $id;
 	$n  = false;
-	foreach ( array( 'nep_progres', 'nep_consentiment', 'nep_token_verifica', 'nep_token_recupera', 'nep_email_verificat' ) as $clau ) {
+	foreach ( array( 'nep_progres', 'nep_consentiment', 'nep_token_verifica', 'nep_token_recupera', 'nep_email_verificat', 'nep_idioma' ) as $clau ) {
 		if ( metadata_exists( 'user', $id, $clau ) ) {
 			delete_user_meta( $id, $clau );
 			$n = true;

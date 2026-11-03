@@ -101,7 +101,7 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 		return new WP_REST_Response(
 			array(
 				'ok'      => false,
-				'message' => 'El missatge és massa llarg.',
+				'message' => __( 'El missatge és massa llarg.', 'noempesquen' ),
 			),
 			413
 		);
@@ -131,7 +131,7 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 		$correu = sanitize_email( $resultat['dades']['correu'] );
 		if ( $correu !== $resultat['dades']['correu'] || ! is_email( $correu ) ) {
 			$resultat['valid']            = false;
-			$resultat['errors']['correu'] = 'Escriu un correu vàlid, per exemple nom@exemple.cat.';
+			$resultat['errors']['correu'] = __( 'Escriu un correu vàlid, per exemple nom@exemple.cat.', 'noempesquen' );
 		}
 	}
 	if ( ! $resultat['valid'] ) {
@@ -156,7 +156,7 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 		return new WP_REST_Response(
 			array(
 				'ok'      => false,
-				'message' => 'Has enviat massa missatges. Torna-ho a provar una mica més tard.',
+				'message' => __( 'Has enviat massa missatges. Torna-ho a provar una mica més tard.', 'noempesquen' ),
 			),
 			429
 		);
@@ -184,7 +184,7 @@ function nep_rest_contacte( WP_REST_Request $request ) {
 		return new WP_REST_Response(
 			array(
 				'ok'      => false,
-				'message' => "No s'ha pogut enviar el missatge. Torna-ho a provar d'aquí una estona.",
+				'message' => __( 'No s\'ha pogut enviar el missatge. Torna-ho a provar d\'aquí una estona.', 'noempesquen' ),
 			),
 			500
 		);

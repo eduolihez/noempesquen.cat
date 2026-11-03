@@ -114,7 +114,7 @@ function nep_redirigeix_jugador_admin(): void {
 	if ( 'admin-post.php' === basename( (string) wp_parse_url( (string) ( $_SERVER['SCRIPT_NAME'] ?? '' ), PHP_URL_PATH ) ) ) {
 		return;
 	}
-	wp_safe_redirect( home_url( '/compte/' ) );
+	wp_safe_redirect( nep_url_pagina( 'compte', nep_idioma_usuari( get_current_user_id() ) ) );
 	exit;
 }
 add_action( 'admin_page_access_denied', 'nep_redirigeix_jugador_admin' );
@@ -132,7 +132,7 @@ add_filter(
 add_filter(
 	'login_redirect',
 	static function ( $desti, $demanada, $usuari ) {
-		return nep_es_jugador( $usuari instanceof WP_User ? $usuari : null ) && $usuari instanceof WP_User ? home_url( '/compte/' ) : $desti;
+		return nep_es_jugador( $usuari instanceof WP_User ? $usuari : null ) && $usuari instanceof WP_User ? nep_url_pagina( 'compte', nep_idioma_usuari( $usuari->ID ) ) : $desti;
 	},
 	10,
 	3

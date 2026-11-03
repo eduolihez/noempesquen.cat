@@ -562,6 +562,8 @@ function nep_rest_compte_registre( WP_REST_Request $request ) {
 		nep_compte_log_alta( 'insert_' . $id->get_error_code() );
 		return $generic;
 	}
+	// Idioma de la pàgina des d'on es crea (X-Nep-Lang / ?lang=): el dels correus futurs.
+	update_user_meta( $id, 'nep_idioma', nep_idioma_actual() );
 	update_user_meta(
 		$id,
 		'nep_consentiment',

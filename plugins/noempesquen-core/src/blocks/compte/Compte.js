@@ -26,8 +26,9 @@ export function Compte( { config } ) {
 				api: config.api || '/wp-json/noempesquen/v1/',
 				ajaxUrl: config.ajaxUrl || '/wp-admin/admin-ajax.php',
 				fetchFn: ( ...args ) => window.fetch( ...args ),
+				lang: config.lang,
 			} ),
-		[ config.api, config.ajaxUrl ]
+		[ config.api, config.ajaxUrl, config.lang ]
 	);
 	const [ carregant, setCarregant ] = useState( true );
 	const [ connectat, setConnectat ] = useState( false );

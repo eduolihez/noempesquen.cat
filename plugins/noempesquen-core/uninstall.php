@@ -12,7 +12,7 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
  */
 function nep_neteja_jugadors(): void {
 	remove_role( 'nep_jugador' );
-	foreach ( array( 'nep_progres', 'nep_consentiment', 'nep_token_verifica', 'nep_email_verificat', 'nep_token_recupera' ) as $meta ) {
+	foreach ( array( 'nep_progres', 'nep_consentiment', 'nep_token_verifica', 'nep_email_verificat', 'nep_token_recupera', 'nep_idioma' ) as $meta ) {
 		delete_metadata( 'user', 0, $meta, '', true );
 	}
 }

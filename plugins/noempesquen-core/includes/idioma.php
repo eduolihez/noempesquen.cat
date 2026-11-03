@@ -96,3 +96,76 @@ add_filter(
 		return nep_locale_idioma( nep_idioma_actual() );
 	}
 );
+
+/**
+ * Enllaç a una pàgina del lloc (`compte`, `contacte`, `projecte`, `simulador`)
+ * en un idioma: `/cuenta/` o `/ca/compte/`.
+ *
+ * @param string      $clau   Clau de la pàgina.
+ * @param string|null $idioma `es`|`ca`; per defecte, el de la petició.
+ * @param string      $resta  Cua opcional (consulta o àncora), p. ex. `?verifica=…`.
+ * @return string
+ */
+function nep_url_pagina( string $clau, ?string $idioma = null, string $resta = '' ): string {
+	$idioma = nep_idioma_valid( $idioma ) ?? nep_idioma_actual();
+	return nep_url( nep_ruta_pagina( $clau, $idioma ), $idioma ) . $resta;
+}
+
+/**
+ * Executa una funció amb el locale d'un idioma (correus, textos fora de petició)
+ * i restaura el locale previ, passi el que passi.
+ *
+ * @param string   $idioma `es`|`ca`.
+ * @param callable $fer    Funció a executar.
+ * @return mixed Resultat de la funció.
+ */
+function nep_amb_idioma( string $idioma, callable $fer ) {
+	$canviat = switch_to_locale( nep_locale_idioma( nep_idioma_valid( $idioma ) ?? 'ca' ) );
+	try {
+		return $fer();
+	} finally {
+		if ( $canviat ) {
+			restore_previous_locale();
+		}
+	}
+}
+
+/**
+ * Carrega les traduccions del connector (`languages/noempesquen-<locale>.mo`).
+ * Sense WP-CLI ni paquets d'idioma a la producció: el `.mo` viatja al zip. El
+ * català és l'msgid i no necessita fitxer.
+ */
+add_filter(
+	'load_textdomain_mofile',
+	static function ( $mofile, $domini ) {
+		if ( 'noempesquen' !== $domini || file_exists( $mofile ) ) {
+			return $mofile;
+		}
+		return NEP_PATH . 'languages/' . basename( (string) $mofile );
+	},
+	10,
+	2
+);
+add_action(
+	'init',
+	static function () {
+		load_plugin_textdomain( 'noempesquen', false, dirname( plugin_basename( NEP_PATH . 'noempesquen-core.php' ) ) . '/languages' );
+	},
+	0
+);
+
+/**
+ * `Vary: X-Nep-Lang` a les respostes REST del connector: els missatges depenen
+ * de la capçalera `X-Nep-Lang` (o de `?lang=`, que ja és a la URL).
+ */
+add_filter(
+	'rest_post_dispatch',
+	static function ( $resposta, $servidor, $peticio ) {
+		if ( $resposta instanceof WP_HTTP_Response && $peticio instanceof WP_REST_Request && str_starts_with( $peticio->get_route(), '/noempesquen/v1/' ) ) {
+			$resposta->header( 'Vary', 'X-Nep-Lang', false );
+		}
+		return $resposta;
+	},
+	10,
+	3
+);
