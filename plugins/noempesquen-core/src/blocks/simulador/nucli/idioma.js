@@ -169,6 +169,7 @@ export function formataPreu( preu, lang = actual ) {
 	const xifra = new Intl.NumberFormat( localeDe( lang ), {
 		minimumFractionDigits: Number.isInteger( preu ) ? 0 : 2,
 		maximumFractionDigits: 2,
+		useGrouping: 'always',
 	} ).format( preu );
 	return `${ xifra }${ separadorEuro( lang ) }€`;
 }
