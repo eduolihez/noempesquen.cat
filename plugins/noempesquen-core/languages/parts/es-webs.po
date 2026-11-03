@@ -108,7 +108,7 @@ msgstr "Compra con tarjeta ·· 9010 · Botiga Verda"
 
 #: src/blocks/simulador/webs/banc-solid/Oficial.js:21
 msgid "Compra amb targeta ·· 9010 · Farmàcia del Barri"
-msgstr "Compra con tarjeta ·· 9010 · Farmàcia del Barri"
+msgstr "Compra con tarjeta ·· 9010 · Farmacia del Barrio"
 
 #: src/blocks/simulador/webs/banc-solid/Oficial.js:34
 msgid "Mai et demanarem contrasenyes"
@@ -776,7 +776,7 @@ msgstr "Ningún mensaje coincide con la búsqueda."
 
 #: src/blocks/simulador/webs/sorteig/Marca.js:35
 msgid "Sorteig del Barri"
-msgstr "Sorteig del Barri"
+msgstr "Sorteo del Barrio"
 
 #: src/blocks/simulador/webs/sorteig/Sorteig.js:18
 msgid "Un telèfon mòbil nou"
@@ -804,4 +804,4 @@ msgstr "Paga solo los gastos de envío para recibir tu premio:"
 
 #: src/blocks/simulador/webs/sorteig/Sorteig.js:55
 msgid "Sorteig del Barri · Sorteigs"
-msgstr "Sorteig del Barri · Sorteos"
+msgstr "Sorteo del Barrio · Sorteos"
