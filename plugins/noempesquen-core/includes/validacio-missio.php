@@ -147,6 +147,41 @@ function nep_valida_passos( $passos ): array {
 	return $errors;
 }
 
+/** Idioma d'una missió del panell sense la meta `nep_idioma` (les anteriors a l'idioma). */
+const NEP_IDIOMA_MISSIO_PER_DEFECTE = 'ca';
+
+/**
+ * Idiomes de les missions, en l'ordre de les carpetes `missions/<idioma>/`.
+ *
+ * @return string[]
+ */
+function nep_idiomes_missio(): array {
+	return array( 'es', 'ca' );
+}
+
+/**
+ * Idioma d'una missió a partir del valor desat de `nep_idioma`: sense meta (o
+ * amb un valor desconegut) és `ca`, l'idioma de totes les missions anteriors.
+ *
+ * @param mixed $valor Meta desada (o '' si no n'hi ha).
+ * @return string `es`|`ca`.
+ */
+function nep_idioma_missio( $valor ): string {
+	$valor = is_string( $valor ) ? strtolower( trim( $valor ) ) : '';
+	return in_array( $valor, nep_idiomes_missio(), true ) ? $valor : NEP_IDIOMA_MISSIO_PER_DEFECTE;
+}
+
+/**
+ * Carpeta de les missions incloses d'un idioma (amb la barra final).
+ *
+ * @param string $arrel  Carpeta `missions/` del plugin (amb la barra final).
+ * @param string $idioma `es`|`ca` (un altre valor dona `ca`).
+ * @return string
+ */
+function nep_carpeta_missions( string $arrel, string $idioma ): string {
+	return $arrel . nep_idioma_missio( $idioma ) . '/';
+}
+
 /** Fitxers de /missions que no són missions jugables. */
 const NEP_FITXERS_NO_MISSIO = array( 'mon.json', 'plantilla-missio.json' );
 

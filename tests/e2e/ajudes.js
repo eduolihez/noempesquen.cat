@@ -60,7 +60,7 @@ const ID_INCLOSES = [
 	'remei-05-comprador',
 ];
 const INCLOSES = ID_INCLOSES.map( ( id ) =>
-	require( `../../plugins/noempesquen-core/missions/${ id }.json` )
+	require( `../../plugins/noempesquen-core/missions/ca/${ id }.json` )
 );
 const VAIXELL = { pc: 'el Pesquer', mobil: 'el Pirata' };
 const NOM_PROGRES = 'noempesquen-progres-v2';

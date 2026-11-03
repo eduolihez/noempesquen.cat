@@ -9,7 +9,7 @@ import {
 } from '../valida.js';
 
 const ruta = new URL(
-	'../../../../../missions/llissa-01-factura.json',
+	'../../../../../missions/ca/llissa-01-factura.json',
 	import.meta.url
 );
 const factura = JSON.parse( readFileSync( ruta, 'utf8' ) );
@@ -570,7 +570,7 @@ describe( 'validaMissio: sorteig i premi_senyal', () => {
 		JSON.parse(
 			readFileSync(
 				new URL(
-					'../../../../../missions/remei-03-sorteig.json',
+					'../../../../../missions/ca/remei-03-sorteig.json',
 					import.meta.url
 				),
 				'utf8'

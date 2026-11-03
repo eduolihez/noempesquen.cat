@@ -5,7 +5,7 @@ import { validaMon } from '../valida-mon.js';
 const carrega = () =>
 	JSON.parse(
 		readFileSync(
-			new URL( '../../../../../missions/mon.json', import.meta.url ),
+			new URL( '../../../../../missions/ca/mon.json', import.meta.url ),
 			'utf8'
 		)
 	);

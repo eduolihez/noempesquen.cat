@@ -67,7 +67,7 @@ $nep_mid_guio = static function ( int $id ): int {
 
 wp_set_current_user( 1 );
 
-$nep_valida = json_decode( (string) file_get_contents( NEP_PATH . 'missions/llissa-01-factura.json' ), true );
+$nep_valida = json_decode( (string) file_get_contents( NEP_PATH . 'missions/ca/llissa-01-factura.json' ), true );
 // Un id que no existeix a la base de dades de proves.
 $nep_valida['id']    = 'prova-integracio-' . wp_rand( 1000, 9999 );
 $nep_valida['titol'] = 'Diu "hola" amb barra \\ i cometes \\"';

@@ -16,8 +16,14 @@ const jsons = ( dir ) =>
 		.filter( ( f ) => f.endsWith( '.json' ) )
 		.sort();
 
-const mon = llegeix( new URL( 'mon.json', MISSIONS ) );
-const reals = jsons( MISSIONS ).filter( ( f ) => f !== 'mon.json' );
+// Les missions reals són a `ca/` (i la seva pareja a `es/`); la plantilla, a l'arrel.
+const mon = llegeix( new URL( 'ca/mon.json', MISSIONS ) );
+const reals = [
+	...jsons( new URL( 'ca/', MISSIONS ) )
+		.filter( ( f ) => f !== 'mon.json' )
+		.map( ( f ) => `ca/${ f }` ),
+	...jsons( MISSIONS ),
+];
 const invalides = jsons( INVALIDES );
 const valides = jsons( VALIDES );
 

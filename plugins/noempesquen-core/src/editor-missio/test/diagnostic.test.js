@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { errorsGuio } from '../diagnostic.js';
-import mon from '../../../missions/mon.json';
-import factura from '../../../missions/llissa-01-factura.json';
+import mon from '../../../missions/ca/mon.json';
+import factura from '../../../missions/ca/llissa-01-factura.json';
 
 const text = ( m ) => JSON.stringify( m );
 

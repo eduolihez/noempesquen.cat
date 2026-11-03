@@ -1,8 +1,8 @@
 const { execSync } = require( 'node:child_process' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const { test, expect } = require( './ajudes' );
-const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-factura.json' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
+const factura = require( '../../plugins/noempesquen-core/missions/ca/llissa-01-factura.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-05-actualitzacio.json' );
 const { iniciaMissio, senseFullscreen } = require( './ajudes' );
 
 /**

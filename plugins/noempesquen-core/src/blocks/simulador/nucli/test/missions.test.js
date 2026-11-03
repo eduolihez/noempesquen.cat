@@ -11,7 +11,7 @@ import {
 } from '../motor.js';
 
 const ruta = new URL(
-	'../../../../../missions/llissa-01-factura.json',
+	'../../../../../missions/ca/llissa-01-factura.json',
 	import.meta.url
 );
 const factura = JSON.parse( readFileSync( ruta, 'utf8' ) );
@@ -20,24 +20,30 @@ const v2 = ( id, extra = {} ) => ( {
 	id,
 	...extra,
 } );
-it( 'totes les missions incloses validen amb mon', () => {
-	const dir = new URL( '../../../../../missions/', import.meta.url );
-	const mon = JSON.parse(
-		readFileSync( new URL( 'mon.json', dir ), 'utf8' )
-	);
-	const fitxers = readdirSync( dir ).filter(
-		( f ) => f.endsWith( '.json' ) && f !== 'mon.json'
-	);
-	expect( fitxers.length ).toBeGreaterThan( 0 );
-	const errors = [];
-	for ( const f of fitxers ) {
-		const m = JSON.parse( readFileSync( new URL( f, dir ), 'utf8' ) );
-		errors.push(
-			...validaMissio( m, mon ).map( ( e ) => `${ f }: ${ e }` )
+it.each( [ 'ca', 'es' ] )(
+	'totes les missions incloses (%s) validen amb el seu mon',
+	( idioma ) => {
+		const dir = new URL(
+			`../../../../../missions/${ idioma }/`,
+			import.meta.url
 		);
+		const mon = JSON.parse(
+			readFileSync( new URL( 'mon.json', dir ), 'utf8' )
+		);
+		const fitxers = readdirSync( dir ).filter(
+			( f ) => f.endsWith( '.json' ) && f !== 'mon.json'
+		);
+		expect( fitxers.length ).toBe( 12 );
+		const errors = [];
+		for ( const f of fitxers ) {
+			const m = JSON.parse( readFileSync( new URL( f, dir ), 'utf8' ) );
+			errors.push(
+				...validaMissio( m, mon ).map( ( e ) => `${ f }: ${ e }` )
+			);
+		}
+		expect( errors ).toEqual( [] );
 	}
-	expect( errors ).toEqual( [] );
-} );
+);
 const v1 = { id: 'antiga', versio: 1, titol: 'Antiga' };
 
 describe( 'combinaMissions', () => {
@@ -79,7 +85,7 @@ describe( 'combinaMissions', () => {
 const carrega = ( nom ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/${ nom }.json`, import.meta.url ),
+			new URL( `../../../../../missions/ca/${ nom }.json`, import.meta.url ),
 			'utf8'
 		)
 	);

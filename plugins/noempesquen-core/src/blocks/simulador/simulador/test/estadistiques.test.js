@@ -11,7 +11,7 @@ import { estatInicial } from '../../nucli/motor.js';
 const factura = JSON.parse(
 	readFileSync(
 		new URL(
-			'../../../../../missions/llissa-01-factura.json',
+			'../../../../../missions/ca/llissa-01-factura.json',
 			import.meta.url
 		),
 		'utf8'

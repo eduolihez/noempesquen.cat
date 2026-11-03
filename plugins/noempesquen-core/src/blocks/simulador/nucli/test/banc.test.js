@@ -5,14 +5,14 @@ import { FASE, estatInicial, reductor, puntuacio } from '../motor.js';
 
 const mon = JSON.parse(
 	readFileSync(
-		new URL( '../../../../../missions/mon.json', import.meta.url ),
+		new URL( '../../../../../missions/ca/mon.json', import.meta.url ),
 		'utf8'
 	)
 );
 const carrega = ( nom ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/${ nom }.json`, import.meta.url ),
+			new URL( `../../../../../missions/ca/${ nom }.json`, import.meta.url ),
 			'utf8'
 		)
 	);

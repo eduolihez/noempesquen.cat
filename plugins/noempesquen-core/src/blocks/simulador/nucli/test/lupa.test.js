@@ -48,7 +48,7 @@ describe( 'textXip', () => {
 
 describe( 'potInspeccionar', () => {
 	const ruta = new URL(
-		'../../../../../missions/llissa-01-factura.json',
+		'../../../../../missions/ca/llissa-01-factura.json',
 		import.meta.url
 	);
 	const m = JSON.parse( readFileSync( ruta, 'utf8' ) );

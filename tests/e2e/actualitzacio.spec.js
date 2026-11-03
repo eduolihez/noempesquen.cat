@@ -6,7 +6,7 @@ const {
 	escoltaFuites,
 	sensePistes,
 } = require( './ajudes' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-05-actualitzacio.json' );
 
 const MISSIO = /Actualitza el navegador/;
 const BLOQUEIG = /Clica o prem/;

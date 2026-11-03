@@ -1,5 +1,5 @@
 const { spawnSync } = require( 'node:child_process' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-05-actualitzacio.json' );
 const { test, expect, RESULTAT } = require( './ajudes' );
 const {
 	greusAxe,

@@ -8,7 +8,7 @@ import { llegeixProgres } from '../progres.js';
 import { registraResultat } from '../previsualitzacio.js';
 import { construeixResultat } from '../../simulador/estadistiques.js';
 
-const MISSIONS = new URL( '../../../../../missions/', import.meta.url );
+const MISSIONS = new URL( '../../../../../missions/ca/', import.meta.url );
 const llegeix = ( f ) =>
 	JSON.parse( readFileSync( new URL( f, MISSIONS ), 'utf8' ) );
 const mon = llegeix( 'mon.json' );

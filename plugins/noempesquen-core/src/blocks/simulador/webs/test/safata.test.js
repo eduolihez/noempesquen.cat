@@ -17,7 +17,7 @@ import {
 const llegeix = ( nom ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/${ nom }`, import.meta.url ),
+			new URL( `../../../../../missions/ca/${ nom }`, import.meta.url ),
 			'utf8'
 		)
 	);

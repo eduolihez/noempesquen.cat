@@ -9,7 +9,7 @@ import {
 	proposaId,
 	slugId,
 } from '../plantilla.js';
-import mon from '../../../missions/mon.json';
+import mon from '../../../missions/ca/mon.json';
 
 describe( 'plantilla de missió', () => {
 	it( 'és una missió v2 vàlida', () => {

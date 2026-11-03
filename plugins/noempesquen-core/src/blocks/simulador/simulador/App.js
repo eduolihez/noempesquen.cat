@@ -21,19 +21,19 @@ import { EstatCompte } from './EstatCompte';
 import { progresAPujar, sincroInicial, sincronitza } from './sincro-compte';
 import { Selector } from './Selector';
 import { Simulador } from './Simulador';
-import llissa01 from '../../../../missions/llissa-01-factura.json';
-import llissa02 from '../../../../missions/llissa-02-banc.json';
-import llissa03 from '../../../../missions/llissa-03-inversio.json';
-import llissa04 from '../../../../missions/llissa-04-suport.json';
-import llissa05 from '../../../../missions/llissa-05-actualitzacio.json';
-import mon from '../../../../missions/mon.json';
-import remei01 from '../../../../missions/remei-01-paquet.json';
-import remei02 from '../../../../missions/remei-02-canviat.json';
-import remei03 from '../../../../missions/remei-03-sorteig.json';
-import remei04 from '../../../../missions/remei-04-codi.json';
-import remei05 from '../../../../missions/remei-05-comprador.json';
-import tutorialMobil from '../../../../missions/tutorial-mobil.json';
-import tutorialPc from '../../../../missions/tutorial-pc.json';
+import llissa01 from '../../../../missions/ca/llissa-01-factura.json';
+import llissa02 from '../../../../missions/ca/llissa-02-banc.json';
+import llissa03 from '../../../../missions/ca/llissa-03-inversio.json';
+import llissa04 from '../../../../missions/ca/llissa-04-suport.json';
+import llissa05 from '../../../../missions/ca/llissa-05-actualitzacio.json';
+import mon from '../../../../missions/ca/mon.json';
+import remei01 from '../../../../missions/ca/remei-01-paquet.json';
+import remei02 from '../../../../missions/ca/remei-02-canviat.json';
+import remei03 from '../../../../missions/ca/remei-03-sorteig.json';
+import remei04 from '../../../../missions/ca/remei-04-codi.json';
+import remei05 from '../../../../missions/ca/remei-05-comprador.json';
+import tutorialMobil from '../../../../missions/ca/tutorial-mobil.json';
+import tutorialPc from '../../../../missions/ca/tutorial-pc.json';
 
 const INCLOSES = [
 	tutorialPc,

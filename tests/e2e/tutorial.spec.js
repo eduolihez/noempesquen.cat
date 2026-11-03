@@ -121,8 +121,8 @@ async function comprovaFinal(
 	await expect( proxima ).not.toHaveAttribute( 'aria-disabled', 'true' );
 }
 
-const tutorialPc = require( '../../plugins/noempesquen-core/missions/tutorial-pc.json' );
-const tutorialMobil = require( '../../plugins/noempesquen-core/missions/tutorial-mobil.json' );
+const tutorialPc = require( '../../plugins/noempesquen-core/missions/ca/tutorial-pc.json' );
+const tutorialMobil = require( '../../plugins/noempesquen-core/missions/ca/tutorial-mobil.json' );
 
 const PASSOS_PC = tutorialPc.passos;
 const PASSOS_MOBIL = tutorialMobil.passos;

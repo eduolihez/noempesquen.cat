@@ -8,7 +8,7 @@ const {
 	escoltaFuites,
 	sensePistes,
 } = require( './ajudes' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/remei-05-comprador.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/remei-05-comprador.json' );
 
 const MISSIO = /Compro la teva bici/;
 const BLOQUEIG = /Llisca cap amunt/;

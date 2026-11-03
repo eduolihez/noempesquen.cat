@@ -4,7 +4,7 @@ import { FASE, estatInicial, reductor, visible } from '../motor.js';
 import { coincideix, processaEsdeveniment } from '../disparadors.js';
 
 const ruta = new URL(
-	'../../../../../missions/llissa-01-factura.json',
+	'../../../../../missions/ca/llissa-01-factura.json',
 	import.meta.url
 );
 const m = JSON.parse( readFileSync( ruta, 'utf8' ) );
@@ -140,7 +140,7 @@ describe( 'coincideix', () => {
 		const m5 = JSON.parse(
 			readFileSync(
 				new URL(
-					'../../../../../missions/remei-05-comprador.json',
+					'../../../../../missions/ca/remei-05-comprador.json',
 					import.meta.url
 				),
 				'utf8'

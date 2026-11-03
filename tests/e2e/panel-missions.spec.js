@@ -1,6 +1,6 @@
 const { test, expect, rutaDe } = require( './ajudes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
-const factura = require( '../../plugins/noempesquen-core/missions/llissa-01-factura.json' );
+const factura = require( '../../plugins/noempesquen-core/missions/ca/llissa-01-factura.json' );
 
 /**
  * Panell de missions: editor del guió amb diagnòstic en viu, publicació i

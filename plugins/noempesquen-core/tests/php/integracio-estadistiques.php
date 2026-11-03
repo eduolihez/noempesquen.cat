@@ -85,7 +85,7 @@ $nep_hashes = array_unique( array_column( $nep_files( $nep_est['id'] ), 'versio_
 $nep_comprova( 2 === count( $nep_hashes ) && in_array( nep_versio_hash( $nep_est2 ), $nep_hashes, true ), 'resultat: editar el guió canvia el hash' );
 
 // Missió inclosa vàlida → 2xx (i es deixa la fila com estava).
-$nep_inclosa = json_decode( (string) file_get_contents( NEP_PATH . 'missions/remei-01-paquet.json' ), true );
+$nep_inclosa = json_decode( (string) file_get_contents( NEP_PATH . 'missions/ca/remei-01-paquet.json' ), true );
 $nep_abans   = $nep_files( $nep_inclosa['id'] );
 $nep_r       = $nep_envia( array( 'missio' => $nep_inclosa['id'], 'estrelles' => 2 ) );
 $nep_comprova( 204 === $nep_r->get_status(), 'resultat: missió inclosa vàlida → 204' );

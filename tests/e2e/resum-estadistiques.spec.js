@@ -1,7 +1,7 @@
 const { execSync } = require( 'node:child_process' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const { test, expect, iniciaMissio, senseFullscreen } = require( './ajudes' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-05-actualitzacio.json' );
 
 /**
  * Resum públic (GET /resultat/resum): en acabar, el jugador veu què va triar

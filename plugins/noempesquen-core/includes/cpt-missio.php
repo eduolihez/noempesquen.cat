@@ -480,13 +480,13 @@ function nep_protegeix_esborrat_guio_per_mid( $check, $meta_id ) {
 add_filter( 'delete_post_metadata_by_mid', 'nep_protegeix_esborrat_guio_per_mid', 10, 2 );
 
 /**
- * Ids de les missions incloses al plugin (`missions/*.json`, sense el món ni la plantilla).
+ * Ids de les missions incloses al plugin (`missions/ca/*.json`, sense el món; els ids són els mateixos a `es/`).
  *
  * @return string[]
  */
 function nep_ids_missions_incloses(): array {
 	$ids = array();
-	foreach ( nep_fitxers_missions_incloses( NEP_PATH . 'missions/' ) as $fitxer ) {
+	foreach ( nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', 'ca' ) ) as $fitxer ) {
 		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
 			$ids[] = $guio['id'];

@@ -16,7 +16,7 @@ import {
 	nomFitxer,
 	textExportat,
 } from './io-guio';
-import mon from '../../missions/mon.json';
+import mon from '../../missions/ca/mon.json';
 import './style.scss';
 
 const ESPERA_MS = 300;

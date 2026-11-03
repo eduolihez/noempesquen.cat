@@ -6,7 +6,7 @@ const {
 	escoltaFuites,
 	sensePistes,
 } = require( './ajudes' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-04-suport.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-04-suport.json' );
 
 const MISSIO = /Virus detectat!/;
 const BLOQUEIG = /Clica o prem/;

@@ -4,7 +4,7 @@ import { validaMissio, MAX_PASSOS } from '../valida.js';
 import { ANCORES, ancoraDelPas, pasSenseAvisos } from '../ancores.js';
 import { estatInicial, reductor, respostesRapides, FASE } from '../motor.js';
 
-const MISSIONS = new URL( '../../../../../missions/', import.meta.url );
+const MISSIONS = new URL( '../../../../../missions/ca/', import.meta.url );
 const crua = ( f ) => readFileSync( new URL( f, MISSIONS ), 'utf8' );
 const llegeix = ( f ) => JSON.parse( crua( f ) );
 const mon = llegeix( 'mon.json' );

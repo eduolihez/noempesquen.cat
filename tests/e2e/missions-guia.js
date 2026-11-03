@@ -6,8 +6,8 @@
  * ha cap mecanisme de producció nou. `guia-tutorial-fixture.test.js` comprova
  * que són vàlides (una remota invàlida es descartaria en silenci).
  */
-const tutorialPc = require( '../../plugins/noempesquen-core/missions/tutorial-pc.json' );
-const tutorialMobil = require( '../../plugins/noempesquen-core/missions/tutorial-mobil.json' );
+const tutorialPc = require( '../../plugins/noempesquen-core/missions/ca/tutorial-pc.json' );
+const tutorialMobil = require( '../../plugins/noempesquen-core/missions/ca/tutorial-mobil.json' );
 
 const copia = ( m ) => JSON.parse( JSON.stringify( m ) );
 

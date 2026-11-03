@@ -47,7 +47,7 @@ describe( 'detector de marques', () => {
 
 const text = ( nom ) =>
 	readFileSync(
-		new URL( `../../../../../missions/${ nom }.json`, import.meta.url ),
+		new URL( `../../../../../missions/ca/${ nom }.json`, import.meta.url ),
 		'utf8'
 	);
 

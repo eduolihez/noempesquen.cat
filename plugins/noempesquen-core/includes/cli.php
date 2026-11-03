@@ -20,7 +20,7 @@ WP_CLI::add_command(
 	'noempesquen importa-missions',
 	static function () {
 		// Sense mon.json (món compartit) ni plantilla-missio.json (plantilla de l'editor).
-		$fitxers = nep_fitxers_missions_incloses( NEP_PATH . 'missions/' );
+		$fitxers = nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', 'ca' ) );
 		$ordre   = 0;
 
 		foreach ( $fitxers as $fitxer ) {

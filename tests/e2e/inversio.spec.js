@@ -6,7 +6,7 @@ const {
 	escoltaFuites,
 	sensePistes,
 } = require( './ajudes' );
-const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-03-inversio.json' );
+const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-03-inversio.json' );
 
 const MISSIO = /El truc d'inversió/;
 const BLOQUEIG = /Clica o prem/;

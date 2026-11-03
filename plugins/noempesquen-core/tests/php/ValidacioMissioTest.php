@@ -36,8 +36,10 @@ final class ValidacioMissioTest extends TestCase {
 	 */
 	public static function reals(): array {
 		$casos = array();
-		foreach ( nep_fitxers_missions_incloses( self::MISSIONS ) as $fitxer ) {
-			$casos[ basename( $fitxer ) ] = array( $fitxer );
+		foreach ( array( 'ca', 'es' ) as $idioma ) {
+			foreach ( nep_fitxers_missions_incloses( self::MISSIONS . $idioma . '/' ) as $fitxer ) {
+				$casos[ $idioma . '/' . basename( $fitxer ) ] = array( $fitxer );
+			}
 		}
 		return $casos;
 	}
@@ -71,7 +73,8 @@ final class ValidacioMissioTest extends TestCase {
 	public function test_la_plantilla_es_valida_i_no_es_inclosa(): void {
 		$guio = self::llegeix( self::MISSIONS . 'plantilla-missio.json' );
 		$this->assertSame( array(), nep_valida_guio( $guio, $guio['dispositiu'], $guio['personatge'], array() ) );
-		$noms = array_map( 'basename', nep_fitxers_missions_incloses( self::MISSIONS ) );
+		$this->assertSame( array(), nep_fitxers_missions_incloses( self::MISSIONS ) );
+		$noms = array_map( 'basename', nep_fitxers_missions_incloses( self::MISSIONS . 'ca/' ) );
 		$this->assertNotContains( 'plantilla-missio.json', $noms );
 		$this->assertNotContains( 'mon.json', $noms );
 		$this->assertContains( 'llissa-01-factura.json', $noms );
