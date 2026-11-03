@@ -572,3 +572,11 @@ msgstr "<strong>Si nos escribes por el formulario de contacto</strong>, el mensa
 msgctxt "tema"
 msgid "Si tens un dubte, un suggeriment o has trobat un error, escriu-nos des de la pàgina de <a href=\"%s\">Contacte</a>."
 msgstr "Si tienes una duda, una sugerencia o has encontrado un error, escríbenos desde la página de <a href=\"%s\">Contacto</a>."
+
+#: includes/contacte.php:104
+msgid "El missatge és massa llarg."
+msgstr "El mensaje es demasiado largo."
+
+#: includes/contacte.php:187
+msgid "No s'ha pogut enviar el missatge. Torna-ho a provar d'aquí una estona."
+msgstr "No se ha podido enviar el mensaje. Vuelve a intentarlo dentro de un rato."
