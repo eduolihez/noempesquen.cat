@@ -22,7 +22,8 @@ if ( $nep_previsualitza && current_user_can( 'nep_gestiona_missions' ) && curren
 	$config['nonce']         = wp_create_nonce( 'wp_rest' );
 } else {
 	// Compte del jugador: sense nonce a l'HTML (la pàgina es pot desar a la memòria cau).
-	$nep_pagina_compte = get_page_by_path( 'compte' );
+	// La ruta depende del idioma: `cuenta` en ES, `ca/compte` en CA.
+	$nep_pagina_compte = get_page_by_path( trim( wp_parse_url( nep_url_pagina( 'compte' ), PHP_URL_PATH ) ?: '', '/' ) );
 	$config['compte']  = array(
 		'ajaxUrl' => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
 		'url'     => $nep_pagina_compte && 'publish' === $nep_pagina_compte->post_status ? esc_url_raw( get_permalink( $nep_pagina_compte ) ) : '',
