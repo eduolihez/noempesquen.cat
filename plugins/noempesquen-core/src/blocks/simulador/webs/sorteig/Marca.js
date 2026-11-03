@@ -1,3 +1,5 @@
+import { __ } from '@wordpress/i18n';
+
 /**
  * Marca de Sorteig del Barri: una estrella dins d'un cercle (SVG propi).
  *
@@ -29,7 +31,9 @@ export function MarcaSorteig() {
 	return (
 		<span className="nep-sb-marca">
 			<IconaEstrella />
-			<span className="nep-sb-marca__nom">Sorteig del Barri</span>
+			<span className="nep-sb-marca__nom">
+				{ __( 'Sorteig del Barri', 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

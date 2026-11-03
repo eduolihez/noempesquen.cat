@@ -91,7 +91,11 @@ export function CentreControl( { onTanca, onObre, origen } ) {
 					>
 						<IconaLupa mida={ 22 } />
 						<span>{ __( 'Lupa', 'noempesquen' ) }</span>
-						<kbd className="nep-so-m-centre__drecera">Alt+⇧+L</kbd>
+						<kbd className="nep-so-m-centre__drecera">
+							{ /* eslint-disable nep/no-literal-ui -- drecera de teclat, no es tradueix */ }
+							Alt+⇧+L
+							{ /* eslint-enable nep/no-literal-ui */ }
+						</kbd>
 					</button>
 					<button
 						type="button"

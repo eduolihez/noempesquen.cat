@@ -4,6 +4,7 @@
  * peça i el nom amb un altre pes i un blau una mica diferent.
  */
 
+import { __ } from '@wordpress/i18n';
 import { Glif24 } from '../comu/icones';
 
 function Bombeta( { falsa } ) {
@@ -73,7 +74,9 @@ export function MarcaLlumClara( { falsa = false } ) {
 	return (
 		<span className={ `nep-lc-marca${ falsa ? ' is-falsa' : '' }` }>
 			<Bombeta falsa={ falsa } />
-			<span className="nep-lc-marca__nom">Llum Clara</span>
+			<span className="nep-lc-marca__nom">
+				{ __( 'Llum Clara', 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

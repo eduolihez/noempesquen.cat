@@ -3,6 +3,7 @@
  * Traç únic de 4 unitats en blau mar, color pla i formes simètriques.
  * estat: 'normal' | 'alerta' | 'contenta' | 'trista'
  */
+import { __ } from '@wordpress/i18n';
 import { useId } from '@wordpress/element';
 
 const TINTA = '#0b1e3f';
@@ -249,6 +250,6 @@ export function Remei( { estat = 'normal', mida = 72 } ) {
 }
 
 export const PERSONATGES = {
-	llissa: { nom: 'la Llissa', Avatar: Llissa },
-	remei: { nom: 'la Pirata Remei', Avatar: Remei },
+	llissa: { nom: __( 'la Llissa', 'noempesquen' ), Avatar: Llissa },
+	remei: { nom: __( 'la Pirata Remei', 'noempesquen' ), Avatar: Remei },
 };

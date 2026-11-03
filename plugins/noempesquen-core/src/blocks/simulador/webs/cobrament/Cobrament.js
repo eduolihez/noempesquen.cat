@@ -24,7 +24,9 @@ function MarcaCobrament() {
 					strokeLinecap="round"
 				/>
 			</svg>
-			<span className="nep-cb-marca__nom">Revenda Cobra</span>
+			<span className="nep-cb-marca__nom">
+				{ __( 'Revenda Cobra', 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

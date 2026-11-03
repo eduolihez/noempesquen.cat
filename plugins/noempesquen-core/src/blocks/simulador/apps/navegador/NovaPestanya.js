@@ -7,9 +7,12 @@ import { IconaCercaNav } from './icones';
 import { FAVICONS_HOST } from './infoPagina';
 
 const DRECERES = [
-	{ nom: 'Posta', url: 'https://posta.cat/' },
-	{ nom: 'Llum Clara', url: 'https://llumclara.cat/' },
-	{ nom: 'El Diari del Barri', url: 'https://diaridelbarri.cat/' },
+	{ nom: __( 'Posta', 'noempesquen' ), url: 'https://posta.cat/' },
+	{ nom: __( 'Llum Clara', 'noempesquen' ), url: 'https://llumclara.cat/' },
+	{
+		nom: __( 'El Diari del Barri', 'noempesquen' ),
+		url: 'https://diaridelbarri.cat/',
+	},
 ];
 
 /**

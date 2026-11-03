@@ -69,6 +69,7 @@ export function PaginaError( { tipus, host, text, onRecarrega } ) {
 				</li>
 				<li>{ __( 'Comprovar la connexió', 'noempesquen' ) }</li>
 			</ul>
+			{ /* eslint-disable-next-line nep/no-literal-ui -- codi tècnic d'error, no es tradueix */ }
 			<p className="nep-nav-error__codi">DNS_PROBE_FINISHED_NXDOMAIN</p>
 			<button
 				type="button"

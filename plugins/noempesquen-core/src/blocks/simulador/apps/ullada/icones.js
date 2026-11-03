@@ -60,7 +60,9 @@ export function LogoUllada( { alt = 22 } ) {
 				fontSize="26"
 				fill="currentColor"
 			>
+				{ /* eslint-disable nep/no-literal-ui -- rètol gràfic del logotip, no es tradueix */ }
 				Ullada
+				{ /* eslint-enable nep/no-literal-ui */ }
 			</text>
 		</svg>
 	);

@@ -1,10 +1,11 @@
 /**
- * Dades i ajudes pures de l'app Banc Sòlid del mòbil (sense JSX ni i18n).
+ * Dades i ajudes pures de l'app Banc Sòlid del mòbil (sense JSX).
  *
  * Privadesa: el que escriu el jugador a la transferència no surt mai del
  * camp. Aquest mòdul només valida; no desa res.
  */
 
+import { __ } from '@wordpress/i18n';
 import { nomPila, NOM_PER_DEFECTE } from '../../nucli/jugador.js';
 
 export { NOM_PER_DEFECTE };
@@ -50,50 +51,59 @@ export function moviments() {
 	return [
 		{
 			id: 'm1',
-			data: 'Dilluns',
-			concepte: 'Compra amb targeta · Botiga Verda',
+			data: __( 'Dilluns', 'noempesquen' ),
+			concepte: __( 'Compra amb targeta · Botiga Verda', 'noempesquen' ),
 			import: -24.9,
 		},
 		{
 			id: 'm2',
-			data: "5 d'octubre",
-			concepte: 'Rebut · Llum Clara Energia, SA',
+			data: __( "5 d'octubre", 'noempesquen' ),
+			concepte: __( 'Rebut · Llum Clara Energia, SA', 'noempesquen' ),
 			import: -62.15,
 		},
 		{
 			id: 'm3',
-			data: "3 d'octubre",
-			concepte: 'Compra amb targeta · Fleca Cal Pere',
+			data: __( "3 d'octubre", 'noempesquen' ),
+			concepte: __(
+				'Compra amb targeta · Fleca Cal Pere',
+				'noempesquen'
+			),
 			import: -6.8,
 		},
 		{
 			id: 'm4',
-			data: "2 d'octubre",
-			concepte: 'Compra amb targeta · Farmàcia del Barri',
+			data: __( "2 d'octubre", 'noempesquen' ),
+			concepte: __(
+				'Compra amb targeta · Farmàcia del Barri',
+				'noempesquen'
+			),
 			import: -12.35,
 		},
 		{
 			id: 'm5',
-			data: "1 d'octubre",
-			concepte: 'Transferència rebuda · Nòmina',
+			data: __( "1 d'octubre", 'noempesquen' ),
+			concepte: __( 'Transferència rebuda · Nòmina', 'noempesquen' ),
 			import: 1640,
 		},
 		{
 			id: 'm6',
-			data: '30 de setembre',
-			concepte: 'Rebut · Aigües del Maresme',
+			data: __( '30 de setembre', 'noempesquen' ),
+			concepte: __( 'Rebut · Aigües del Maresme', 'noempesquen' ),
 			import: -28.4,
 		},
 		{
 			id: 'm7',
-			data: '28 de setembre',
-			concepte: 'Compra amb targeta · Llibreria Rodona',
+			data: __( '28 de setembre', 'noempesquen' ),
+			concepte: __(
+				'Compra amb targeta · Llibreria Rodona',
+				'noempesquen'
+			),
 			import: -19.5,
 		},
 		{
 			id: 'm8',
-			data: '26 de setembre',
-			concepte: 'Reintegrament · Caixer Plaça Major',
+			data: __( '26 de setembre', 'noempesquen' ),
+			concepte: __( 'Reintegrament · Caixer Plaça Major', 'noempesquen' ),
 			import: -50,
 		},
 	];

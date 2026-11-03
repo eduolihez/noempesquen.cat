@@ -225,7 +225,9 @@ export default function Posta( { obrePestanya, onHoverUrl } ) {
 			>
 				<span className="nep-posta__marca">
 					<MarcaPosta mida={ 30 } />
-					<span className="nep-posta__nom">posta</span>
+					<span className="nep-posta__nom">
+						{ __( 'posta', 'noempesquen' ) }
+					</span>
 				</span>
 				<div className="nep-posta__cerca" role="search">
 					<label htmlFor={ idCerca } className="screen-reader-text">

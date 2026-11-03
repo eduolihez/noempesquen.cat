@@ -287,7 +287,9 @@ export function Pesquer( {
 					textAnchor="middle"
 					fill="#fff"
 				>
+					{ /* eslint-disable nep/no-literal-ui -- rètol gràfic del vaixell, no es tradueix */ }
 					PESQUER
+					{ /* eslint-enable nep/no-literal-ui */ }
 				</text>
 				{ activa && <GavinaPosada x={ 296 } y={ 134 } /> }
 			</g>

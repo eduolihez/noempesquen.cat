@@ -1,10 +1,12 @@
+import { __ } from '@wordpress/i18n';
+
 /**
  * Lògica pura de la Calculadora. Interna: nombres amb punt decimal;
  * a pantalla (`mostra`) es fa servir la coma.
  */
 export const MAX_DIGITS = 12;
-export const ERROR_ZERO = 'No es pot dividir per zero';
-export const ERROR_GRAN = 'Número massa gran';
+export const ERROR_ZERO = __( 'No es pot dividir per zero', 'noempesquen' );
+export const ERROR_GRAN = __( 'Número massa gran', 'noempesquen' );
 
 const OPERADORS = [ '+', '−', '×', '÷' ];
 

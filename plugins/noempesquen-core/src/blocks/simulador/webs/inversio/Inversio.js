@@ -25,7 +25,9 @@ function MarcaInversio() {
 					strokeLinejoin="round"
 				/>
 			</svg>
-			<span className="nep-iv-marca__nom">Invest Rapid</span>
+			<span className="nep-iv-marca__nom">
+				{ __( 'Invest Rapid', 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

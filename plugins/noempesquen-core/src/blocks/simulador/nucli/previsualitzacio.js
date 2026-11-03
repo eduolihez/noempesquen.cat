@@ -5,6 +5,7 @@
  * La de prova surt sempre al selector amb un id propi (no substitueix cap
  * missió real) i marcada «esborrany». El seu resultat no es desa mai.
  */
+import { __, sprintf } from '@wordpress/i18n';
 import { validaMissio } from './valida.js';
 import { desaProgres } from './progres.js';
 
@@ -37,7 +38,11 @@ export function preparaPrevisualitzacio( guio, mon ) {
 	return {
 		...guio,
 		id: `${ guio.id }${ SUFIX_PROVA }`,
-		titol: `${ guio.titol } · esborrany`,
+		titol: sprintf(
+			/* translators: %s: títol de la missió */
+			__( '%s · esborrany', 'noempesquen' ),
+			guio.titol
+		),
 		previsualitzacio: true,
 	};
 }

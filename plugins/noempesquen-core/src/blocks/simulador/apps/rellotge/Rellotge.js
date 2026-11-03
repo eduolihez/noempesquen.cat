@@ -6,7 +6,7 @@
  * a l'arrel, així que canviar de pestanya no els reinicia.
  */
 import { useEffect, useRef, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useJoc } from '../../simulador/context';
 import {
 	formata,
@@ -24,9 +24,9 @@ const PESTANYES = [
 ];
 
 const CIUTATS = [
-	{ nom: 'Barcelona', desfase: 0 },
-	{ nom: 'Londres', desfase: -1 },
-	{ nom: 'Nova York', desfase: -6 },
+	{ nom: __( 'Barcelona', 'noempesquen' ), desfase: 0 },
+	{ nom: __( 'Londres', 'noempesquen' ), desfase: -1 },
+	{ nom: __( 'Nova York', 'noempesquen' ), desfase: -6 },
 ];
 
 const PRESETS = [ 1, 5, 10 ];
@@ -117,7 +117,11 @@ function PanellTemp( { temp, trieu, alternar, reinicia } ) {
 						aria-pressed={ temp.total === m * 60000 }
 						onClick={ () => trieu( m * 60000 ) }
 					>
-						{ m } min
+						{ sprintf(
+							/* translators: %d: minuts */
+							__( '%d min', 'noempesquen' ),
+							m
+						) }
 					</button>
 				) ) }
 			</div>

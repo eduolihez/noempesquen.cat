@@ -8,6 +8,7 @@
  * - `carrega` de cada pestanya és el valor de `carregues` de la seva última
  *   càrrega (serveix de clau per tornar a muntar la pàgina).
  */
+import { __ } from '@wordpress/i18n';
 
 export const NOVA_PESTANYA = 'nep:nova-pestanya';
 export const PREFIX_CERCA = 'cerca:';
@@ -20,8 +21,16 @@ export const ESTAT_NAVEGADOR = {
 };
 
 /* posta.cat és el correu de l'Àlex: hi és en totes les missions. */
-const POSTA = { plantilla: 'posta', https: true, titol: 'Posta' };
-const DIARI = { plantilla: 'diari', https: true, titol: 'El Diari del Barri' };
+const POSTA = {
+	plantilla: 'posta',
+	https: true,
+	titol: __( 'Posta', 'noempesquen' ),
+};
+const DIARI = {
+	plantilla: 'diari',
+	https: true,
+	titol: __( 'El Diari del Barri', 'noempesquen' ),
+};
 
 /**
  * Hostname d'una URL http(s), o null si no n'és una.

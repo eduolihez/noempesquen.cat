@@ -1,3 +1,5 @@
+import { __ } from '@wordpress/i18n';
+
 /**
  * Marca d'Envia't: una caixa amb una fletxa d'enviament (SVG propi).
  *
@@ -32,7 +34,9 @@ export function MarcaEnviat() {
 	return (
 		<span className="nep-ev-marca">
 			<IconaCaixa />
-			<span className="nep-ev-marca__nom">Envia&apos;t</span>
+			<span className="nep-ev-marca__nom">
+				{ __( "Envia't", 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

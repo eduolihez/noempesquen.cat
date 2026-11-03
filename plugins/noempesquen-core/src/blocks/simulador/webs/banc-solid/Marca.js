@@ -4,6 +4,7 @@
  * els blocs una mica més junts i el nom amb un altre pes.
  */
 
+import { __ } from '@wordpress/i18n';
 import { Glif24 } from '../comu/icones';
 
 function Blocs( { falsa } ) {
@@ -52,7 +53,9 @@ export function MarcaBancSolid( { falsa = false } ) {
 	return (
 		<span className={ `nep-bs-marca${ falsa ? ' is-falsa' : '' }` }>
 			<Blocs falsa={ falsa } />
-			<span className="nep-bs-marca__nom">Banc Sòlid</span>
+			<span className="nep-bs-marca__nom">
+				{ __( 'Banc Sòlid', 'noempesquen' ) }
+			</span>
 		</span>
 	);
 }

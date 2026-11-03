@@ -3,6 +3,7 @@
  * Reductor immutable.
  */
 
+import { __ } from '@wordpress/i18n';
 import {
 	processaEsdeveniment,
 	avancaTemps,
@@ -29,11 +30,11 @@ export const PUNTS = {
 	pista: -5,
 };
 
-const TEXT_SEGUENT = 'Següent';
-const TEXT_COMENCA = 'Som-hi!';
-const TEXT_SALTA = 'Salta la presentació';
-const TEXT_DECIDIR = 'Ja ho tinc clar';
-const TEXT_TORNAR = 'Encara vull mirar';
+const TEXT_SEGUENT = __( 'Següent', 'noempesquen' );
+const TEXT_COMENCA = __( 'Som-hi!', 'noempesquen' );
+const TEXT_SALTA = __( 'Salta la presentació', 'noempesquen' );
+const TEXT_DECIDIR = __( 'Ja ho tinc clar', 'noempesquen' );
+const TEXT_TORNAR = __( 'Encara vull mirar', 'noempesquen' );
 
 /**
  * Clau d'una web per a l'estat: el host sense `www.` (com `resolWeb`), o el
