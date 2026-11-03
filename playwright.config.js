@@ -44,7 +44,12 @@ const BASE = ( process.env.WP_BASE_URL || 'http://localhost:8888' ).replace(
 );
 const ES = NEP_LANG === 'es';
 const SPEC_ES = /[\\/]e2e[\\/]es[\\/]/;
-/** testIgnore d'un projecte: sense NEP_LANG=es, també la carpeta `es/`. */
+/**
+ * testIgnore d'un projecte: sense NEP_LANG=es, també la carpeta `es/`.
+ *
+ * @param {...RegExp} patrons Patrons propis del projecte.
+ * @return {RegExp[]} Patrons a ignorar.
+ */
 const ignora = ( ...patrons ) => ( ES ? patrons : [ ...patrons, SPEC_ES ] );
 
 module.exports = defineConfig( {

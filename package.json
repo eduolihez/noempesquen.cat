@@ -23,6 +23,8 @@
     "empaqueta": "node scripts/empaqueta.mjs",
     "missions:valida": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/valida-parella-missions.mjs",
     "test:e2e": "playwright test",
+    "test:e2e:ca": "node scripts/e2e-idioma.mjs ca",
+    "test:e2e:es": "node scripts/e2e-idioma.mjs es",
     "test:unit": "vitest run",
     "test:php": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli --env-cwd=wp-content/plugins/noempesquen-core phpunit && node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli wp eval-file wp-content/plugins/noempesquen-core/tests/php/integracio.php"
   },
