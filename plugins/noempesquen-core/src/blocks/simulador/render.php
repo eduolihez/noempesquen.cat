@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 $config = array(
 	'dispositiu' => $attributes['dispositiu'] ?? 'auto',
 	'api'        => esc_url_raw( rest_url( 'noempesquen/v1/' ) ),
-	'inici'      => esc_url_raw( home_url( '/' ) ),
+	'inici'      => esc_url_raw( nep_url( '/' ) ),
 	'lang'       => nep_idioma_actual(),
 );
 
