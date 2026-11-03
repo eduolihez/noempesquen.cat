@@ -24,7 +24,7 @@ function nep_neteja_lloc(): void {
 	global $wpdb;
 
 	// Llista explícita d'opcions conegudes (afegir-hi les noves).
-	foreach ( array( 'nep_db_version', 'nep_sal_dia', 'nep_hash_fals' ) as $opcio ) {
+	foreach ( array( 'nep_db_version', 'nep_sal_dia', 'nep_hash_fals', 'nep_versio_missions' ) as $opcio ) {
 		delete_option( $opcio );
 	}
 

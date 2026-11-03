@@ -150,6 +150,9 @@ function nep_valida_passos( $passos ): array {
 /** Idioma d'una missió del panell sense la meta `nep_idioma` (les anteriors a l'idioma). */
 const NEP_IDIOMA_MISSIO_PER_DEFECTE = 'ca';
 
+/** Idioma de les missions noves (`ca` només és lectura de les anteriors a la migració). */
+const NEP_IDIOMA_MISSIO_NOVA = 'es';
+
 /**
  * Idiomes de les missions, en l'ordre de les carpetes `missions/<idioma>/`.
  *

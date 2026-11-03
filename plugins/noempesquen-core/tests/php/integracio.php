@@ -389,8 +389,18 @@ $nep_ids_rest = static function ( ?string $lang ): array {
 	return array_map( static fn( $m ) => (int) $m['id'], (array) rest_do_request( $peticio )->get_data() );
 };
 
-$nep_r_ca = $nep_crea_idioma( null );
+// Una missió nova sense idioma és es (REST; el mateix ganxo cobreix Gutenberg, la caixa i la CLI).
+$nep_r_nova = $nep_crea_idioma( null, array( 'id' => 'prova-idioma-t04-nova' ) + $nep_idioma_guio );
+$nep_nova   = (int) ( $nep_r_nova->get_data()['id'] ?? 0 );
+$nep_comprova( 201 === $nep_r_nova->get_status() && array( 'es' ) === get_post_meta( $nep_nova, 'nep_idioma' ), 'idioma: una missió nova sense idioma és es' );
+$nep_auto = wp_insert_post( array( 'post_type' => 'nep_missio', 'post_status' => 'auto-draft', 'post_title' => 'auto' ) );
+$nep_comprova( 'es' === get_post_meta( $nep_auto, 'nep_idioma', true ), 'idioma: un auto-draft de Gutenberg neix es' );
+wp_delete_post( $nep_auto, true );
+wp_delete_post( $nep_nova, true );
+// Missió anterior a la migració: es crea ca i se li treu la meta.
+$nep_r_ca = $nep_crea_idioma( 'ca' );
 $nep_ca   = (int) ( $nep_r_ca->get_data()['id'] ?? 0 );
+delete_post_meta( $nep_ca, 'nep_idioma' );
 $nep_comprova( 201 === $nep_r_ca->get_status() && 'ca' === nep_idioma_de_missio( $nep_ca ), 'idioma: sense nep_idioma la missió és ca' );
 $nep_comprova( ! metadata_exists( 'post', $nep_ca, 'nep_idioma' ), 'idioma: (la meta encara no existeix: cas de migració)' );
 $nep_r_es = $nep_crea_idioma( 'es' );

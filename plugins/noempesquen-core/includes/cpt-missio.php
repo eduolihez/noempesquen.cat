@@ -157,7 +157,7 @@ function nep_idiomes_ids_missions( int $exclou ): array {
  * @param string|null $json       Guió candidat (null = el desat).
  * @param string|null $dispositiu Dispositiu candidat (null = el desat).
  * @param string|null $personatge Personatge candidat (null = el desat).
- * @param string|null $idioma     Idioma candidat (null = el desat; sense meta, `ca`).
+ * @param string|null $idioma     Idioma candidat (null = el desat; missió nova, `es`; antiga sense meta, `ca`).
  * @return string[]
  */
 function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?string $personatge, ?string $idioma = null ): array {
@@ -173,7 +173,9 @@ function nep_errors_missio( int $post_id, ?string $json, ?string $dispositiu, ?s
 	$json       = $json ?? $desat( 'nep_guio' );
 	$dispositiu = sanitize_key( $dispositiu ?? $desat( 'nep_dispositiu' ) );
 	$personatge = sanitize_key( $personatge ?? $desat( 'nep_personatge' ) );
-	$idioma     = nep_idioma_missio( $idioma ?? $desat( 'nep_idioma' ) );
+	// Una missió nova (sense entrada o sense meta encara) és `es`; només les anteriors a la migració es llegeixen com a `ca`.
+	$idioma = $idioma ?? ( $post_id && metadata_exists( 'post', $post_id, 'nep_idioma' ) ? $desat( 'nep_idioma' ) : ( nep_es_missio_nova( $post_id ) ? NEP_IDIOMA_MISSIO_NOVA : '' ) );
+	$idioma = nep_idioma_missio( $idioma );
 
 	$errors = array();
 	if ( '' === $dispositiu ) {
@@ -733,3 +735,28 @@ function nep_migra_missions(): void {
 	update_option( 'nep_versio_missions', NEP_VERSIO_MISSIONS );
 }
 add_action( 'init', 'nep_migra_missions', 20 );
+
+/**
+ * Si una entrada és nova (encara no desada o en `auto-draft`): sense meta d'idioma, serà `es`.
+ *
+ * @param int $post_id Entrada (0 = encara no existeix).
+ * @return bool
+ */
+function nep_es_missio_nova( int $post_id ): bool {
+	return ! $post_id || 'auto-draft' === get_post_status( $post_id );
+}
+
+/**
+ * Tota missió nova neix en castellà (REST, Gutenberg, metabox, CLI): REST,
+ * la caixa i la CLI ja hi escriuen després el que es demani.
+ *
+ * @param int     $post_id Entrada.
+ * @param WP_Post $post    Entrada.
+ * @param bool    $update  Si és una actualització.
+ */
+function nep_idioma_missio_nova( $post_id, $post, $update ): void {
+	if ( ! $update && ! metadata_exists( 'post', (int) $post_id, 'nep_idioma' ) ) {
+		add_post_meta( (int) $post_id, 'nep_idioma', NEP_IDIOMA_MISSIO_NOVA, true );
+	}
+}
+add_action( 'save_post_nep_missio', 'nep_idioma_missio_nova', 5, 3 );
