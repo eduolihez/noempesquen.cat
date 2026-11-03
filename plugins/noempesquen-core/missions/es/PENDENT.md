@@ -1,7 +1,7 @@
 # Missions en castellà: pendents de traduir
 
 Els JSON d'aquesta carpeta són **còpies provisionals idèntiques al català**
-(`missions/ca/`). Hi són perquè el bundle (`lang=es`), el validador de pareja
+(`missions/ca/`). Hi són perquè el bundle (`lang=es`), el validador de parella
 (`npm run missions:valida`) i el servidor funcionin fins que es tradueixin.
 
 No s'hi afegeix cap camp de marca dins dels JSON: canviaria el hash de versió
