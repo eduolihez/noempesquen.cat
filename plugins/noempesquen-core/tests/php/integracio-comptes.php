@@ -47,7 +47,7 @@ $nep_comprova( nep_es_jugador( new WP_User( $nep_jug_id ) ) && nep_es_jugador( $
 $nep_comprova( ! nep_es_jugador( $nep_adm ) && ! nep_es_jugador( 0 ), 'nep_es_jugador: administrador i invàlid → false' );
 wp_set_current_user( $nep_jug_id );
 $nep_comprova( false === apply_filters( 'show_admin_bar', true ), 'jugador: sense barra d\'administració' );
-$nep_comprova( home_url( '/compte/' ) === apply_filters( 'login_redirect', 'x', '', new WP_User( $nep_jug_id ) ), 'jugador: login_redirect → /compte/' );
+$nep_comprova( home_url( '/ca/compte/' ) === apply_filters( 'login_redirect', 'x', '', new WP_User( $nep_jug_id ) ), 'jugador: login_redirect → /ca/compte/ (sense meta nep_idioma, ca)' );
 $nep_comprova( ! current_user_can( 'read' ), 'jugador: sense read' );
 // Un jugador amb sessió no toca /wp/v2/users* (correu o contrasenya sense la
 // actual) ni crea contrasenyes d'aplicació (Basic saltaria els límits).
@@ -332,7 +332,7 @@ delete_transient( nep_clau_limit( 'registre-global' ) );
 
 // Verificació del correu.
 $nep_token_de = static function ( array $correu ): string {
-	return preg_match( '/\/compte\/\?verifica=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
+	return preg_match( '/\/(?:cuenta|ca\/compte)\/\?verifica=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
 };
 $nep_verifica = static fn( $token ) => $nep_json( 'POST', '/noempesquen/v1/compte/verifica', array( 'token' => $token ) );
 $nep_reenvia  = static fn() => $nep_json( 'POST', '/noempesquen/v1/compte/reenvia-verificacio' );
@@ -484,7 +484,7 @@ $_COOKIE = array();
 
 // Recuperació de contrasenya.
 $nep_rec_de = static function ( array $correu ): string {
-	return preg_match( '/\/compte\/\?restableix=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
+	return preg_match( '/\/(?:cuenta|ca\/compte)\/\?restableix=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
 };
 $nep_recupera  = static fn( $email ) => $nep_json( 'POST', '/noempesquen/v1/compte/recupera', array( 'email' => $email ) );
 $nep_restableix = static fn( $token, $pass ) => $nep_json( 'POST', '/noempesquen/v1/compte/restableix', array( 'token' => $token, 'contrasenya' => $pass ) );
@@ -743,3 +743,22 @@ if ( $nep_autonom ) {
 	}
 	WP_CLI::success( 'Comptes correctes.' );
 }
+
+add_filter( 'pre_wp_mail', $nep_captura_correu, 10, 2 );
+// Idioma dels correus: meta nep_idioma del compte, enllaç amb la ruta de l'idioma, locale restaurat.
+foreach ( array( 'es' => '/cuenta/?verifica=', 'ca' => '/ca/compte/?verifica=' ) as $nep_id => $nep_cami ) {
+	$nep_u = wp_insert_user( array( 'user_login' => 'nep_idi_' . $nep_id, 'user_email' => 'idi-' . $nep_id . '@exemple.cat', 'user_pass' => wp_generate_password( 20 ), 'role' => 'nep_jugador' ) );
+	update_user_meta( $nep_u, 'nep_idioma', $nep_id );
+	$nep_mails      = array();
+	$nep_mail_falla = false;
+	$nep_locale0    = determine_locale();
+	nep_correu_verificacio( $nep_u, $nep_u . '.' . str_repeat( 'a', 64 ) );
+	$nep_esperat = nep_amb_idioma( $nep_id, static fn() => __( 'Confirma el teu correu a No em pesquen', 'noempesquen' ) );
+	$nep_comprova( 1 === count( $nep_mails ) && str_contains( $nep_mails[0]['message'], home_url( $nep_cami ) ) && $nep_esperat === $nep_mails[0]['subject'], 'correu ' . $nep_id . ': enllaç ' . $nep_cami . ' i assumpte en el seu idioma' );
+	$nep_comprova( determine_locale() === $nep_locale0, 'correu ' . $nep_id . ': el locale es restaura' );
+	wp_delete_user( $nep_u );
+}
+$nep_comprova( 'ca' === nep_idioma_usuari( 0 ), 'sense meta nep_idioma, ca' );
+$nep_vary = apply_filters( 'rest_post_dispatch', new WP_REST_Response( array() ), rest_get_server(), new WP_REST_Request( 'GET', '/noempesquen/v1/missions' ) );
+$nep_comprova( str_contains( (string) ( $nep_vary->get_headers()['Vary'] ?? '' ), 'X-Nep-Lang' ), 'REST noempesquen/v1: Vary: X-Nep-Lang' );
+remove_filter( 'pre_wp_mail', $nep_captura_correu, 10 );

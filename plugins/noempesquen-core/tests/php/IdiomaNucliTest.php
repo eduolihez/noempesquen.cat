@@ -86,4 +86,18 @@ final class IdiomaNucliTest extends TestCase {
 		$this->assertSame( 'es-ES', nep_lang_html( 'es_ES' ) );
 		$this->assertSame( 'ca', nep_lang_html( 'ca' ) );
 	}
+
+	public function test_ruta_pagina_per_idioma(): void {
+		$this->assertSame( '/cuenta/', nep_ruta_pagina( 'compte', 'es' ) );
+		$this->assertSame( '/compte/', nep_ruta_pagina( 'compte', 'ca' ) );
+		$this->assertSame( '/ca/compte/', nep_ruta_idioma( nep_ruta_pagina( 'compte', 'ca' ), 'ca' ) );
+		$this->assertSame( '/sobre-el-proyecto/', nep_ruta_pagina( 'projecte', 'es' ) );
+		$this->assertSame( '/simulador/', nep_ruta_pagina( 'inexistent', 'ca' ) );
+	}
+
+	public function test_idioma_de_meta_usuari(): void {
+		$this->assertSame( 'es', nep_idioma_de_meta_usuari( 'es' ) );
+		$this->assertSame( 'ca', nep_idioma_de_meta_usuari( '' ) );
+		$this->assertSame( 'ca', nep_idioma_de_meta_usuari( 'fr' ) );
+	}
 }
