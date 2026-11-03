@@ -38,7 +38,7 @@ $nep_menu  = array(
 <a class="nep-btn nep-btn--lot nep-btn--petit nep-capcalera__joc" href="<?php echo esc_url( nep_tema_url( 'simulador' ) ); ?>"><?php echo esc_html_x( 'Entra a jugar', 'tema', 'noempesquen' ); ?></a>
 <!-- /wp:html -->
 <!-- wp:html -->
-<nav class="nep-idioma" aria-label="<?php echo esc_attr_x( 'Idioma', 'tema', 'noempesquen' ); ?>"><a class="nep-idioma__enllac" href="<?php echo esc_url( nep_tema_url( nep_tema_clau_actual(), $nep_altre ) ); ?>" hreflang="<?php echo esc_attr( $nep_altre ); ?>" lang="<?php echo esc_attr( $nep_altre ); ?>"><?php echo 'ca' === $nep_altre ? 'Català' : 'Castellano'; ?></a></nav>
+<nav class="nep-idioma" aria-label="<?php echo esc_attr_x( 'Idioma', 'tema', 'noempesquen' ); ?>"><a class="nep-idioma__enllac" href="<?php echo esc_url( nep_tema_url( nep_tema_clau_actual(), $nep_altre ) ); ?>" hreflang="<?php echo esc_attr( $nep_altre ); ?>" lang="<?php echo esc_attr( $nep_altre ); ?>"><span class="nep-idioma__curt"><?php echo 'ca' === $nep_altre ? 'CA' : 'ES'; ?></span><span class="nep-idioma__llarg"><?php echo 'ca' === $nep_altre ? 'Català' : 'Castellano'; ?></span></a></nav>
 <!-- /wp:html -->
 </div>
 <!-- /wp:group -->

@@ -236,17 +236,35 @@ html {
 	justify-content: center;
 	min-width: 2.75rem;
 	min-height: 2.75rem;
-	padding: 0 0.75rem;
+	padding: 0 0.7rem;
 	border: 2px solid var(--nep-blanc);
 	border-radius: 8px;
 	color: var(--nep-blanc);
+	font-size: 1rem;
 	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
 	text-decoration: none;
+}
+
+/* Escritori: nom complet. Mòbil: sigla visible; el nom complet queda per a lectors de pantalla. */
+.nep-idioma__curt { display: none; }
+@media (max-width: 40rem) {
+	.nep-idioma__curt { display: inline; letter-spacing: 0.04em; }
+	.nep-idioma__llarg {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+	.nep-idioma__enllac { min-width: 2.75rem; padding: 0 0.55rem; }
 }
 
 .nep-idioma__enllac:hover { background: rgb(255 255 255 / 0.16); }
 
-@media (min-width: 40.01rem) and (max-width: 78rem) {
+@media (min-width: 40.01rem) and (max-width: 84rem) {
 	.nep-marca { margin-right: auto; }
 	.nep-capcalera__joc { margin-left: 0; }
 	.nep-menu { flex-basis: 100%; order: 3; }
@@ -256,11 +274,13 @@ html {
 	}
 }
 
-@media (min-width: 78.01rem) {
+@media (min-width: 84.01rem) {
 	.nep-menu { order: 1; }
 	.nep-capcalera__joc { order: 2; margin-left: 0; }
 	.nep-idioma { order: 3; }
-	.nep-capcalera__dins { column-gap: 1.25rem; }
+	.nep-capcalera__dins { column-gap: 1rem; flex-wrap: nowrap; }
+	.nep-marca { flex: none; }
+	.nep-idioma { flex: none; }
 	.nep-menu .wp-block-navigation-item__content { font-size: 1.1rem; padding: 0 0.65rem; }
 }
 
@@ -268,6 +288,13 @@ html {
 	.nep-capcalera__joc { display: none; }
 	.nep-marca { font-size: 1.45rem; }
 	.nep-marca svg { width: 2.5rem; height: 2.5rem; }
+}
+
+/* Menú en hamburguesa (WP, ≤600px): marca + idioma + menú en una sola fila. */
+@media (max-width: 37.4rem) {
+	.nep-capcalera__dins { flex-wrap: nowrap; column-gap: 0.5rem; }
+	.nep-marca { margin-right: auto; min-width: 0; }
+	.nep-menu { flex: none; }
 }
 
 @media (max-width: 52rem) {
