@@ -1,0 +1,933 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: No em pesquen – Nucli\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: noempesquen\n"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:22 src/blocks/simulador/apps/ajustos/Subpantalla.js:67
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:26
+msgid "Pantalla"
+msgstr "Pantalla"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:28
+msgid "So"
+msgstr "Sonido"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:32
+msgid "Aplicacions"
+msgstr "Aplicaciones"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:37
+msgid "Sobre el telèfon"
+msgstr "Acerca del teléfono"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:42 src/blocks/simulador/apps/ajustos/Subpantalla.js:193 src/blocks/simulador/sistemes/mobil/CentreControl.js:109
+msgid "Apagar"
+msgstr "Apagar"
+
+#: src/blocks/simulador/apps/ajustos/Ajustos.js:115 src/blocks/simulador/apps/ajustos/Ajustos.js:125 src/blocks/simulador/apps/registre.js:86
+msgid "Ajustos"
+msgstr "Ajustes"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:74
+msgid "Xarxa de casa"
+msgstr "Red de casa"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:75
+msgid "Connectada · Senyal excel·lent"
+msgstr "Conectada · Señal excelente"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:81
+msgid "Seguretat"
+msgstr "Seguridad"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:82
+msgid "WPA2"
+msgstr "WPA2"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:97
+msgid "Brillantor"
+msgstr "Brillo"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:110
+msgid "Mode fosc"
+msgstr "Modo oscuro"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:111
+msgid "No disponible en aquesta versió d'Ajustos."
+msgstr "No disponible en esta versión de Ajustes."
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:126
+msgid "Sons de notificació"
+msgstr "Sonidos de notificación"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:127
+msgid "Reprodueix un so quan arriba una notificació."
+msgstr "Reproduce un sonido cuando llega una notificación."
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:145 src/blocks/simulador/apps/navegador/MenuNavegador.js:122
+msgid "Versió"
+msgstr "Versión"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:159
+msgid "Nom del dispositiu"
+msgstr "Nombre del dispositivo"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:163
+msgid "Model"
+msgstr "Modelo"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:164
+msgid "Mòbil Nova 5"
+msgstr "Mòbil Nova 5"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:167
+msgid "Versió del sistema"
+msgstr "Versión del sistema"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:168
+msgid "Nova OS 3.2"
+msgstr "Nova OS 3.2"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:171
+msgid "Emmagatzematge"
+msgstr "Almacenamiento"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:172
+msgid "38 GB usats de 128 GB"
+msgstr "38 GB usados de 128 GB"
+
+#: src/blocks/simulador/apps/ajustos/Subpantalla.js:183
+msgid "Apagar el telèfon posa la partida en pausa."
+msgstr "Apagar el teléfono pone la partida en pausa."
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:30 src/blocks/simulador/apps/banc-solid/BancSolid.js:31 src/blocks/simulador/apps/missatges/Contactes.js:11 src/blocks/simulador/apps/missatges/Contactes.js:12 src/blocks/simulador/apps/navegador/Navegador.js:68 src/blocks/simulador/apps/navegador/NavegadorMobil.js:89 src/blocks/simulador/sistemes/mobil/BarraNavegacio.js:24
+msgid "Enrere"
+msgstr "Atrás"
+
+#. translators: %s: nom de pila
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:52 src/blocks/simulador/webs/banc-solid/Oficial.js:114 src/blocks/simulador/webs/llum-clara/AreaClient.js:22
+#, js-format
+msgid "Hola, %s"
+msgstr "Hola, %s"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:61 src/blocks/simulador/webs/banc-solid/Oficial.js:144
+msgid "Compte corrent"
+msgstr "Cuenta corriente"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:65
+msgid "Saldo disponible"
+msgstr "Saldo disponible"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:76 src/blocks/simulador/apps/ullada/Ullada.js:155 src/blocks/simulador/webs/banc-solid/Oficial.js:126
+msgid "Avisos"
+msgstr "Avisos"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:79 src/blocks/simulador/webs/banc-solid/Oficial.js:235
+msgid "Cap avís pendent. El teu compte està actiu."
+msgstr "No tienes avisos pendientes. Tu cuenta está activa."
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:94 src/blocks/simulador/apps/banc-solid/BancSolid.js:114
+msgid "Moviments"
+msgstr "Movimientos"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:103 src/blocks/simulador/apps/banc-solid/BancSolid.js:226 src/blocks/simulador/apps/banc-solid/BancSolid.js:254
+msgid "Transferència"
+msgstr "Transferencia"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:141 src/blocks/simulador/webs/comu/FormulariFals.js:156 src/blocks/simulador/webs/llum-clara/AreaClient.js:148
+msgid "Omple aquest camp."
+msgstr "Rellena este campo."
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:142
+msgid "Revisa aquest camp."
+msgstr "Revisa este campo."
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:143
+msgid "No tens prou saldo."
+msgstr "No tienes saldo suficiente."
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:148
+msgid "Beneficiari"
+msgstr "Beneficiario"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:149
+msgid "IBAN del destinatari"
+msgstr "IBAN del destinatario"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:150
+msgid "Import (€)"
+msgstr "Importe (€)"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:151 src/blocks/simulador/webs/banc-solid/Oficial.js:183 src/blocks/simulador/webs/llum-clara/Falsa.js:76
+msgid "Concepte"
+msgstr "Concepto"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:207 src/blocks/simulador/apps/banc-solid/BancSolid.js:236
+msgid "Transferència enviada"
+msgstr "Transferencia enviada"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:243
+msgid "Torna al compte"
+msgstr "Volver a la cuenta"
+
+#: src/blocks/simulador/apps/banc-solid/BancSolid.js:295
+msgid "Envia la transferència"
+msgstr "Enviar la transferencia"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:54 src/blocks/simulador/apps/parla/Conversa.js:32
+msgid "Dilluns"
+msgstr "Lunes"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:55
+msgid "Compra amb targeta · Botiga Verda"
+msgstr "Compra con tarjeta · Tienda Verde"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:60 src/blocks/simulador/webs/banc-solid/Oficial.js:15
+msgid "5 d'octubre"
+msgstr "5 de octubre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:61 src/blocks/simulador/webs/banc-solid/Oficial.js:16
+msgid "Rebut · Llum Clara Energia, SA"
+msgstr "Recibo · Llum Clara Energía, SA"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:66
+msgid "3 d'octubre"
+msgstr "3 de octubre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:67
+msgid "Compra amb targeta · Fleca Cal Pere"
+msgstr "Compra con tarjeta · Panadería Casa Pere"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:75 src/blocks/simulador/webs/banc-solid/Oficial.js:20
+msgid "2 d'octubre"
+msgstr "2 de octubre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:76
+msgid "Compra amb targeta · Farmàcia del Barri"
+msgstr "Compra con tarjeta · Farmacia del Barrio"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:84 src/blocks/simulador/webs/banc-solid/Oficial.js:25
+msgid "1 d'octubre"
+msgstr "1 de octubre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:85 src/blocks/simulador/webs/banc-solid/Oficial.js:26
+msgid "Transferència rebuda · Nòmina"
+msgstr "Transferencia recibida · Nómina"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:90
+msgid "30 de setembre"
+msgstr "30 de septiembre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:91
+msgid "Rebut · Aigües del Maresme"
+msgstr "Recibo · Aguas del Maresme"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:96
+msgid "28 de setembre"
+msgstr "28 de septiembre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:97
+msgid "Compra amb targeta · Llibreria Rodona"
+msgstr "Compra con tarjeta · Librería Redonda"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:105
+msgid "26 de setembre"
+msgstr "26 de septiembre"
+
+#: src/blocks/simulador/apps/banc-solid/compte.js:106
+msgid "Reintegrament · Caixer Plaça Major"
+msgstr "Reintegro · Cajero Plaza Mayor"
+
+#: src/blocks/simulador/apps/calculadora/calc.js:8
+msgid "No es pot dividir per zero"
+msgstr "No se puede dividir entre cero"
+
+#: src/blocks/simulador/apps/calculadora/calc.js:9
+msgid "Número massa gran"
+msgstr "Número demasiado grande"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:31
+msgid "Esborrar tot"
+msgstr "Borrar todo"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:32
+msgid "Esborrar"
+msgstr "Borrar"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:33
+msgid "Percentatge"
+msgstr "Porcentaje"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:34
+msgid "Dividir"
+msgstr "Dividir"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:35
+msgid "Multiplicar"
+msgstr "Multiplicar"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:36
+msgid "Restar"
+msgstr "Restar"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:37
+msgid "Sumar"
+msgstr "Sumar"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:38
+msgid "Canviar signe"
+msgstr "Cambiar signo"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:39
+msgid "Coma decimal"
+msgstr "Coma decimal"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:40
+msgid "Igual"
+msgstr "Igual"
+
+#: src/blocks/simulador/apps/calculadora/Calculadora.js:108 src/blocks/simulador/apps/registre.js:74
+msgid "Calculadora"
+msgstr "Calculadora"
+
+#: src/blocks/simulador/apps/camera/Camera.js:14 src/blocks/simulador/apps/registre.js:62
+msgid "Càmera"
+msgstr "Cámara"
+
+#: src/blocks/simulador/apps/camera/Camera.js:18
+msgid "No s'ha pogut accedir a la càmera en aquest simulador."
+msgstr "No se ha podido acceder a la cámara en este simulador."
+
+#: src/blocks/simulador/apps/camera/Camera.js:29
+msgid "Canvia de càmera"
+msgstr "Cambiar de cámara"
+
+#: src/blocks/simulador/apps/camera/Camera.js:37
+msgid "Fes una foto"
+msgstr "Hacer una foto"
+
+#: src/blocks/simulador/apps/camera/Camera.js:44
+msgid "Mode de captura"
+msgstr "Modo de captura"
+
+#: src/blocks/simulador/apps/camera/Camera.js:52
+msgid "Foto"
+msgstr "Foto"
+
+#: src/blocks/simulador/apps/camera/Camera.js:60
+msgid "Vídeo"
+msgstr "Vídeo"
+
+#: src/blocks/simulador/apps/galeria/agrupa.js:39 src/blocks/simulador/apps/parla/Conversa.js:30 src/blocks/simulador/webs/llum-clara/Falsa.js:82
+msgid "Avui"
+msgstr "Hoy"
+
+#: src/blocks/simulador/apps/galeria/agrupa.js:42 src/blocks/simulador/apps/parla/Conversa.js:31
+msgid "Ahir"
+msgstr "Ayer"
+
+#: src/blocks/simulador/apps/galeria/Galeria.js:91 src/blocks/simulador/apps/galeria/Galeria.js:97 src/blocks/simulador/apps/registre.js:56
+msgid "Galeria"
+msgstr "Galería"
+
+#: src/blocks/simulador/apps/galeria/Visor.js:85 src/blocks/simulador/apps/navegador/MenuNavegador.js:134 src/blocks/simulador/sistemes/pc/Finestra.js:287 src/blocks/simulador/sistemes/pc/Finestra.js:288 src/blocks/simulador/webs/comu/AvisFals.js:130
+msgid "Tanca"
+msgstr "Cerrar"
+
+#: src/blocks/simulador/apps/galeria/Visor.js:111
+msgid "Anterior"
+msgstr "Anterior"
+
+#: src/blocks/simulador/apps/galeria/Visor.js:121 src/blocks/simulador/nucli/motor.js:33
+msgid "Següent"
+msgstr "Siguiente"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:37 src/blocks/simulador/apps/missatges/LlistaFils.js:26 src/blocks/simulador/apps/missatges/LlistaFils.js:27
+msgid "Contactes"
+msgstr "Contactos"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:63 src/blocks/simulador/apps/missatges/LlistaFils.js:75
+msgid "Bloquejat"
+msgstr "Bloqueado"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:97 src/blocks/simulador/apps/missatges/Fil.js:234 src/blocks/simulador/apps/missatges/Fil.js:235
+msgid "Fitxa del contacte"
+msgstr "Ficha del contacto"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:115
+msgid "No és a la teva agenda"
+msgstr "No está en tu agenda"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:125
+msgid "Obre la conversa"
+msgstr "Abrir la conversación"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:131
+msgid "Número bloquejat"
+msgstr "Número bloqueado"
+
+#: src/blocks/simulador/apps/missatges/Contactes.js:140 src/blocks/simulador/apps/missatges/Missatges.js:58 src/blocks/simulador/apps/parla/AvisDesconegut.js:126
+msgid "Bloqueja el número"
+msgstr "Bloquear el número"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:123 src/blocks/simulador/apps/missatges/LlistaFils.js:67 src/blocks/simulador/apps/parla/Conversa.js:53 src/blocks/simulador/apps/parla/LlistaXats.js:69 src/blocks/simulador/apps/revenda/Revenda.js:254 src/blocks/simulador/apps/revenda/Revenda.js:287
+msgid "Tu:"
+msgstr "Tú:"
+
+#. translators: %s: nom del contacte
+#: src/blocks/simulador/apps/missatges/Fil.js:126 src/blocks/simulador/apps/parla/Conversa.js:56 src/blocks/simulador/apps/revenda/Revenda.js:257
+#, js-format
+msgid "%s:"
+msgstr "%s:"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:144 src/blocks/simulador/apps/missatges/Fil.js:145 src/blocks/simulador/apps/missatges/Missatges.js:353
+msgid "Opcions del missatge"
+msgstr "Opciones del mensaje"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:219 src/blocks/simulador/apps/missatges/Fil.js:220
+msgid "Torna a les converses"
+msgstr "Volver a las conversaciones"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:244 src/blocks/simulador/apps/missatges/LlistaFils.js:21 src/blocks/simulador/apps/registre.js:32
+msgid "Missatges"
+msgstr "Mensajes"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:259
+msgid "Has bloquejat aquest número. No en rebràs més missatges."
+msgstr "Has bloqueado este número. No recibirás más mensajes suyos."
+
+#: src/blocks/simulador/apps/missatges/Fil.js:271 src/blocks/simulador/apps/parla/useParla.js:253 src/blocks/simulador/apps/revenda/Revenda.js:322
+msgid "Escriu un missatge"
+msgstr "Escribe un mensaje"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:280
+msgid "Missatge de text"
+msgstr "Mensaje de texto"
+
+#: src/blocks/simulador/apps/missatges/Fil.js:285 src/blocks/simulador/apps/missatges/Fil.js:286 src/blocks/simulador/apps/parla/Conversa.js:338 src/blocks/simulador/apps/revenda/Revenda.js:331
+msgid "Envia"
+msgstr "Enviar"
+
+#: src/blocks/simulador/apps/missatges/LlistaFils.js:35
+msgid "No tens cap conversa."
+msgstr "No tienes ninguna conversación."
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:41
+msgid "Veure adreça"
+msgstr "Ver dirección"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:47
+msgid "Respon"
+msgstr "Responder"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:52
+msgid "Reenvia"
+msgstr "Reenviar"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:63
+msgid "Esborra"
+msgstr "Borrar"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:93 src/blocks/simulador/webs/comu/DescarregaFicticia.js:106 src/blocks/simulador/webs/posta/Denuncia.js:76
+msgid "Cancel·la"
+msgstr "Cancelar"
+
+#. translators: %s: nom o número del contacte
+#: src/blocks/simulador/apps/missatges/Missatges.js:290
+#, js-format
+msgid "Has bloquejat %s."
+msgstr "Has bloqueado a %s."
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:328
+msgid "S'ha esborrat el missatge."
+msgstr "Se ha borrado el mensaje."
+
+#. translators: %s: nom del xat de destí
+#: src/blocks/simulador/apps/missatges/Missatges.js:342
+#, js-format
+msgid "S'ha reenviat a %s."
+msgstr "Se ha reenviado a %s."
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:370
+msgid "Reenvia a…"
+msgstr "Reenviar a…"
+
+#. translators: %s: nom o número del contacte
+#: src/blocks/simulador/apps/missatges/Missatges.js:405
+#, js-format
+msgid "Vols bloquejar %s?"
+msgstr "¿Quieres bloquear a %s?"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:424
+msgid "No rebràs trucades ni missatges d'aquest número."
+msgstr "No recibirás llamadas ni mensajes de este número."
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:438
+msgid "I esborra la conversa"
+msgstr "Y borrar la conversación"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:446 src/blocks/simulador/apps/parla/AvisDesconegut.js:38 src/blocks/simulador/apps/revenda/Revenda.js:212
+msgid "Bloqueja"
+msgstr "Bloquear"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:457
+msgid "Enllaç"
+msgstr "Enlace"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:473 src/blocks/simulador/webs/comu/DescarregaFicticia.js:98
+msgid "Obre"
+msgstr "Abrir"
+
+#: src/blocks/simulador/apps/missatges/Missatges.js:507
+msgid "Missatge enviat."
+msgstr "Mensaje enviado."
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:12
+msgid "La connexió és segura"
+msgstr "La conexión es segura"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:13
+msgid "La informació que hi enviïs (com contrasenyes o números de targeta) viatja xifrada fins a aquest lloc."
+msgstr "La información que envíes (como contraseñas o números de tarjeta) viaja cifrada hasta este sitio."
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:20
+msgid "No segur"
+msgstr "No seguro"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:21
+msgid "La connexió amb aquest lloc no és segura"
+msgstr "La conexión con este sitio no es segura"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:22
+msgid "No hi escriguis informació sensible, com contrasenyes o números de targeta: algú la podria veure pel camí."
+msgstr "No escribas información sensible, como contraseñas o números de tarjeta: alguien podría verla por el camino."
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:29
+msgid "No s'ha pogut connectar amb aquest lloc"
+msgstr "No se ha podido conectar con este sitio"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:30
+msgid "El servidor d'aquesta adreça no respon."
+msgstr "El servidor de esta dirección no responde."
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:108 src/blocks/simulador/apps/navegador/BarraAdreces.js:110
+msgid "Mostra la informació del lloc"
+msgstr "Mostrar la información del sitio"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:208 src/blocks/simulador/apps/navegador/NovaPestanya.js:51 src/blocks/simulador/apps/navegador/NovaPestanya.js:55
+msgid "Cerca o escriu una adreça web"
+msgstr "Busca o escribe una dirección web"
+
+#: src/blocks/simulador/apps/navegador/BarraAdreces.js:212
+msgid "Barra d'adreces"
+msgstr "Barra de direcciones"
+
+#: src/blocks/simulador/apps/navegador/historial.js:27 src/blocks/simulador/apps/navegador/NovaPestanya.js:10 src/blocks/simulador/sistemes/mobil/notificacio.js:34 src/blocks/simulador/sistemes/pc/Notificacions.js:76
+msgid "Posta"
+msgstr "Posta"
+
+#: src/blocks/simulador/apps/navegador/historial.js:32 src/blocks/simulador/apps/navegador/NovaPestanya.js:13 src/blocks/simulador/webs/diari/Marca.js:33
+msgid "El Diari del Barri"
+msgstr "El Diari del Barri"
+
+#: src/blocks/simulador/apps/navegador/infoPagina.js:32 src/blocks/simulador/apps/navegador/Pestanyes.js:139 src/blocks/simulador/apps/navegador/Pestanyes.js:140 src/blocks/simulador/apps/navegador/SelectorPestanyes.js:67
+msgid "Pestanya nova"
+msgstr "Pestaña nueva"
+
+#: src/blocks/simulador/apps/navegador/MenuNavegador.js:95 src/blocks/simulador/apps/navegador/MenuNavegador.js:96 src/blocks/simulador/apps/navegador/MenuNavegador.js:111
+msgid "Menú del navegador"
+msgstr "Menú del navegador"
+
+#: src/blocks/simulador/apps/navegador/MenuNavegador.js:110 src/blocks/simulador/apps/navegador/MenuNavegador.js:144
+msgid "Quant a Brúixola"
+msgstr "Acerca de Brúixola"
+
+#: src/blocks/simulador/apps/navegador/MenuNavegador.js:119
+msgid "Navegador Brúixola"
+msgstr "Navegador Brúixola"
+
+#: src/blocks/simulador/apps/navegador/MenuNavegador.js:127
+msgid "El navegador està al dia."
+msgstr "El navegador está actualizado."
+
+#. translators: %s: títol de la pàgina
+#: src/blocks/simulador/apps/navegador/Navegador.js:43
+#, js-format
+msgid "%s — Navegador"
+msgstr "%s — Navegador"
+
+#: src/blocks/simulador/apps/navegador/Navegador.js:74 src/blocks/simulador/apps/navegador/NavegadorMobil.js:96
+msgid "Endavant"
+msgstr "Adelante"
+
+#: src/blocks/simulador/apps/navegador/Navegador.js:80 src/blocks/simulador/apps/navegador/NavegadorMobil.js:112 src/blocks/simulador/apps/navegador/PaginaError.js:79
+msgid "Torna a carregar"
+msgstr "Volver a cargar"
+
+#. translators: %d: nombre de pestanyes obertes
+#: src/blocks/simulador/apps/navegador/NavegadorMobil.js:125
+#, js-format
+msgid "Pestanyes: %d oberta"
+msgid_plural "Pestanyes: %d obertes"
+msgstr[0] "Pestañas: %d abierta"
+msgstr[1] "Pestañas: %d abiertas"
+
+#: src/blocks/simulador/apps/navegador/NavegadorMobil.js:133 src/blocks/simulador/apps/navegador/Pestanyes.js:79 src/blocks/simulador/apps/navegador/SelectorPestanyes.js:58
+msgid "Pestanyes"
+msgstr "Pestañas"
+
+#: src/blocks/simulador/apps/navegador/NovaPestanya.js:11 src/blocks/simulador/webs/llum-clara/Marca.js:78
+msgid "Llum Clara"
+msgstr "Llum Clara"
+
+#: src/blocks/simulador/apps/navegador/NovaPestanya.js:65
+msgid "Dreceres"
+msgstr "Accesos directos"
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:23
+msgid "No s'ha trobat cap resultat"
+msgstr "No se ha encontrado ningún resultado"
+
+#. translators: <cerca />: text cercat
+#: src/blocks/simulador/apps/navegador/PaginaError.js:28
+msgid "La cerca <cerca /> no ha donat cap resultat."
+msgstr "La búsqueda <cerca /> no ha dado ningún resultado."
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:36
+msgid "Comprova com ho has escrit o escriu l'adreça completa de la web (per exemple, llumclara.cat)."
+msgstr "Comprueba cómo lo has escrito o escribe la dirección completa de la web (por ejemplo, llumclara.es)."
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:50
+msgid "No es pot accedir a aquest lloc"
+msgstr "No se puede acceder a este sitio"
+
+#. translators: <domini />: domini que no respon
+#: src/blocks/simulador/apps/navegador/PaginaError.js:55
+msgid "No s'ha trobat l'adreça del servidor de <domini />."
+msgstr "No se ha encontrado la dirección del servidor de <domini />."
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:62
+msgid "Prova de:"
+msgstr "Prueba a:"
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:65
+msgid "Comprovar que l'adreça estigui ben escrita"
+msgstr "Comprobar que la dirección esté bien escrita"
+
+#: src/blocks/simulador/apps/navegador/PaginaError.js:70
+msgid "Comprovar la connexió"
+msgstr "Comprobar la conexión"
+
+#. translators: %s: títol de la pestanya
+#: src/blocks/simulador/apps/navegador/Pestanyes.js:118 src/blocks/simulador/apps/navegador/SelectorPestanyes.js:114
+#, js-format
+msgid "Tanca la pestanya: %s"
+msgstr "Cerrar la pestaña: %s"
+
+#: src/blocks/simulador/apps/navegador/Pestanyes.js:124
+msgid "Tanca la pestanya"
+msgstr "Cerrar la pestaña"
+
+#: src/blocks/simulador/apps/navegador/SelectorPestanyes.js:74 src/blocks/simulador/simulador/Mapa.js:237
+msgid "Fet"
+msgstr "Hecho"
+
+#: src/blocks/simulador/apps/parla/AvisDesconegut.js:21
+msgid "Número desconegut"
+msgstr "Número desconocido"
+
+#: src/blocks/simulador/apps/parla/AvisDesconegut.js:25
+msgid "Aquest número no és als teus contactes"
+msgstr "Este número no está en tus contactos"
+
+#: src/blocks/simulador/apps/parla/AvisDesconegut.js:45
+msgid "Afegeix als contactes"
+msgstr "Añadir a contactos"
+
+#: src/blocks/simulador/apps/parla/AvisDesconegut.js:107
+msgid "Més opcions"
+msgstr "Más opciones"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:33
+msgid "Dimarts"
+msgstr "Martes"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:34
+msgid "Dimecres"
+msgstr "Miércoles"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:35
+msgid "Dijous"
+msgstr "Jueves"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:36
+msgid "Divendres"
+msgstr "Viernes"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:37
+msgid "Dissabte"
+msgstr "Sábado"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:38
+msgid "Diumenge"
+msgstr "Domingo"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:70
+msgid "Llegit"
+msgstr "Leído"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:216 src/blocks/simulador/apps/revenda/Revenda.js:193
+msgid "Torna als xats"
+msgstr "Volver a los chats"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:262 src/blocks/simulador/apps/parla/useParla.js:171 src/blocks/simulador/apps/parla/useParla.js:177
+msgid "Has bloquejat aquest número"
+msgstr "Has bloqueado este número"
+
+#. translators: %s: nom del contacte
+#: src/blocks/simulador/apps/parla/Conversa.js:275 src/blocks/simulador/apps/revenda/Revenda.js:233
+#, js-format
+msgid "Missatges amb %s"
+msgstr "Mensajes con %s"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:310
+msgid "Missatges nous"
+msgstr "Mensajes nuevos"
+
+#: src/blocks/simulador/apps/parla/Conversa.js:331 src/blocks/simulador/apps/revenda/Revenda.js:326
+msgid "Missatge"
+msgstr "Mensaje"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:56 src/blocks/simulador/apps/parla/useParla.js:265
+msgid "escrivint…"
+msgstr "escribiendo…"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:104
+msgid "Fixat"
+msgstr "Fijado"
+
+#. translators: %d: nombre de missatges no llegits
+#: src/blocks/simulador/apps/parla/LlistaXats.js:114
+#, js-format
+msgid "%d missatge no llegit"
+msgid_plural "%d missatges no llegits"
+msgstr[0] "%d mensaje sin leer"
+msgstr[1] "%d mensajes sin leer"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:146 src/blocks/simulador/apps/registre.js:26 src/blocks/simulador/apps/registre.js:38 src/blocks/simulador/sistemes/mobil/Bloqueig.js:121 src/blocks/simulador/sistemes/mobil/notificacio.js:26 src/blocks/simulador/sistemes/pc/Notificacions.js:64
+msgid "Parla"
+msgstr "Parla"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:160
+msgid "Cerca un xat"
+msgstr "Buscar un chat"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:161
+msgid "Cerca un xat per nom"
+msgstr "Buscar un chat por nombre"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:169 src/blocks/simulador/apps/revenda/Revenda.js:506
+msgid "Xats"
+msgstr "Chats"
+
+#: src/blocks/simulador/apps/parla/LlistaXats.js:182
+msgid "Cap xat amb aquest nom."
+msgstr "Ningún chat con ese nombre."
+
+#: src/blocks/simulador/apps/parla/Respostes.js:44
+msgid "Respostes ràpides"
+msgstr "Respuestas rápidas"
+
+#: src/blocks/simulador/apps/parla/useParla.js:266
+msgid "en línia"
+msgstr "en línea"
+
+#: src/blocks/simulador/apps/parla/useParla.js:274
+msgid "Tria una resposta"
+msgstr "Elige una respuesta"
+
+#: src/blocks/simulador/apps/registre.js:20 src/blocks/simulador/apps/registre.js:44
+msgid "Navegador"
+msgstr "Navegador"
+
+#: src/blocks/simulador/apps/registre.js:50 src/blocks/simulador/webs/banc-solid/Marca.js:57
+msgid "Banc Sòlid"
+msgstr "Banc Sòlid"
+
+#: src/blocks/simulador/apps/registre.js:68 src/blocks/simulador/apps/ullada/Ullada.js:142 src/blocks/simulador/apps/ullada/Ullada.js:148
+msgid "Ullada"
+msgstr "Ullada"
+
+#: src/blocks/simulador/apps/registre.js:80 src/blocks/simulador/apps/rellotge/Rellotge.js:214 src/blocks/simulador/apps/rellotge/Rellotge.js:218
+msgid "Rellotge"
+msgstr "Reloj"
+
+#: src/blocks/simulador/apps/registre.js:92 src/blocks/simulador/apps/revenda/Revenda.js:554
+msgid "Revenda"
+msgstr "Revenda"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:21
+msgid "Hora"
+msgstr "Hora"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:22
+msgid "Cronòmetre"
+msgstr "Cronómetro"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:23
+msgid "Temporitzador"
+msgstr "Temporizador"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:27
+msgid "Barcelona"
+msgstr "Barcelona"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:28
+msgid "Londres"
+msgstr "Londres"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:29
+msgid "Nova York"
+msgstr "Nueva York"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:67 src/blocks/simulador/apps/rellotge/Rellotge.js:85
+msgid "Volta"
+msgstr "Vuelta"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:68 src/blocks/simulador/apps/rellotge/Rellotge.js:134
+msgid "Reinicia"
+msgstr "Reiniciar"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:76
+msgid "Para"
+msgstr "Parar"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:77 src/blocks/simulador/apps/rellotge/Rellotge.js:144
+msgid "Inicia"
+msgstr "Iniciar"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:105
+msgid "Temps!"
+msgstr "¡Tiempo!"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:110
+msgid "Durada"
+msgstr "Duración"
+
+#. translators: %d: minuts
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:122
+#, js-format
+msgid "%d min"
+msgstr "%d min"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:143 src/blocks/simulador/simulador/Pausa.js:91
+msgid "Pausa"
+msgstr "Pausa"
+
+#: src/blocks/simulador/apps/rellotge/Rellotge.js:224
+msgid "Seccions del rellotge"
+msgstr "Secciones del reloj"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:50
+msgid "Encara no has publicat cap anunci"
+msgstr "Todavía no has publicado ningún anuncio"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:94
+msgid "Encara no tens cap xat"
+msgstr "Todavía no tienes ningún chat"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:218
+msgid "Aquest usuari no és als teus contactes de Revenda. Vigila amb les dades que comparteixes."
+msgstr "Este usuario no está en tus contactos de Revenda. Ten cuidado con los datos que compartes."
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:290 src/blocks/simulador/apps/revenda/Revenda.js:482
+msgid "Missatge enviat"
+msgstr "Mensaje enviado"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:307
+msgid "Has bloquejat aquest usuari. Ja no et pot escriure."
+msgstr "Has bloqueado a este usuario. Ya no puede escribirte."
+
+#. translators: %s: nom del contacte
+#: src/blocks/simulador/apps/revenda/Revenda.js:393
+#, js-format
+msgid "Missatge nou de %s a Revenda"
+msgstr "Mensaje nuevo de %s en Revenda"
+
+#. translators: %s: nom del contacte
+#: src/blocks/simulador/apps/revenda/Revenda.js:473
+#, js-format
+msgid "Has bloquejat %s"
+msgstr "Has bloqueado a %s"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:505
+msgid "Anuncis"
+msgstr "Anuncios"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:508
+msgid "Has bloquejat aquest usuari"
+msgstr "Has bloqueado a este usuario"
+
+#: src/blocks/simulador/apps/revenda/Revenda.js:560
+msgid "Seccions de Revenda"
+msgstr "Secciones de Revenda"
+
+#: src/blocks/simulador/apps/ullada/Publicacio.js:29
+msgid "Usuari"
+msgstr "Usuario"
+
+#. translators: %s: nom de l'autor
+#: src/blocks/simulador/apps/ullada/Publicacio.js:56
+#, js-format
+msgid "Publicació de %s"
+msgstr "Publicación de %s"
+
+#: src/blocks/simulador/apps/ullada/Publicacio.js:88
+msgid "M'agrada"
+msgstr "Me gusta"
+
+#. translators: %s: nom de l'autor
+#: src/blocks/simulador/apps/ullada/Publicacio.js:99
+#, js-format
+msgid "Denuncia la publicació de %s"
+msgstr "Denunciar la publicación de %s"
+
+#: src/blocks/simulador/apps/ullada/Publicacio.js:105 src/blocks/simulador/webs/posta/Denuncia.js:83
+msgid "Denuncia"
+msgstr "Denunciar"
+
+#: src/blocks/simulador/apps/ullada/Publicacio.js:110
+msgid "Denunciada. Gràcies."
+msgstr "Denunciada. Gracias."
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:36 src/blocks/simulador/sistemes/mobil/BarraNavegacio.js:34 src/blocks/simulador/sistemes/pc/BarraTasques.js:101 src/blocks/simulador/sistemes/pc/BarraTasques.js:108 src/blocks/simulador/sistemes/pc/MenuInici.js:42
+msgid "Inici"
+msgstr "Inicio"
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:37 src/blocks/simulador/sistemes/pc/BarraTasques.js:117 src/blocks/simulador/webs/enviat/Oficial.js:46
+msgid "Cerca"
+msgstr "Buscar"
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:38
+msgid "Perfil"
+msgstr "Perfil"
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:105
+msgid "Encara no has publicat res"
+msgstr "Todavía no has publicado nada"
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:114
+msgid "Històries"
+msgstr "Historias"
+
+#: src/blocks/simulador/apps/ullada/Ullada.js:172 src/blocks/simulador/webs/diari/Diari.js:49
+msgid "Seccions"
+msgstr "Secciones"
