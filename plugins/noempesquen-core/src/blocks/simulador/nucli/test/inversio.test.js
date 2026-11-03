@@ -5,7 +5,10 @@ import { FASE, estatInicial, reductor, puntuacio } from '../motor.js';
 const carrega = ( nom ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/ca/${ nom }.json`, import.meta.url ),
+			new URL(
+				`../../../../../missions/ca/${ nom }.json`,
+				import.meta.url
+			),
 			'utf8'
 		)
 	);

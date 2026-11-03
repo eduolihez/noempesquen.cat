@@ -85,7 +85,10 @@ describe( 'combinaMissions', () => {
 const carrega = ( nom ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/ca/${ nom }.json`, import.meta.url ),
+			new URL(
+				`../../../../../missions/ca/${ nom }.json`,
+				import.meta.url
+			),
 			'utf8'
 		)
 	);

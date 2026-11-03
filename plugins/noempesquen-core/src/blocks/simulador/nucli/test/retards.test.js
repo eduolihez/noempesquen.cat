@@ -8,7 +8,10 @@ import { MS_TRAS_INTRO } from '../temps.js';
 const carrega = ( fitxer ) =>
 	JSON.parse(
 		readFileSync(
-			new URL( `../../../../../missions/ca/${ fitxer }`, import.meta.url ),
+			new URL(
+				`../../../../../missions/ca/${ fitxer }`,
+				import.meta.url
+			),
 			'utf8'
 		)
 	);

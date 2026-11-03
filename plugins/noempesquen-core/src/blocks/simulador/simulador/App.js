@@ -6,6 +6,7 @@ import {
 	useRef,
 } from '@wordpress/element';
 import { combinaMissions } from '../nucli/missions';
+import { triaConjunt, urlMissions } from '../nucli/conjunt-missions';
 import { seguentDe } from '../nucli/ruta';
 import { __ } from '@wordpress/i18n';
 import { desaProgres, llegeixProgres } from '../nucli/progres';
@@ -21,34 +22,7 @@ import { EstatCompte } from './EstatCompte';
 import { progresAPujar, sincroInicial, sincronitza } from './sincro-compte';
 import { Selector } from './Selector';
 import { Simulador } from './Simulador';
-import llissa01 from '../../../../missions/ca/llissa-01-factura.json';
-import llissa02 from '../../../../missions/ca/llissa-02-banc.json';
-import llissa03 from '../../../../missions/ca/llissa-03-inversio.json';
-import llissa04 from '../../../../missions/ca/llissa-04-suport.json';
-import llissa05 from '../../../../missions/ca/llissa-05-actualitzacio.json';
-import mon from '../../../../missions/ca/mon.json';
-import remei01 from '../../../../missions/ca/remei-01-paquet.json';
-import remei02 from '../../../../missions/ca/remei-02-canviat.json';
-import remei03 from '../../../../missions/ca/remei-03-sorteig.json';
-import remei04 from '../../../../missions/ca/remei-04-codi.json';
-import remei05 from '../../../../missions/ca/remei-05-comprador.json';
-import tutorialMobil from '../../../../missions/ca/tutorial-mobil.json';
-import tutorialPc from '../../../../missions/ca/tutorial-pc.json';
-
-const INCLOSES = [
-	tutorialPc,
-	tutorialMobil,
-	llissa01,
-	llissa02,
-	llissa03,
-	llissa04,
-	llissa05,
-	remei01,
-	remei02,
-	remei03,
-	remei04,
-	remei05,
-];
+import { CONJUNTS } from './missions-incloses';
 function emmagatzematge() {
 	try {
 		return window.localStorage;
@@ -194,12 +168,14 @@ function previsualitzacio( api, previsualitza, nonce ) {
  *
  * @param {Object} config               Configuració del bloc.
  * @param {string} config.api           Arrel de l'API.
+ * @param {string} config.lang          Idioma (`es`|`ca`): tria les incloses i les remotes.
  * @param {number} config.previsualitza Id de l'entrada en prova (opcional).
  * @param {string} config.nonce         Nonce REST (opcional).
- * @return {{missions: Array, fallaPrevi: boolean}} Missions i estat de la prova.
+ * @return {{missions: Array, fallaPrevi: boolean, mon: Object}} Missions, estat de la prova i món.
  */
-function useMissions( { api, previsualitza, nonce } ) {
-	const [ missions, setMissions ] = useState( INCLOSES );
+function useMissions( { api, previsualitza, nonce, lang } ) {
+	const { missions: incloses, mon } = triaConjunt( CONJUNTS, lang );
+	const [ missions, setMissions ] = useState( incloses );
 	const [ fallaPrevi, setFallaPrevi ] = useState( false );
 	useEffect( () => {
 		if ( ! api ) {
@@ -207,13 +183,13 @@ function useMissions( { api, previsualitza, nonce } ) {
 		}
 		const ambPrevi = !! ( previsualitza && nonce );
 		Promise.allSettled( [
-			llegeix( `${ api }missions` ),
+			llegeix( urlMissions( api, lang ) ),
 			ambPrevi ? previsualitzacio( api, previsualitza, nonce ) : null,
 		] ).then( ( [ remotes, previ ] ) => {
 			const guions = Array.isArray( remotes.value )
 				? remotes.value.map( ( r ) => r?.guio )
 				: [];
-			const combinades = combinaMissions( INCLOSES, guions, mon );
+			const combinades = combinaMissions( incloses, guions, mon );
 			const prova = ambPrevi
 				? preparaPrevisualitzacio( previ.value, mon )
 				: null;
@@ -221,12 +197,12 @@ function useMissions( { api, previsualitza, nonce } ) {
 			setFallaPrevi( ambPrevi && ! prova );
 			setMissions( prova ? [ ...combinades, prova ] : combinades );
 		} );
-	}, [ api, previsualitza, nonce ] );
-	return { missions, fallaPrevi };
+	}, [ api, previsualitza, nonce, lang, incloses, mon ] );
+	return { missions, fallaPrevi, mon };
 }
 
 export function App( { config } ) {
-	const { missions, fallaPrevi } = useMissions( config );
+	const { missions, fallaPrevi, mon } = useMissions( config );
 	const esMobil = useEsMobil();
 	let preferit = esMobil ? 'mobil' : 'pc';
 	if ( config.dispositiu === 'pc' || config.dispositiu === 'mobil' ) {
