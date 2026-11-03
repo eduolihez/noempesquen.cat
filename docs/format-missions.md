@@ -246,14 +246,16 @@ El bloc tria el conjunt pel `config.lang` del simulador (`nucli/conjunt-missions
 - falta un fitxer en una de les dues carpetes;
 - canvia el tipus d'un valor, la llargada d'una llista o les claus d'un objecte;
 - canvia qualsevol valor que no sigui text lliure: `id`, ids de nodes i disparadors, `tipus`, `retard`, `correcta`, efectes...
+- una `url` d'un disparador o de `navegador.inici` no apunta a cap web de la missió ni de `mon.json` del mateix idioma, o apunta a una web d'una altra posició que en l'altre idioma (les `app://` no compten).
 
 Els textos lliures (`CLAUS_LLIURES`: `titol`, `text`, `pistes`, `explicacio`, `nom`, `assumpte`... i els dominis `url`, `inici`, `adreca`, `origen`, `correu`) poden ser diferents. Dins de `webs` només es compara que hi hagi el mateix nombre d'entrades i la mateixa estructura, en ordre, perquè les claus són dominis que es poden traduir.
 
 ### Missions del panell (`nep_missio`)
 
-- Meta `nep_idioma`: `es` o `ca`. Si falta, la missió és `ca` (les que ja existien). La rutina versionada `nep_migra_missions()` (opció `nep_versio_missions`) afegeix `ca` a les que no en tenen. Es pot executar més d'una vegada sense efectes.
+- Meta `nep_idioma`: `es` o `ca`. Tota missió nova (REST, Gutenberg, caixa, CLI) neix `es` si no se n'indica cap. Si falta la meta, la missió és `ca` (només les anteriors a la migració). La rutina versionada `nep_migra_missions()` (opció `nep_versio_missions`) afegeix `ca` a les que no en tenen. Es pot executar més d'una vegada sense efectes.
 - L'`id` ha de ser únic per parell `(id, idioma)`: hi pot haver una missió `ca` i una `es` amb el mateix `id`, però no dues del mateix idioma.
 - `GET /noempesquen/v1/missions?lang=es|ca` retorna només les d'aquell idioma (les que no tenen meta compten com a `ca`). Un `lang` desconegut o absent fa servir l'idioma de la petició (per defecte `es`).
 - L'editor té un selector d'idioma i avisa (sense bloquejar) quan la missió no té parella en l'altre idioma. `nep_url_simulador()` hi afegeix `?lang=`.
 - `wp noempesquen importa-missions [--idioma=<es|ca>]` importa des de `missions/<idioma>/`. Sense `--idioma`, importa tots dos. L'slug de les `es` acaba en `-es`.
-- Les estadístiques només compten les missions `ca` (el hash de versió no canvia).
+- Estadístiques: compten les missions de tots dos idiomes per `id`. Si hi ha versió `ca`, el hash de versió és el de la `ca` (no canvia); una missió només `es` també compta. La `decisio` es valida contra la unió de les opcions de les dues versions.
+- Exportar i importar a l'editor: l'idioma viatja al nom del fitxer (`<id>.es.json`, `<id>.ca.json`), no dins del guió. En importar, el selector d'idioma es posa al del nom si n'hi ha.

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	MIDA_MAXIMA,
+	idiomaDelFitxer,
 	llegeixImportat,
 	nomFitxer,
 	textExportat,
@@ -50,5 +51,28 @@ describe( 'importar el guió', () => {
 	it( 'compta bytes UTF-8, no caràcters', () => {
 		const just = `{"a":"${ 'à'.repeat( MIDA_MAXIMA / 2 ) }"}`;
 		expect( llegeixImportat( just ).ok ).toBe( false );
+	} );
+} );
+
+describe( 'idioma a l’exportació i la importació', () => {
+	it( 'l’idioma viatja al nom del fitxer', () => {
+		expect( nomFitxer( '{"id":"llissa-09-prova"}', 'es' ) ).toBe(
+			'llissa-09-prova.es.json'
+		);
+		expect( nomFitxer( '{"id":"llissa-09-prova"}', 'ca' ) ).toBe(
+			'llissa-09-prova.ca.json'
+		);
+		expect( nomFitxer( '{"id":"llissa-09-prova"}', 'en' ) ).toBe(
+			'llissa-09-prova.json'
+		);
+		expect( nomFitxer( '{ trencat', 'es' ) ).toBe( 'guio.es.json' );
+	} );
+
+	it( 'llegeix l’idioma del nom importat', () => {
+		expect( idiomaDelFitxer( 'llissa-09-prova.es.json' ) ).toBe( 'es' );
+		expect( idiomaDelFitxer( 'llissa-09-prova.CA.json' ) ).toBe( 'ca' );
+		expect( idiomaDelFitxer( 'llissa-09-prova.json' ) ).toBeNull();
+		expect( idiomaDelFitxer( 'x.en.json' ) ).toBeNull();
+		expect( idiomaDelFitxer( null ) ).toBeNull();
 	} );
 } );

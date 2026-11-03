@@ -12,6 +12,7 @@ import { guioDesDePlantilla } from './plantilla';
 import {
 	MIDA_MAXIMA,
 	MOTIU_GRAN,
+	idiomaDelFitxer,
 	llegeixImportat,
 	nomFitxer,
 	textExportat,
@@ -275,7 +276,10 @@ function iniciaIO( { editor, textarea, valida } ) {
 		const url = URL.createObjectURL( blob );
 		const enllac = document.createElement( 'a' );
 		enllac.href = url;
-		enllac.download = nomFitxer( text() );
+		enllac.download = nomFitxer(
+			text(),
+			document.getElementById( 'nep-idioma' )?.value
+		);
 		document.body.append( enllac );
 		enllac.click();
 		enllac.remove();
@@ -311,6 +315,11 @@ function iniciaIO( { editor, textarea, valida } ) {
 			editor.save();
 		} else {
 			textarea.value = resultat.text;
+		}
+		const idioma = idiomaDelFitxer( triat.name );
+		const selector = document.getElementById( 'nep-idioma' );
+		if ( idioma && selector ) {
+			selector.value = idioma;
 		}
 		valida();
 		avisa(

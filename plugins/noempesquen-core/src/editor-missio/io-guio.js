@@ -30,19 +30,40 @@ export function textExportat( text ) {
 }
 
 /**
- * Nom del fitxer exportat: `<id>.json` si l'id del guió és vàlid.
+ * Idiomes d'una missió (meta `nep_idioma`).
+ */
+export const IDIOMES_MISSIO = [ 'es', 'ca' ];
+
+/**
+ * Nom del fitxer exportat: `<id>.json` si l'id del guió és vàlid. L'idioma
+ * viatja al nom (`<id>.<idioma>.json`) i no al guió, que ha de ser igual en
+ * tots dos idiomes llevat dels textos.
  *
- * @param {string} text Contingut de l'editor.
+ * @param {string}  text   Contingut de l'editor.
+ * @param {?string} idioma Idioma de la missió (`es` | `ca`).
  * @return {string} Nom del fitxer.
  */
-export function nomFitxer( text ) {
+export function nomFitxer( text, idioma = null ) {
+	const sufix = IDIOMES_MISSIO.includes( idioma ) ? `.${ idioma }` : '';
 	try {
 		const id = JSON.parse( text )?.id;
 		if ( typeof id === 'string' && ID_MISSIO.test( id ) ) {
-			return `${ id }.json`;
+			return `${ id }${ sufix }.json`;
 		}
 	} catch {}
-	return 'guio.json';
+	return `guio${ sufix }.json`;
+}
+
+/**
+ * Idioma d'un fitxer importat segons el nom (`<id>.es.json`), o null.
+ *
+ * @param {string} nom Nom del fitxer.
+ * @return {?string} `es`, `ca` o null.
+ */
+export function idiomaDelFitxer( nom ) {
+	const m = /\.([a-z]{2})\.json$/i.exec( String( nom ?? '' ) );
+	const idioma = m?.[ 1 ].toLowerCase();
+	return IDIOMES_MISSIO.includes( idioma ) ? idioma : null;
 }
 
 /**
