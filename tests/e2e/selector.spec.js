@@ -95,9 +95,9 @@ test.describe( 'Selector de missions: port', () => {
 		await expect(
 			selector( page ).getByText( 'Millor en horitzontal' )
 		).toHaveCount( estret( page ) ? 1 : 0 );
-		// Un sol h2: el del selector.
+		// Un sol h1: el del selector (el simulador no tiene el h1 del tema).
 		await expect(
-			selector( page ).getByRole( 'heading', { level: 2 } )
+			selector( page ).getByRole( 'heading', { level: 1 } )
 		).toHaveText( 'Tria una missió' );
 	} );
 

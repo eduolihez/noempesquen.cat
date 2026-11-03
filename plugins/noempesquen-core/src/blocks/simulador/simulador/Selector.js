@@ -410,9 +410,9 @@ export function Selector( {
 					</span>
 				</a>
 				<div className="nep-selector__rotul">
-					<h2 id="nep-selector-titol" className="nep-selector__titol">
+					<h1 id="nep-selector-titol" className="nep-selector__titol">
 						{ __( 'Tria una missió', 'noempesquen' ) }
-					</h2>
+					</h1>
 					{ total.fetes > 0 && (
 						<p className="nep-selector__resum">
 							{ sprintf(

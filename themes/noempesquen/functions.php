@@ -165,6 +165,14 @@ function nep_tema_clau_actual(): string {
 	return 'inici';
 }
 
+/*
+ * Un sol enllaç «Salta al contingut»: el del tema (patterns/capcalera.php, #contingut).
+ * Es treu el del nucli per a temes de blocs (wp_footer fins a 6.3, wp_enqueue_scripts
+ * des de 6.4), que quedava duplicat al Tab.
+ */
+remove_action( 'wp_footer', 'the_block_template_skip_link' );
+remove_action( 'wp_enqueue_scripts', 'wp_enqueue_block_template_skip_link' );
+
 // Elimina soroll del <head>.
 remove_action( 'wp_head', 'wp_generator' );
 remove_action( 'wp_head', 'rsd_link' );

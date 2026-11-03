@@ -211,6 +211,7 @@ function FormRegistre( { client, onEntra } ) {
 	return (
 		<form className="nep-compte__form" noValidate onSubmit={ envia }>
 			<h3>{ T.crea }</h3>
+				<p className="nep-compte__nota">{ T.obligatoris }</p>
 			<Camp
 				id="nep-registre-email"
 				etiqueta={ T.correu }
@@ -328,6 +329,7 @@ function FormEntra( { client, onEntra, onOblidat, refOblidat } ) {
 	return (
 		<form className="nep-compte__form" noValidate onSubmit={ envia }>
 			<h3>{ T.entra }</h3>
+				<p className="nep-compte__nota">{ T.obligatoris }</p>
 			<Camp
 				id="nep-entra-email"
 				etiqueta={ T.correu }

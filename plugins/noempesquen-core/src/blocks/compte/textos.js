@@ -5,6 +5,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  * `wp_set_script_translations` (JSON generat per `npm run i18n:json`).
  */
 export const T = {
+	obligatoris: __( 'Tots els camps són obligatoris.', 'noempesquen' ),
 	carregant: __( 'Carregant el teu compte…', 'noempesquen' ),
 	pestanyes: __( 'Accés al compte', 'noempesquen' ),
 	crea: __( 'Crea un compte', 'noempesquen' ),
