@@ -11,6 +11,7 @@ import { esborraProgres } from '../simulador/nucli/progres';
 import { T } from './textos';
 import { Acces } from './Acces';
 import { Panell } from './Panell';
+import { FormRestableix } from './Recupera';
 
 /**
  * Pantalla de compte: accés (alta / entrada) o panell del compte.
@@ -35,11 +36,34 @@ export function Compte( { config } ) {
 	const titolPanell = useRef( null );
 	const titolAcces = useRef( null );
 	const focusPendent = useRef( null );
+	const accio = config.accio || {};
+	const [ verificat, setVerificat ] = useState( false );
+	// El token de recuperació només viu a la memòria d'aquest component.
+	const [ tokenRestableix, setTokenRestableix ] = useState(
+		accio.tipus === 'restableix' ? accio.token : null
+	);
+	const [ obreRecupera, setObreRecupera ] = useState( false );
+	const [ pestanyaEntra, setPestanyaEntra ] = useState( false );
+	const verificaFeta = useRef( false );
 
 	useEffect( () => {
 		let viu = true;
-		client.estat().then( ( e ) => {
+		client.estat().then( async ( e ) => {
+			let ok = e.verificat === true;
+			if (
+				accio.tipus === 'verifica' &&
+				accio.token &&
+				! verificaFeta.current
+			) {
+				verificaFeta.current = true;
+				const r = await client.verifica( accio.token );
+				ok = ok || r.ok;
+				if ( viu ) {
+					setAvis( r.ok ? T.verificat : T.errToken );
+				}
+			}
 			if ( viu ) {
+				setVerificat( ok );
 				if ( e.connectat ) {
 					posaMarcaSessio();
 				} else {
@@ -61,11 +85,12 @@ export function Compte( { config } ) {
 			focusPendent.current.current?.focus();
 			focusPendent.current = null;
 		}
-	}, [ connectat ] );
+	}, [ connectat, tokenRestableix ] );
 
 	const haEntrat = useCallback( ( dades, missatge ) => {
 		posaMarcaSessio();
 		focusPendent.current = titolPanell;
+		setVerificat( dades.verificat === true );
 		setProgres( dades.progres || {} );
 		setConnectat( true );
 		setAvis( missatge );
@@ -80,8 +105,19 @@ export function Compte( { config } ) {
 		focusPendent.current = titolAcces;
 		setProgres( {} );
 		setConnectat( false );
+		setVerificat( false );
 		setAvis( missatge );
 	}, [] );
+
+	// Contrasenya canviada: el servidor ha tancat totes les sessions.
+	const haRestablert = useCallback(
+		( missatge ) => {
+			haSortit( missatge );
+			setPestanyaEntra( true );
+			setTokenRestableix( null );
+		},
+		[ haSortit ]
+	);
 
 	return (
 		<div className="nep-compte__app">
@@ -89,17 +125,32 @@ export function Compte( { config } ) {
 				{ avis }
 			</div>
 			{ carregant && <p>{ T.carregant }</p> }
-			{ ! carregant && ! connectat && (
+			{ ! carregant && tokenRestableix && (
+				<FormRestableix
+					client={ client }
+					token={ tokenRestableix }
+					onFet={ haRestablert }
+					onDemana={ () => {
+						setObreRecupera( true );
+						setTokenRestableix( null );
+					} }
+					refTitol={ titolAcces }
+				/>
+			) }
+			{ ! carregant && ! tokenRestableix && ! connectat && (
 				<Acces
 					client={ client }
 					onEntra={ haEntrat }
 					refTitol={ titolAcces }
+					pestanyaInicial={ pestanyaEntra ? 'entra' : 'crea' }
+					recuperaInicial={ obreRecupera }
 				/>
 			) }
-			{ ! carregant && connectat && (
+			{ ! carregant && ! tokenRestableix && connectat && (
 				<Panell
 					client={ client }
 					progres={ progres }
+					verificat={ verificat }
 					urlSimulador={ config.urlSimulador }
 					onSurt={ haSortit }
 					onAvis={ setAvis }

@@ -132,7 +132,12 @@ export function creaClient( { api, ajaxUrl, fetchFn } ) {
 		if ( ! r.ok ) {
 			return { connectat: false, nonce: null, progres: {} };
 		}
-		return { connectat: true, nonce, progres: r.dades.progres || {} };
+		return {
+			connectat: true,
+			nonce,
+			progres: r.dades.progres || {},
+			verificat: r.dades.verificat === true,
+		};
 	}
 
 	const tancaSessio = ( r ) => {
@@ -156,6 +161,30 @@ export function creaClient( { api, ajaxUrl, fetchFn } ) {
 			} ),
 		entra: ( { email, contrasenya } ) =>
 			peticio( 'POST', 'compte/entra', { email, contrasenya } ),
+		// El token viatja pel cos de la petició, mai per la URL.
+		verifica: ( token ) =>
+			peticio(
+				'POST',
+				'compte/verifica',
+				{ token },
+				{ senseNonce: true }
+			),
+		reenviaVerificacio: () =>
+			peticio( 'POST', 'compte/reenvia-verificacio', {} ),
+		recupera: ( email ) =>
+			peticio(
+				'POST',
+				'compte/recupera',
+				{ email },
+				{ senseNonce: true }
+			),
+		restableix: ( { token, contrasenya } ) =>
+			peticio(
+				'POST',
+				'compte/restableix',
+				{ token, contrasenya },
+				{ senseNonce: true }
+			),
 		surt: async () =>
 			tancaSessio(
 				await peticio( 'POST', 'compte/surt', {}, { senseNonce: true } )

@@ -1,6 +1,7 @@
-import { useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { T } from './textos';
 import { Camp, Casella } from './Camp';
+import { FormRecupera } from './Recupera';
 
 const CORREU = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PESTANYES = [ 'crea', 'entra' ];
@@ -17,13 +18,32 @@ const llargada = ( text ) => Array.from( text ).length;
  * Accés sense sessió: pestanyes «Crea un compte» i «Entra».
  *
  * @param {Object}     props
- * @param {Object}     props.client   Client de l'API.
- * @param {() => void} props.onEntra  Crida amb `(dades, missatge)` en entrar.
- * @param {Object}     props.refTitol Ref del títol.
+ * @param {Object}     props.client          Client de l'API.
+ * @param {() => void} props.onEntra         Crida amb `(dades, missatge)` en entrar.
+ * @param {Object}     props.refTitol        Ref del títol.
+ * @param {string=}    props.pestanyaInicial Pestanya oberta (`crea` o `entra`).
+ * @param {boolean=}   props.recuperaInicial Obre «He oblidat la contrasenya».
  */
-export function Acces( { client, onEntra, refTitol } ) {
-	const [ activa, setActiva ] = useState( 'crea' );
+export function Acces( {
+	client,
+	onEntra,
+	refTitol,
+	pestanyaInicial = 'crea',
+	recuperaInicial = false,
+} ) {
+	const [ activa, setActiva ] = useState( pestanyaInicial );
+	const [ recupera, setRecupera ] = useState( recuperaInicial );
 	const refs = { crea: useRef( null ), entra: useRef( null ) };
+	const refBotoOblidat = useRef( null );
+	const tornat = useRef( false );
+
+	// En tornar de «recupera», el focus va al botó que l'ha obert.
+	useEffect( () => {
+		if ( ! recupera && tornat.current ) {
+			tornat.current = false;
+			refBotoOblidat.current?.focus();
+		}
+	}, [ recupera ] );
 
 	const teclat = ( event ) => {
 		const i = PESTANYES.indexOf( activa );
@@ -41,6 +61,20 @@ export function Acces( { client, onEntra, refTitol } ) {
 			refs[ nova ].current?.focus();
 		}
 	};
+
+	if ( recupera ) {
+		return (
+			<FormRecupera
+				client={ client }
+				refTitol={ refTitol }
+				onTorna={ () => {
+					tornat.current = true;
+					setActiva( 'entra' );
+					setRecupera( false );
+				} }
+			/>
+		);
+	}
 
 	return (
 		<section
@@ -82,7 +116,12 @@ export function Acces( { client, onEntra, refTitol } ) {
 				{ activa === 'crea' ? (
 					<FormRegistre client={ client } onEntra={ onEntra } />
 				) : (
-					<FormEntra client={ client } onEntra={ onEntra } />
+					<FormEntra
+						client={ client }
+						onEntra={ onEntra }
+						onOblidat={ () => setRecupera( true ) }
+						refOblidat={ refBotoOblidat }
+					/>
 				) }
 			</div>
 		</section>
@@ -242,10 +281,12 @@ function FormRegistre( { client, onEntra } ) {
  * Formulari d'entrada.
  *
  * @param {Object}     props
- * @param {Object}     props.client  Client.
- * @param {() => void} props.onEntra En entrar.
+ * @param {Object}     props.client     Client.
+ * @param {() => void} props.onEntra    En entrar.
+ * @param {() => void} props.onOblidat  Obre la recuperació.
+ * @param {Object}     props.refOblidat Ref del botó «He oblidat».
  */
-function FormEntra( { client, onEntra } ) {
+function FormEntra( { client, onEntra, onOblidat, refOblidat } ) {
 	const [ email, setEmail ] = useState( '' );
 	const [ contrasenya, setContrasenya ] = useState( '' );
 	const [ errors, setErrors ] = useState( {} );
@@ -319,6 +360,16 @@ function FormEntra( { client, onEntra } ) {
 			>
 				{ enviant ? T.enviant : T.botoEntra }
 			</button>
+			<p>
+				<button
+					type="button"
+					ref={ refOblidat }
+					className="nep-compte__enllac"
+					onClick={ onOblidat }
+				>
+					{ T.oblidat }
+				</button>
+			</p>
 		</form>
 	);
 }

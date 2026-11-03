@@ -8,6 +8,7 @@ import { Camp } from './Camp';
  * @param {Object}     props
  * @param {Object}     props.client       Client de l'API.
  * @param {Object}     props.progres      `{ idMissio: estrelles }`.
+ * @param {boolean=}   props.verificat    Correu verificat.
  * @param {string=}    props.urlSimulador URL del simulador.
  * @param {() => void} props.onSurt       En tancar la sessió o esborrar.
  * @param {() => void} props.onAvis       Missatge a la regió viva.
@@ -16,6 +17,7 @@ import { Camp } from './Camp';
 export function Panell( {
 	client,
 	progres,
+	verificat,
 	urlSimulador,
 	onSurt,
 	onAvis,
@@ -47,6 +49,18 @@ export function Panell( {
 		onAvis( T.descarregat );
 	};
 
+	const reenvia = async () => {
+		setError( '' );
+		const r = await client.reenviaVerificacio();
+		if ( ! r.ok ) {
+			setError( r.missatge );
+		} else if ( r.dades.verificat !== true && r.dades.enviat === false ) {
+			setError( T.noReenviat );
+		} else {
+			onAvis( T.reenviat );
+		}
+	};
+
 	const tanca = async () => {
 		setError( '' );
 		const r = await client.surt();
@@ -65,6 +79,23 @@ export function Panell( {
 			<h2 id="nep-compte-panell-titol" ref={ refTitol } tabIndex={ -1 }>
 				{ T.elTeuCompte }
 			</h2>
+			{ ! verificat && (
+				<div
+					className="nep-compte__banner"
+					role="group"
+					aria-labelledby="nep-compte-banner-titol"
+				>
+					<h3 id="nep-compte-banner-titol">{ T.bannerTitol }</h3>
+					<p>{ T.bannerText }</p>
+					<button
+						type="button"
+						className="nep-compte__boto nep-compte__boto--secundari"
+						onClick={ reenvia }
+					>
+						{ T.reenvia }
+					</button>
+				</div>
+			) }
 			<h3>{ T.progres }</h3>
 			{ missions.length === 0 ? (
 				<p>{ T.senseProgres }</p>

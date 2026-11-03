@@ -219,6 +219,16 @@ add_filter(
 	3
 );
 
+// La pàgina de compte rep tokens a la URL (?verifica= / ?restableix=): mai surten com a Referer.
+add_action(
+	'template_redirect',
+	static function () {
+		if ( is_singular() && has_block( 'noempesquen/compte', get_queried_object() ) && ! headers_sent() ) {
+			header( 'Referrer-Policy: no-referrer' );
+		}
+	}
+);
+
 /**
  * Permís de les rutes privades: sessió iniciada i rol `nep_jugador`.
  *

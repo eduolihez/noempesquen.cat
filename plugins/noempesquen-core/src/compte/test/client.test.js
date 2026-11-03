@@ -70,6 +70,7 @@ describe( 'client de comptes', () => {
 			connectat: true,
 			nonce: 'abc123',
 			progres: { 'llissa-01': 2 },
+			verificat: false,
 		} );
 		expect( crides[ 1 ].url ).toBe( `${ API }compte/progres` );
 		expect( crides[ 1 ].opcions.headers[ 'X-WP-Nonce' ] ).toBe( 'abc123' );
@@ -197,5 +198,68 @@ describe( 'client de comptes', () => {
 			estat: 0,
 			codi: 'nep_xarxa',
 		} );
+	} );
+} );
+
+describe( 'client de comptes · verificació i recuperació', () => {
+	const cosDe = ( crida ) => JSON.parse( crida.opcions.body );
+
+	it( 'verifica envia el token al cos, mai a la URL', async () => {
+		const { fn, crides } = fetchFals( [
+			resposta( 200, { verificat: true } ),
+		] );
+		const client = creaClient( { api: API, ajaxUrl: AJAX, fetchFn: fn } );
+		const r = await client.verifica( '1.abc' );
+		expect( r ).toEqual( { ok: true, dades: { verificat: true } } );
+		expect( crides[ 0 ].url ).toBe( `${ API }compte/verifica` );
+		expect( crides[ 0 ].opcions.method ).toBe( 'POST' );
+		expect( cosDe( crides[ 0 ] ) ).toEqual( { token: '1.abc' } );
+	} );
+
+	it( 'un token invàlid torna l’error genèric del servidor', async () => {
+		const { fn } = fetchFals( [
+			resposta( 400, { code: 'nep_token_invalid', message: 'No val.' } ),
+		] );
+		const client = creaClient( { api: API, ajaxUrl: AJAX, fetchFn: fn } );
+		expect( await client.verifica( '1.abc' ) ).toMatchObject( {
+			ok: false,
+			estat: 400,
+			codi: 'nep_token_invalid',
+			missatge: 'No val.',
+		} );
+	} );
+
+	it( 'recupera i restableix envien només el que toca', async () => {
+		const { fn, crides } = fetchFals( [
+			resposta( 200, { enviat: true } ),
+			resposta( 200, { restablert: true } ),
+		] );
+		const client = creaClient( { api: API, ajaxUrl: AJAX, fetchFn: fn } );
+		await client.recupera( 'a@b.cat' );
+		await client.restableix( {
+			token: '1.abc',
+			contrasenya: 'x'.repeat( 12 ),
+		} );
+		expect( crides[ 0 ].url ).toBe( `${ API }compte/recupera` );
+		expect( cosDe( crides[ 0 ] ) ).toEqual( { email: 'a@b.cat' } );
+		expect( crides[ 1 ].url ).toBe( `${ API }compte/restableix` );
+		expect( Object.keys( cosDe( crides[ 1 ] ) ).sort() ).toEqual( [
+			'contrasenya',
+			'token',
+		] );
+	} );
+
+	it( 'reenviaVerificacio usa POST amb el nonce de la sessió', async () => {
+		const { fn, crides } = fetchFals( [
+			resposta( 200, 'N0NCE' ),
+			resposta( 200, { progres: {}, verificat: false } ),
+			resposta( 200, { verificat: false, enviat: true } ),
+		] );
+		const client = creaClient( { api: API, ajaxUrl: AJAX, fetchFn: fn } );
+		const e = await client.estat();
+		expect( e.verificat ).toBe( false );
+		await client.reenviaVerificacio();
+		expect( crides[ 2 ].url ).toBe( `${ API }compte/reenvia-verificacio` );
+		expect( crides[ 2 ].opcions.headers[ 'X-WP-Nonce' ] ).toBe( 'N0NCE' );
 	} );
 } );
