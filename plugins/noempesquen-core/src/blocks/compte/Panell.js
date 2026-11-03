@@ -24,6 +24,7 @@ export function Panell( {
 	refTitol,
 } ) {
 	const [ error, setError ] = useState( '' );
+	const [ reenviant, setReenviant ] = useState( false );
 	const [ obert, setObert ] = useState( false );
 	const botoEsborra = useRef( null );
 	const missions = Object.entries( progres || {} );
@@ -51,13 +52,21 @@ export function Panell( {
 
 	const reenvia = async () => {
 		setError( '' );
-		const r = await client.reenviaVerificacio();
-		if ( ! r.ok ) {
-			setError( r.missatge );
-		} else if ( r.dades.verificat !== true && r.dades.enviat === false ) {
-			setError( T.noReenviat );
-		} else {
-			onAvis( T.reenviat );
+		setReenviant( true );
+		try {
+			const r = await client.reenviaVerificacio();
+			if ( ! r.ok ) {
+				setError( r.missatge );
+			} else if (
+				r.dades.verificat !== true &&
+				r.dades.enviat === false
+			) {
+				setError( T.noReenviat );
+			} else {
+				onAvis( T.reenviat );
+			}
+		} finally {
+			setReenviant( false );
 		}
 	};
 
@@ -91,6 +100,7 @@ export function Panell( {
 						type="button"
 						className="nep-compte__boto nep-compte__boto--secundari"
 						onClick={ reenvia }
+						disabled={ reenviant }
 					>
 						{ T.reenvia }
 					</button>

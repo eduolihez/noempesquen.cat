@@ -110,6 +110,7 @@ $nep_captura_correu = static function ( $previ, $atts ) use ( &$nep_mails, &$nep
 	return ! $nep_mail_falla;
 };
 add_filter( 'pre_wp_mail', $nep_captura_correu, 10, 2 );
+add_filter( 'nep_correu_diferit', '__return_false' );
 add_action( 'set_logged_in_cookie', $nep_captura );
 
 // Simula la petició següent del navegador: només amb la galeta i el nonce rebuts.
@@ -532,7 +533,7 @@ $nep_rt2 = $nep_rec_de( end( $nep_mails ) );
 $nep_comprova( 2 === count( $nep_mails ) && '' !== $nep_rt2 && $nep_rt2 !== $nep_rt1 && 400 === $nep_restableix( $nep_rt1, 'una-contrasenya-nova' )->get_status(), 'recupera: un correu nou invalida el token anterior' );
 // Límit per correu (3/hora) i per IP (5/hora); els intents amb correu inexistent també compten.
 $r4 = $nep_recupera( $nep_r_mail );
-$nep_comprova( 200 === $r4->get_status() && 429 === $nep_recupera( $nep_r_mail )->get_status() && 'nep_massa_intents' === $nep_recupera( $nep_r_mail )->get_data()['code'] && 3 === count( $nep_mails ), 'recupera: el 4t del mateix correu → 429 i no envia' );
+$nep_comprova( 200 === $r4->get_status() && 3 === count( $nep_mails ) && 200 === $nep_recupera( $nep_r_mail )->get_status() && array( 'enviat' => true ) === $nep_recupera( $nep_r_mail )->get_data() && 3 === count( $nep_mails ), 'recupera: el 4t del mateix correu respon igual però no envia (sense 429 visible)' );
 $nep_nova_ip();
 $nep_codis = array();
 for ( $i = 1; $i <= 6; $i++ ) {

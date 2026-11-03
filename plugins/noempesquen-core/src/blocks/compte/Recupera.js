@@ -156,6 +156,7 @@ export function FormRestableix( { client, token, onFet, onDemana, refTitol } ) {
 				onFet( T.restablert );
 			} else if ( r.codi === 'nep_token_invalid' ) {
 				setTokenMort( true );
+				refTitol?.current?.focus();
 			} else if ( r.codi === 'nep_contrasenya_invalida' ) {
 				setError( r.missatge );
 				camp.current?.focus();

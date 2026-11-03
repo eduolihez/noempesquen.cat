@@ -653,8 +653,11 @@ function nep_rest_compte_verifica( WP_REST_Request $request ) {
 	if ( ! $usuari instanceof WP_User || ! nep_es_jugador( $usuari ) || ! nep_token_valid( $registre, $token['secret'], wp_salt( 'auth' ), time() ) ) {
 		return $generic;
 	}
+	// Es consumeix el token abans de l'efecte: dues peticions paral·leles no el poden usar totes dues.
+	if ( ! delete_user_meta( $usuari->ID, 'nep_token_verifica', $registre ) ) {
+		return $generic;
+	}
 	update_user_meta( $usuari->ID, 'nep_email_verificat', time() );
-	delete_user_meta( $usuari->ID, 'nep_token_verifica' );
 	return rest_ensure_response( array( 'verificat' => true ) );
 }
 
@@ -700,7 +703,21 @@ function nep_compte_envia_recuperacio( int $id ): bool {
 		return false;
 	}
 	update_user_meta( $id, 'nep_token_recupera', $registre );
-	return nep_correu_recuperacio( $id, $token );
+	// El correu surt després de respondre: l'SMTP no ha de fer la resposta més lenta
+	// per als correus que existeixen (enumeració per temps).
+	if ( ! apply_filters( 'nep_correu_diferit', true ) ) {
+		return nep_correu_recuperacio( $id, $token );
+	}
+	add_action(
+		'shutdown',
+		static function () use ( $id, $token ): void {
+			if ( function_exists( 'fastcgi_finish_request' ) ) {
+				fastcgi_finish_request();
+			}
+			nep_correu_recuperacio( $id, $token );
+		}
+	);
+	return true;
 }
 
 /**
@@ -723,16 +740,20 @@ function nep_rest_compte_recupera( WP_REST_Request $request ) {
 	$email      = is_string( $email ) ? strtolower( trim( $email ) ) : '';
 	$clau_ip    = nep_clau_limit( 'recupera|' . nep_ip_client() );
 	$clau_email = nep_clau_limit( 'recupera-email|' . $email );
-	if ( nep_compte_limit_ple( $clau_ip, (int) NEP_COMPTE_LIMIT_RECUPERA_IP ) || nep_compte_limit_ple( $clau_email, (int) NEP_COMPTE_LIMIT_RECUPERA_EMAIL ) ) {
+	if ( nep_compte_limit_ple( $clau_ip, (int) NEP_COMPTE_LIMIT_RECUPERA_IP ) ) {
 		return nep_compte_massa_intents();
 	}
+	// Límit ple per a aquest correu: mateixa resposta però sense enviar res, perquè
+	// un tercer no pugui bloquejar visiblement la recuperació d'una víctima.
+	$email_ple = nep_compte_limit_ple( $clau_email, (int) NEP_COMPTE_LIMIT_RECUPERA_EMAIL );
 	// Es compten tots els intents, existeixi o no el correu.
 	nep_compte_suma_intent( $clau_ip, (int) NEP_COMPTE_FINESTRA_RECUPERA );
 	nep_compte_suma_intent( $clau_email, (int) NEP_COMPTE_FINESTRA_RECUPERA );
 
 	$usuari = nep_valida_email( $email ) ? get_user_by( 'email', $email ) : false;
-	if ( $usuari instanceof WP_User && nep_es_jugador( $usuari ) && nep_compte_verificat( (int) $usuari->ID ) ) {
+	if ( $usuari instanceof WP_User && nep_es_jugador( $usuari ) && nep_compte_verificat( (int) $usuari->ID ) && ! $email_ple ) {
 		nep_compte_envia_recuperacio( (int) $usuari->ID );
+		wp_check_password( '', nep_compte_hash_fals() );
 	} else {
 		// Treball equivalent (token, hash i cost de contrasenya) sense desar ni enviar res.
 		$fals = nep_token_parseja( nep_token_genera( 1, random_bytes( 32 ) ) );
@@ -781,8 +802,11 @@ function nep_rest_compte_restableix( WP_REST_Request $request ) {
 		return $generic;
 	}
 	$id = (int) $usuari->ID;
+	// Es consumeix el token abans de canviar la contrasenya (un sol ús, també en paral·lel).
+	if ( ! delete_user_meta( $id, 'nep_token_recupera', $registre ) ) {
+		return $generic;
+	}
 	wp_set_password( $pass, $id );
-	delete_user_meta( $id, 'nep_token_recupera' );
 	delete_user_meta( $id, 'nep_token_verifica' );
 	update_user_meta( $id, 'nep_email_verificat', time() );
 	// Cap sessió anterior (ni d'aquest navegador ni d'altres) continua vàlida.

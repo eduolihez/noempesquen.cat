@@ -66,7 +66,6 @@ export const T = {
 	restablert: 'Contrasenya canviada. Ja pots entrar amb la nova.',
 	errToken: "L'enllaç no és vàlid o ha caducat. Demana'n un de nou.",
 	verificat: 'Correu verificat. Gràcies!',
-	verificant: 'Verificant el correu…',
 	bannerTitol: 'Verifica el correu',
 	bannerText:
 		"T'hem enviat un enllaç per confirmar el correu. Sense verificar, no podràs recuperar la contrasenya si la perds. El compte funciona igualment.",
