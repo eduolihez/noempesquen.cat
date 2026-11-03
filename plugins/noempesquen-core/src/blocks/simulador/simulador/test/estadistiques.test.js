@@ -134,6 +134,7 @@ describe( 'demanaResum', () => {
 		expect( opcions ).toStrictEqual( {
 			method: 'GET',
 			credentials: 'omit',
+			headers: { 'X-Nep-Lang': expect.stringMatching( /^(es|ca)$/ ) },
 		} );
 	} );
 
