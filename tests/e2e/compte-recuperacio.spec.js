@@ -1,4 +1,5 @@
 const { spawnSync } = require( 'node:child_process' );
+const { ruta } = require( './rutes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const { test, expect } = require( '@playwright/test' );
 
@@ -45,7 +46,8 @@ const netejaCorreu = () =>
 	wp( 'eval', 'delete_transient( "nep_e2e_correu" );' );
 
 /**
- * Enllaç `/compte/?verifica=…` o `?restableix=…` de l'últim correu capturat.
+ * Enllaç `/ca/compte/?verifica=…` o `?restableix=…` (o `/cuenta/…`) de
+ * l'últim correu capturat.
  *
  * @param {'verifica'|'restableix'} tipus Tipus d'enllaç.
  * @return {string} Camí i query de l'enllaç.
@@ -53,7 +55,7 @@ const netejaCorreu = () =>
 function enllacDelCorreu( tipus ) {
 	const cos = wp( 'eval', 'echo get_transient( "nep_e2e_correu" );' );
 	const m = cos.match(
-		new RegExp( `/compte/\\?${ tipus }=[0-9]+\\.[0-9a-f]{64}` )
+		new RegExp( `(?:/ca)?/(?:compte|cuenta)/\\?${ tipus }=[0-9]+\\.[0-9a-f]{64}` )
 	);
 	expect( m, `cal un enllaç ${ tipus } al correu` ).not.toBeNull();
 	return m[ 0 ];
@@ -152,7 +154,7 @@ async function obre( ruta ) {
 }
 
 test( 'alta: el compte funciona sense verificar i mostra el banner amb el correu enviat', async () => {
-	await page.goto( '/compte/' );
+	await page.goto( ruta( 'compte' ) );
 	await page.getByLabel( 'Correu electrònic' ).fill( EMAIL );
 	await page.getByLabel( 'Contrasenya', { exact: true } ).fill( CONTRASENYA );
 	await page.getByLabel( 'Tinc 14 anys o més' ).check();
@@ -209,7 +211,7 @@ test( 'l’enllaç del correu verifica el compte; el token surt de la URL i no e
 } );
 
 test( 'la pàgina de compte porta Referrer-Policy: no-referrer', async () => {
-	const r = await page.request.get( '/compte/' );
+	const r = await page.request.get( ruta( 'compte' ) );
 	expect( r.headers()[ 'referrer-policy' ] ).toBe( 'no-referrer' );
 	// A producció el servidor pot sobreescriure la capçalera: la metaetiqueta ho cobreix.
 	expect( await r.text() ).toContain(
@@ -218,7 +220,7 @@ test( 'la pàgina de compte porta Referrer-Policy: no-referrer', async () => {
 } );
 
 test( 'recuperació completa: correu, contrasenya nova, sessions tancades i enllaç d’un sol ús', async () => {
-	await obre( '/compte/' );
+	await obre( ruta( 'compte' ) );
 	await bloc().getByRole( 'button', { name: 'Tanca la sessió' } ).click();
 	await bloc().getByRole( 'tab', { name: 'Entra' } ).click();
 	await bloc()
@@ -319,7 +321,7 @@ test( 'un enllaç caducat dóna l’error genèric i permet demanar-ne un de nou
 	).trim();
 	expect( token ).toMatch( /^\d+\.[0-9a-f]{64}$/ );
 
-	await obre( `/compte/?restableix=${ token }` );
+	await obre( `${ ruta( 'compte' ) }?restableix=${ token }` );
 	await page
 		.getByLabel( 'Contrasenya nova', { exact: true } )
 		.fill( `${ NOVA }-3` );
@@ -338,7 +340,7 @@ test( 'un enllaç caducat dóna l’error genèric i permet demanar-ne un de nou
 } );
 
 test( 'amb un correu que no existeix la resposta és idèntica i no surt cap correu', async () => {
-	await obre( '/compte/' );
+	await obre( ruta( 'compte' ) );
 	// La sessió segueix oberta de la prova anterior? Surt si cal.
 	const sortir = bloc().getByRole( 'button', { name: 'Tanca la sessió' } );
 	if ( await sortir.isVisible() ) {

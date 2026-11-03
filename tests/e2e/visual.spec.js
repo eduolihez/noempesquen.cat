@@ -1,4 +1,5 @@
 const { test, expect } = require( './ajudes' );
+const { ruta } = require( './rutes' );
 const {
 	greusAxePc,
 	iniciaMissio,
@@ -108,7 +109,7 @@ async function pc( page, mida, prefix ) {
 	if ( mida.height > mida.width && mida.width < 768 ) {
 		await page.clock.install();
 		const trobada = desbloqueja( page, FACTURA );
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await obreMissio( page, FACTURA, trobada );
 		await expect( page.getByRole( 'alertdialog' ) ).toBeVisible();
 		await revisa( page, `${ prefix }girar`, [ '[role="alertdialog"]' ] );
@@ -200,7 +201,7 @@ test.describe( 'Revisió visual', () => {
 
 		test( `selector a ${ m }`, async ( { page } ) => {
 			await page.setViewportSize( mida );
-			await page.goto( '/simulador/' );
+			await page.goto( ruta( 'simulador' ) );
 			await expect(
 				page.getByRole( 'region', { name: 'Tria una missió' } )
 			).toBeVisible();
@@ -226,7 +227,7 @@ test.describe( 'Revisió visual', () => {
 				await page.setViewportSize( mida );
 				await page.clock.install();
 				const trobada = desbloqueja( page, missio.titol );
-				await page.goto( '/simulador/' );
+				await page.goto( ruta( 'simulador' ) );
 				await expect(
 					page.getByRole( 'region', { name: 'Tria una missió' } )
 				).toBeVisible();

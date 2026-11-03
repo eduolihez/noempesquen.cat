@@ -1,4 +1,5 @@
 const { test, expect, rutaDe } = require( './ajudes' );
+const { ruta } = require( './rutes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const factura = require( '../../plugins/noempesquen-core/missions/ca/llissa-01-factura.json' );
 
@@ -122,7 +123,7 @@ test( 'mostra els errors en viu i no publica un guió invàlid', async ( { page 
 	await expect( page.locator( '#post-status-display' ) ).toContainText( /esborrany/i );
 
 	// Provar-la avisa el gestor sense trencar el selector.
-	await page.goto( `/simulador/?previsualitza=${ post }` );
+	await page.goto( `${ ruta( 'simulador' ) }?previsualitza=${ post }` );
 	await expect( page.getByRole( 'status' ).filter( { hasText: "No s'ha pogut carregar el guió de prova" } ) ).toBeVisible();
 	await obrePesquer( page );
 	await expect( page.locator( '[data-missio="llissa-01-factura"]' ) ).toBeVisible();
@@ -138,7 +139,7 @@ test( 'publica un guió vàlid i surt al simulador', async ( { page } ) => {
 		await expect( page.locator( '.notice-error' ) ).toHaveCount( 0 );
 		await expect( page.locator( '#post-status-display' ) ).toContainText( /publicad/i );
 
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await obrePesquer( page );
 		await expect( page.locator( `[data-missio="${ id }"]` ) ).toBeVisible();
 	} finally {

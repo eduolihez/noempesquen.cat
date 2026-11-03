@@ -1,4 +1,5 @@
 const { spawnSync } = require( 'node:child_process' );
+const { ruta } = require( './rutes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const { test, expect } = require( '@playwright/test' );
 
@@ -120,7 +121,7 @@ test( 'camps buits: errors associats, resum i focus al primer camp', async ( {
 		status: 200,
 		body: { ok: true },
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	await expect( bloc( page ).locator( 'form' ) ).toBeVisible();
 	await page.getByRole( 'button', { name: ENVIA } ).click();
 
@@ -147,7 +148,7 @@ test( 'correu invàlid: error de format i cap petició', async ( { page } ) => {
 		status: 200,
 		body: { ok: true },
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	await omple( page );
 	await page.getByLabel( 'Correu electrònic' ).fill( 'no-es-un-correu' );
 	await page.getByRole( 'button', { name: ENVIA } ).click();
@@ -165,7 +166,7 @@ test( 'camp trampa: fora del teclat, ocult a les ajudes tècniques i buit', asyn
 		status: 200,
 		body: { ok: true },
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	const web = bloc( page ).locator( 'input[name="web"]' );
 	await expect( web ).toHaveAttribute( 'tabindex', '-1' );
 	await expect( bloc( page ).locator( '.nep-contacte__web' ) ).toHaveAttribute(
@@ -191,7 +192,7 @@ test( 'enviament vàlid: estat enviant, confirmació amb focus i cos correcte', 
 		body: { ok: true },
 		retard: 600,
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	await omple( page );
 	await page.getByRole( 'button', { name: ENVIA } ).click();
 	const enviant = page.getByRole( 'button', { name: /S.està enviant/ } );
@@ -219,7 +220,7 @@ test( 'fallada del servidor: avís a la regió aria-live i dades conservades', a
 		status: 500,
 		body: { ok: false, message: 'Error' },
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	await omple( page );
 	await page.getByRole( 'button', { name: ENVIA } ).click();
 	await expect( bloc( page ).locator( '[aria-live="polite"]' ) ).toContainText(
@@ -236,7 +237,7 @@ test( 'recorregut només amb teclat', async ( { page } ) => {
 		status: 200,
 		body: { ok: true },
 	} );
-	await page.goto( '/contacte/' );
+	await page.goto( ruta( 'contacte' ) );
 	await page.getByLabel( 'Nom', { exact: true } ).focus();
 	await page.keyboard.type( 'Jordi' );
 	await page.keyboard.press( 'Tab' );

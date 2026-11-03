@@ -1,4 +1,5 @@
 const { test, expect } = require( './ajudes' );
+const { ruta } = require( './rutes' );
 const {
 	RESULTAT,
 	esHoritzontal,
@@ -618,7 +619,7 @@ test.describe( 'tutorial al selector', () => {
 		const tutorial = mobil ? 'tutorial-mobil' : 'tutorial-pc';
 		const primera = mobil ? 'remei-01-paquet' : 'llissa-01-factura';
 		await page.clock.install();
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await page
 			.getByRole( 'button', {
 				name: mobil ? /Obre el Pirata:/ : /Obre el Pesquer:/,

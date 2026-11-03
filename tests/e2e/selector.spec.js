@@ -1,4 +1,5 @@
 const { test, expect } = require( './ajudes' );
+const { ruta } = require( './rutes' );
 const { greusAxe, petits, rutaDe } = require( './ajudes' );
 
 const PROGRES = 'noempesquen-progres-v2';
@@ -63,7 +64,7 @@ const tapat = ( node ) =>
  * @param d
  */
 async function obreMapa( page, d ) {
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	await barco( page, d ).click();
 	await expect( tornaAlPort( page ) ).toBeVisible();
 }
@@ -72,7 +73,7 @@ test.describe( 'Selector de missions: port', () => {
 	test( 'mostra els dos vaixells i marca «Aquí» el del dispositiu en ús', async ( {
 		page,
 	} ) => {
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await expect( selector( page ) ).toBeVisible();
 		await expect( barco( page, 'pc' ) ).toBeVisible();
 		await expect( barco( page, 'mobil' ) ).toBeVisible();
@@ -106,7 +107,7 @@ test.describe( 'Selector de missions: port', () => {
 			'llissa-01-factura': 2,
 			'remei-01-paquet': 3,
 		} );
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await expect( selector( page ) ).toContainText(
 			'3 de 12 missions fetes · 5 de 30 estrelles'
 		);
@@ -244,7 +245,7 @@ test.describe( 'Selector de missions: mapa', () => {
 	test( 'transició: la càmera s’acosta al vaixell i el mapa apareix', async ( {
 		page,
 	} ) => {
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await expect( page.locator( '.nep-port--zoom' ) ).toHaveCount( 0 );
 		await barco( page, 'pc' ).click();
 		await expect( page.locator( '.nep-port--zoom' ) ).toHaveCount( 1 );
@@ -257,7 +258,7 @@ test.describe( 'Selector de missions: mapa', () => {
 	test( 'aria-live anuncia l’obertura del mapa i el retorn al port', async ( {
 		page,
 	} ) => {
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		const anunci = selector( page ).locator( '[aria-live="polite"]' );
 		await barco( page, 'mobil' ).click();
 		await expect( anunci ).toHaveText(
@@ -298,7 +299,7 @@ test.describe( 'Selector de missions: accessibilitat i disposició', () => {
 		}
 		const nom = isMobile ? 'mobil' : '1440';
 		await sembra( page, { 'tutorial-pc': 1, 'llissa-01-factura': 2 } );
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await expect( selector( page ) ).toBeVisible();
 		expect( await greusAxe( page ) ).toEqual( [] );
 		expect( await petitsSelector( page ) ).toEqual( [] );
@@ -326,7 +327,7 @@ test.describe( 'Selector de missions: accessibilitat i disposició', () => {
 		page,
 	}, testInfo ) => {
 		await page.setViewportSize( { width: 400, height: 800 } );
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		await expect( selector( page ) ).toBeVisible();
 		expect( await desborda( page ) ).toBe( false );
 		expect( await petitsSelector( page ) ).toEqual( [] );
@@ -350,7 +351,7 @@ test.describe( 'Selector de missions: accessibilitat i disposició', () => {
 			page,
 		} ) => {
 			await page.setViewportSize( { width: ample, height: alt } );
-			await page.goto( '/simulador/' );
+			await page.goto( ruta( 'simulador' ) );
 			await expect( barco( page, 'pc' ) ).toBeVisible();
 			await expect( barco( page, 'mobil' ) ).toBeVisible();
 			expect( await desborda( page ) ).toBe( false );
@@ -376,7 +377,7 @@ test.describe( 'Selector de missions: accessibilitat i disposició', () => {
 		page,
 	} ) => {
 		await page.emulateMedia( { reducedMotion: 'reduce' } );
-		await page.goto( '/simulador/' );
+		await page.goto( ruta( 'simulador' ) );
 		const animats = () =>
 			page.evaluate(
 				() =>

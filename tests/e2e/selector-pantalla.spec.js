@@ -1,4 +1,5 @@
 const { test, expect } = require( './ajudes' );
+const { ruta } = require( './rutes' );
 const { greusAxe } = require( './ajudes' );
 
 const selector = ( page ) =>
@@ -24,7 +25,7 @@ const nomsVistes = ( ...claus ) => claus.map( ( c ) => [ c, VISTES[ c ] ] );
 
 async function obre( page, [ ample, alt ] ) {
 	await page.setViewportSize( { width: ample, height: alt } );
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	await expect( barco( page, 'pc' ) ).toBeVisible();
 	await expect( barco( page, 'mobil' ) ).toBeVisible();
 }
@@ -154,7 +155,7 @@ test.describe( 'Selector a pantalla completa', () => {
 		await expect( surt ).toBeVisible();
 		const href = new URL( await surt.getAttribute( 'href' ), page.url() )
 			.pathname;
-		expect( href ).toBe( '/' );
+		expect( href ).toBe( ruta( 'inici' ) );
 
 		const completa = selector( page ).getByRole( 'button', {
 			name: 'Pantalla completa',

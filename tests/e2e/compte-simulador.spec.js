@@ -1,4 +1,5 @@
 const { spawnSync } = require( 'node:child_process' );
+const { ruta } = require( './rutes' );
 const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/ca/llissa-05-actualitzacio.json' );
 const { test, expect, RESULTAT } = require( './ajudes' );
 const {
@@ -156,7 +157,7 @@ test( 'sense compte: el selector funciona igual, amb l’enllaç i sense cap pet
 			progres.push( r.url() );
 		}
 	} );
-	await anonima.goto( '/simulador/' );
+	await anonima.goto( ruta( 'simulador' ) );
 	await expect( selector( anonima ) ).toBeVisible();
 	await expect( enllacCompte( anonima ) ).toHaveAttribute(
 		'href',
@@ -170,7 +171,7 @@ test( 'sense compte: el selector funciona igual, amb l’enllaç i sense cap pet
 } );
 
 test( 'amb compte: fusiona el local i el del servidor, i es conserva sense localStorage', async () => {
-	await page.goto( '/compte/' );
+	await page.goto( ruta( 'compte' ) );
 	const bloc = page.locator( '.wp-block-noempesquen-compte' );
 	await bloc.getByRole( 'tab', { name: 'Entra' } ).click();
 	await page.getByLabel( 'Correu electrònic' ).fill( EMAIL );
@@ -203,7 +204,7 @@ test( 'amb compte: fusiona el local i el del servidor, i es conserva sense local
 	const puja = page.waitForResponse(
 		( r ) => PROGRES.test( r.url() ) && r.request().method() === 'PUT'
 	);
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	const pujada = await puja;
 	expect( pujada.request().postDataJSON() ).toEqual( {
 		progres: { ...LOCAL, ...SERVIDOR },
@@ -251,7 +252,7 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 		).text()
 	).trim();
 	expect( nonce ).toMatch( /^[a-f0-9]{10}$/ );
-	const html = await ( await page.request.get( '/simulador/' ) ).text();
+	const html = await ( await page.request.get( ruta( 'simulador' ) ) ).text();
 	expect( html ).toContain( 'nep-sim' );
 	expect( html ).not.toContain( nonce );
 
@@ -274,7 +275,7 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	await senseFullscreen( page );
 	await page.clock.install();
 	const trobada = desbloqueja( page, /Actualitza el navegador/ );
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	await obreMissio( page, /Actualitza el navegador/, trobada );
 	await page.getByRole( 'button', { name: /Clica o prem/ } ).click();
 	await parla( page )
@@ -321,7 +322,7 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 } );
 
 test( 'en tancar la sessió no queda el progrés del jugador a l’ordinador', async () => {
-	await page.goto( '/compte/' );
+	await page.goto( ruta( 'compte' ) );
 	const bloc = page.locator( '.wp-block-noempesquen-compte' );
 	await expect(
 		bloc.getByRole( 'heading', { name: 'El teu compte' } )
@@ -339,7 +340,7 @@ test( 'en tancar la sessió no queda el progrés del jugador a l’ordinador', a
 		] )
 	).toEqual( [ null, null, null ] );
 
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	await expect( selector( page ) ).toBeVisible();
 	await expect( enllacCompte( page ) ).toBeVisible();
 	await expect(

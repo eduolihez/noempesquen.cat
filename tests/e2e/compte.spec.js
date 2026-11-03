@@ -1,4 +1,5 @@
 const { spawnSync } = require( 'node:child_process' );
+const { ruta } = require( './rutes' );
 const { readFileSync } = require( 'node:fs' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 const { test, expect } = require( '@playwright/test' );
@@ -120,7 +121,7 @@ test( 'alta amb teclat: sense caselles no es crea; amb les dues, sessió iniciad
 			altes.push( r );
 		}
 	} );
-	await page.goto( '/compte/' );
+	await page.goto( ruta( 'compte' ) );
 	await expect(
 		bloc().getByRole( 'tab', { name: 'Crea un compte' } )
 	).toHaveAttribute( 'aria-selected', 'true' );
@@ -182,7 +183,7 @@ test( 'en recarregar segueix amb sessió i l’HTML no porta cap nonce', async (
 		).text()
 	).trim();
 	expect( nonce ).toMatch( /^[a-f0-9]{10}$/ );
-	const html = await ( await page.request.get( '/compte/' ) ).text();
+	const html = await ( await page.request.get( ruta( 'compte' ) ) ).text();
 	expect( html ).toContain( 'wp-block-noempesquen-compte' );
 	expect( html ).not.toContain( nonce );
 	expect( html ).not.toContain( 'nonceMiddleware' );

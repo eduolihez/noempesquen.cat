@@ -26,12 +26,14 @@ const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil|finestres|guia-tutorial|ancores|tutorial)\.spec\.js$/;
 
 /*
- * Idioma (preparat, no actiu per defecte): sense NEP_LANG, tot igual que abans
- * (arrel i locale ca-ES). NEP_LANG=es → locale es-ES a l'arrel; NEP_LANG=ca →
- * locale ca-ES i baseURL acabada en `/ca/`. Ull: Playwright resol les rutes amb
- * `new URL()`, així que el prefix només s'aplica a rutes relatives
- * (`simulador/`), no a les absolutes (`/simulador/`); adaptar-les és feina
- * d'una tasca posterior.
+ * Idioma (NEP_LANG):
+ * - sense variable o NEP_LANG=ca: la bateria catalana de sempre, contra `/ca/`
+ *   (les rutes surten de `tests/e2e/rutes.js`), locale ca-ES. Ignora
+ *   `tests/e2e/es/`.
+ * - NEP_LANG=es: només `tests/e2e/es/` (smoke, axe i recorreguts en castellà),
+ *   locale es-ES, arrel en castellà.
+ * Playwright resol les rutes absolutes (`/simulador/`) contra l'origen, no
+ * contra la baseURL; per això `ruta()` ja retorna el camí amb el prefix.
  */
 const NEP_LANG = [ 'es', 'ca' ].includes( process.env.NEP_LANG )
 	? process.env.NEP_LANG
@@ -40,23 +42,31 @@ const BASE = ( process.env.WP_BASE_URL || 'http://localhost:8888' ).replace(
 	/\/+$/,
 	''
 );
+const ES = NEP_LANG === 'es';
+const SPEC_ES = /[\\/]e2e[\\/]es[\\/]/;
+/** testIgnore d'un projecte: sense NEP_LANG=es, també la carpeta `es/`. */
+const ignora = ( ...patrons ) => ( ES ? patrons : [ ...patrons, SPEC_ES ] );
 
 module.exports = defineConfig( {
-	testDir: './tests/e2e',
+	testDir: ES ? './tests/e2e/es' : './tests/e2e',
 	use: {
 		baseURL: NEP_LANG === 'ca' ? `${ BASE }/ca/` : BASE,
-		locale: NEP_LANG === 'es' ? 'es-ES' : 'ca-ES',
+		locale: ES ? 'es-ES' : 'ca-ES',
 	},
 	projects: [
 		{
 			name: 'escriptori',
 			use: { ...devices[ 'Desktop Chrome' ] },
-			testIgnore: [ SPEC_PANELL, SPEC_COMPTE ],
+			testIgnore: ignora( SPEC_PANELL, SPEC_COMPTE ),
 		},
 		{
 			name: 'mobil',
 			use: { ...devices[ 'Pixel 7' ] },
-			testIgnore: [ SPEC_PANELL, SPEC_COMPTE, SPEC_COMPTE_SIMULADOR ],
+			testIgnore: ignora(
+				SPEC_PANELL,
+				SPEC_COMPTE,
+				SPEC_COMPTE_SIMULADOR
+			),
 		},
 		{
 			name: 'mobil-horitzontal',

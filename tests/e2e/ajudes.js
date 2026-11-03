@@ -1,4 +1,5 @@
 const { test: base, expect } = require( '@playwright/test' );
+const { ruta } = require( './rutes' );
 const AxeBuilder = require( '@axe-core/playwright' ).default;
 
 /** Endpoint d'estadístiques. */
@@ -158,7 +159,7 @@ async function obreMissio( page, titol, missio = null ) {
 async function iniciaMissio( page, titol, bloqueig ) {
 	await page.clock.install();
 	const missio = desbloqueja( page, titol );
-	await page.goto( '/simulador/' );
+	await page.goto( ruta( 'simulador' ) );
 	await obreMissio( page, titol, missio );
 	await expect(
 		page.getByRole( 'button', { name: bloqueig } )
