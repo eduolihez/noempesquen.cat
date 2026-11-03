@@ -1,76 +1,76 @@
 {
 	"id": "llissa-04-suport",
 	"versio": 2,
-	"titol": "Virus detectat!",
-	"resum": "Estàs mirant una recepta i de cop la pantalla s'omple d'alarmes: diu que tens virus i que truquis ara mateix. Què fas?",
+	"titol": "¡Virus detectado!",
+	"resum": "Estás mirando una receta y de golpe la pantalla se llena de alarmas: dice que tienes virus y que llames ahora mismo. ¿Qué haces?",
 	"dispositiu": "pc",
 	"personatge": "llissa",
 	"nivell": 3,
 	"durada_minuts": 5,
 	"rellotge": "19:15",
 	"intro": [
-		"Hola, Àlex! Sóc la Llissa. Avui no t'arribarà cap correu estrany: avui l'ensurt et pot sortir mentre navegues tan tranquil.",
-		"Hi ha webs que, de cop, et mostren un avís enorme que diu que el teu ordinador està infectat i que truquis a un «servei tècnic». Fan por a propòsit.",
-		"Tens el navegador obert amb una recepta de Cuina Avui. Llegeix-la amb calma i, si passa alguna cosa, fes servir la lupa abans de tocar res."
+		"¡Hola, Àlex! Soy Llissa. Hoy no te llegará ningún correo raro: hoy el susto te puede salir mientras navegas tan tranquilo.",
+		"Hay webs que, de golpe, te muestran un aviso enorme que dice que tu ordenador está infectado y que llames a un «servicio técnico». Dan miedo a propósito.",
+		"Tienes el navegador abierto con una receta de Cuina Avui. Léela con calma y, si pasa algo, usa la lupa antes de tocar nada."
 	],
-	"instruccions": "Llegeix la recepta de Cuina Avui. Si surt cap avís, revisa'l amb la lupa sense trucar ni instal·lar res, i decideix què en fas des del menú de la Llissa.",
+	"instruccions": "Lee la receta de Cuina Avui. Si sale algún aviso, revísalo con la lupa sin llamar ni instalar nada, y decide qué haces desde el menú de Llissa.",
 	"pistes": [
-		"Llegeix la recepta i espera una mica. Si et surt un avís a sobre de la pàgina, no toquis cap botó encara.",
-		"Fixa't en qui et parla: és una pàgina web. Una web pot saber si el teu ordinador té virus? I per què et demana que truquis o que instal·lis un programa?",
-		"Si dubtes, no truquis ni instal·lis res. Tanca la pestanya i ja està: l'avís viu dins de la pàgina, no al teu ordinador."
+		"Lee la receta y espera un poco. Si te sale un aviso encima de la página, no toques ningún botón todavía.",
+		"Fíjate en quién te habla: es una página web. ¿Puede una web saber si tu ordenador tiene virus? ¿Y por qué te pide que llames o que instales un programa?",
+		"Si dudas, no llames ni instales nada. Cierra la pestaña y ya está: el aviso vive dentro de la página, no en tu ordenador."
 	],
 	"apps": {
-		"navegador": { "inici": [ "https://cuinaravui.cat/" ] }
+		"navegador": { "inici": [ "https://cuinaravui.es/" ] }
 	},
 	"webs": {
-		"cuinaravui.cat": {
+		"cuinaravui.es": {
 			"plantilla": "article",
 			"https": true,
-			"titol": "Crema de carbassa en 20 minuts",
+			"titol": "Crema de calabaza en 20 minutos",
 			"nom_lloc": "Cuina Avui",
 			"entradeta": [
 				[
 					{
-						"t": "Un plat calentó, barat i de temporada. Amb una carbassa mitjana en tens per a quatre persones."
+						"t": "Un plato calentito, barato y de temporada. Con una calabaza mediana tienes para cuatro personas."
 					}
 				]
 			],
 			"seccions": [
 				{
-					"titol": "Ingredients",
+					"titol": "Ingredientes",
 					"llista": [
-						{ "t": "1 kg de carbassa pelada i a daus" },
-						{ "t": "1 ceba i 1 pastanaga" },
-						{ "t": "700 ml de brou de verdures" },
-						{ "t": "Un raig d'oli d'oliva, sal i pebre" }
+						{ "t": "1 kg de calabaza pelada y en dados" },
+						{ "t": "1 cebolla y 1 zanahoria" },
+						{ "t": "700 ml de caldo de verduras" },
+						{ "t": "Un chorrito de aceite de oliva, sal y pimienta" }
 					]
 				},
 				{
-					"titol": "Preparació",
+					"titol": "Preparación",
 					"cos": [
 						[
 							{
-								"t": "Sofregeix la ceba i la pastanaga amb una mica d'oli durant cinc minuts, a foc mitjà."
+								"t": "Sofríe la cebolla y la zanahoria con un poco de aceite durante cinco minutos, a fuego medio."
 							}
 						],
 						[
 							{
-								"t": "Afegeix-hi la carbassa i el brou, i deixa-ho bullir uns quinze minuts, fins que la carbassa estigui tova."
+								"t": "Añade la calabaza y el caldo, y déjalo hervir unos quince minutos, hasta que la calabaza esté tierna."
 							}
 						],
 						[
 							{
-								"t": "Tritura-ho tot, tasta-ho i posa-hi sal i pebre al gust."
+								"t": "Tritúralo todo, pruébalo y ponle sal y pimienta al gusto."
 							}
 						]
 					]
 				},
 				{
-					"titol": "Un consell",
+					"titol": "Un consejo",
 					"cos": [
 						[
 							{
-								"t": "Si la vols més cremosa, hi pots afegir una patata petita en començar la cocció."
+								"t": "Si la quieres más cremosa, puedes añadir una patata pequeña al empezar la cocción."
 							}
 						]
 					]
@@ -78,42 +78,42 @@
 			],
 			"avis": {
 				"retard_ms": 8000,
-				"titol": "Virus detectat! El teu ordinador està en perill",
+				"titol": "¡Virus detectado! Tu ordenador está en peligro",
 				"cos": [
 					[
 						{
-							"t": "Suport Segur Digital ha analitzat el teu equip i hi ha trobat 3 virus.",
+							"t": "Suport Segur Digital ha analizado tu equipo y ha encontrado 3 virus.",
 							"senyal": "web_no_detecta"
 						}
 					],
 					[
 						{
-							"t": "Les teves dades bancàries i contrasenyes estan en risc. No apaguis l'ordinador!",
+							"t": "Tus datos bancarios y contraseñas están en riesgo. ¡No apagues el ordenador!",
 							"senyal": "urgencia"
 						}
 					],
 					[
 						{
-							"t": "Aquest avís no es pot tancar fins que el problema estigui resolt.",
+							"t": "Este aviso no se puede cerrar hasta que el problema esté resuelto.",
 							"senyal": "no_es_tanca"
 						}
 					],
 					[
 						{
-							"t": "Instal·la l'eina de suport remot (suport-remot.exe) des de suport-segur-digital.top i un tècnic ho arreglarà.",
+							"t": "Instala la herramienta de soporte remoto (suport-remot.exe) desde suport-segur-digital.top y un técnico lo arreglará.",
 							"senyal": "instal_la_programa"
 						}
 					]
 				],
 				"telefon": "900 000 000",
-				"etiquetaTelefon": "Truca al suport tècnic",
+				"etiquetaTelefon": "Llama al soporte técnico",
 				"senyal_telefon": "truca_telefon",
-				"contador": "Temps restant: 04:59",
+				"contador": "Tiempo restante: 04:59",
 				"reobre": true,
 				"instal_la": {
 					"fitxer": "suport-remot.exe",
 					"origen": "suport-segur-digital.top",
-					"text_boto": "Instal·la l'eina de suport",
+					"text_boto": "Instalar la herramienta de soporte",
 					"senyal_origen": "origen_top"
 				}
 			}
@@ -122,14 +122,14 @@
 	"disparadors": [
 		{
 			"id": "avis-surt",
-			"quan": { "esdeveniment": "avis.apareix", "url": "cuinaravui.cat" },
+			"quan": { "esdeveniment": "avis.apareix", "url": "cuinaravui.es" },
 			"efectes": [ { "tipus": "guia-diu", "frase": "avis_surt" } ]
 		},
 		{
 			"id": "trucat",
 			"quan": {
 				"esdeveniment": "telefon.truca",
-				"url": "cuinaravui.cat"
+				"url": "cuinaravui.es"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
 		},
@@ -137,7 +137,7 @@
 			"id": "instal-lat",
 			"quan": {
 				"esdeveniment": "descarrega.fes",
-				"url": "cuinaravui.cat",
+				"url": "cuinaravui.es",
 				"fitxer": "suport-remot.exe"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
@@ -146,81 +146,81 @@
 	"senyals": [
 		{
 			"id": "web_no_detecta",
-			"titol": "Una web no pot veure si tens virus",
-			"explicacio": "Una pàgina web no té accés als fitxers del teu ordinador i no pot analitzar-lo. Si et diu que ha trobat virus, s'ho inventa. Qui vigila el teu equip és l'antivirus del sistema, no una web de receptes.",
-			"reaccio": "Una web de receptes que t'analitza l'ordinador? Si no pot ni veure els teus fitxers!"
+			"titol": "Una web no puede ver si tienes virus",
+			"explicacio": "Una página web no tiene acceso a los archivos de tu ordenador y no puede analizarlo. Si te dice que ha encontrado virus, se lo inventa. Quien vigila tu equipo es el antivirus del sistema, no una web de recetas.",
+			"reaccio": "¿Una web de recetas que te analiza el ordenador? ¡Si no puede ni ver tus archivos!"
 		},
 		{
 			"id": "truca_telefon",
-			"titol": "Et fan trucar a un telèfon",
-			"explicacio": "Cap avís de seguretat de veritat et demana que truquis a un número. A l'altra banda hi ha algú que et farà por perquè li paguis un «arranjament» o perquè li deixis entrar al teu ordinador.",
-			"reaccio": "Un número de telèfon per arreglar un virus? Aquí qui t'espera és l'estafador."
+			"titol": "Te hacen llamar a un teléfono",
+			"explicacio": "Ningún aviso de seguridad de verdad te pide que llames a un número. Al otro lado hay alguien que te va a asustar para que le pagues un «arreglo» o para que le dejes entrar en tu ordenador.",
+			"reaccio": "¿Un número de teléfono para arreglar un virus? Ahí el que te espera es el estafador."
 		},
 		{
 			"id": "urgencia",
-			"titol": "Pressa i por",
-			"explicacio": "«No apaguis l'ordinador», «les teves dades estan en risc», un compte enrere... Tot està pensat perquè t'espantis i actuïs sense pensar. Apagar o tancar el navegador no et farà cap mal.",
-			"reaccio": "Com més por et fan, més calma hi has de posar tu."
+			"titol": "Prisa y miedo",
+			"explicacio": "«No apagues el ordenador», «tus datos están en riesgo», una cuenta atrás... Todo está pensado para que te asustes y actúes sin pensar. Apagar o cerrar el navegador no te hará ningún daño.",
+			"reaccio": "Cuanto más miedo te meten, más calma tienes que poner tú."
 		},
 		{
 			"id": "no_es_tanca",
-			"titol": "Un «Tanca» que no tanca",
-			"explicacio": "El botó «Tanca» de l'avís no fa res: és un parany perquè et pensis que estàs atrapat. L'avís és part de la pàgina, així que tancar la pestanya sencera se l'emporta.",
-			"reaccio": "Que no es pugui tancar és un truc. Tanca la pestanya i s'ha acabat."
+			"titol": "Un «Cerrar» que no cierra",
+			"explicacio": "El botón «Cerrar» del aviso no hace nada: es una trampa para que creas que estás atrapado. El aviso es parte de la página, así que cerrar la pestaña entera se lo lleva por delante.",
+			"reaccio": "Que no se pueda cerrar es un truco. Cierra la pestaña y se acabó."
 		},
 		{
 			"id": "instal_la_programa",
-			"titol": "Et demanen instal·lar un programa",
-			"explicacio": "Un programa de «suport remot» deixa que un desconegut controli el teu ordinador: pot veure-ho tot, entrar al teu banc o posar-hi virus de veritat. Mai n'instal·lis cap perquè t'ho demana un avís.",
-			"reaccio": "Instal·lar-te el seu programa? Seria com donar-li les claus de casa."
+			"titol": "Te piden instalar un programa",
+			"explicacio": "Un programa de «soporte remoto» deja que un desconocido controle tu ordenador: puede verlo todo, entrar en tu banco o meterte virus de verdad. No instales nunca ninguno porque te lo pida un aviso.",
+			"reaccio": "¿Instalar su programa? Sería como darle las llaves de tu casa."
 		},
 		{
 			"id": "origen_top",
 			"requereix": "instal-lat",
-			"titol": "Un programa que ve d'un .top",
-			"explicacio": "El fitxer ve de suport-segur-digital.top, un domini sense cap empresa coneguda al darrere. Els programes de confiança els treus de la botiga d'apps del sistema o de la web oficial del fabricant, mai d'un enllaç d'un avís.",
-			"reaccio": "«.top» i un .exe que no has demanat? Ni de broma."
+			"titol": "Un programa que viene de un .top",
+			"explicacio": "El archivo viene de suport-segur-digital.top, un dominio sin ninguna empresa conocida detrás. Los programas de confianza los sacas de la tienda de apps del sistema o de la web oficial del fabricante, nunca de un enlace de un aviso.",
+			"reaccio": "¿«.top» y un .exe que no has pedido? Ni de broma."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això és normal, tranquil.",
-			"Aquí no hi ha res que piqui.",
-			"Tot en ordre, continua."
+			"Esto es normal, tranquilo.",
+			"Aquí no hay nada que pique.",
+			"Todo en orden, sigue."
 		],
-		"avis_surt": "Ep, t'ha sortit alguna cosa a sobre de la recepta? Respira: no toquis cap botó i mira-ho primer amb la lupa. Recorda que és un simulacre.",
-		"pescat": "Ai, Àlex! Si fos de veritat, ara un desconegut et demanaria diners per «arreglar» virus que no existeixen, o tindria el control del teu ordinador. Tranquil, que és un simulacre."
+		"avis_surt": "Eh, ¿te ha salido algo encima de la receta? Respira: no toques ningún botón y míralo primero con la lupa. Recuerda que es un simulacro.",
+		"pescat": "¡Ay, Àlex! Si fuera de verdad, ahora un desconocido te pediría dinero para «arreglar» virus que no existen, o tendría el control de tu ordenador. Tranquilo, que es un simulacro."
 	},
 	"decisio": {
-		"pregunta": "Què fas amb l'avís de virus?",
+		"pregunta": "¿Qué haces con el aviso de virus?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "Tanco la pestanya sense tocar res.",
+				"text": "Cierro la pestaña sin tocar nada.",
 				"valor": "correcta",
-				"resposta": "Molt bé! L'avís vivia dins de la pàgina: tancant la pestanya desapareix, i tu no has trucat ni instal·lat res."
+				"resposta": "¡Muy bien! El aviso vivía dentro de la página: al cerrar la pestaña desaparece, y tú no has llamado ni instalado nada."
 			},
 			{
 				"id": "b",
-				"text": "Ignoro l'avís i segueixo mirant la recepta.",
+				"text": "Ignoro el aviso y sigo mirando la receta.",
 				"valor": "parcial",
-				"resposta": "No has caigut, i això és el més important. Però aquella pàgina et pot tornar a mostrar l'avís. El més segur és tancar la pestanya."
+				"resposta": "No has caído, y eso es lo más importante. Pero esa página te puede volver a mostrar el aviso. Lo más seguro es cerrar la pestaña."
 			},
 			{
 				"id": "c",
-				"text": "Truco al telèfon o instal·lo l'eina.",
+				"text": "Llamo al teléfono o instalo la herramienta.",
 				"valor": "incorrecta",
-				"resposta": "T'han pescat. Al telèfon et demanarien diners o accés al teu ordinador, i l'eina els deixaria entrar-hi quan volguessin."
+				"resposta": "Te han pescado. Por teléfono te pedirían dinero o acceso a tu ordenador, y la herramienta les dejaría entrar cuando quisieran."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Una pàgina web no pot saber si el teu ordinador té virus.",
-			"Cap avís de seguretat de veritat et fa trucar a un telèfon ni instal·lar un programa.",
-			"Si un avís no es deixa tancar, tanca la pestanya o el navegador: no passa res.",
-			"La por i la pressa són l'esquer: atura't abans de tocar res."
+			"Una página web no puede saber si tu ordenador tiene virus.",
+			"Ningún aviso de seguridad de verdad te hace llamar a un teléfono ni instalar un programa.",
+			"Si un aviso no se deja cerrar, cierra la pestaña o el navegador: no pasa nada.",
+			"El miedo y la prisa son el cebo: para antes de tocar nada."
 		],
-		"consell": "Si has trucat o has instal·lat un programa d'un avís així, desconnecta l'ordinador d'internet, desinstal·la el programa i canvia les contrasenyes des d'un altre dispositiu. Si has donat dades bancàries, truca al banc de seguida. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si has llamado o has instalado un programa de un aviso así, desconecta el ordenador de internet, desinstala el programa y cambia las contraseñas desde otro dispositivo. Si has dado datos bancarios, llama enseguida al banco. También puedes llamar al 017, la línea gratuita y confidencial de ayuda en ciberseguridad de INCIBE."
 	}
 }

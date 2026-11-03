@@ -1,23 +1,23 @@
 {
 	"id": "llissa-02-banc",
 	"versio": 2,
-	"titol": "El banc et bloqueja el compte",
-	"resum": "Un correu del banc diu que t'han bloquejat el compte i que tens 24 hores per verificar-lo. Cal fer-ne cas?",
+	"titol": "El banco te bloquea la cuenta",
+	"resum": "Un correo del banco dice que te han bloqueado la cuenta y que tienes 24 horas para verificarla. ¿Hay que hacerle caso?",
 	"dispositiu": "pc",
 	"personatge": "llissa",
 	"nivell": 2,
 	"durada_minuts": 6,
 	"rellotge": "10:05",
 	"intro": [
-		"Hola de nou, Àlex! Avui toca un esquer que fa molta por: el del banc. Quan toquen els diners, ningú no es queda tranquil.",
-		"Un bon pescador no es deixa endur per la pressa. Mira bé qui escriu, d'on ve l'enllaç i què et demanen. Jo hi tinc l'ull posat.",
-		"Obre Posta i espera que arribi res de nou. I recorda: el teu banc, el de veritat, el trobes a bancsolid.cat."
+		"¡Hola de nuevo, Àlex! Hoy toca un cebo que da mucho miedo: el del banco. Cuando se tocan los cuartos, nadie se queda tranquilo.",
+		"Un buen pescador no se deja llevar por la prisa. Mira bien quién escribe, de dónde viene el enlace y qué te piden. Yo estoy pendiente.",
+		"Abre Posta y espera a que llegue algo nuevo. Y recuerda: tu banco, el de verdad, lo encuentras en bancsolid.es."
 	],
-	"instruccions": "Espera que t'arribi un correu nou a Posta, obre'l, busca'n els indicis amb la lupa i decideix què en fas.",
+	"instruccions": "Espera a que te llegue un correo nuevo a Posta, ábrelo, busca los indicios con la lupa y decide qué haces.",
 	"pistes": [
-		"Obre Posta i fixa't en el correu nou. De quin domini és l'adreça del remitent?",
-		"Compara l'adreça de l'enllaç amb la del teu banc: bancsolid.cat. Si hi ha alguna cosa afegida, desconfia.",
-		"Si dubtes, no facis servir l'enllaç. Comprova-ho pel camí de sempre, sense fer servir l'enllaç del correu, o marca el correu com a phishing."
+		"Abre Posta y fíjate en el correo nuevo. ¿De qué dominio es la dirección del remitente?",
+		"Compara la dirección del enlace con la de tu banco: bancsolid.es. Si hay algo añadido, desconfía.",
+		"Si dudas, no uses el enlace. Compruébalo por el camino de siempre, sin usar el enlace del correo, o marca el correo como phishing."
 	],
 	"apps": {
 		"posta": {
@@ -30,17 +30,17 @@
 					"data": "ahir",
 					"remitent": {
 						"nom": "Banc Sòlid",
-						"adreca": "extractes@bancsolid.cat"
+						"adreca": "extractes@bancsolid.es"
 					},
-					"assumpte": "El teu extracte d'aquest mes",
+					"assumpte": "Tu extracto de este mes",
 					"cos": [
 						[ { "t": "Hola, Àlex:" } ],
 						[
-							{ "t": "Ja tens disponible l'extracte del mes a la teva àrea de clients: " },
+							{ "t": "Ya tienes disponible el extracto del mes en tu área de clientes: " },
 							{
 								"enllac": {
-									"text": "bancsolid.cat",
-									"url": "https://bancsolid.cat/area-clients"
+									"text": "bancsolid.es",
+									"url": "https://bancsolid.es/area-clients"
 								}
 							}
 						],
@@ -59,84 +59,84 @@
 						"adreca": "seguretat@bancsolid-acces.top",
 						"senyal": "remitent"
 					},
-					"assumpte": "Compte bloquejat: verifica la teva identitat",
+					"assumpte": "Cuenta bloqueada: verifica tu identidad",
 					"assumpte_senyal": "urgencia",
 					"cos": [
-						[ { "t": "Benvolgut client,", "senyal": "salutacio" } ],
+						[ { "t": "Estimado cliente:", "senyal": "salutacio" } ],
 						[
 							{
-								"t": "Per motius de seguretat, el teu compte s'ha bloquejat. Si no verifiques la teva identitat en les pròximes 24 hores, el compte es cancel·larà definitivament.",
+								"t": "Por motivos de seguridad, tu cuenta se ha bloqueado. Si no verificas tu identidad en las próximas 24 horas, la cuenta se cancelará definitivamente.",
 								"senyal": "urgencia"
 							}
 						],
 						[
-							{ "t": "Per desbloquejar-lo, entra a " },
+							{ "t": "Para desbloquearla, entra en " },
 							{
 								"enllac": {
-									"text": "Accedeix al teu banc",
+									"text": "Accede a tu banco",
 									"url": "https://bancsolid-acces.top/entrada"
 								},
 								"senyal": "enllac"
 							},
-							{ "t": " i segueix els passos." }
+							{ "t": " y sigue los pasos." }
 						],
-						[ { "t": "Atentament," } ],
-						[ { "t": "Departament de Seguretat" } ]
+						[ { "t": "Atentamente," } ],
+						[ { "t": "Departamento de Seguridad" } ]
 					]
 				}
 			]
 		},
-		"navegador": { "inici": [ "https://posta.cat/" ] }
+		"navegador": { "inici": [ "https://posta.es/" ] }
 	},
 	"webs": {
-		"posta.cat": {
+		"posta.es": {
 			"plantilla": "posta",
 			"https": true,
 			"titol": "Posta"
 		},
-		"bancsolid.cat": {
+		"bancsolid.es": {
 			"plantilla": "banc-solid",
 			"variant": "oficial",
 			"https": true,
-			"titol": "Banc Sòlid · Àrea de clients",
-			"missatge": "No tens cap avís pendent"
+			"titol": "Banc Sòlid · Área de clientes",
+			"missatge": "No tienes ningún aviso pendiente"
 		},
 		"bancsolid-acces.top": {
 			"plantilla": "banc-solid",
 			"variant": "falsa",
 			"https": true,
-			"titol": "Banc Sòlid · Verificació del compte",
+			"titol": "Banc Sòlid · Verificación de la cuenta",
 			"domini_senyal": "domini",
 			"textos": {
 				"bloqueig": {
 					"senyal": "bloqueig",
-					"t": "El teu conte ha estat bloquejat"
+					"t": "Tu cuetna ha sido bloqueada"
 				},
 				"urgencia": { "senyal": "urgencia" },
 				"errata": {
 					"senyal": "errata",
-					"t": "Hem detectat un accés no autoritzat al teu conte."
+					"t": "Hemos detectado un acceso no autorizado a tu cuetna."
 				},
 				"codi_sms": {
 					"senyal": "codi_sms",
-					"t": "T'hem enviat un codi per SMS. Escriu-lo aquí per acabar la verificació."
+					"t": "Te hemos enviado un código por SMS. Escríbelo aquí para terminar la verificación."
 				}
 			},
 			"formulari": {
 				"id": "acces",
-				"boto": "Accedeix",
-				"processant": "Comprovant les teves dades…",
-				"nota": "Connexió segura",
+				"boto": "Acceder",
+				"processant": "Comprobando tus datos…",
+				"nota": "Conexión segura",
 				"camps": [
 					{
 						"id": "usuari",
-						"etiqueta": "Usuari",
+						"etiqueta": "Usuario",
 						"autoompli": "alex.puig"
 					},
 					{
 						"id": "contrasenya",
-						"etiqueta": "Contrasenya",
-						"autoompli": "contrasenya123",
+						"etiqueta": "Contraseña",
+						"autoompli": "contraseña123",
 						"amagat": true
 					},
 					{
@@ -149,13 +149,13 @@
 			},
 			"formulari_codi": {
 				"id": "codi",
-				"boto": "Verifica",
-				"processant": "Desbloquejant el compte…",
-				"nota": "Verificació en curs",
+				"boto": "Verificar",
+				"processant": "Desbloqueando la cuenta…",
+				"nota": "Verificación en curso",
 				"camps": [
 					{
 						"id": "codi",
-						"etiqueta": "Codi SMS",
+						"etiqueta": "Código SMS",
 						"autocomplete": false
 					}
 				]
@@ -174,7 +174,7 @@
 					"so": "alerta",
 					"app": "posta",
 					"titol": "Banc Sòlid",
-					"text": "Compte bloquejat: verifica la teva identitat"
+					"text": "Cuenta bloqueada: verifica tu identidad"
 				}
 			]
 		},
@@ -209,7 +209,7 @@
 					"font": "mobil",
 					"app": "missatges",
 					"titol": "Banc Sòlid",
-					"text": "El teu codi de verificació és 482913. No el comparteixis amb ningú."
+					"text": "Tu código de verificación es 482913. No lo compartas con nadie."
 				}
 			]
 		},
@@ -252,7 +252,7 @@
 			"id": "web-oficial",
 			"quan": {
 				"esdeveniment": "web.carrega",
-				"url": "bancsolid.cat",
+				"url": "bancsolid.es",
 				"visible": "m2"
 			},
 			"efectes": [ { "tipus": "decideix", "opcio": "d" } ]
@@ -261,112 +261,112 @@
 	"senyals": [
 		{
 			"id": "remitent",
-			"titol": "L'adreça no és la del banc",
-			"explicacio": "El nom diu Banc Sòlid, però el correu ve de bancsolid-acces.top. El domini oficial és bancsolid.cat. Els estafadors registren dominis que s'hi assemblen i amb terminacions rares com .top.",
-			"reaccio": "Mira què hi ha després de l'arrova. Aquest «-acces.top» no és del teu banc."
+			"titol": "La dirección no es la del banco",
+			"explicacio": "El nombre dice Banc Sòlid, pero el correo viene de bancsolid-acces.top. El dominio oficial es bancsolid.es. Los estafadores registran dominios que se le parecen y con terminaciones raras como .top.",
+			"reaccio": "Mira lo que hay después de la arroba. Ese «-acces.top» no es de tu banco."
 		},
 		{
 			"id": "salutacio",
-			"titol": "Salutació genèrica",
-			"explicacio": "El teu banc sap com et dius. Un «Benvolgut client» serveix per enviar el mateix correu a milers de persones alhora.",
-			"reaccio": "Si fos del teu banc, hi sortiria el teu nom."
+			"titol": "Saludo genérico",
+			"explicacio": "Tu banco sabe cómo te llamas. Un «Estimado cliente» sirve para enviar el mismo correo a miles de personas a la vez.",
+			"reaccio": "Si fuera de tu banco, saldría tu nombre."
 		},
 		{
 			"id": "urgencia",
-			"titol": "Pressa de 24 hores",
-			"explicacio": "Et donen 24 hores abans de cancel·lar el compte. Un banc de veritat no et pressiona així per correu: la pressa serveix perquè no pensis.",
-			"reaccio": "24 hores... Clàssic. La por fa picar més que la gana."
+			"titol": "Prisa de 24 horas",
+			"explicacio": "Te dan 24 horas antes de cancelar la cuenta. Un banco de verdad no te presiona así por correo: la prisa sirve para que no pienses.",
+			"reaccio": "24 horas... Un clásico. El miedo hace picar más que el hambre."
 		},
 		{
 			"id": "bloqueig",
 			"requereix": "web-falsa",
-			"titol": "L'amenaça del compte bloquejat",
-			"explicacio": "Dir-te que el compte ja està bloquejat és l'esquer: vol que corris a «desbloquejar-lo». Si fos cert, ho veuries entrant tu al web oficial.",
-			"reaccio": "Bloquejat, diu. Doncs comprova-ho tu, per la porta de sempre."
+			"titol": "La amenaza de la cuenta bloqueada",
+			"explicacio": "Decirte que la cuenta ya está bloqueada es el cebo: quiere que corras a «desbloquearla». Si fuera cierto, lo verías entrando tú en la web oficial.",
+			"reaccio": "Bloqueada, dice. Pues compruébalo tú, por la puerta de siempre."
 		},
 		{
 			"id": "enllac",
-			"titol": "L'enllaç porta a un altre lloc",
-			"explicacio": "El text diu «Accedeix al teu banc», però si hi passes el ratolí, la barra de baix mostra bancsolid-acces.top, no bancsolid.cat.",
-			"reaccio": "Has vist la barra de baix? Aquest enllaç no te'n porta a casa."
+			"titol": "El enlace lleva a otro sitio",
+			"explicacio": "El texto dice «Accede a tu banco», pero si pasas el ratón por encima, la barra de abajo muestra bancsolid-acces.top, no bancsolid.es.",
+			"reaccio": "¿Has visto la barra de abajo? Ese enlace no te lleva a casa."
 		},
 		{
 			"id": "domini",
 			"requereix": "web-falsa",
-			"titol": "L'adreça de la web no és l'oficial",
-			"explicacio": "La barra d'adreces diu bancsolid-acces.top. Que tingui cadenat no vol dir que sigui fiable: només vol dir que la connexió està xifrada, també amb els estafadors.",
-			"reaccio": "Té cadenat, sí, però l'adreça no és la del banc. El cadenat no t'assegura res."
+			"titol": "La dirección de la web no es la oficial",
+			"explicacio": "La barra de direcciones dice bancsolid-acces.top. Que tenga candado no significa que sea fiable: solo significa que la conexión está cifrada, también con los estafadores.",
+			"reaccio": "Tiene candado, sí, pero la dirección no es la del banco. El candado no te asegura nada."
 		},
 		{
 			"id": "errata",
 			"requereix": "web-falsa",
 			"titol": "Una errata que delata",
-			"explicacio": "Hi diu «conte» en lloc de «compte». Un banc revisa els textos; les estafes sovint tenen faltes.",
-			"reaccio": "«Conte»? Això és un conte, i no precisament bo."
+			"explicacio": "Pone «cuetna» en lugar de «cuenta». Un banco revisa los textos; las estafas suelen tener faltas.",
+			"reaccio": "¿«Cuetna»? Eso no lo escribe ningún banco, y menos el tuyo."
 		},
 		{
 			"id": "dni",
 			"requereix": "web-falsa",
-			"titol": "Et demana més dades de les necessàries",
-			"explicacio": "Per entrar només caldria l'usuari i la contrasenya. Que et demanin també el DNI és una manera de robar-te més informació.",
-			"reaccio": "Un camp de més. Quan et demanen més del compte, sospita."
+			"titol": "Te pide más datos de los necesarios",
+			"explicacio": "Para entrar solo haría falta el usuario y la contraseña. Que te pidan también el DNI es una manera de robarte más información.",
+			"reaccio": "Un campo de más. Cuando te piden más de la cuenta, sospecha."
 		},
 		{
 			"id": "codi_sms",
 			"requereix": "web-falsa",
-			"titol": "El banc no et demana el codi SMS en una web",
-			"explicacio": "El codi que et ve per SMS és personal i serveix per autoritzar operacions. Si el donen als estafadors, el fan servir al banc de veritat. Cap banc te'l demana per aquí.",
-			"reaccio": "Aquest codi és la clau del pany. Mai no el donis."
+			"titol": "El banco no te pide el código SMS en una web",
+			"explicacio": "El código que te llega por SMS es personal y sirve para autorizar operaciones. Si se lo das a los estafadores, lo usan en el banco de verdad. Ningún banco te lo pide por aquí.",
+			"reaccio": "Ese código es la llave de la cerradura. Nunca lo des."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això sembla normal. Continua buscant.",
-			"Aquí no hi veig cap ham.",
-			"Res d'estrany per aquí."
+			"Esto parece normal. Sigue buscando.",
+			"Aquí no veo ningún anzuelo.",
+			"Nada raro por aquí."
 		],
-		"web_falsa": "Ho has obert. Fixa't bé en aquesta web: s'assembla a la del banc, però mira l'adreça de dalt. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"dades_donades": "Ostres, ja els has donat l'usuari, la contrasenya i el DNI. No escriguis el codi que et demanaran i, de seguida, canvia la contrasenya i avisa el banc pel canal oficial.",
-		"pescat": "Ai, ai, ai. Has donat el codi. Si fos de veritat, ara els estafadors podrien entrar al teu compte i moure'n els diners. Calma, això és un simulacre."
+		"web_falsa": "La has abierto. Fíjate bien en esta web: se parece a la del banco, pero mira la dirección de arriba. Y ten presente que es un simulacro, no pongas nada de verdad.",
+		"dades_donades": "Vaya, ya les has dado el usuario, la contraseña y el DNI. No escribas el código que te van a pedir y, enseguida, cambia la contraseña y avisa al banco por el canal oficial.",
+		"pescat": "Ay, ay, ay. Has dado el código. Si fuera de verdad, ahora los estafadores podrían entrar en tu cuenta y mover tu dinero. Calma, esto es un simulacro."
 	},
 	"decisio": {
-		"pregunta": "Què fas amb el correu del banc?",
+		"pregunta": "¿Qué haces con el correo del banco?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "Faig cas del correu: entro a l'enllaç i verifico el compte.",
+				"text": "Hago caso al correo: entro en el enlace y verifico la cuenta.",
 				"valor": "incorrecta",
-				"resposta": "T'han pescat. La web era una còpia i ara els estafadors tenen les teves dades i el codi. Si et passa de veritat, truca al banc de seguida."
+				"resposta": "Te han pescado. La web era una copia y ahora los estafadores tienen tus datos y el código. Si te pasa de verdad, llama enseguida al banco."
 			},
 			{
 				"id": "b",
-				"text": "L'ignoro o l'esborro, sense fer res més.",
+				"text": "Lo ignoro o lo borro, sin hacer nada más.",
 				"valor": "parcial",
-				"resposta": "No has picat, i això ja és molt. Si a més el marques com a phishing, el teu correu aprèn a bloquejar-los i protegeixes altres persones."
+				"resposta": "No has picado, y eso ya es mucho. Si además lo marcas como phishing, tu correo aprende a bloquearlos y proteges a otras personas."
 			},
 			{
 				"id": "c",
-				"text": "Marco el correu com a phishing.",
+				"text": "Marco el correo como phishing.",
 				"valor": "correcta",
-				"resposta": "Perfecte. Era una estafa, i marcar el correu com a phishing ajuda a frenar-la també per a altres persones."
+				"resposta": "Perfecto. Era una estafa, y marcar el correo como phishing ayuda a frenarla también para otras personas."
 			},
 			{
 				"id": "d",
-				"text": "Entro jo a bancsolid.cat, miro el compte i comprovo que no hi ha cap avís.",
+				"text": "Entro yo en bancsolid.es, miro la cuenta y compruebo que no hay ningún aviso.",
 				"valor": "correcta",
-				"resposta": "Molt bé. Al web oficial no hi ha cap bloqueig, així que el correu era una estafa. Entrar per la porta de sempre és la millor comprovació."
+				"resposta": "Muy bien. En la web oficial no hay ningún bloqueo, así que el correo era una estafa. Entrar por la puerta de siempre es la mejor comprobación."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Mira sempre l'adreça completa del remitent, sobretot el que hi ha després de l'arrova.",
-			"Un banc no et demana l'usuari, la contrasenya ni el codi SMS a través d'un enllaç d'un correu.",
-			"Els codis que reps per SMS són personals: no els donis a ningú.",
-			"La pressa i les amenaces de bloqueig són senyals d'alarma.",
-			"El cadenat de la barra d'adreces no garanteix que una web sigui fiable.",
-			"Si dubtes, entra tu al web oficial escrivint l'adreça. Mai des de l'enllaç del correu."
+			"Mira siempre la dirección completa del remitente, sobre todo lo que hay después de la arroba.",
+			"Un banco no te pide el usuario, la contraseña ni el código SMS a través de un enlace de un correo.",
+			"Los códigos que recibes por SMS son personales: no se los des a nadie.",
+			"La prisa y las amenazas de bloqueo son señales de alarma.",
+			"El candado de la barra de direcciones no garantiza que una web sea fiable.",
+			"Si dudas, entra tú en la web oficial escribiendo la dirección. Nunca desde el enlace del correo."
 		],
-		"consell": "Si has donat dades o un codi en una web sospitosa, truca al teu banc de seguida per bloquejar el compte i canvia la contrasenya. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si has dado datos o un código en una web sospechosa, llama enseguida a tu banco para bloquear la cuenta y cambia la contraseña. También puedes llamar al 017, la línea gratuita y confidencial de ayuda en ciberseguridad de INCIBE."
 	}
 }
