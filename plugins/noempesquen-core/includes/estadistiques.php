@@ -500,29 +500,34 @@ function nep_crea_taula_resultats(): bool {
 }
 
 /**
- * Missions jugables (les mateixes que veu el client): les incloses
- * (`missions/ca/*.json`, sense `mon.json`; els ids són els mateixos a `es/`) i les publicades al panell, que
- * substitueixen per id les incloses.
+ * Missions jugables per idioma (les mateixes que veu el client): les incloses
+ * (`missions/<idioma>/*.json`, sense `mon.json`) i les publicades al panell
+ * amb aquell idioma (sense `nep_idioma` = `ca`), que substitueixen per id les incloses.
  *
  * Es desa en un transient (una hora com a màxim) que s'esborra quan canvia
  * una missió del panell; la signatura dels fitxers inclosos (nom i data)
  * l'invalida també després d'un desplegament.
  *
- * @return array<string, array> Guió per id.
+ * @return array<string, array<string, array>> Guió per idioma i id.
  */
-function nep_missions_jugables(): array {
-	$fitxers = nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', 'ca' ) );
-	$firma   = md5( implode( '|', array_map( static fn( $f ) => basename( $f ) . ':' . filemtime( $f ), $fitxers ) ) );
-	$cau     = get_transient( NEP_CAU_MISSIONS );
-	if ( is_array( $cau ) && ( $cau['firma'] ?? '' ) === $firma && is_array( $cau['missions'] ?? null ) ) {
-		return $cau['missions'];
+function nep_missions_jugables_per_idioma(): array {
+	$fitxers = array();
+	foreach ( nep_idiomes_missio() as $idioma ) {
+		$fitxers[ $idioma ] = nep_fitxers_missions_incloses( nep_carpeta_missions( NEP_PATH . 'missions/', $idioma ) );
+	}
+	$firma = md5( implode( '|', array_map( static fn( $f ) => $f . ':' . filemtime( $f ), array_merge( ...array_values( $fitxers ) ) ) ) );
+	$cau   = get_transient( NEP_CAU_MISSIONS );
+	if ( is_array( $cau ) && ( $cau['firma'] ?? '' ) === $firma && is_array( $cau['idiomes'] ?? null ) ) {
+		return $cau['idiomes'];
 	}
 
-	$missions = array();
-	foreach ( $fitxers as $fitxer ) {
-		$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
-		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
-			$missions[ $guio['id'] ] = $guio;
+	$idiomes = array_fill_keys( nep_idiomes_missio(), array() );
+	foreach ( $fitxers as $idioma => $llista ) {
+		foreach ( $llista as $fitxer ) {
+			$guio = nep_descodifica_guio( (string) file_get_contents( $fitxer ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Fitxer local del plugin.
+			if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) ) {
+				$idiomes[ $idioma ][ $guio['id'] ] = $guio;
+			}
 		}
 	}
 
@@ -535,26 +540,51 @@ function nep_missions_jugables(): array {
 			'order'          => 'ASC',
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
-			// Les dues versions d'una missió tenen el mateix id; el hash de versió és el de la catalana.
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Poques missions; resultat en transient.
-			'meta_query'     => nep_meta_query_idioma( 'ca' ),
 		)
 	);
 	foreach ( $posts as $post_id ) {
 		$guio = nep_descodifica_guio( (string) get_post_meta( $post_id, 'nep_guio', true ) );
 		if ( $guio && isset( $guio['id'] ) && is_string( $guio['id'] ) && preg_match( '/' . NEP_PATRO_ID . '/D', $guio['id'] ) ) {
-			$missions[ $guio['id'] ] = $guio;
+			$idiomes[ nep_idioma_de_missio( (int) $post_id ) ][ $guio['id'] ] = $guio;
 		}
 	}
 	set_transient(
 		NEP_CAU_MISSIONS,
 		array(
-			'firma'    => $firma,
-			'missions' => $missions,
+			'firma'   => $firma,
+			'idiomes' => $idiomes,
 		),
 		HOUR_IN_SECONDS
 	);
-	return $missions;
+	return $idiomes;
+}
+
+/**
+ * Missions jugables per id. Les dues versions d'una missió tenen el mateix id:
+ * si n'hi ha de catalana, mana la catalana (el hash de versió no canvia); una
+ * missió només en castellà també compta.
+ *
+ * @return array<string, array> Guió per id.
+ */
+function nep_missions_jugables(): array {
+	$idiomes = nep_missions_jugables_per_idioma();
+	return array_merge( $idiomes['es'] ?? array(), $idiomes['ca'] ?? array() );
+}
+
+/**
+ * Ids d'opció de la decisió d'una missió en qualsevol idioma (unió de ca i es).
+ *
+ * @param string $id Id de la missió.
+ * @return string[]
+ */
+function nep_ids_opcions_tots_idiomes( string $id ): array {
+	$ids = array();
+	foreach ( nep_missions_jugables_per_idioma() as $missions ) {
+		if ( isset( $missions[ $id ] ) ) {
+			$ids = array_merge( $ids, nep_ids_opcions( $missions[ $id ] ) );
+		}
+	}
+	return array_values( array_unique( $ids ) );
 }
 
 /**
@@ -746,7 +776,7 @@ function nep_rest_resultat( WP_REST_Request $request ) {
 		return new WP_Error( 'nep_missio_tutorial', __( 'Els tutorials no tenen resultat.', 'noempesquen' ), array( 'status' => 400 ) );
 	}
 	$decisio = isset( $request['decisio'] ) ? (string) $request['decisio'] : '';
-	if ( '' !== $decisio && ! in_array( $decisio, nep_ids_opcions( $guio ), true ) ) {
+	if ( '' !== $decisio && ! in_array( $decisio, nep_ids_opcions_tots_idiomes( $id ), true ) ) {
 		return new WP_Error( 'nep_decisio_desconeguda', __( 'Decisió desconeguda.', 'noempesquen' ), array( 'status' => 400 ) );
 	}
 

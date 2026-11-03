@@ -357,7 +357,8 @@ $nep_comprova( NEP_DB_VERSION === get_option( 'nep_db_version' ), 'uninstall: re
 wp_set_current_user( 1 );
 $nep_idioma_guio = $nep_valida;
 $nep_idioma_guio['id'] = 'prova-idioma-t04';
-$nep_crea_idioma = static function ( ?string $idioma ) use ( $nep_idioma_guio, &$nep_creades ): WP_REST_Response {
+$nep_crea_idioma = static function ( ?string $idioma, ?array $guio = null ) use ( $nep_idioma_guio, &$nep_creades ): WP_REST_Response {
+	$nep_idioma_guio = $guio ?? $nep_idioma_guio;
 	$meta = array(
 		'nep_dispositiu' => $nep_idioma_guio['dispositiu'],
 		'nep_personatge' => $nep_idioma_guio['personatge'],
@@ -412,7 +413,37 @@ nep_migra_missions();
 nep_migra_missions();
 $nep_comprova( array( 'ca' ) === get_post_meta( $nep_ca, 'nep_idioma' ) && array( 'es' ) === get_post_meta( $nep_es, 'nep_idioma' ), 'migració: posa ca a les que no en tenen, una sola vegada' );
 $nep_comprova( NEP_VERSIO_MISSIONS === (int) get_option( 'nep_versio_missions' ), 'migració: desa la versió' );
-foreach ( array( $nep_ca, $nep_es ) as $nep_id_t04 ) {
+// Estadístiques: una missió només en castellà compta, i la decisió es valida contra la unió d'opcions ca + es.
+$nep_guio_es_ = $nep_idioma_guio;
+$nep_guio_es_['id'] = 'prova-idioma-t04-es';
+$nep_guio_es_['decisio']['opcions'][0]['id'] = 'nomes-es';
+$nep_es_sol = (int) ( $nep_crea_idioma( 'es', $nep_guio_es_ )->get_data()['id'] ?? 0 );
+$nep_guio_par = $nep_idioma_guio;
+$nep_guio_par['id'] = 'prova-idioma-t04-par';
+$nep_par_ca = (int) ( $nep_crea_idioma( 'ca', $nep_guio_par )->get_data()['id'] ?? 0 );
+$nep_guio_par['decisio']['opcions'][3]['id'] = 'opcio-es';
+$nep_par_es = (int) ( $nep_crea_idioma( 'es', $nep_guio_par )->get_data()['id'] ?? 0 );
+foreach ( array( $nep_es_sol, $nep_par_ca, $nep_par_es ) as $nep_id_t04 ) {
+	wp_publish_post( $nep_id_t04 );
+}
+delete_transient( NEP_CAU_MISSIONS );
+delete_transient( nep_clau_limit( nep_ip_client() ) );
+delete_transient( NEP_CLAU_LIMIT_GLOBAL );
+$nep_resultat_t04 = static function ( string $missio, string $decisio ): int {
+	$peticio = new WP_REST_Request( 'POST', '/noempesquen/v1/resultat' );
+	$peticio->set_header( 'Content-Type', 'application/json' );
+	$peticio->set_body( wp_json_encode( array( 'missio' => $missio, 'estrelles' => 2, 'decisio' => $decisio ) ) );
+	return rest_do_request( $peticio )->get_status();
+};
+$nep_jugables = nep_missions_jugables();
+$nep_comprova( isset( $nep_jugables['prova-idioma-t04-es'] ) && 'a' === $nep_jugables['prova-idioma-t04-par']['decisio']['opcions'][0]['id'], 'estadístiques: missió només es jugable; en una parella mana la ca' );
+$nep_comprova( 204 === $nep_resultat_t04( 'prova-idioma-t04-es', 'nomes-es' ), 'estadístiques: resultat amb una missió només es → 204' );
+$nep_comprova( 204 === $nep_resultat_t04( 'prova-idioma-t04-par', 'opcio-es' ) && 204 === $nep_resultat_t04( 'prova-idioma-t04-par', 'd' ), 'estadístiques: decisió de qualsevol dels dos idiomes → 204' );
+$nep_comprova( 400 === $nep_resultat_t04( 'prova-idioma-t04-par', 'zz' ), 'estadístiques: decisió que no és en cap idioma → 400' );
+$wpdb->query( "DELETE FROM " . nep_taula_resultats() . " WHERE missio LIKE 'prova-idioma-t04%'" ); // phpcs:ignore WordPress.DB
+delete_transient( nep_clau_limit( nep_ip_client() ) );
+delete_transient( NEP_CLAU_LIMIT_GLOBAL );
+foreach ( array( $nep_ca, $nep_es, $nep_es_sol, $nep_par_ca, $nep_par_es ) as $nep_id_t04 ) {
 	wp_delete_post( $nep_id_t04, true );
 }
 
