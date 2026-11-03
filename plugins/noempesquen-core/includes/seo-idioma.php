@@ -105,9 +105,11 @@ add_action(
 
 /*
  * Sitemaps: el del nucli de WordPress, amb un proveïdor per idioma
- * (`/wp-sitemap-es-1.xml`, `/wp-sitemap-ca-1.xml`). The SEO Framework, si hi és,
- * desactiva el del nucli quan fa servir el seu (un sol fitxer sense idiomes): aquí es
- * força el del nucli, que TSF continua filtrant i anunciant a `robots.txt`.
+ * (`/wp-sitemap-es-1.xml`, `/wp-sitemap-ca-1.xml`). The SEO Framework (TSF), si hi és,
+ * té el seu propi sitemap (un sol fitxer, sense idiomes) i desactiva el del nucli;
+ * aquí es força `sitemaps_output = 0` perquè TSF no el generi i quedi el del nucli.
+ * L'anunci a `robots.txt` només hi surt si el fitxer és virtual: amb un `robots.txt`
+ * físic a l'arrel no hi ha cap línia `Sitemap:` (cal afegir-la a mà).
  */
 add_filter(
 	'the_seo_framework_get_options',

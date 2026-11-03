@@ -6,6 +6,12 @@
 # Cuándo: SOLO después de que la migración de páginas haya creado /ca/… y
 # hecho flush de rewrites (ver docs/despliegue-i18n.md). Si se inserta antes,
 # las URLs catalanas darían 404.
+# POLÍTICA 302 -> 301: se despliega PRIMERO con R=302 (1-2 semanas). Un 301 lo
+# cachean para siempre navegadores y Google: si algo falla no hay rollback real.
+# Cuando el smoke y Search Console estén limpios, cambiar R=302 por R=301 en
+# todas las reglas (buscar/reemplazar «R=302» -> «R=301») y purgar Varnish.
+# Tenerlo listo para pegar en <=2 min tras la migración (entre migración y bloque
+# hay una ventana de 404 en las URLs catalanas de la raíz).
 # Rollback: borrar este bloque entero (de «BEGIN nep-i18n» a «END nep-i18n»).
 #
 # Qué NO toca, por construcción: cada regla casa con un slug catalán exacto
@@ -25,14 +31,22 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
-# Salvaguarda: nada que ya sea /ca/, ni rutas técnicas, entra en las reglas.
-RewriteRule ^(ca|simulador|wp-json|wp-admin|admin|wp-content|wp-includes)(/|$) - [S=5]
+# Cada regla lleva su propia condición explícita (sin saltos [S=N], que se
+# rompen al añadir o quitar reglas). Además casan con el slug exacto en la
+# raíz, así que /ca/…, /simulador/, /wp-json, /wp-admin, etc. no entran.
+# Con y sin barra final. R=302 (provisional, ver arriba); L para cortar.
+RewriteCond %{REQUEST_URI} !^/ca/
+RewriteRule ^com-funciona/?$      /ca/com-funciona/      [R=302,L]
+RewriteCond %{REQUEST_URI} !^/ca/
+RewriteRule ^missions/?$          /ca/missions/          [R=302,L]
+RewriteCond %{REQUEST_URI} !^/ca/
+RewriteRule ^compte/?$            /ca/compte/            [R=302,L]
+RewriteCond %{REQUEST_URI} !^/ca/
+RewriteRule ^contacte/?$          /ca/contacte/          [R=302,L]
+RewriteCond %{REQUEST_URI} !^/ca/
+RewriteRule ^sobre-el-projecte/?$ /ca/sobre-el-projecte/ [R=302,L]
 
-# Con y sin barra final. Se usa R=301 (permanente), L para cortar.
-RewriteRule ^com-funciona/?$      /ca/com-funciona/      [R=301,L]
-RewriteRule ^missions/?$          /ca/missions/          [R=301,L]
-RewriteRule ^compte/?$            /ca/compte/            [R=301,L]
-RewriteRule ^contacte/?$          /ca/contacte/          [R=301,L]
-RewriteRule ^sobre-el-projecte/?$ /ca/sobre-el-projecte/ [R=301,L]
+# /sitemap.xml (el de TSF, desactivado por el plugin) -> sitemap del core. Misma política 302 -> 301.
+RewriteRule ^sitemap\.xml$ /wp-sitemap.xml [R=302,L]
 </IfModule>
 # END nep-i18n

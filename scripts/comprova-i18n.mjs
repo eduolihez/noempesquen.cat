@@ -186,7 +186,10 @@ async function comprovaRedireccio( origen, desti ) {
 		return;
 	}
 	const loc = res.headers.get( 'location' );
-	if ( res.status === 301 && loc && ruta( loc ) === desti ) {
+	if ( res.status === 302 && loc && ruta( loc ) === desti ) {
+		// Fase provisional del despliegue: se pasa a 301 tras 1-2 semanas limpias.
+		dubte( `302 provisional → ${ loc } (pasar a 301 tras el periodo de prueba)` );
+	} else if ( res.status === 301 && loc && ruta( loc ) === desti ) {
 		ok( `301 → ${ loc }` );
 	} else {
 		ko(
