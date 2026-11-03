@@ -215,3 +215,26 @@
 		transition: background-color 0.15s ease;
 	}
 }
+
+.nep-compte__enllac {
+	min-height: 44px;
+	padding: 0.5rem 0;
+	border: 0;
+	background: none;
+	color: var(--nep-compte-mar);
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.nep-compte__banner {
+	margin-block: 1rem;
+	padding: 0.75rem 1rem;
+	border: 2px solid var(--nep-compte-mar);
+	border-radius: 0.25rem;
+	background: var(--nep-compte-escuma);
+
+	h3 {
+		margin-block-start: 0;
+	}
+}

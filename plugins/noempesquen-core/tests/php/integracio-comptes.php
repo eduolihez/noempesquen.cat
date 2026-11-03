@@ -101,6 +101,16 @@ $nep_captura = static function ( $galeta ) use ( &$nep_galeta ) {
 };
 add_filter( 'nep_ip_client', $nep_filtre_ip );
 add_filter( 'send_auth_cookies', '__return_false' );
+
+// Correu: es captura amb pre_wp_mail (no s'envia res); `$nep_mail_falla` el fa fallar.
+$nep_mails          = array();
+$nep_mail_falla     = false;
+$nep_captura_correu = static function ( $previ, $atts ) use ( &$nep_mails, &$nep_mail_falla ) {
+	$nep_mails[] = $atts;
+	return ! $nep_mail_falla;
+};
+add_filter( 'pre_wp_mail', $nep_captura_correu, 10, 2 );
+add_filter( 'nep_correu_diferit', '__return_false' );
 add_action( 'set_logged_in_cookie', $nep_captura );
 
 // Simula la petició següent del navegador: només amb la galeta i el nonce rebuts.
@@ -320,6 +330,314 @@ if ( $nep_usuari_s ) {
 }
 delete_transient( nep_clau_limit( 'registre-global' ) );
 
+// Verificació del correu.
+$nep_token_de = static function ( array $correu ): string {
+	return preg_match( '/\/compte\/\?verifica=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
+};
+$nep_verifica = static fn( $token ) => $nep_json( 'POST', '/noempesquen/v1/compte/verifica', array( 'token' => $token ) );
+$nep_reenvia  = static fn() => $nep_json( 'POST', '/noempesquen/v1/compte/reenvia-verificacio' );
+$nep_resum    = static fn( WP_REST_Response $r ) => array( $r->get_status(), $r->get_data()['code'] ?? '', $r->get_data()['message'] ?? '' );
+
+$nep_nova_ip();
+$_COOKIE     = array();
+$nep_mails   = array();
+$nep_email_v = 'v' . $nep_email1;
+wp_set_current_user( 0 );
+$r      = $nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_v ) );
+$nep_v  = get_user_by( 'email', $nep_email_v );
+$nep_t1 = $nep_mails ? $nep_token_de( $nep_mails[0] ) : '';
+$nep_comprova( 200 === $r->get_status() && false === $r->get_data()['verificat'] && 1 === count( $nep_mails ) && $nep_email_v === $nep_mails[0]['to'], 'verificació: l\'alta envia un correu al destinatari i torna verificat=false' );
+$nep_comprova( '' !== $nep_t1 && ! str_contains( wp_json_encode( $r->get_data() ), substr( $nep_t1, -64 ) ), 'verificació: enllaç ?verifica= al correu i el token no surt a la resposta REST' );
+$nep_comprova( str_contains( $nep_mails[0]['message'], '48' ) && str_contains( implode( ' ', (array) $nep_mails[0]['headers'] ), 'text/plain' ), 'verificació: correu en text pla amb la caducitat' );
+$nep_reg = get_user_meta( $nep_v->ID, 'nep_token_verifica', true );
+$nep_comprova( is_array( $nep_reg ) && ! str_contains( maybe_serialize( $nep_reg ), substr( $nep_t1, -64 ) ) && $nep_reg['caduca'] > time() + NEP_TTL_VERIFICA - 60, 'verificació: el meta té el hash i la caducitat, mai el secret en clar' );
+$nep_comprova( ! metadata_exists( 'user', $nep_v->ID, 'nep_email_verificat' ), 'verificació: l\'alta no deixa el compte verificat' );
+
+// Reenviament: invalida l'anterior, límit de 3 per hora.
+$r1     = $nep_reenvia();
+$nep_t2 = $nep_token_de( end( $nep_mails ) );
+$nep_comprova( 200 === $r1->get_status() && false === $r1->get_data()['verificat'] && true === $r1->get_data()['enviat'] && 2 === count( $nep_mails ) && '' !== $nep_t2 && $nep_t2 !== $nep_t1, 'reenvia: envia un token nou' );
+$nep_msgs   = array();
+$nep_msgs[] = $nep_resum( $nep_verifica( $nep_t1 ) );
+$nep_comprova( 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'reenvia: el token anterior queda invalidat' );
+$nep_reenvia();
+$r3     = $nep_reenvia();
+$nep_t3 = $nep_token_de( end( $nep_mails ) );
+$r4     = $nep_reenvia();
+$nep_comprova( 200 === $r3->get_status() && 4 === count( $nep_mails ) && 429 === $r4->get_status() && 'nep_massa_intents' === $r4->get_data()['code'], 'reenvia: el quart de l\'hora → 429 i no envia' );
+
+// Si wp_mail falla, el reenviament torna 200 amb enviat=false.
+$nep_nova_ip();
+$nep_email_g = 'g' . $nep_email1;
+$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_g ) );
+$nep_g = get_user_by( 'email', $nep_email_g );
+wp_set_current_user( $nep_g->ID );
+$nep_mail_falla = true;
+$r              = $nep_reenvia();
+$nep_mail_falla = false;
+$nep_comprova( 200 === $r->get_status() && false === $r->get_data()['verificat'] && false === $r->get_data()['enviat'], 'reenvia: si el correu falla → 200 amb enviat=false' );
+wp_delete_user( $nep_g->ID );
+wp_set_current_user( $nep_v->ID );
+
+// Tokens invàlids: tots amb el mateix 400.
+$nep_nova_ip();
+$nep_email_w = 'w' . $nep_email1;
+$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_w ) );
+$nep_w        = get_user_by( 'email', $nep_email_w );
+$nep_tw       = $nep_token_de( end( $nep_mails ) );
+$nep_secret_w = substr( $nep_tw, -64 );
+$nep_secret_v = substr( $nep_t3, -64 );
+wp_set_current_user( 0 );
+$nep_nova_ip();
+$nep_mal = array(
+	'manipulat'     => substr( $nep_t3, 0, -1 ) . ( '0' === substr( $nep_t3, -1 ) ? '1' : '0' ),
+	'altre usuari'  => $nep_v->ID . '.' . $nep_secret_w,
+	'id inexistent' => '999999999.' . $nep_secret_v,
+	'format'        => 'no-es-un-token',
+	'buit'          => '',
+	'no cadena'     => array( 'x' ),
+);
+foreach ( $nep_mal as $nep_t ) {
+	$nep_msgs[] = $nep_resum( $nep_verifica( $nep_t ) );
+}
+// Usuari NO jugador (editor) amb un registre vàlid i el token real: rebutjat per rol.
+$nep_ed_id = (int) wp_insert_user(
+	array(
+		'user_login' => 'nep_ed_' . wp_rand( 10000, 99999 ),
+		'user_pass'  => wp_generate_password(),
+		'role'       => 'editor',
+	)
+);
+$nep_ed_sec = bin2hex( random_bytes( 32 ) );
+update_user_meta( $nep_ed_id, 'nep_token_verifica', nep_token_registre( $nep_ed_sec, wp_salt( 'auth' ), time(), NEP_TTL_VERIFICA ) );
+$nep_msgs[] = $nep_resum( $nep_verifica( $nep_ed_id . '.' . $nep_ed_sec ) );
+$nep_comprova( ! metadata_exists( 'user', $nep_ed_id, 'nep_email_verificat' ) && metadata_exists( 'user', $nep_ed_id, 'nep_token_verifica' ), 'verifica: usuari no jugador amb token real no es verifica' );
+wp_delete_user( $nep_ed_id );
+// Caducat (manipulant el meta).
+$nep_reg_w           = get_user_meta( $nep_w->ID, 'nep_token_verifica', true );
+$nep_reg_w['caduca'] = time() - 1;
+update_user_meta( $nep_w->ID, 'nep_token_verifica', $nep_reg_w );
+$nep_msgs[] = $nep_resum( $nep_verifica( $nep_tw ) );
+$nep_comprova( count( $nep_msgs ) === count( $nep_mal ) + 3 && 1 === count( array_unique( array_map( 'wp_json_encode', $nep_msgs ) ) ) && 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'verifica: manipulat, d\'un altre usuari, inexistent, no jugador (token real), caducat, mal format o antic → mateix 400' );
+$nep_comprova( ! metadata_exists( 'user', $nep_v->ID, 'nep_email_verificat' ) && ! metadata_exists( 'user', $nep_w->ID, 'nep_email_verificat' ), 'verifica: cap intent invàlid verifica res' );
+
+// Correcte i d'un sol ús; no inicia sessió.
+wp_set_current_user( 0 );
+$r  = $nep_verifica( $nep_t3 );
+$r2 = $nep_verifica( $nep_t3 );
+$nep_comprova( 200 === $r->get_status() && array( 'verificat' => true ) === $r->get_data() && 0 === get_current_user_id() && 'no-store' === ( $r->get_headers()['Cache-Control'] ?? '' ), 'verifica: correcte → 200 {verificat:true} sense iniciar sessió' );
+$nep_comprova( (int) get_user_meta( $nep_v->ID, 'nep_email_verificat', true ) > time() - 60 && ! metadata_exists( 'user', $nep_v->ID, 'nep_token_verifica' ) && 400 === $r2->get_status(), 'verifica: desa la data, esborra el token i no es pot reutilitzar' );
+// Reenviar un compte ja verificat no envia res.
+$nep_mails_abans = count( $nep_mails );
+wp_set_current_user( $nep_v->ID );
+$r = $nep_reenvia();
+$nep_comprova( 200 === $r->get_status() && true === $r->get_data()['verificat'] && count( $nep_mails ) === $nep_mails_abans, 'reenvia: ja verificat → 200 {verificat:true} sense enviar' );
+// verificat apareix a entra i a GET progres; un anònim no reenvia.
+wp_set_current_user( 0 );
+$_COOKIE = array();
+$r       = $nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_email_v, 'contrasenya' => $nep_pass ) );
+$nep_comprova( 200 === $r->get_status() && true === $r->get_data()['verificat'], 'entra: inclou verificat=true' );
+$r = $nep_json( 'GET', '/noempesquen/v1/compte/progres' );
+$nep_comprova( true === ( $r->get_data()['verificat'] ?? null ), 'progres: GET inclou verificat' );
+wp_set_current_user( 0 );
+$nep_comprova( in_array( $nep_reenvia()->get_status(), array( 401, 403 ), true ), 'reenvia: anònim → 401/403' );
+// Formulari → 415; límit per IP.
+$nep_form = new WP_REST_Request( 'POST', '/noempesquen/v1/compte/verifica' );
+$nep_form->set_header( 'Content-Type', 'application/x-www-form-urlencoded' );
+$nep_form->set_body_params( array( 'token' => $nep_t3 ) );
+$nep_comprova( 415 === rest_do_request( $nep_form )->get_status(), 'verifica: cos de formulari → 415' );
+$nep_nova_ip();
+$nep_codis = array();
+for ( $i = 1; $i <= 21; $i++ ) {
+	$nep_codis[] = $nep_verifica( 'x' )->get_status();
+}
+$nep_comprova( array_fill( 0, 20, 400 ) === array_slice( $nep_codis, 0, 20 ) && 429 === $nep_codis[20], 'verifica: el 21è intent de la IP → 429' );
+
+// Si wp_mail falla, l'alta no falla.
+$nep_nova_ip();
+$nep_mail_falla = true;
+$nep_email_f    = 'f' . $nep_email1;
+wp_set_current_user( 0 );
+$r              = $nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $nep_email_f ) );
+$nep_mail_falla = false;
+$nep_f          = get_user_by( 'email', $nep_email_f );
+$nep_comprova( 200 === $r->get_status() && true === $r->get_data()['connectat'] && false !== $nep_f, 'registre: si el correu falla, l\'alta segueix OK' );
+
+// Privacitat: l'exportador porta la data de verificació, mai el token; l'esborrat neteja les metes.
+$nep_txt = wp_json_encode( nep_exporta_dades_personals( $nep_email_v ) );
+$nep_comprova( str_contains( $nep_txt, gmdate( 'Y-m-d', (int) get_user_meta( $nep_v->ID, 'nep_email_verificat', true ) ) ), 'privacitat: l\'exportador inclou la data de verificació' );
+$nep_exp_w = wp_json_encode( nep_exporta_dades_personals( $nep_email_w ) );
+$nep_comprova( metadata_exists( 'user', $nep_w->ID, 'nep_token_verifica' ) && ! str_contains( $nep_exp_w, $nep_secret_w ) && ! str_contains( $nep_exp_w, (string) $nep_reg_w['hash'] ), 'privacitat: l\'exportador mai inclou el token ni el seu hash' );
+update_user_meta( $nep_v->ID, 'nep_token_verifica', $nep_reg_w );
+$nep_comprova( true === nep_esborra_metes_compte( $nep_v->ID ) && ! metadata_exists( 'user', $nep_v->ID, 'nep_token_verifica' ) && ! metadata_exists( 'user', $nep_v->ID, 'nep_email_verificat' ), 'privacitat: nep_esborra_metes_compte esborra token i verificació' );
+update_user_meta( $nep_w->ID, 'nep_email_verificat', time() );
+$nep_ids_v = array( $nep_v->ID, $nep_w->ID, $nep_f ? $nep_f->ID : 0 );
+foreach ( $nep_ids_v as $nep_id_v ) {
+	if ( $nep_id_v ) {
+		wp_delete_user( $nep_id_v );
+	}
+}
+$nep_comprova( 0 === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE user_id IN (%d,%d,%d)", $nep_ids_v ) ), 'verificació: esborrar el compte no deixa metes' ); // phpcs:ignore WordPress.DB
+delete_transient( nep_clau_limit( 'registre-global' ) );
+wp_set_current_user( 0 );
+$_COOKIE = array();
+
+// Recuperació de contrasenya.
+$nep_rec_de = static function ( array $correu ): string {
+	return preg_match( '/\/compte\/\?restableix=(\d+\.[0-9a-f]{64})/', (string) $correu['message'], $m ) ? $m[1] : '';
+};
+$nep_recupera  = static fn( $email ) => $nep_json( 'POST', '/noempesquen/v1/compte/recupera', array( 'email' => $email ) );
+$nep_restableix = static fn( $token, $pass ) => $nep_json( 'POST', '/noempesquen/v1/compte/restableix', array( 'token' => $token, 'contrasenya' => $pass ) );
+$nep_cru        = static fn( WP_REST_Response $r ) => $r->get_status() . '|' . wp_json_encode( $r->get_data() ) . '|' . ( $r->get_headers()['Cache-Control'] ?? '' );
+$nep_crea_rec   = static function ( string $email, bool $verificat ) use ( $nep_json, $nep_alta, $nep_nova_ip ): WP_User {
+	$nep_nova_ip();
+	wp_set_current_user( 0 );
+	$nep_json( 'POST', '/noempesquen/v1/compte/registre', $nep_alta( $email ) );
+	$u = get_user_by( 'email', $email );
+	if ( $verificat ) {
+		update_user_meta( $u->ID, 'nep_email_verificat', time() );
+	}
+	return $u;
+};
+$nep_r_mail = 'r' . $nep_email1;
+$nep_r_nv   = $nep_crea_rec( 'n' . $nep_r_mail, false );
+$nep_r_ok   = $nep_crea_rec( $nep_r_mail, true );
+$nep_r_ed   = (int) wp_insert_user(
+	array(
+		'user_login' => 'nep_re_' . wp_rand( 10000, 99999 ),
+		'user_email' => 'e' . $nep_r_mail,
+		'user_pass'  => wp_generate_password(),
+		'role'       => 'editor',
+	)
+);
+update_user_meta( $nep_r_ed, 'nep_email_verificat', time() );
+$nep_nova_ip();
+$nep_mails = array();
+$nep_cru_a = array(
+	$nep_cru( $nep_recupera( 'no-existeix' . $nep_r_mail ) ),
+	$nep_cru( $nep_recupera( 'n' . $nep_r_mail ) ),
+	$nep_cru( $nep_recupera( 'format-malformat' ) ),
+	$nep_cru( $nep_recupera( 'e' . $nep_r_mail ) ),
+);
+$nep_cru_ok = $nep_cru( $nep_recupera( $nep_r_mail ) );
+$nep_comprova( 1 === count( array_unique( array_merge( $nep_cru_a, array( $nep_cru_ok ) ) ) ) && str_starts_with( $nep_cru_ok, '200|{"enviat":true}|no-store' ), 'recupera: mateixa resposta byte a byte (inexistent, no verificat, malformat, no jugador, verificat)' );
+$nep_comprova( 1 === count( $nep_mails ) && $nep_r_mail === $nep_mails[0]['to'], 'recupera: només el verificat genera un correu' );
+$nep_rt1 = $nep_mails ? $nep_rec_de( $nep_mails[0] ) : '';
+$nep_comprova( '' !== $nep_rt1 && str_contains( $nep_mails[0]['message'], '1 hora' ) && ! str_contains( $nep_cru_ok, substr( $nep_rt1, -64 ) ), 'recupera: enllaç ?restableix= al correu, caducitat de 1 hora, token fora de la resposta' );
+$nep_reg_r = get_user_meta( $nep_r_ok->ID, 'nep_token_recupera', true );
+$nep_comprova( is_array( $nep_reg_r ) && ! str_contains( maybe_serialize( $nep_reg_r ), substr( $nep_rt1, -64 ) ) && $nep_reg_r['caduca'] > time() + NEP_TTL_RECUPERA - 60 && ! metadata_exists( 'user', $nep_r_nv->ID, 'nep_token_recupera' ) && ! metadata_exists( 'user', $nep_r_ed, 'nep_token_recupera' ), 'recupera: el meta desa hash i caducitat, mai el secret; no es crea per a no verificat ni no jugador' );
+// Reenviar invalida el token anterior.
+$nep_nova_ip();
+$nep_recupera( $nep_r_mail );
+$nep_rt2 = $nep_rec_de( end( $nep_mails ) );
+$nep_comprova( 2 === count( $nep_mails ) && '' !== $nep_rt2 && $nep_rt2 !== $nep_rt1 && 400 === $nep_restableix( $nep_rt1, 'una-contrasenya-nova' )->get_status(), 'recupera: un correu nou invalida el token anterior' );
+// Límit per correu (3/hora) i per IP (5/hora); els intents amb correu inexistent també compten.
+$r4 = $nep_recupera( $nep_r_mail );
+$nep_comprova( 200 === $r4->get_status() && 3 === count( $nep_mails ) && 200 === $nep_recupera( $nep_r_mail )->get_status() && array( 'enviat' => true ) === $nep_recupera( $nep_r_mail )->get_data() && 3 === count( $nep_mails ), 'recupera: el 4t del mateix correu respon igual però no envia (sense 429 visible)' );
+$nep_nova_ip();
+$nep_codis = array();
+for ( $i = 1; $i <= 6; $i++ ) {
+	$nep_codis[] = $nep_recupera( "inexistent$i$nep_r_mail" )->get_status();
+}
+$nep_comprova( array( 200, 200, 200, 200, 200, 429 ) === $nep_codis, 'recupera: el 6è intent de la IP (correus inexistents) → 429' );
+$nep_form = new WP_REST_Request( 'POST', '/noempesquen/v1/compte/recupera' );
+$nep_form->set_header( 'Content-Type', 'application/x-www-form-urlencoded' );
+$nep_form->set_body_params( array( 'email' => $nep_r_mail ) );
+$nep_comprova( 415 === rest_do_request( $nep_form )->get_status(), 'recupera: cos de formulari → 415' );
+// Si el correu falla, la resposta no canvia.
+$nep_nova_ip();
+$nep_mail_falla = true;
+delete_transient( nep_clau_limit( 'recupera-email|' . $nep_r_mail ) );
+$nep_cru_f      = $nep_cru( $nep_recupera( $nep_r_mail ) );
+$nep_mail_falla = false;
+$nep_comprova( $nep_cru_f === $nep_cru_ok, 'recupera: si wp_mail falla, mateixa resposta' );
+$nep_rt3 = $nep_rec_de( end( $nep_mails ) );
+
+// Restableix: tokens invàlids (mateix 400), contrasenya curta sense consumir el token.
+$nep_nova_ip();
+$nep_nova = 'contrasenya-nova-1';
+$nep_secret_r = substr( $nep_rt3, -64 );
+update_user_meta( $nep_r_ed, 'nep_token_recupera', nep_token_registre( $nep_secret_r, wp_salt( 'auth' ), time(), NEP_TTL_RECUPERA ) );
+$nep_curta = $nep_restableix( $nep_rt3, 'curta' );
+$nep_comprova( 400 === $nep_curta->get_status() && 'nep_contrasenya_invalida' === $nep_curta->get_data()['code'] && metadata_exists( 'user', $nep_r_ok->ID, 'nep_token_recupera' ), 'restableix: contrasenya curta → 400 sense consumir el token' );
+$nep_bytes_ver = bin2hex( random_bytes( 32 ) );
+update_user_meta( $nep_r_nv->ID, 'nep_token_verifica', nep_token_registre( $nep_bytes_ver, wp_salt( 'auth' ), time(), NEP_TTL_VERIFICA ) );
+$nep_mal = array(
+	'manipulat'      => substr( $nep_rt3, 0, -1 ) . ( '0' === substr( $nep_rt3, -1 ) ? '1' : '0' ),
+	'altre usuari'   => $nep_r_nv->ID . '.' . $nep_secret_r,
+	'inexistent'     => '999999999.' . $nep_secret_r,
+	'no jugador'     => $nep_r_ed . '.' . $nep_secret_r,
+	'format'         => 'no-es-un-token',
+	'buit'           => '',
+	'no cadena'      => array( 'x' ),
+	'token verifica' => $nep_r_nv->ID . '.' . $nep_bytes_ver,
+);
+$nep_msgs = array();
+foreach ( $nep_mal as $nep_t ) {
+	$nep_msgs[] = $nep_resum( $nep_restableix( $nep_t, $nep_nova ) );
+}
+$nep_reg_c           = get_user_meta( $nep_r_ok->ID, 'nep_token_recupera', true );
+$nep_reg_c['caduca'] = time() - 1;
+update_user_meta( $nep_r_ok->ID, 'nep_token_recupera', $nep_reg_c );
+$nep_msgs[] = $nep_resum( $nep_restableix( $nep_rt3, $nep_nova ) );
+$nep_comprova( 1 === count( array_unique( array_map( 'wp_json_encode', $nep_msgs ) ) ) && 400 === $nep_msgs[0][0] && 'nep_token_invalid' === $nep_msgs[0][1], 'restableix: manipulat, d\'un altre usuari, inexistent, no jugador, mal format, de verificació o caducat → mateix 400' );
+$nep_comprova( wp_check_password( $nep_pass, get_userdata( $nep_r_ok->ID )->user_pass ) && wp_check_password( $nep_pass, get_userdata( $nep_r_nv->ID )->user_pass ), 'restableix: cap intent invàlid canvia contrasenyes' );
+// El token de recuperació no verifica el correu (metes distintes).
+$nep_comprova( 400 === $nep_verifica( $nep_rt3 )->get_status() && ! metadata_exists( 'user', $nep_r_nv->ID, 'nep_email_verificat' ), 'verifica: el token de recuperació no val per verificar' );
+
+// Camí correcte: canvia la contrasenya, destrueix sessions, un sol ús, no inicia sessió.
+$nep_nova_ip();
+delete_transient( nep_clau_limit( 'recupera-email|' . $nep_r_mail ) );
+$nep_recupera( $nep_r_mail );
+$nep_rt4 = $nep_rec_de( end( $nep_mails ) );
+update_user_meta( $nep_r_ok->ID, 'nep_token_verifica', nep_token_registre( bin2hex( random_bytes( 32 ) ), wp_salt( 'auth' ), time(), NEP_TTL_VERIFICA ) );
+delete_user_meta( $nep_r_ok->ID, 'nep_email_verificat' );
+WP_Session_Tokens::get_instance( $nep_r_ok->ID )->create( time() + HOUR_IN_SECONDS );
+WP_Session_Tokens::get_instance( $nep_r_ok->ID )->create( time() + HOUR_IN_SECONDS );
+$nep_ses_abans = count( WP_Session_Tokens::get_instance( $nep_r_ok->ID )->get_all() );
+wp_set_current_user( 0 );
+$r  = $nep_restableix( $nep_rt4, $nep_nova );
+$r2 = $nep_restableix( $nep_rt4, 'una-altra-contrasenya' );
+$nep_u_r = get_userdata( $nep_r_ok->ID );
+$nep_comprova( 200 === $r->get_status() && array( 'restablert' => true ) === $r->get_data() && 'no-store' === ( $r->get_headers()['Cache-Control'] ?? '' ) && 0 === get_current_user_id(), 'restableix: correcte → 200 {restablert:true} sense iniciar sessió' );
+$nep_comprova( wp_check_password( $nep_nova, $nep_u_r->user_pass ) && ! wp_check_password( $nep_pass, $nep_u_r->user_pass ), 'restableix: la contrasenya nova funciona i l\'antiga no' );
+$nep_comprova( $nep_ses_abans >= 2 && array() === WP_Session_Tokens::get_instance( $nep_r_ok->ID )->get_all(), 'restableix: destrueix totes les sessions' );
+$nep_comprova( ! metadata_exists( 'user', $nep_r_ok->ID, 'nep_token_recupera' ) && ! metadata_exists( 'user', $nep_r_ok->ID, 'nep_token_verifica' ) && (int) get_user_meta( $nep_r_ok->ID, 'nep_email_verificat', true ) > time() - 60, 'restableix: esborra els tokens i marca el correu verificat' );
+$nep_comprova( 400 === $r2->get_status() && 'nep_token_invalid' === $r2->get_data()['code'] && wp_check_password( $nep_nova, get_userdata( $nep_r_ok->ID )->user_pass ), 'restableix: el token és d\'un sol ús' );
+$_COOKIE = array();
+$r_vella = $nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_r_mail, 'contrasenya' => $nep_pass ) );
+$r_nova  = $nep_json( 'POST', '/noempesquen/v1/compte/entra', array( 'email' => $nep_r_mail, 'contrasenya' => $nep_nova ) );
+$nep_comprova( 401 === $r_vella->get_status() && 200 === $r_nova->get_status() && true === $r_nova->get_data()['verificat'], 'restableix: /compte/entra accepta la nova i rebutja l\'antiga' );
+// Límit per IP: 10 intents.
+$nep_nova_ip();
+$nep_codis = array();
+for ( $i = 1; $i <= 11; $i++ ) {
+	$nep_codis[] = $nep_restableix( 'x', $nep_nova )->get_status();
+}
+$nep_comprova( array_fill( 0, 10, 400 ) === array_slice( $nep_codis, 0, 10 ) && 429 === $nep_codis[10], 'restableix: l\'11è intent de la IP → 429' );
+$nep_form = new WP_REST_Request( 'POST', '/noempesquen/v1/compte/restableix' );
+$nep_form->set_header( 'Content-Type', 'application/x-www-form-urlencoded' );
+$nep_form->set_body_params( array( 'token' => $nep_rt4, 'contrasenya' => $nep_nova ) );
+$nep_comprova( 415 === rest_do_request( $nep_form )->get_status(), 'restableix: cos de formulari → 415' );
+// El flux natiu de WordPress segueix bloquejat per als jugadors.
+$nep_errs = apply_filters( 'lostpassword_errors', new WP_Error(), $nep_r_ok );
+$nep_comprova( $nep_errs->has_errors() && 'nep_sense_recuperacio' === $nep_errs->get_error_code(), 'recuperació nativa: segueix bloquejada per a jugadors' );
+// Privacitat: l'exportador no inclou el token de recuperació; l'esborrat neteja la meta.
+$nep_reg_x = nep_token_registre( bin2hex( random_bytes( 32 ) ), wp_salt( 'auth' ), time(), NEP_TTL_RECUPERA );
+update_user_meta( $nep_r_ok->ID, 'nep_token_recupera', $nep_reg_x );
+$nep_comprova( ! str_contains( wp_json_encode( nep_exporta_dades_personals( $nep_r_mail ) ), $nep_reg_x['hash'] ), 'privacitat: l\'exportador no inclou el token de recuperació' );
+nep_esborra_metes_compte( $nep_r_ok->ID );
+$nep_comprova( ! metadata_exists( 'user', $nep_r_ok->ID, 'nep_token_recupera' ), 'privacitat: nep_esborra_metes_compte esborra el token de recuperació' );
+update_user_meta( $nep_r_nv->ID, 'nep_token_recupera', $nep_reg_x );
+$nep_ids_r = array( $nep_r_ok->ID, $nep_r_nv->ID, $nep_r_ed );
+foreach ( $nep_ids_r as $nep_id_r ) {
+	wp_delete_user( $nep_id_r );
+}
+$nep_comprova( 0 === (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->usermeta WHERE user_id IN (%d,%d,%d)", $nep_ids_r ) ), 'recuperació: esborrar el compte no deixa metes' ); // phpcs:ignore WordPress.DB
+delete_transient( nep_clau_limit( 'registre-global' ) );
+wp_set_current_user( 0 );
+$_COOKIE = array();
+
 // DELETE /compte: límit d'intents de contrasenya i 415 sense JSON.
 $nep_nova_ip();
 $_COOKIE = array();
@@ -353,12 +671,16 @@ $nep_comprova( $nep_files === (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . ne
 remove_filter( 'nep_ip_client', $nep_filtre_ip );
 remove_filter( 'send_auth_cookies', '__return_false' );
 remove_action( 'set_logged_in_cookie', $nep_captura );
+remove_filter( 'pre_wp_mail', $nep_captura_correu, 10 );
 $_COOKIE = array();
 wp_set_current_user( 1 );
 
 // Neteja: rol i metes desapareixen, l'usuari es conserva.
 update_user_meta( $nep_jug_id, 'nep_progres', 'x' );
 update_user_meta( $nep_jug_id, 'nep_consentiment', '1' );
+foreach ( array( 'nep_token_verifica', 'nep_email_verificat', 'nep_token_recupera' ) as $nep_m ) {
+	update_user_meta( $nep_jug_id, $nep_m, 'x' );
+}
 if ( ! function_exists( 'nep_neteja_jugadors' ) ) {
 	defined( 'WP_UNINSTALL_PLUGIN' ) || define( 'WP_UNINSTALL_PLUGIN', 'noempesquen-core/noempesquen-core.php' );
 	define( 'NEP_PROVA_NETEJA', true );
@@ -367,6 +689,7 @@ if ( ! function_exists( 'nep_neteja_jugadors' ) ) {
 nep_neteja_jugadors();
 $nep_comprova( null === get_role( 'nep_jugador' ), 'neteja: rol eliminat' );
 $nep_comprova( '' === get_user_meta( $nep_jug_id, 'nep_progres', true ) && '' === get_user_meta( $nep_jug_id, 'nep_consentiment', true ), 'neteja: metes eliminades' );
+$nep_comprova( ! metadata_exists( 'user', $nep_jug_id, 'nep_token_verifica' ) && ! metadata_exists( 'user', $nep_jug_id, 'nep_email_verificat' ) && ! metadata_exists( 'user', $nep_jug_id, 'nep_token_recupera' ), 'neteja: uninstall esborra també les metes de token i verificació' );
 $nep_comprova( false !== get_userdata( $nep_jug_id ), 'neteja: l\'usuari es conserva' );
 
 wp_delete_user( $nep_jug_id );

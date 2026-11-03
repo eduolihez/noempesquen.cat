@@ -97,3 +97,91 @@ function nep_consentiment_valid( $dades ) {
 		&& true === $dades['acepta']
 		&& true === $dades['majoria_edat'];
 }
+
+/** Vigència del token de verificació del correu (48 h). */
+const NEP_TTL_VERIFICA = 172800;
+
+/** Vigència del token de recuperació de contrasenya (1 h). */
+const NEP_TTL_RECUPERA = 3600;
+
+/**
+ * Genera un token "<id>.<hex>" a partir de 32 bytes aleatoris donats.
+ *
+ * @param int    $id_usuari      Id d'usuari (> 0).
+ * @param string $bytes_aleatoris Exactament 32 bytes.
+ * @return string Token o cadena buida si l'entrada no és vàlida.
+ */
+function nep_token_genera( $id_usuari, $bytes_aleatoris ) {
+	if ( ! is_int( $id_usuari ) || $id_usuari <= 0 || ! is_string( $bytes_aleatoris ) || 32 !== strlen( $bytes_aleatoris ) ) {
+		return '';
+	}
+	return $id_usuari . '.' . bin2hex( $bytes_aleatoris );
+}
+
+/**
+ * Analitza un token.
+ *
+ * @param mixed $token Token rebut.
+ * @return array|null array( 'id' => int, 'secret' => string ) o null.
+ */
+function nep_token_parseja( $token ) {
+	if ( ! is_string( $token ) || ! preg_match( '/^([1-9][0-9]{0,9})\.([0-9a-f]{64})$/D', $token, $m ) ) {
+		return null;
+	}
+	return array(
+		'id'     => (int) $m[1],
+		'secret' => $m[2],
+	);
+}
+
+/**
+ * Hash HMAC-SHA256 del secret.
+ *
+ * @param string $secret Secret.
+ * @param string $sal    Sal del servidor.
+ * @return string Hash o cadena buida si no hi ha sal.
+ */
+function nep_token_hash( $secret, $sal ) {
+	if ( ! is_string( $secret ) || ! is_string( $sal ) || '' === $sal ) {
+		return '';
+	}
+	return hash_hmac( 'sha256', $secret, $sal );
+}
+
+/**
+ * Registre a desar a user meta (mai el secret).
+ *
+ * @param string $secret Secret.
+ * @param string $sal    Sal.
+ * @param int    $ara    Instant actual (Unix).
+ * @param int    $ttl    Vigència en segons.
+ * @return array
+ */
+function nep_token_registre( $secret, $sal, $ara, $ttl ) {
+	if ( ! is_int( $ara ) || ! is_int( $ttl ) || '' === nep_token_hash( $secret, $sal ) ) {
+		return array();
+	}
+	return array(
+		'hash'   => nep_token_hash( $secret, $sal ),
+		'caduca' => $ara + $ttl,
+	);
+}
+
+/**
+ * Valida un secret contra el registre desat.
+ *
+ * @param mixed  $registre Registre desat.
+ * @param string $secret   Secret rebut.
+ * @param string $sal      Sal.
+ * @param int    $ara      Instant actual (Unix).
+ * @return bool
+ */
+function nep_token_valid( $registre, $secret, $sal, $ara ) {
+	if ( ! is_array( $registre ) || ! isset( $registre['hash'], $registre['caduca'] )
+		|| ! is_string( $registre['hash'] ) || ! is_int( $registre['caduca'] )
+		|| ! is_int( $ara ) || ! is_string( $secret ) || $ara > $registre['caduca'] ) {
+		return false;
+	}
+	$esperat = nep_token_hash( $secret, $sal );
+	return '' !== $esperat && hash_equals( $registre['hash'], $esperat );
+}

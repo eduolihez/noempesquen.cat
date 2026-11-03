@@ -10,12 +10,12 @@ export const T = {
 	contrasenya: 'Contrasenya',
 	ajudaContrasenya: 'Entre 10 i 128 caràcters.',
 	avisContrasenya:
-		'Si perds la contrasenya no es pot recuperar: apunta-la en un lloc segur.',
+		"Si perds la contrasenya, només la podràs recuperar si has verificat el correu. T'enviarem un missatge per fer-ho.",
 	majoriaEdat: 'Tinc 14 anys o més',
 	acepta: 'Accepto que es desin el meu correu i el meu progrés per poder recuperar-lo en un altre dispositiu',
 	quinesDades: 'Quines dades es guarden',
 	dades: [
-		'Només el teu correu electrònic.',
+		"Només el teu correu electrònic. L'usem per entrar i per enviar-te els missatges de verificació i de recuperació de la contrasenya, res més.",
 		'La contrasenya, guardada xifrada (amb hash): ningú no la pot llegir.',
 		'El progrés de les missions (les estrelles de cada missió).',
 		'La data i la versió del consentiment que acceptes ara.',
@@ -52,5 +52,26 @@ export const T = {
 	esborraConfirma: 'Esborra el compte definitivament',
 	cancella: 'Cancel·la',
 	esborrat: "El compte s'ha esborrat.",
+	oblidat: 'He oblidat la contrasenya',
+	recuperaTitol: 'Recupera la contrasenya',
+	recuperaText:
+		"Escriu el correu del teu compte. Si és d'un compte amb el correu verificat, t'hi enviarem un enllaç per triar una contrasenya nova.",
+	recuperaBoto: "Envia'm l'enllaç",
+	recuperaEnviat:
+		"Si hi ha un compte amb aquest correu verificat, t'hem enviat un enllaç. Mira també la carpeta de correu brossa. L'enllaç caduca d'aquí a 1 hora.",
+	tornaEntra: "Torna a l'entrada",
+	restableixTitol: 'Tria una contrasenya nova',
+	contrasenyaNova: 'Contrasenya nova',
+	restableixBoto: 'Desa la contrasenya nova',
+	restablert: 'Contrasenya canviada. Ja pots entrar amb la nova.',
+	errToken: "L'enllaç no és vàlid o ha caducat. Demana'n un de nou.",
+	verificat: 'Correu verificat. Gràcies!',
+	bannerTitol: 'Verifica el correu',
+	bannerText:
+		"T'hem enviat un enllaç per confirmar el correu. Sense verificar, no podràs recuperar la contrasenya si la perds. El compte funciona igualment.",
+	reenvia: 'Reenvia el correu',
+	reenviat:
+		"T'hem tornat a enviar el correu. Mira també la carpeta de correu brossa.",
+	noReenviat: "No s'ha pogut enviar el correu. Torna-ho a provar més tard.",
 	noscript: 'Cal JavaScript per crear un compte o entrar-hi.',
 };

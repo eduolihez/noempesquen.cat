@@ -69,7 +69,8 @@ function nep_exporta_dades_personals( $email, $pagina = 1 ) {
 	foreach ( nep_compte_progres_desat( (int) $usuari->ID ) as $id => $estrelles ) {
 		$progres[] = $id . ': ' . $estrelles;
 	}
-	$dades = array(
+	$verificat = get_user_meta( $usuari->ID, 'nep_email_verificat', true );
+	$dades     = array(
 		array(
 			'name'  => __( 'Correu electrònic', 'noempesquen' ),
 			'value' => $usuari->user_email,
@@ -85,6 +86,10 @@ function nep_exporta_dades_personals( $email, $pagina = 1 ) {
 		array(
 			'name'  => __( 'Data del consentiment', 'noempesquen' ),
 			'value' => is_array( $cons ) ? (string) ( $cons['data'] ?? '' ) : '',
+		),
+		array(
+			'name'  => __( 'Data de verificació del correu', 'noempesquen' ),
+			'value' => is_numeric( $verificat ) ? gmdate( 'c', (int) $verificat ) : '',
 		),
 		array(
 			'name'  => __( 'Progrés (missió: estrelles)', 'noempesquen' ),
@@ -136,7 +141,7 @@ function nep_esborra_dades_personals( $email, $pagina = 1 ) {
 function nep_esborra_metes_compte( $id ): bool {
 	$id = (int) $id;
 	$n  = false;
-	foreach ( array( 'nep_progres', 'nep_consentiment' ) as $clau ) {
+	foreach ( array( 'nep_progres', 'nep_consentiment', 'nep_token_verifica', 'nep_token_recupera', 'nep_email_verificat' ) as $clau ) {
 		if ( metadata_exists( 'user', $id, $clau ) ) {
 			delete_user_meta( $id, $clau );
 			$n = true;
