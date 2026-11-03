@@ -191,8 +191,7 @@ test.describe( 'Recorrido en castellano', () => {
 		await resultat( page, t( 'Molt bé!' ) );
 	} );
 
-	// FIXME (T11): Parla no és al dock amb aquest nom a l'inici ES; falta saltar la intro bé.
-	test.fixme( 'Móvil: El paquete retenido, bloquear y borrar', async ( {
+	test( 'Móvil: El paquete retenido, bloquear y borrar', async ( {
 		page,
 		isMobile,
 	} ) => {
@@ -211,7 +210,8 @@ test.describe( 'Recorrido en castellano', () => {
 		const dock = page.getByRole( 'list', { name: t( 'Apps preferides' ) } );
 		await expect( dock ).toBeVisible();
 		// Salta la presentació de Parla (com `saltaIntro` d'ajudes.js) i torna a l'inici.
-		await dock
+		await page
+			.getByRole( 'list', { name: 'Apps', exact: true } )
 			.getByRole( 'button', { name: 'Parla', exact: true } )
 			.click();
 		const salta = page
