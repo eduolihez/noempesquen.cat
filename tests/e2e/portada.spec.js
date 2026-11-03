@@ -1,6 +1,7 @@
 const { test, expect } = require( '@playwright/test' );
 
-test( 'la portada carrega en català', async ( { page } ) => {
+// L'arrel és castellà (`/`); el català viu a `/ca/` (pàgines a T09c).
+test( 'la portada carrega en castellà', async ( { page } ) => {
 	await page.goto( '/' );
-	await expect( page.locator( 'html' ) ).toHaveAttribute( 'lang', /^ca/ );
+	await expect( page.locator( 'html' ) ).toHaveAttribute( 'lang', 'es-ES' );
 } );
