@@ -95,6 +95,19 @@ Tabla de URLs esperadas (el script la usa tal cual):
 - `/compte/?verifica=…` y `?restableix=…` llevan token en la query: el 301 la conserva, y `view.js` la limpia al llegar a `/ca/compte/` (ver `docs/decisions.md`). Los correos ya enviados siguen funcionando por el 301.
 - Un `.htaccess` roto da 500 en todo el sitio: tener a mano el acceso por FTP/panel para restaurar la copia.
 
+## SEO (T10)
+
+Código: `plugins/noempesquen-core/includes/seo-idioma.php` (hooks), `seo-idioma-nucli.php` (puro, `SeoIdiomaNucliTest`) y `class-nep-sitemap-idioma.php`.
+
+- **The SEO Framework (TSF) ya pone** canonical autorreferenciado, `<title>`, `og:locale` (`es_ES`/`ca_ES`) y JSON-LD con `inLanguage` según el locale de la petición. No se duplican. Sin TSF, el canonical lo pone `rel_canonical` del core y `og:locale` lo pone el plugin.
+- **hreflang:** `es`, `ca` y `x-default` (→ ES), URLs absolutas, solo en las páginas de `nep_pagines()` cuya pareja existe y está publicada. La página se reconoce por slug **y** padre (ES en raíz, CA hija de `ca`), así que una página fuera del mapa, un 404 o una raíz antigua con slug catalán no llevan hreflang. También `og:locale:alternate`.
+- **Sitemaps:** los del core, uno por idioma: `/wp-sitemap-es-1.xml` y `/wp-sitemap-ca-1.xml`, listados en `/wp-sitemap.xml`. Las páginas del mapa (y las raíces antiguas con slug catalán) se quitan de `wp-sitemap-posts-page-1.xml`; las demás páginas siguen ahí. `robots.txt` apunta a `/wp-sitemap.xml` (lo escribe TSF o el core).
+- **Decisión:** el plugin fuerza `sitemaps_output = 0` de TSF (filtro `the_seo_framework_get_options`) para usar los sitemaps del core. Por eso `/sitemap.xml` (el de TSF) deja de existir: en Search Console hay que enviar `/wp-sitemap.xml`.
+- **Título y description:** no hay textos fijos. El título sale del `post_title` de cada idioma y TSF no genera description en estas páginas. No hacen falta cadenas nuevas.
+- **Progreso al cambiar de idioma:** se conserva. `nucli/progres.js` guarda en `localStorage` con la clave `noempesquen-progres-v2` (sin idioma), el origen es el mismo y los ids de misión son iguales en ES y CA.
+- **Sugerencia de idioma:** solo en `/` y `/simulador/` en ES. Es un aviso `<aside hidden lang="ca">` en `patterns/capcalera.php` y `assets/suggeriment-idioma.js` lo muestra si `navigator.language` empieza por `ca` y no se ha cerrado (`localStorage` `noempesquen-suggeriment-idioma`). No redirige, no usa cookies ni `role="alert"`. Al cerrarlo, el foco va al selector de idioma.
+- **Comprobación:** `node scripts/comprova-i18n.mjs` (canonical único, hreflang y tabla resumen) y `node scripts/axe-i18n.mjs` (axe con el navegador en catalán).
+
 ## Traducciones PHP (`.mo`) y correos (T09b)
 
 - PHP carga `plugins/noempesquen-core/languages/noempesquen-es_ES.mo` (`load_plugin_textdomain` en `init` y filtro `load_textdomain_mofile`, que cubre la recarga tras `switch_to_locale()`). No hace falta WP-CLI ni language packs: el `.mo` viaja en el zip. El catalán es el msgid y no tiene fichero.

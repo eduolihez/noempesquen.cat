@@ -284,6 +284,44 @@ html {
 	background-color: var(--nep-port);
 }
 
+/* Suggeriment d'idioma (ocult per defecte; el JS el mostra). */
+.nep-suggeriment[hidden] { display: none; }
+
+.nep-suggeriment {
+	background: var(--nep-lot);
+	color: var(--nep-tinta);
+}
+
+.nep-suggeriment__dins {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	padding-block: 0.5rem;
+}
+
+.nep-suggeriment__text { margin: 0; font-weight: 700; }
+
+.nep-suggeriment__enllac,
+.nep-suggeriment__tanca {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0 0.85rem;
+	border: 2px solid var(--nep-tinta);
+	border-radius: 8px;
+	color: var(--nep-tinta);
+	font: inherit;
+	font-weight: 700;
+}
+
+.nep-suggeriment__enllac { background: var(--nep-blanc); }
+
+.nep-suggeriment__tanca {
+	background: transparent;
+	cursor: pointer;
+}
+
 /* ---------- Portada: el cebo ---------- */
 .nep-ham {
 	position: relative;

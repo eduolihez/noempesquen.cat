@@ -28,6 +28,20 @@ add_action(
 			array(),
 			file_exists( $ruta ) ? (string) filemtime( $ruta ) : null
 		);
+		// Suggeriment d'idioma: només a la portada i el simulador en castellà (patterns/capcalera.php).
+		if ( 'es' === nep_tema_idioma() && ( is_front_page() || 'simulador' === nep_tema_clau_actual() ) ) {
+			$js = get_template_directory() . '/assets/suggeriment-idioma.js';
+			wp_enqueue_script(
+				'noempesquen-suggeriment-idioma',
+				get_template_directory_uri() . '/assets/suggeriment-idioma.js',
+				array(),
+				file_exists( $js ) ? (string) filemtime( $js ) : null,
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
+			);
+		}
 	}
 );
 

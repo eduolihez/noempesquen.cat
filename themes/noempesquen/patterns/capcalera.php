@@ -47,3 +47,15 @@ $nep_menu  = array(
 <!-- wp:html -->
 <div class="nep-corda" aria-hidden="true"></div>
 <!-- /wp:html -->
+<?php
+/*
+ * Suggeriment d'idioma (només ES, portada i simulador): ocult fins que el JS veu un
+ * navegador en català i que no s'ha tancat abans. En català (lang="ca") perquè és
+ * per a qui el parla, com el selector.
+ */
+if ( 'es' === nep_tema_idioma() && ( is_front_page() || 'simulador' === nep_tema_clau_actual() ) ) :
+	?>
+<!-- wp:html -->
+<aside class="nep-suggeriment" lang="ca" aria-label="Idioma" hidden><div class="nep-dins nep-suggeriment__dins"><p class="nep-suggeriment__text">Aquest web també és en català.</p><a class="nep-suggeriment__enllac" href="<?php echo esc_url( nep_tema_url( nep_tema_clau_actual(), 'ca' ) ); ?>" hreflang="ca">Canvia al català</a><button type="button" class="nep-suggeriment__tanca">Tanca</button></div></aside>
+<!-- /wp:html -->
+<?php endif; ?>
