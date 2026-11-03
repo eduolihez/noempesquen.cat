@@ -1,23 +1,23 @@
 {
 	"id": "remei-04-codi",
 	"versio": 2,
-	"titol": "Em passes el codi?",
-	"resum": "La Marta et demana per Parla el codi que t'acaba d'arribar per SMS. Li'l passaries?",
+	"titol": "¿Me pasas el código?",
+	"resum": "Marta te pide por Parla el código que te acaba de llegar por SMS. ¿Se lo pasarías?",
 	"dispositiu": "mobil",
 	"personatge": "remei",
 	"nivell": 2,
 	"durada_minuts": 4,
 	"rellotge": "21:05",
 	"intro": [
-		"Ei, Àlex! Remei. Avui, una estafa que sembla un favor entre amics: la del codi que «t'ha arribat per error».",
-		"Un contacte et demana un codi del mòbil. Sona innocent, però aquest codi és la clau del teu compte.",
-		"Vés a Parla i mira què passa. Llegeix amb calma abans de contestar. Jo em quedo per aquí."
+		"¡Eh, Álex! Soy Remei. Hoy, una estafa que parece un favor entre amigos: la del código que «te ha llegado por error».",
+		"Un contacto te pide un código del móvil. Suena inocente, pero ese código es la llave de tu cuenta.",
+		"Ve a Parla y mira qué pasa. Lee con calma antes de contestar. Yo me quedo por aquí."
 	],
-	"instruccions": "Espera un missatge de la Marta a Parla, mira també els SMS que et van arribant, busca'n els indicis amb la lupa i decideix què en fas.",
+	"instruccions": "Espera un mensaje de Marta en Parla, mira también los SMS que te vayan llegando, busca los indicios con la lupa y decide qué haces.",
 	"pistes": [
-		"Obre Parla i mira el xat de la Marta. Què et demana, i amb quina pressa?",
-		"Mira l'SMS que et surt a Missatges. Qui l'envia i què diu de compartir-lo?",
-		"Si dubtes, no passis cap codi. Avisa la Marta per un altre mitjà, per exemple trucant-li."
+		"Abre Parla y mira el chat de Marta. ¿Qué te pide, y con qué prisa?",
+		"Mira el SMS que te sale en Mensajes. ¿Quién lo envía y qué dice sobre compartirlo?",
+		"Si dudas, no pases ningún código. Avisa a Marta por otro medio, por ejemplo llamándola."
 	],
 	"apps": {
 		"parla": {
@@ -31,7 +31,7 @@
 							"de": "ells",
 							"ocult": true,
 							"hora": "21:12",
-							"text": "Ei! Em pots fer un favor?",
+							"text": "¡Eh! ¿Me puedes hacer un favor?",
 							"senyal": "estil"
 						},
 						{
@@ -39,7 +39,7 @@
 							"de": "ells",
 							"ocult": true,
 							"hora": "21:14",
-							"text": "T'ha arribat un codi per SMS? Me'l passes? És urgent, el necessito ara!",
+							"text": "¿Te ha llegado un código por SMS? ¿Me lo pasas? Es urgente, ¡lo necesito ya!",
 							"senyal": "demana_codi"
 						}
 					]
@@ -57,14 +57,14 @@
 					"hora": "21:13",
 					"cos": [
 						[
-							{ "t": "Codi per entrar a Parla " },
+							{ "t": "Código para entrar en Parla " },
 							{
-								"t": "des d'un dispositiu nou",
+								"t": "desde un dispositivo nuevo",
 								"senyal": "dispositiu_nou"
 							},
 							{ "t": ": 482 913. " },
 							{
-								"t": "No el comparteixis amb ningú.",
+								"t": "No lo compartas con nadie.",
 								"senyal": "no_compartir"
 							}
 						]
@@ -84,7 +84,7 @@
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "Marta",
-					"text": "Ei! Em pots fer un favor?",
+					"text": "¡Eh! ¿Me puedes hacer un favor?",
 					"xat": "marta",
 					"font": "mobil"
 				}
@@ -100,7 +100,7 @@
 					"tipus": "notifica",
 					"app": "missatges",
 					"titol": "Parla",
-					"text": "Codi per entrar a Parla des d'un dispositiu nou",
+					"text": "Código para entrar en Parla desde un dispositivo nuevo",
 					"font": "mobil"
 				}
 			]
@@ -116,7 +116,7 @@
 					"so": "alerta",
 					"app": "parla",
 					"titol": "Marta",
-					"text": "T'ha arribat un codi per SMS? Me'l passes?...",
+					"text": "¿Te ha llegado un código por SMS? ¿Me lo pasas?...",
 					"xat": "marta",
 					"font": "mobil"
 				}
@@ -147,70 +147,70 @@
 		{
 			"id": "estil",
 			"requereix": "codi-1",
-			"titol": "No escriu com la Marta",
-			"explicacio": "«Ei! Em pots fer un favor?» sense explicar què ni per què, i amb un to estrany. La Marta sempre t'explica el motiu del favor i escriu de manera diferent; això sembla algú altre.",
-			"reaccio": "Compara-ho amb el xat de sempre de la Marta. Això no sona a ella."
+			"titol": "No escribe como Marta",
+			"explicacio": "«¡Eh! ¿Me puedes hacer un favor?» sin explicar qué ni por qué, y con un tono extraño. Marta siempre te cuenta el motivo del favor y escribe de otra manera; esto parece otra persona.",
+			"reaccio": "Compáralo con el chat de siempre de Marta. Esto no suena a ella."
 		},
 		{
 			"id": "demana_codi",
 			"requereix": "codi-2",
-			"titol": "Et demana un codi que has rebut tu",
-			"explicacio": "Un codi per SMS és la clau del teu compte, i només el pots saber tu. I si a sobre te'l demanen amb pressa («urgent», «ara»), és perquè no hi pensis. Qui te'l demana no és un amic: vol entrar-hi.",
-			"reaccio": "Un codi que t'ha arribat a tu, i ella el vol? Aquest codi és la clau de casa teva."
+			"titol": "Te pide un código que has recibido tú",
+			"explicacio": "Un código por SMS es la llave de tu cuenta, y solo puedes saberlo tú. Y si encima te lo piden con prisa («urgente», «ya»), es para que no lo pienses. Quien te lo pide no es un amigo: quiere entrar.",
+			"reaccio": "¿Un código que te ha llegado a ti, y ella lo quiere? Ese código es la llave de tu casa."
 		},
 		{
 			"id": "dispositiu_nou",
 			"requereix": "sms-codi",
-			"titol": "L'SMS parla d'un dispositiu nou",
-			"explicacio": "El codi és per entrar a Parla des d'un dispositiu nou. La Marta no ha d'esperar res d'això: algú intenta entrar al teu compte des d'un altre aparell.",
-			"reaccio": "«Dispositiu nou». Algú està trucant a la teva porta ara mateix."
+			"titol": "El SMS habla de un dispositivo nuevo",
+			"explicacio": "El código es para entrar en Parla desde un dispositivo nuevo. Marta no tiene por qué esperar nada de eso: alguien intenta entrar en tu cuenta desde otro aparato.",
+			"reaccio": "«Dispositivo nuevo». Alguien está llamando a tu puerta ahora mismo."
 		},
 		{
 			"id": "no_compartir",
 			"requereix": "sms-codi",
-			"titol": "L'SMS diu que no el comparteixis",
-			"explicacio": "El missatge ho diu ben clar: «No el comparteixis amb ningú». Cap empresa et demanarà aquest codi, ni per xat ni per telèfon.",
-			"reaccio": "Ho posa a l'SMS mateix: «No el comparteixis amb ningú». Fes-ne cas."
+			"titol": "El SMS dice que no lo compartas",
+			"explicacio": "El mensaje lo dice bien claro: «No lo compartas con nadie». Ninguna empresa te pedirá este código, ni por chat ni por teléfono.",
+			"reaccio": "Lo pone en el propio SMS: «No lo compartas con nadie». Hazle caso."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això és normal, rei.",
-			"Aquí no hi ha res, continua.",
-			"Ni olor d'estafa."
+			"Esto es normal, chaval.",
+			"Aquí no hay nada, sigue.",
+			"Ni olor a estafa."
 		],
-		"pescat": "Ai, criatura! Has passat el codi. Si fos de veritat, ara algú tindria el teu compte de Parla i escriuria als teus contactes fent-se passar per tu, per demanar-los diners. Activa sempre la verificació en dos passos i avisa la Marta per un altre mitjà. Tranquil, que és un simulacre."
+		"pescat": "¡Ay, criatura! Has pasado el código. Si fuera de verdad, ahora alguien tendría tu cuenta de Parla y escribiría a tus contactos haciéndose pasar por ti, para pedirles dinero. Activa siempre la verificación en dos pasos y avisa a Marta por otro medio. Tranquilo, que es un simulacro."
 	},
 	"decisio": {
-		"pregunta": "Què fas amb la petició de la Marta?",
+		"pregunta": "¿Qué haces con la petición de Marta?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "No li passo el codi i l'aviso per un altre mitjà.",
+				"text": "No le paso el código y la aviso por otro medio.",
 				"valor": "correcta",
-				"resposta": "Ben fet! Avisar-la per un altre mitjà, per exemple trucant-li, serveix perquè sàpiga que li han pres el compte. I el codi no surt de les teves mans."
+				"resposta": "¡Bien hecho! Avisarla por otro medio, por ejemplo llamándola, sirve para que sepa que le han cogido la cuenta. Y el código no sale de tus manos."
 			},
 			{
 				"id": "b",
-				"text": "Li dic que no m'ha arribat res.",
+				"text": "Le digo que no me ha llegado nada.",
 				"valor": "parcial",
-				"resposta": "No has passat el codi, i això és el més important. Però no n'hi ha prou: algú intenta entrar al teu compte i potser la Marta ja ha perdut el seu. Avisa-la per un altre mitjà."
+				"resposta": "No has pasado el código, y eso es lo más importante. Pero no basta: alguien intenta entrar en tu cuenta y quizá Marta ya ha perdido la suya. Avísala por otro medio."
 			},
 			{
 				"id": "c",
-				"text": "Li passo el codi.",
+				"text": "Le paso el código.",
 				"valor": "incorrecta",
-				"resposta": "T'han pescat. Aquest codi és la clau del teu compte de Parla: amb ell, algú pot entrar-hi i escriure als teus contactes fent-se passar per tu."
+				"resposta": "Te han pescado. Ese código es la llave de tu cuenta de Parla: con él, alguien puede entrar y escribir a tus contactos haciéndose pasar por ti."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Un codi que et ve per SMS és només per a tu: no el passis a ningú, ni a un amic.",
-			"Si un contacte et demana un favor estrany, verifica'l per un altre mitjà, com trucar-li.",
-			"La pressa forma part de l'estafa: com més corre, menys penses.",
-			"Activa la verificació en dos passos als comptes importants."
+			"Un código que te llega por SMS es solo para ti: no se lo pases a nadie, ni a un amigo.",
+			"Si un contacto te pide un favor extraño, verifícalo por otro medio, como llamarle.",
+			"La prisa forma parte de la estafa: cuanto más corre, menos piensas.",
+			"Activa la verificación en dos pasos en las cuentas importantes."
 		],
-		"consell": "Si has passat un codi, canvia la contrasenya del compte i tanca les sessions obertes de seguida. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si has pasado un código, cambia la contraseña de la cuenta y cierra las sesiones abiertas enseguida. También puedes llamar al 017, la línea gratuita y confidencial de ayuda en ciberseguridad de INCIBE."
 	}
 }

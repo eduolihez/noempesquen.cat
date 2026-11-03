@@ -1,23 +1,23 @@
 {
 	"id": "remei-03-sorteig",
 	"versio": 2,
-	"titol": "Has guanyat un sorteig!",
-	"resum": "Una publicació d'Ullada diu que has guanyat un premi enorme, però cal pagar unes despeses d'enviament. Ho faries?",
+	"titol": "¡Has ganado un sorteo!",
+	"resum": "Una publicación de Ullada dice que has ganado un premio enorme, pero hay que pagar unos gastos de envío. ¿Lo harías?",
 	"dispositiu": "mobil",
 	"personatge": "remei",
 	"nivell": 1,
 	"durada_minuts": 4,
 	"rellotge": "18:20",
 	"intro": [
-		"Ei, Àlex! Remei un cop més. Avui toca la dels sorteigs: tothom vol guanyar alguna cosa, i els lladres ho saben de sobres.",
-		"T'ensenyen un premi enorme, et diuen que corris i, a l'hora de cobrar, resulta que has de pagar tu. Dolent, oi?",
-		"Fes un tomb per Ullada. Si veus alguna cosa que no quadra, activa la lupa i toca-ho. Jo em quedo per aquí."
+		"¡Eh, Álex! Remei una vez más. Hoy toca la de los sorteos: todo el mundo quiere ganar algo, y los ladrones lo saben de sobra.",
+		"Te enseñan un premio enorme, te dicen que corras y, a la hora de cobrar, resulta que tienes que pagar tú. Malo, ¿no?",
+		"Date una vuelta por Ullada. Si ves algo que no cuadra, activa la lupa y tócalo. Yo me quedo por aquí."
 	],
-	"instruccions": "Obre Ullada i mira les publicacions. Busca'n els indicis amb la lupa i decideix què en fas.",
+	"instruccions": "Abre Ullada y mira las publicaciones. Busca los indicios con la lupa y decide qué haces.",
 	"pistes": [
-		"Obre Ullada i mira bé qui ha fet cada publicació. Les dues parlen de Cal Roig, però només una és de la botiga de veritat.",
-		"Fixa't en el nom d'usuari i en el que et demanen per cobrar el premi. Un sorteig de veritat no et cobra res.",
-		"Si dubtes, no toquis l'enllaç. Denuncia la publicació, o mira què diu la botiga de veritat."
+		"Abre Ullada y mira bien quién ha hecho cada publicación. Las dos hablan de Cal Roig, pero solo una es de la tienda de verdad.",
+		"Fíjate en el nombre de usuario y en lo que te piden para cobrar el premio. Un sorteo de verdad no te cobra nada.",
+		"Si dudas, no toques el enlace. Denuncia la publicación, o mira qué dice la tienda de verdad."
 	],
 	"apps": {
 		"ullada": {
@@ -27,36 +27,36 @@
 					"autor": "p_sorteigs",
 					"il": "pa",
 					"likes": 3,
-					"text": "Sorteig de Cal Roig: un mòbil de gamma alta per a tu. Reclama el teu premi.",
+					"text": "Sorteo de Cal Roig: un móvil de gama alta para ti. Reclama tu premio.",
 					"cos": [
 						[
 							{
 								"t": "@cal.roig.botlga",
 								"senyal": "compte_imitat"
 							},
-							{ "t": " ha triat el teu número!" }
+							{ "t": " ¡ha elegido tu número!" }
 						],
 						[
 							{
-								"t": "Has estat triat i t'emportes un viatge de luxe per a dues persones, més un mòbil de gamma alta.",
+								"t": "Has sido elegido y te llevas un viaje de lujo para dos personas, más un móvil de gama alta.",
 								"senyal": "premi"
 							},
 							{ "t": " " },
 							{
-								"t": "Has guanyat el sorteig!",
+								"t": "¡Has ganado el sorteo!",
 								"senyal": "no_has_participat"
 							}
 						],
 						[
 							{
-								"t": "Només avui, o el premi passa a un altre.",
+								"t": "Solo hoy, o el premio pasa a otra persona.",
 								"senyal": "urgencia"
 							}
 						],
 						[
 							{
 								"enllac": {
-									"text": "Reclama el teu premi",
+									"text": "Reclama tu premio",
 									"url": "https://sorteig-calroig.top/premi"
 								}
 							}
@@ -68,7 +68,7 @@
 					"autor": "p_botiga",
 					"il": "pa",
 					"likes": 212,
-					"text": "Compte amb els sorteigs falsos que circulen amb el nostre nom. El nostre sorteig és a la botiga, en persona. Mai us demanarem diners ni dades de la targeta."
+					"text": "Cuidado con los sorteos falsos que circulan con nuestro nombre. Nuestro sorteo es en la tienda, en persona. Nunca os pediremos dinero ni datos de la tarjeta."
 				}
 			]
 		}
@@ -78,9 +78,9 @@
 			"plantilla": "sorteig",
 			"variant": "falsa",
 			"https": true,
-			"titol": "Sorteig · Reclama el teu premi",
+			"titol": "Sorteo · Reclama tu premio",
 			"domini_senyal": "domini",
-			"premi": "Un viatge de luxe i un mòbil de gamma alta, només pagant les despeses d'enviament",
+			"premi": "Un viaje de lujo y un móvil de gama alta, pagando solo los gastos de envío",
 			"premi_senyal": "pagar_per_cobrar",
 			"formulari": {
 				"id": "premi",
@@ -89,18 +89,18 @@
 				"camps": [
 					{
 						"id": "nom",
-						"etiqueta": "Nom i cognoms",
-						"autoompli": "Àlex Puig"
+						"etiqueta": "Nombre y apellidos",
+						"autoompli": "Álex Puig"
 					},
 					{
 						"id": "targeta",
-						"etiqueta": "Número de targeta",
+						"etiqueta": "Número de tarjeta",
 						"autoompli": "4000 1234 5678 9010",
 						"senyal": "dades_targeta"
 					},
 					{
 						"id": "caducitat",
-						"etiqueta": "Caducitat",
+						"etiqueta": "Caducidad",
 						"autoompli": "08/28"
 					},
 					{
@@ -141,89 +141,89 @@
 	"senyals": [
 		{
 			"id": "compte_imitat",
-			"titol": "Un compte que imita la botiga",
-			"explicacio": "El nom diu «Cal Roig», però l'usuari és cal.roig.botlga, amb «botlga» al final. La botiga de veritat és cal.roig.botiga. Els estafadors copien el nom i canvien una lletra.",
-			"reaccio": "Mira bé l'usuari: «botlga». No és «botiga». Un canvi de lletra i ja et sembla de confiança."
+			"titol": "Una cuenta que imita la tienda",
+			"explicacio": "El nombre dice «Cal Roig», pero el usuario es cal.roig.botlga, con «botlga» al final. El de la tienda de verdad es cal.roig.botiga. Los estafadores copian el nombre y cambian una letra.",
+			"reaccio": "Mira bien el usuario: «botlga». No es «botiga». Un cambio de letra y ya te parece de fiar."
 		},
 		{
 			"id": "premi",
-			"titol": "Un premi desproporcionat",
-			"explicacio": "Un viatge de luxe i un mòbil de gamma alta per a algú sol d'una botiga de barri? Cap negoci petit regala això. Un premi massa gran és l'esquer.",
-			"reaccio": "Un viatge i un mòbil de regal? Això no s'ho empassa ningú, rei."
+			"titol": "Un premio desproporcionado",
+			"explicacio": "¿Un viaje de lujo y un móvil de gama alta para alguien suelto de una tienda de barrio? Ningún negocio pequeño regala eso. Un premio demasiado grande es el cebo.",
+			"reaccio": "¿Un viaje y un móvil de regalo? Eso no se lo cree nadie, chaval."
 		},
 		{
 			"id": "urgencia",
-			"titol": "«Només avui»",
-			"explicacio": "Et donen poca estona perquè reaccionis sense pensar. Els sorteigs de veritat no caduquen en unes hores.",
-			"reaccio": "«Només avui». Si fos bo, esperaria, no et faria córrer."
+			"titol": "«Solo hoy»",
+			"explicacio": "Te dan poco rato para que reacciones sin pensar. Los sorteos de verdad no caducan en unas horas.",
+			"reaccio": "«Solo hoy». Si fuera bueno, esperaría, no te haría correr."
 		},
 		{
 			"id": "no_has_participat",
-			"titol": "«Has guanyat» sense haver participat",
-			"explicacio": "No t'has apuntat a cap sorteig i ja has guanyat. No pots guanyar una cosa on no has jugat.",
-			"reaccio": "Guanyar un sorteig on no t'has apuntat? Aquesta sort no existeix."
+			"titol": "«Has ganado» sin haber participado",
+			"explicacio": "No te has apuntado a ningún sorteo y ya has ganado. No puedes ganar algo en lo que no has jugado.",
+			"reaccio": "¿Ganar un sorteo al que no te has apuntado? Esa suerte no existe."
 		},
 		{
 			"id": "domini",
 			"requereix": "web-falsa",
-			"titol": "Una adreça estranya",
-			"explicacio": "La web és sorteig-calroig.top. Un domini acabat en .top i amb guions no és el d'una botiga de barri. El cadenat només vol dir que la connexió està xifrada, també amb els estafadors.",
-			"reaccio": "Mira l'adreça: «.top». La botiga de veritat no es diu així."
+			"titol": "Una dirección rara",
+			"explicacio": "La web es sorteig-calroig.top. Un dominio acabado en .top y con guiones no es el de una tienda de barrio. El candado solo significa que la conexión está cifrada, también con los estafadores.",
+			"reaccio": "Mira la dirección: «.top». La tienda de verdad no se llama así."
 		},
 		{
 			"id": "pagar_per_cobrar",
 			"requereix": "web-falsa",
-			"titol": "Cal pagar per cobrar un premi",
-			"explicacio": "Un premi de veritat no costa res. Si et demanen diners, encara que siguin pocs, per enviar-lo o alliberar-lo, és una estafa.",
-			"reaccio": "Pagar per cobrar un premi? Això ja fa pudor d'estafa."
+			"titol": "Hay que pagar para cobrar un premio",
+			"explicacio": "Un premio de verdad no cuesta nada. Si te piden dinero, aunque sea poco, para enviarlo o liberarlo, es una estafa.",
+			"reaccio": "¿Pagar para cobrar un premio? Eso ya huele a estafa."
 		},
 		{
 			"id": "dades_targeta",
 			"requereix": "web-falsa",
-			"titol": "Et demanen les dades de la targeta",
-			"explicacio": "Per rebre un premi no cal el número de la targeta ni el CVC. Amb aquestes dades poden cobrar-te molt més dels 2,95 €.",
-			"reaccio": "La targeta sencera per rebre un premi? Això és per buidar-te el compte."
+			"titol": "Te piden los datos de la tarjeta",
+			"explicacio": "Para recibir un premio no hace falta el número de la tarjeta ni el CVC. Con esos datos pueden cobrarte mucho más de 2,95 €.",
+			"reaccio": "¿La tarjeta entera para recibir un premio? Eso es para vaciarte la cuenta."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això és normal, rei.",
-			"Aquí no hi ha res, continua.",
-			"Ni olor d'estafa."
+			"Esto es normal, chaval.",
+			"Aquí no hay nada, sigue.",
+			"Ni olor a estafa."
 		],
-		"web_falsa": "Ho has obert. Mira bé l'adreça de dalt: no és la de la botiga. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"pescat": "Ai, criatura! Has pagat. Els 2,95 € eren només l'esquer: amb la targeta ja poden fer-te més càrrecs, apuntar-te a una subscripció oculta i buidar-te el compte. Tranquil, que és un simulacre."
+		"web_falsa": "Lo has abierto. Mira bien la dirección de arriba: no es la de la tienda. Y ten presente que es un simulacro, no pongas nada real.",
+		"pescat": "¡Ay, criatura! Has pagado. Los 2,95 € eran solo el cebo: con la tarjeta ya pueden hacerte más cargos, apuntarte a una suscripción oculta y vaciarte la cuenta. Tranquilo, que es un simulacro."
 	},
 	"decisio": {
-		"pregunta": "Què fas amb la publicació del sorteig?",
+		"pregunta": "¿Qué haces con la publicación del sorteo?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "Denuncio la publicació i no toco l'enllaç.",
+				"text": "Denuncio la publicación y no toco el enlace.",
 				"valor": "correcta",
-				"resposta": "Ben fet! Denunciar-la ajuda que no hi caigui ningú més, i tu no has regalat ni una dada."
+				"resposta": "¡Bien hecho! Denunciarla ayuda a que no caiga nadie más, y tú no has regalado ni un dato."
 			},
 			{
 				"id": "b",
-				"text": "L'ignoro sense més.",
+				"text": "La ignoro sin más.",
 				"valor": "parcial",
-				"resposta": "No has caigut a la trampa, i això és el més important. Però la publicació segueix allà. Denunciar-la ajuda altra gent."
+				"resposta": "No has caído en la trampa, y eso es lo más importante. Pero la publicación sigue ahí. Denunciarla ayuda a otra gente."
 			},
 			{
 				"id": "c",
-				"text": "Pago els 2,95 € per rebre el premi.",
+				"text": "Pago los 2,95 € para recibir el premio.",
 				"valor": "incorrecta",
-				"resposta": "T'han pescat. Els 2,95 € són l'esquer: has donat les dades de la targeta i et poden fer més càrrecs. Si et passa de veritat, truca al banc de seguida."
+				"resposta": "Te han pescado. Los 2,95 € son el cebo: has dado los datos de la tarjeta y te pueden hacer más cargos. Si te pasa de verdad, llama al banco enseguida."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Si no t'has apuntat a un sorteig, no pots haver-lo guanyat.",
-			"Un premi de veritat no es paga: si et demanen diners per cobrar-lo, és una estafa.",
-			"Comprova l'usuari del compte: un canvi d'una lletra delata les còpies.",
-			"Un import petit és l'esquer per aconseguir les dades de la targeta."
+			"Si no te has apuntado a un sorteo, no puedes haberlo ganado.",
+			"Un premio de verdad no se paga: si te piden dinero para cobrarlo, es una estafa.",
+			"Comprueba el usuario de la cuenta: el cambio de una letra delata las copias.",
+			"Un importe pequeño es el cebo para conseguir los datos de la tarjeta."
 		],
-		"consell": "Si has posat les dades de la targeta en una web així, truca al banc de seguida per bloquejar-la i denuncia-ho. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si has puesto los datos de la tarjeta en una web así, llama al banco enseguida para bloquearla y denúncialo. También puedes llamar al 017, la línea gratuita y confidencial de ayuda en ciberseguridad de INCIBE."
 	}
 }

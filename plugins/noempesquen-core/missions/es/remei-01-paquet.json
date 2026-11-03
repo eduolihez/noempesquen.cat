@@ -1,23 +1,23 @@
 {
 	"id": "remei-01-paquet",
 	"versio": 2,
-	"titol": "El paquet retingut",
-	"resum": "Un SMS diu que tens un paquet retingut i que cal pagar 1,99 €. Ho pagaries?",
+	"titol": "El paquete retenido",
+	"resum": "Un SMS dice que tienes un paquete retenido y que tienes que pagar 1,99 €. ¿Lo pagarías?",
 	"dispositiu": "mobil",
 	"personatge": "remei",
 	"nivell": 1,
 	"durada_minuts": 4,
 	"rellotge": "19:40",
 	"intro": [
-		"Ei, Àlex! Sóc la Pirata Remei. Setanta-sis anys i més estafes esquivades que tota la teva colla junta.",
-		"Ara els lladres pesquen pel mòbil. T'envien un SMS que sembla de la missatgeria, del banc o de Trànsit, i esperen que hi toquis sense pensar.",
-		"Obre Missatges i espera que et n'arribi algun. Si en veus un de trampa, activa la lupa i toca el que et faci mala espina. Jo em quedo per aquí, a Parla."
+		"¡Eh, Álex! Soy la Pirata Remei. Setenta y seis años y más estafas esquivadas que toda tu pandilla junta.",
+		"Ahora los ladrones pescan por el móvil. Te mandan un SMS que parece de la empresa de mensajería, del banco o de Tráfico, y esperan que pulses sin pensar.",
+		"Abre Mensajes y espera a que te llegue alguno. Si ves uno con trampa, activa la lupa y toca lo que te huela mal. Yo me quedo por aquí, en Parla."
 	],
-	"instruccions": "Espera que t'arribi un SMS nou a Missatges, obre'l, busca'n els indicis amb la lupa i decideix què en fas.",
+	"instruccions": "Espera a que te llegue un SMS nuevo en Mensajes, ábrelo, busca los indicios con la lupa y decide qué haces.",
 	"pistes": [
-		"Obre Missatges i fixa't en el SMS nou. Qui l'envia?",
-		"Mantén premut l'enllaç, sense obrir-lo, per veure l'adreça sencera.",
-		"Si dubtes, no toquis res. Bloqueja el número, o mira a la web de la missatgeria si el número de seguiment hi existeix."
+		"Abre Mensajes y fíjate en el SMS nuevo. ¿Quién lo envía?",
+		"Mantén pulsado el enlace, sin abrirlo, para ver la dirección entera.",
+		"Si dudas, no toques nada. Bloquea el número, o mira en la web de la mensajería si el número de seguimiento existe."
 	],
 	"apps": {
 		"missatges": {
@@ -36,18 +36,18 @@
 						[
 							{ "t": "Envia't: " },
 							{
-								"t": "el teu paquet 4471-CA està retingut al magatzem.",
+								"t": "tu paquete 4471-ES está retenido en el almacén.",
 								"senyal": "paquet"
 							},
 							{
-								"t": " Cal pagar 1,99 € de despeses d'enviament",
+								"t": " Debes pagar 1,99 € de gastos de envío",
 								"senyal": "import"
 							},
 							{
-								"t": " abans de les 23:59 d'avui",
+								"t": " antes de las 23:59 de hoy",
 								"senyal": "urgencia"
 							},
-							{ "t": " o el retornarem al remitent: " },
+							{ "t": " o lo devolveremos al remitente: " },
 							{
 								"enllac": {
 									"text": "enviat-entrega.top/c/4471",
@@ -62,18 +62,18 @@
 		}
 	},
 	"webs": {
-		"enviat.cat": {
+		"enviat.es": {
 			"plantilla": "enviat",
 			"variant": "oficial",
 			"https": true,
-			"titol": "Envia't · Seguiment d'enviaments",
-			"missatge": "No hi ha cap paquet amb aquest número"
+			"titol": "Envia't · Seguimiento de envíos",
+			"missatge": "No hay ningún paquete con este número"
 		},
 		"enviat-entrega.top": {
 			"plantilla": "enviat",
 			"variant": "falsa",
 			"https": true,
-			"titol": "Envia't · Paga les despeses d'entrega",
+			"titol": "Envia't · Paga los gastos de entrega",
 			"domini_senyal": "enllac",
 			"formulari": {
 				"id": "targeta",
@@ -81,17 +81,17 @@
 				"camps": [
 					{
 						"id": "titular",
-						"etiqueta": "Titular de la targeta",
-						"autoompli": "Àlex Puig"
+						"etiqueta": "Titular de la tarjeta",
+						"autoompli": "Álex Puig"
 					},
 					{
 						"id": "numero",
-						"etiqueta": "Número de targeta",
+						"etiqueta": "Número de tarjeta",
 						"autoompli": "4000 1234 5678 9010"
 					},
 					{
 						"id": "caducitat",
-						"etiqueta": "Caducitat",
+						"etiqueta": "Caducidad",
 						"autoompli": "08/28"
 					},
 					{
@@ -115,7 +115,7 @@
 					"so": "alerta",
 					"app": "missatges",
 					"titol": "+44 7700 900461",
-					"text": "Envia't: el teu paquet 4471-CA està retingut al magatzem."
+					"text": "Envia't: tu paquete 4471-ES está retenido en el almacén."
 				}
 			]
 		},
@@ -163,81 +163,81 @@
 	"senyals": [
 		{
 			"id": "remitent",
-			"titol": "Número estranger",
-			"explicacio": "Un número del Regne Unit (+44) per a una empresa que suposadament és d'aquí. Els estafadors envien SMS des de qualsevol país i també poden falsificar el nom del remitent.",
-			"reaccio": "Més 44? Jo no tinc família a Anglaterra, nano."
+			"titol": "Número extranjero",
+			"explicacio": "Un número del Reino Unido (+44) para una empresa que supuestamente es de aquí. Los estafadores envían SMS desde cualquier país y también pueden falsificar el nombre del remitente.",
+			"reaccio": "¿Un +44? Yo no tengo familia en Inglaterra, chaval."
 		},
 		{
 			"id": "paquet",
-			"titol": "El número de seguiment no quadra",
-			"explicacio": "Tens una comanda de Botiga Verda en camí, però aquest número de seguiment no correspon a cap comanda teva. I una empresa de missatgeria no et demana diners per alliberar un paquet per SMS. Si dubtes, comprova el número a la web oficial de la missatgeria o de la botiga.",
-			"reaccio": "Paquet? El de les plantes ja el tens de camí, i aquest número no hi correspon. Això fa pudor."
+			"titol": "El número de seguimiento no cuadra",
+			"explicacio": "Tienes un pedido de Tienda Verde en camino, pero este número de seguimiento no corresponde a ningún pedido tuyo. Y una empresa de mensajería no te pide dinero por SMS para liberar un paquete. Si dudas, comprueba el número en la web oficial de la mensajería o de la tienda.",
+			"reaccio": "¿Un paquete? El de las plantas ya lo tienes en camino, y este número no corresponde. Esto huele fatal."
 		},
 		{
 			"id": "import",
-			"titol": "Un import petit",
-			"explicacio": "Un import petit fa que no t'ho pensis. El que volen és que posis les dades de la targeta, i amb això et poden cobrar molt més.",
-			"reaccio": "1,99 €... Que barat, oi? Doncs aquesta és la gràcia: amb la targeta et poden buidar el compte."
+			"titol": "Un importe pequeño",
+			"explicacio": "Un importe pequeño hace que no te lo pienses. Lo que quieren es que pongas los datos de la tarjeta, y con eso te pueden cobrar mucho más.",
+			"reaccio": "1,99 €... Qué barato, ¿verdad? Pues ahí está la gracia: con la tarjeta te pueden vaciar la cuenta."
 		},
 		{
 			"id": "urgencia",
-			"titol": "Termini d'avui mateix",
-			"explicacio": "Et donen poques hores perquè actuïs amb pressa i no ho comprovis.",
-			"reaccio": "Avui, avui, avui. Tothom té pressa menys qui diu la veritat."
+			"titol": "Plazo de hoy mismo",
+			"explicacio": "Te dan pocas horas para que actúes con prisa y no lo compruebes.",
+			"reaccio": "Hoy, hoy, hoy. Todo el mundo tiene prisa menos quien dice la verdad."
 		},
 		{
 			"id": "enllac",
-			"titol": "Domini estrany",
-			"explicacio": "Envia't fa servir enviat.cat. Un domini acabat en .top, amb guions i paraules com «entrega», és típic de les estafes per SMS. Al mòbil, mantén premut l'enllaç per veure'l sencer sense obrir-lo.",
-			"reaccio": "Mira el final: «.top». L'oficial és enviat.cat. Al meu poble, a això en diem un ham amb perruca."
+			"titol": "Dominio raro",
+			"explicacio": "Envia't usa enviat.es. Un dominio acabado en .top, con guiones y palabras como «entrega», es típico de las estafas por SMS. En el móvil, mantén pulsado el enlace para verlo entero sin abrirlo.",
+			"reaccio": "Mira el final: «.top». El oficial es enviat.es. En mi pueblo a eso lo llamamos un anzuelo con peluca."
 		}
 	],
 	"frases": {
 		"normal": [
-			"Això és normal, rei.",
-			"Aquí no hi ha res, continua.",
-			"Ni olor d'estafa."
+			"Esto es normal, chaval.",
+			"Aquí no hay nada, sigue.",
+			"Ni olor a estafa."
 		],
-		"web_falsa": "Ho has obert. Mira bé l'adreça de dalt: no és enviat.cat. I tingues present que és un simulacre, no hi posis res de veritat.",
-		"pescat": "Ai, criatura! Has enviat les dades. Si fos de veritat, ara els lladres tindrien la teva targeta, i tot per 1,99 €. Tranquil, que és un simulacre.",
-		"esborra_sol": "Esborrar-lo està bé, però el número et pot seguir escrivint. Bloqueja també el número perquè no insisteixin."
+		"web_falsa": "Lo has abierto. Mira bien la dirección de arriba: no es enviat.es. Y ten presente que es un simulacro, no pongas nada real.",
+		"pescat": "¡Ay, criatura! Has enviado los datos. Si fuera de verdad, ahora los ladrones tendrían tu tarjeta, y todo por 1,99 €. Tranquilo, que es un simulacro.",
+		"esborra_sol": "Borrarlo está bien, pero el número te puede seguir escribiendo. Bloquea también el número para que no insistan."
 	},
 	"decisio": {
-		"pregunta": "Què fas amb l'SMS d'Envia't?",
+		"pregunta": "¿Qué haces con el SMS de Envia't?",
 		"opcions": [
 			{
 				"id": "a",
-				"text": "Toco l'enllaç i pago l'1,99 €, que és poca cosa.",
+				"text": "Toco el enlace y pago 1,99 €, que es poca cosa.",
 				"valor": "incorrecta",
-				"resposta": "T'han pescat. Has donat les dades de la targeta i en pocs dies hi pot haver càrrecs molt més grans. Si et passa de veritat, truca al banc de seguida."
+				"resposta": "Te han pescado. Has dado los datos de la tarjeta y en pocos días puede haber cargos mucho mayores. Si te pasa de verdad, llama al banco enseguida."
 			},
 			{
 				"id": "b",
-				"text": "Responc «STOP» perquè no m'enviïn més missatges.",
+				"text": "Respondo «STOP» para que no me envíen más mensajes.",
 				"valor": "incorrecta",
-				"resposta": "Respondre, sigui el que sigui, confirma que el número és actiu i que hi ha algú a l'altra banda. En rebràs més."
+				"resposta": "Responder, sea lo que sea, confirma que el número está activo y que hay alguien al otro lado. Recibirás más."
 			},
 			{
 				"id": "c",
-				"text": "No toco res i bloquejo el número. Si esperés un paquet, ho miraria a la web oficial.",
+				"text": "No toco nada y bloqueo el número. Si esperara un paquete, lo miraría en la web oficial.",
 				"valor": "correcta",
-				"resposta": "Ben fet! Esborrar i bloquejar talla el fil. I si de veritat esperes un paquet, el número de seguiment de la botiga o a enviat.cat et dirà on és."
+				"resposta": "¡Bien hecho! Borrar y bloquear corta el hilo. Y si de verdad esperas un paquete, el número de seguimiento de la tienda o enviat.es te dirá dónde está."
 			},
 			{
 				"id": "d",
-				"text": "El reenvio a la Família per preguntar si algú ha demanat res.",
+				"text": "Lo reenvío a Familia para preguntar si alguien ha pedido algo.",
 				"valor": "parcial",
-				"resposta": "Bona intenció: preguntar és prudent. Però reenviar l'enllaç el fa arribar a més gent, i algú hi pot tocar. Pregunta-ho sense reenviar-lo."
+				"resposta": "Buena intención: preguntar es prudente. Pero reenviar el enlace lo hace llegar a más gente, y alguien puede pulsarlo. Pregúntalo sin reenviarlo."
 			}
 		]
 	},
 	"tancament": {
 		"aprenentatges": [
-			"Si el número de seguiment no coincideix amb cap comanda teva, desconfia.",
-			"Al mòbil, mantén premut un enllaç per veure on porta abans d'obrir-lo.",
-			"Un import petit és un esquer per aconseguir la teva targeta.",
-			"No responguis mai a un SMS sospitós, ni tan sols amb un «STOP»."
+			"Si el número de seguimiento no coincide con ningún pedido tuyo, desconfía.",
+			"En el móvil, mantén pulsado un enlace para ver adónde lleva antes de abrirlo.",
+			"Un importe pequeño es un cebo para conseguir tu tarjeta.",
+			"No respondas nunca a un SMS sospechoso, ni siquiera con un «STOP»."
 		],
-		"consell": "Si ja has posat les dades de la targeta en una web sospitosa, truca al teu banc per bloquejar-la. També pots trucar al 017, la línia gratuïta i confidencial d'ajuda en ciberseguretat d'INCIBE."
+		"consell": "Si ya has puesto los datos de la tarjeta en una web sospechosa, llama a tu banco para bloquearla. También puedes llamar al 017, la línea gratuita y confidencial de ayuda en ciberseguridad de INCIBE."
 	}
 }
