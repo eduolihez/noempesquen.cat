@@ -159,6 +159,27 @@ final class ValidacioMissioTest extends TestCase {
 		$this->assertSame( array(), nep_valida_guio( $guio, 'pc', 'llissa', array() ) );
 	}
 
+	public function test_passos_del_tutorial(): void {
+		$guio = self::llegeix( self::MISSIONS . 'tutorial-pc.json' );
+		$this->assertSame( array(), nep_valida_guio( $guio, 'pc', $guio['personatge'], array() ) );
+		$pas  = $guio['passos'][0];
+		$casos = array(
+			'massa passos'    => array_fill( 0, 41, $pas ),
+			'buida'           => array(),
+			'no llista'       => array( 'a' => $pas ),
+			'camp desconegut' => array( $pas + array( 'extra' => 1 ) ),
+			'títol llarg'     => array( array( 'titol' => str_repeat( 'à', 61 ) ) + $pas ),
+			'text llarg'      => array( array( 'text' => str_repeat( 'x', 281 ) ) + $pas ),
+			'sense text'      => array( array( 'text' => ' ' ) + $pas ),
+		);
+		foreach ( $casos as $nom => $passos ) {
+			$guio['passos'] = $passos;
+			$this->assertNotEmpty( nep_valida_guio( $guio, 'pc', $guio['personatge'], array() ), $nom );
+		}
+		$guio['passos'] = array( array( 'titol' => str_repeat( 'à', 60 ) ) + $pas );
+		$this->assertSame( array(), nep_valida_guio( $guio, 'pc', $guio['personatge'], array() ) );
+	}
+
 	public function test_id_amb_salt_de_linia_final_falla(): void {
 		$guio       = self::llegeix( self::MISSIONS . 'llissa-01-factura.json' );
 		$guio['id'] = $guio['id'] . "\n";

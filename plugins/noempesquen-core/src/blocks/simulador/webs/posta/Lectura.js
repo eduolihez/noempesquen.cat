@@ -78,7 +78,7 @@ export function Lectura( {
 	}, [ correu.id ] );
 
 	return (
-		<article className="nep-posta-lectura">
+		<article className="nep-posta-lectura" data-tut="correu-obert">
 			<div
 				className="nep-posta-lectura__eines"
 				role="toolbar"
@@ -161,7 +161,10 @@ export function Lectura( {
 					</span>
 				</div>
 
-				<div className="nep-posta-lectura__remitent">
+				<div
+					className="nep-posta-lectura__remitent"
+					data-tut="remitent"
+				>
 					<span
 						className="nep-posta-lectura__avatar"
 						style={ { background: colorDe( adreca || nom ) } }
@@ -201,7 +204,7 @@ export function Lectura( {
 					</button>
 				</div>
 
-				<div className="nep-posta-lectura__cos">
+				<div className="nep-posta-lectura__cos" data-tut="enllacos">
 					<Cos
 						paragrafs={ correu.cos ?? [] }
 						onEnllac={ obrePestanya }

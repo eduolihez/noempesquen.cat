@@ -26,6 +26,14 @@ const REF_ALCADA = 760;
 /* Part de la barra de títol que sempre ha de quedar a l'abast. */
 const VISIBLE_MINIM = 120;
 const ALCADA_BARRA = 32;
+/* Píxels de pantalla abans de començar a arrossegar. */
+const LLINDAR_MOU = 3;
+
+/* Àncores del tutorial (`data-tut`) de les finestres. */
+const TUT_FINESTRA = {
+	navegador: 'finestra-navegador',
+	parla: 'finestra-parla',
+};
 
 /**
  * Posició inicial en cascada a partir de l'origen que centraria la
@@ -74,6 +82,7 @@ function limita( el, { x, y } ) {
  * @param {Function} props.onMinimitza Minimitza-la.
  * @param {Function} props.onMaximitza Alterna maximitzada/restaurada.
  * @param {Function} props.onTanca     Tanca-la (després de l'animació).
+ * @param {Function} props.onMou       Avisa que el jugador l'ha moguda (rect).
  */
 export function Finestra( {
 	finestra,
@@ -83,6 +92,7 @@ export function Finestra( {
 	onMinimitza,
 	onMaximitza,
 	onTanca,
+	onMou,
 } ) {
 	const { nom, Icona, Component } = APPS[ finestra.app ];
 	const arrel = useRef( null );
@@ -93,11 +103,34 @@ export function Finestra( {
 	const [ titol, setTitol ] = useState( nom );
 	const [ tancant, setTancant ] = useState( false );
 	const ctx = useMemo( () => ( { posaTitol: setTitol } ), [] );
-	const { minimitzada, maximitzada } = finestra;
+	const { minimitzada, maximitzada, manual, rect } = finestra;
+	const mogut = useRef( false );
 
 	useLayoutEffect( () => {
-		setPos( posicioInicial( arrel.current, ordre ) );
+		setPos(
+			rect
+				? { x: rect.x, y: rect.y }
+				: posicioInicial( arrel.current, ordre )
+		);
 	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Reajust automàtic (s'ha obert, restaurat o tancat una altra finestra):
+	// només si no és manual. Sense rect, torna a la posició per defecte.
+	const clau = rect
+		? `${ rect.x },${ rect.y },${ rect.amplada },${ rect.alcada }`
+		: '';
+	const teRect = useRef( !! rect );
+	useLayoutEffect( () => {
+		if ( manual ) {
+			return;
+		}
+		if ( rect ) {
+			setPos( { x: rect.x, y: rect.y } );
+		} else if ( teRect.current ) {
+			setPos( posicioInicial( arrel.current, 0 ) );
+		}
+		teRect.current = !! rect;
+	}, [ clau, manual ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Focus al contingut quan passa a ser activa, si no hi és ja (un clic
 	// a dins no s'ha de perdre).
@@ -125,25 +158,46 @@ export function Finestra( {
 			return;
 		}
 		e.currentTarget.setPointerCapture?.( e.pointerId );
+		mogut.current = false;
 		arrossega.current = { px: e.clientX, py: e.clientY, ...pos };
 	};
 	const mou = ( e ) => {
 		const d = arrossega.current;
+		// Llindar: un clic amb tremolor (< 3 px) no mou ni avisa la finestra.
+		if (
+			d &&
+			! mogut.current &&
+			Math.hypot( e.clientX - d.px, e.clientY - d.py ) < LLINDAR_MOU
+		) {
+			return;
+		}
 		if ( d ) {
+			mogut.current = true;
 			const { dx, dy } = delta(
 				e.clientX - d.px,
 				e.clientY - d.py,
 				escala
 			);
-			setPos(
-				limita( arrel.current, {
-					x: d.x + dx,
-					y: d.y + dy,
-				} )
-			);
+			const nova = limita( arrel.current, {
+				x: d.x + dx,
+				y: d.y + dy,
+			} );
+			d.actual = nova;
+			setPos( nova );
 		}
 	};
 	const deixa = () => {
+		const d = arrossega.current;
+		if ( d?.actual && mogut.current ) {
+			const el = arrel.current;
+			onMou( {
+				x: d.actual.x,
+				y: d.actual.y,
+				amplada: el.offsetWidth,
+				alcada: el.offsetHeight,
+			} );
+		}
+		mogut.current = false;
 		arrossega.current = null;
 	};
 
@@ -163,10 +217,14 @@ export function Finestra( {
 			ref={ arrel }
 			className={ classes }
 			aria-label={ titol }
+			data-tut-foc={ enfocada ? 'true' : undefined }
+			data-tut={ TUT_FINESTRA[ finestra.app ] }
 			style={ {
 				zIndex: finestra.z,
 				left: maximitzada ? undefined : pos?.x,
 				top: maximitzada ? undefined : pos?.y,
+				width: maximitzada ? undefined : rect?.amplada,
+				height: maximitzada ? undefined : rect?.alcada,
 			} }
 			inert={ minimitzada || tancant ? '' : undefined }
 			onPointerDownCapture={ enfocada ? undefined : onEnfoca }
@@ -193,7 +251,10 @@ export function Finestra( {
 					<Icona mida={ 16 } />
 				</span>
 				<span className="nep-so-finestra__titol">{ titol }</span>
-				<div className="nep-so-finestra__controls">
+				<div
+					className="nep-so-finestra__controls"
+					data-tut="botons-finestra"
+				>
 					<button
 						type="button"
 						className="nep-so-finestra__control"

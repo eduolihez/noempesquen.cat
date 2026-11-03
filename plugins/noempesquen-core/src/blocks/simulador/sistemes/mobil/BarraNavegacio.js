@@ -22,6 +22,7 @@ export function BarraNavegacio( { aInici, onEnrere, onInici, inerta } ) {
 				type="button"
 				className="nep-so-m-nav__boto"
 				aria-label={ __( 'Enrere', 'noempesquen' ) }
+				data-tut="nav-enrere"
 				aria-disabled={ aInici ? 'true' : undefined }
 				onClick={ aInici ? undefined : onEnrere }
 			>
@@ -31,6 +32,7 @@ export function BarraNavegacio( { aInici, onEnrere, onInici, inerta } ) {
 				type="button"
 				className="nep-so-m-nav__boto"
 				aria-label={ __( 'Inici', 'noempesquen' ) }
+				data-tut="nav-inici"
 				onClick={ onInici }
 			>
 				<IconaInici mida={ 22 } />

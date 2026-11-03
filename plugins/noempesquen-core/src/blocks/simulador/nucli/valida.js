@@ -5,6 +5,7 @@
 import { CLAUS_APPS_PC, CLAUS_APPS_MOBIL } from '../apps/claus';
 import { existeixIlustracio } from '../ui/ilustracions-ids';
 import { senseWww } from '../apps/navegador/historial';
+import { ANCORES } from './ancores';
 import {
 	MS_TRAS_INTRO,
 	MS_MIN_AVISOS_NIVELL_1,
@@ -71,6 +72,13 @@ export const ESDEVENIMENTS = [
 	'descarrega.fes',
 	'avis.apareix',
 	'lupa.activa',
+	'finestra.tanca',
+	'senyal.troba',
+	'decisio.pren',
+	'nav.inici',
+	'nav.enrere',
+	'centre.obre',
+	'pas.entra',
 ];
 
 /**
@@ -1136,6 +1144,149 @@ function validaTutorial( m, valors, errors ) {
 	}
 }
 
+const ID_PAS = /^[a-z0-9-]+$/;
+const CAMPS_PAS = [ 'id', 'ancora', 'titol', 'text', 'continua' ];
+/** Tope de passos d'un tutorial. */
+export const MAX_PASSOS = 40;
+// Claus que pot dur un `continua` objecte (filtres de l'esdeveniment).
+const CLAUS_CONTINUA = [
+	'esdeveniment',
+	'app',
+	'id',
+	'senyal',
+	'opcio',
+	'url',
+];
+// Esdeveniments que només emet un dels dos sistemes.
+const ESDEVENIMENTS_DISPOSITIU = {
+	'finestra.tanca': 'pc',
+	'nav.inici': 'mobil',
+	'nav.enrere': 'mobil',
+	'centre.obre': 'mobil',
+};
+const esValorSimple = ( v ) =>
+	[ 'string', 'number', 'boolean' ].includes( typeof v );
+
+/**
+ * Indica si la missió té una llista de `passos` (la intro per xat és llavors
+ * opcional: la substitueix l'overlay del tutorial).
+ *
+ * @param {Object} m Missió.
+ * @return {boolean} Si té passos (no buits).
+ */
+const tePassos = ( m ) =>
+	m.tutorial === true && Array.isArray( m.passos ) && m.passos.length > 0;
+
+function validaContinua( ref, c, m, errors ) {
+	if ( c === 'boto' ) {
+		return;
+	}
+	if ( ! esObjecte( c ) ) {
+		errors.push( `${ ref }: continua invàlid` );
+		return;
+	}
+	if ( typeof c.esdeveniment !== 'string' || ! c.esdeveniment ) {
+		errors.push( `${ ref }: continua sense esdeveniment` );
+	} else if (
+		! ESDEVENIMENTS.includes( c.esdeveniment ) ||
+		[ 'pas.entra', 'inici' ].includes( c.esdeveniment )
+	) {
+		// `inici` i `pas.entra` són interns: el jugador mai els emet.
+		errors.push(
+			`${ ref }: continua amb esdeveniment no vàlid: ${ c.esdeveniment }`
+		);
+	} else if (
+		ESDEVENIMENTS_DISPOSITIU[ c.esdeveniment ] &&
+		ESDEVENIMENTS_DISPOSITIU[ c.esdeveniment ] !== ( m.dispositiu ?? 'pc' )
+	) {
+		errors.push(
+			`${ ref }: ${ c.esdeveniment } no existeix al dispositiu ${
+				m.dispositiu ?? 'pc'
+			}`
+		);
+	}
+	Object.keys( c )
+		.filter( ( k ) => ! CLAUS_CONTINUA.includes( k ) )
+		.forEach( ( k ) =>
+			errors.push( `${ ref }: continua amb clau desconeguda: ${ k }` )
+		);
+	const apps = APPS_MISSIO[ m.dispositiu ];
+	if ( c.app !== undefined && apps && ! apps.includes( c.app ) ) {
+		errors.push( `${ ref }: continua amb app inexistent: ${ c.app }` );
+	}
+	if ( Object.values( c ).some( ( v ) => ! esValorSimple( v ) ) ) {
+		errors.push( `${ ref }: continua amb valors invàlids` );
+	}
+}
+
+function validaPas( p, i, vistos, m, errors ) {
+	if ( ! esObjecte( p ) ) {
+		errors.push( `pas ${ i }: invàlid` );
+		return;
+	}
+	const ref = `pas ${ p.id ?? i }`;
+	Object.keys( p )
+		.filter( ( c ) => ! CAMPS_PAS.includes( c ) )
+		.forEach( ( c ) => errors.push( `${ ref }: camp desconegut: ${ c }` ) );
+	if ( typeof p.id !== 'string' || ! ID_PAS.test( p.id ) ) {
+		errors.push( `pas ${ i }: id invàlid` );
+	} else if ( vistos.has( p.id ) ) {
+		errors.push( `pas duplicat: ${ p.id }` );
+	} else {
+		vistos.add( p.id );
+	}
+	if ( p.ancora !== null && ! ANCORES.includes( p.ancora ) ) {
+		errors.push( `${ ref }: àncora desconeguda: ${ p.ancora }` );
+	}
+	[
+		[ 'titol', 60 ],
+		[ 'text', 280 ],
+	].forEach( ( [ camp, max ] ) => {
+		const v = p[ camp ];
+		if ( typeof v !== 'string' || ! v.trim() || v.length > max ) {
+			errors.push( `${ ref }: ${ camp } invàlid (1-${ max } caràcters)` );
+		}
+	} );
+	validaContinua( ref, p.continua, m, errors );
+}
+
+/**
+ * Valida `passos` (només amb `tutorial: true`) i que els disparadors
+ * `pas.entra` apuntin a un pas existent.
+ *
+ * @param {Object}   m      Missió.
+ * @param {string[]} errors Acumulador d'errors.
+ */
+function validaPassos( m, errors ) {
+	const idsPas = new Set( llista( m.passos ).map( ( p ) => p?.id ) );
+	llista( m.disparadors ).forEach( ( d ) => {
+		if (
+			d?.quan?.esdeveniment === 'pas.entra' &&
+			( typeof d.quan.pas !== 'string' || ! idsPas.has( d.quan.pas ) )
+		) {
+			errors.push(
+				`disparador ${ d.id }: pas inexistent: ${ d.quan.pas }`
+			);
+		}
+	} );
+	if ( m.passos === undefined ) {
+		return;
+	}
+	if ( m.tutorial !== true ) {
+		errors.push( 'passos: només els tutorials en poden tenir' );
+		return;
+	}
+	if ( ! Array.isArray( m.passos ) || ! m.passos.length ) {
+		errors.push( 'passos: ha de ser una llista no buida' );
+		return;
+	}
+	if ( m.passos.length > MAX_PASSOS ) {
+		errors.push( `passos: com a màxim ${ MAX_PASSOS }` );
+	}
+	const vistos = new Set();
+	m.passos.forEach( ( p, i ) => validaPas( p, i, vistos, m, errors ) );
+}
+
 /**
  * Valida una missió v2.
  *
@@ -1169,7 +1320,11 @@ export function validaMissio( m, mon ) {
 	if ( m.personatge && ! [ 'llissa', 'remei' ].includes( m.personatge ) ) {
 		errors.push( 'personatge invàlid' );
 	}
-	if ( ! Array.isArray( m.intro ) || ! m.intro.length ) {
+	// Amb `passos` (tutorial) la intro per xat és opcional: la substitueix l'overlay.
+	if (
+		! tePassos( m ) &&
+		( ! Array.isArray( m.intro ) || ! m.intro.length )
+	) {
 		errors.push( 'falta intro' );
 	}
 	if ( mon && ! Array.isArray( mon.contactes ) ) {
@@ -1292,5 +1447,6 @@ export function validaMissio( m, mon ) {
 		errors.push( 'cap opció correcta' );
 	}
 	validaTutorial( m, valors, errors );
+	validaPassos( m, errors );
 	return errors;
 }

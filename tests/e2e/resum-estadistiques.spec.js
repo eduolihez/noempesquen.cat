@@ -32,7 +32,7 @@ const files = ( accio, missio ) =>
 const parla = ( page ) => page.getByRole( 'region', { name: 'Parla' } );
 
 async function entra( page ) {
-	await page.goto( '/wp-login.php' );
+	await page.goto( '/admin/' );
 	await page.locator( '#user_login' ).fill( 'admin' );
 	await page.locator( '#user_pass' ).fill( 'password' );
 	await page.locator( '#wp-submit' ).click();

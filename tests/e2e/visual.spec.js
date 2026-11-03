@@ -2,6 +2,8 @@ const { test, expect } = require( './ajudes' );
 const {
 	greusAxePc,
 	iniciaMissio,
+	desbloqueja,
+	obreMissio,
 	petits,
 	saltaIntro,
 	senseFullscreen,
@@ -105,8 +107,9 @@ async function pc( page, mida, prefix ) {
 	// En vertical estret el PC no es mostra: petició de girar o d'ampliar.
 	if ( mida.height > mida.width && mida.width < 768 ) {
 		await page.clock.install();
+		const trobada = desbloqueja( page, FACTURA );
 		await page.goto( '/simulador/' );
-		await page.getByRole( 'button', { name: FACTURA } ).click();
+		await obreMissio( page, FACTURA, trobada );
 		await expect( page.getByRole( 'alertdialog' ) ).toBeVisible();
 		await revisa( page, `${ prefix }girar`, [ '[role="alertdialog"]' ] );
 		return;
@@ -222,13 +225,12 @@ test.describe( 'Revisió visual', () => {
 				await senseFullscreen( page );
 				await page.setViewportSize( mida );
 				await page.clock.install();
+				const trobada = desbloqueja( page, missio.titol );
 				await page.goto( '/simulador/' );
 				await expect(
 					page.getByRole( 'region', { name: 'Tria una missió' } )
 				).toBeVisible();
-				await page
-					.getByRole( 'button', { name: missio.titol } )
-					.click();
+				await obreMissio( page, missio.titol, trobada );
 				const girar = page.getByRole( 'alertdialog' );
 				const bloqueig = page.getByRole( 'button', {
 					name: missio.bloqueig,

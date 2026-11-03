@@ -7,6 +7,8 @@ import {
 	processaEsdeveniment,
 	avancaTemps,
 	desplacaPendents,
+	entraPas,
+	saltaPassos,
 } from './disparadors.js';
 import { senseWww } from '../apps/navegador/historial.js';
 import { SEGONS_PISTA } from './temps.js';
@@ -83,6 +85,9 @@ function anotaEsdeveniment( estat, nom, dades ) {
 	return { ...estat, [ camp ]: [ ...estat[ camp ], id ] };
 }
 
+const tePassos = ( missio ) =>
+	Array.isArray( missio?.passos ) && missio.passos.length > 0;
+
 export function estatInicial( missio ) {
 	return {
 		missioId: missio?.id ?? null,
@@ -91,7 +96,10 @@ export function estatInicial( missio ) {
 		pausa: false,
 		temps: 0,
 		introPas: 0,
-		introAcabada: false,
+		// Amb `passos` l'overlay substitueix la intro per xat.
+		introAcabada: tePassos( missio ),
+		// Índex del pas actual del tutorial; == passos.length vol dir acabat.
+		pas: 0,
 		lupa: false,
 		lupaUsada: false,
 		// Resultat de l'última inspecció (mai text del jugador): `clau` puja a
@@ -164,10 +172,12 @@ function afegeixJo( estat, text ) {
 function seguentIntro( missio, estat ) {
 	const jo = afegeixJo(
 		estat,
-		estat.introPas + 1 < missio.intro.length ? TEXT_SEGUENT : TEXT_COMENCA
+		estat.introPas + 1 < ( missio.intro ?? [] ).length
+			? TEXT_SEGUENT
+			: TEXT_COMENCA
 	);
 	const pas = estat.introPas + 1;
-	if ( pas < missio.intro.length ) {
+	if ( pas < ( missio.intro ?? [] ).length ) {
 		return afegeixGuia( { ...jo, introPas: pas }, missio.intro[ pas ] );
 	}
 	return afegeixGuia(
@@ -202,9 +212,16 @@ function triaOpcio( missio, estat, opcioId ) {
 	if ( ! opcio ) {
 		return estat;
 	}
+	// `decisio.pren` abans de tancar el joc: pot acabar l'últim pas.
+	const pres = processaEsdeveniment( missio, estat, 'decisio.pren', {
+		opcio: opcio.id,
+	} );
+	if ( pres.fase !== FASE.JOC ) {
+		return pres;
+	}
 	return afegeixGuia(
 		{
-			...afegeixJo( estat, opcio.text ),
+			...afegeixJo( pres, opcio.text ),
 			opcio: opcio.id,
 			decisioOberta: false,
 			fase: FASE.CONSEQUENCIA,
@@ -273,10 +290,16 @@ function inspecciona( missio, estat, idSenyal ) {
 	}
 	const trobats = [ ...estat.trobats, senyal.id ];
 	const nou = { ...estat, trobats, ultimAvanc: estat.temps };
-	return afegeixGuia(
-		amb( nou, 'nova' ),
-		senyal.reaccio,
-		`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
+	// `senyal.troba` (un sol cop per senyal) pot fer avançar un pas.
+	return processaEsdeveniment(
+		missio,
+		afegeixGuia(
+			amb( nou, 'nova' ),
+			senyal.reaccio,
+			`Indicis: ${ trobats.length } de ${ missio.senyals.length }`
+		),
+		'senyal.troba',
+		{ senyal: senyal.id }
 	);
 }
 
@@ -313,18 +336,44 @@ function tancaWeb( estat, url, element ) {
 		: { ...estat, tancats: [ ...estat.tancats, clau ] };
 }
 
+function desbloqueja( missio, estat ) {
+	const joc = { ...estat, fase: FASE.JOC };
+	const inici = processaEsdeveniment(
+		missio,
+		missio.intro?.[ 0 ] && ! tePassos( missio )
+			? afegeixGuia( joc, missio.intro[ 0 ] )
+			: joc,
+		'inici',
+		{}
+	);
+	// El pas 0 també «entra» en començar (dispara els seus `pas.entra`).
+	return tePassos( missio ) && inici.pas === 0
+		? entraPas( missio, inici, 0 )
+		: inici;
+}
+
 export function reductor( missio, estat, accio ) {
 	switch ( accio.tipus ) {
 		case 'DESBLOQUEJA':
 			if ( estat.fase !== FASE.BLOQUEIG ) {
 				return estat;
 			}
-			return processaEsdeveniment(
-				missio,
-				afegeixGuia( { ...estat, fase: FASE.JOC }, missio.intro[ 0 ] ),
-				'inici',
-				{}
-			);
+			return desbloqueja( missio, estat );
+
+		case 'PAS_SEGUENT':
+			return estat.fase === FASE.JOC &&
+				! estat.pausa &&
+				missio.passos?.[ estat.pas ]?.continua === 'boto'
+				? entraPas( missio, estat, estat.pas + 1 )
+				: estat;
+
+		case 'PAS_SALTA':
+			return estat.fase === FASE.JOC &&
+				! estat.pausa &&
+				tePassos( missio ) &&
+				estat.pas < missio.passos.length
+				? saltaPassos( missio, estat )
+				: estat;
 
 		case 'ESDEVENIMENT':
 			return processaEsdeveniment(
@@ -350,8 +399,13 @@ export function reductor( missio, estat, accio ) {
 				return estat;
 			}
 			const nou = { ...estat, lupa: ! estat.lupa };
-			// Primera vegada per partida: avisa missions i tutorials.
-			return nou.lupa && ! estat.lupaUsada
+			// La primera encesa i, als tutorials, cada encesa (un pas «activa
+			// la lupa» avança encara que ja s'hagués fet servir). Les missions
+			// sense passos es queden com abans.
+			const emet =
+				nou.lupa &&
+				( ! estat.lupaUsada || Array.isArray( missio.passos ) );
+			return emet
 				? processaEsdeveniment(
 						missio,
 						{ ...nou, lupaUsada: true },
@@ -408,7 +462,7 @@ export function respostesRapides( missio, estat ) {
 		return [];
 	}
 	if ( ! estat.introAcabada ) {
-		const ultim = estat.introPas + 1 >= missio.intro.length;
+		const ultim = estat.introPas + 1 >= ( missio.intro ?? [] ).length;
 		return [
 			{
 				id: 'intro:seguent',

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 
-const CLASSE_SCROLL = 'nep-so-bloqueja-scroll';
+export const CLASSE_SCROLL = 'nep-so-bloqueja-scroll';
 
 /*
  * Keyboard Lock (Chromium): amb Esc bloquejat, una pulsació curta arriba a la

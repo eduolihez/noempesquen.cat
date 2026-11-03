@@ -13,6 +13,12 @@ import { BotoLupa } from '../../ui/BotoLupa';
 import { DATA_CURTA, DATA_LLARGA } from './calendari';
 import { usePistaDescartable } from './usePista';
 
+/* Àncores del tutorial (`data-tut`) dels botons d'app. */
+const TUT_APP = {
+	navegador: 'app-navegador',
+	parla: 'app-parla',
+};
+
 function etiquetaApp( nom, finestra, enfocada ) {
 	if ( ! finestra ) {
 		return nom;
@@ -85,6 +91,7 @@ export function BarraTasques( {
 				pistaAmagada ? ' is-pista-amagada' : ''
 			}` }
 			aria-label={ __( 'Barra de tasques', 'noempesquen' ) }
+			data-tut="barra"
 		>
 			<div className="nep-so-barra__centre">
 				<button
@@ -92,6 +99,7 @@ export function BarraTasques( {
 					type="button"
 					className="nep-so-barra__boto nep-so-barra__inici"
 					aria-label={ __( 'Inici', 'noempesquen' ) }
+					data-tut="inici"
 					aria-expanded={ panell === 'inici' }
 					onClick={ () => onPanell( 'inici' ) }
 				>
@@ -124,6 +132,7 @@ export function BarraTasques( {
 							key={ id }
 							type="button"
 							className={ classes }
+							data-tut={ TUT_APP[ id ] }
 							aria-label={ etiquetaApp(
 								nom,
 								finestra,
@@ -155,6 +164,7 @@ export function BarraTasques( {
 					ref={ refRellotge }
 					type="button"
 					className="nep-so-barra__rellotge"
+					data-tut="rellotge"
 					aria-label={ etiquetaRellotge }
 					aria-expanded={ panell === 'notificacions' }
 					onClick={ () => onPanell( 'notificacions' ) }

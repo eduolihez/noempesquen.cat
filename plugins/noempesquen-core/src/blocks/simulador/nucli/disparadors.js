@@ -213,6 +213,99 @@ export function processaEsdeveniment( missio, estat, nom, dades = {} ) {
 	if ( estat.fase !== FASE.JOC || estat.pausa ) {
 		return estat;
 	}
+	const resultat = executaDisparadors( missio, estat, nom, dades );
+	const pas = missio.passos?.[ resultat.pas ];
+	// Un esdeveniment del jugador avança com a màxim un pas.
+	if (
+		resultat.fase === FASE.JOC &&
+		pas?.continua &&
+		typeof pas.continua === 'object' &&
+		coincideix( pas.continua, nom, dades, resultat )
+	) {
+		return entraPas( missio, resultat, resultat.pas + 1 );
+	}
+	return resultat;
+}
+
+/**
+ * Indica si el tutorial és dins els passos (cal mostrar-los i no donar pistes
+ * per temps).
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat actual.
+ * @return {boolean} Si encara queden passos.
+ */
+export function enPassos( missio, estat ) {
+	return Array.isArray( missio?.passos ) && estat.pas < missio.passos.length;
+}
+
+/**
+ * Un pas d'acció que l'estat ja compleix (el jugador s'hi ha avançat): la
+ * lupa ja és encesa o el senyal ja s'ha trobat. Si no, quedaria encallat.
+ *
+ * @param {Object} pas   Pas del tutorial.
+ * @param {Object} estat Estat actual.
+ * @return {boolean} Cert si el pas ja està fet.
+ */
+function pasJaFet( pas, estat ) {
+	const c = pas.continua;
+	if ( c?.esdeveniment === 'lupa.activa' ) {
+		return !! estat.lupa;
+	}
+	return (
+		c?.esdeveniment === 'senyal.troba' && estat.trobats.includes( c.senyal )
+	);
+}
+
+/**
+ * Posa el tutorial al pas indicat i processa l'esdeveniment sintètic
+ * `pas.entra` només contra els disparadors (no pot avançar cap altre pas).
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat actual.
+ * @param {number} index  Índex del pas on entra (== longitud: acabat).
+ * @return {Object} Nou estat.
+ */
+export function entraPas( missio, estat, index ) {
+	const nou = { ...estat, pas: index, ultimAvanc: estat.temps };
+	const pas = missio.passos?.[ index ];
+	if ( ! pas ) {
+		return nou;
+	}
+	const entrat = executaDisparadors( missio, nou, 'pas.entra', {
+		pas: pas.id,
+	} );
+	return entrat.fase === FASE.JOC && pasJaFet( pas, entrat )
+		? entraPas( missio, entrat, index + 1 )
+		: entrat;
+}
+
+/**
+ * Salta els passos que queden: aplica en ordre els `pas.entra` pendents
+ * (cada disparador només s'executa una vegada) i acaba el tutorial.
+ *
+ * @param {Object} missio Missió.
+ * @param {Object} estat  Estat actual.
+ * @return {Object} Nou estat.
+ */
+export function saltaPassos( missio, estat ) {
+	let actual = estat;
+	for ( let i = estat.pas; i < missio.passos.length; i++ ) {
+		if ( actual.fase !== FASE.JOC ) {
+			break;
+		}
+		actual = executaDisparadors( missio, actual, 'pas.entra', {
+			pas: missio.passos[ i ].id,
+		} );
+	}
+	return {
+		...actual,
+		pas: missio.passos.length,
+		ultimAvanc: actual.temps,
+	};
+}
+
+function executaDisparadors( missio, estat, nom, dades ) {
 	let actual = obreObjectiu( missio, nom, dades )
 		? { ...estat, ultimAvanc: estat.temps }
 		: estat;
@@ -285,6 +378,7 @@ export function avancaTemps( missio, estat, segons, limit ) {
 	const pista = missio.pistes?.[ actual.pistesDonades ];
 	if (
 		actual.introAcabada &&
+		! enPassos( missio, actual ) &&
 		actual.fase === FASE.JOC &&
 		pista !== undefined &&
 		actual.temps - actual.ultimAvanc >= limit

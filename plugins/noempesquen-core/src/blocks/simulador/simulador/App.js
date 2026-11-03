@@ -6,6 +6,7 @@ import {
 	useRef,
 } from '@wordpress/element';
 import { combinaMissions } from '../nucli/missions';
+import { seguentDe } from '../nucli/ruta';
 import { __ } from '@wordpress/i18n';
 import { desaProgres, llegeixProgres } from '../nucli/progres';
 import { fusionaProgres } from '../nucli/sincro';
@@ -247,8 +248,12 @@ export function App( { config } ) {
 	darreres.current = missions;
 
 	const missio = missions.find( ( m ) => m.id === actual ) ?? null;
-	const index = missio ? missions.indexOf( missio ) : -1;
-	const seguentMissio = index >= 0 ? missions[ index + 1 ] : null;
+	// La següent de la ruta del mateix vaixell si ja és jugable amb el progrés
+	// actual; a l'última o si encara és bloquejada, tornar al mapa.
+	const seguentId = missio ? seguentDe( missions, missio.id, progres ) : null;
+	// Vaixell de la darrera missió jugada: el selector hi torna obert.
+	const vaixellJugat =
+		missions.find( ( m ) => m.id === jugada.current )?.dispositiu ?? null;
 
 	// Una previsualització no desa progrés ni envia estadístiques.
 	const { api } = config;
@@ -283,8 +288,21 @@ export function App( { config } ) {
 	};
 
 	if ( ! missio ) {
+		// L'avís de prova i l'estat del compte van a la barra inferior del
+		// selector: és a pantalla completa i taparia res que quedés fora.
 		return (
-			<>
+			<Selector
+				// `vaixellInicial` només es llegeix en muntar: si canvia
+				// (missions remotes que arriben tard), es torna a muntar.
+				key={ vaixellJugat ?? 'port' }
+				missions={ missions }
+				progres={ progres }
+				preferit={ preferit }
+				onTria={ tria }
+				enfoca={ jugada.current }
+				vaixellInicial={ vaixellJugat }
+				inici={ config.inici || '/' }
+			>
 				{ !! config.previsualitza && (
 					<p className="nep-sim-avis" role="status">
 						{ fallaPrevi
@@ -295,20 +313,13 @@ export function App( { config } ) {
 							: '' }
 					</p>
 				) }
-				<Selector
-					missions={ missions }
-					progres={ progres }
-					preferit={ preferit }
-					onTria={ tria }
-					enfoca={ jugada.current }
-				/>
 				{ ! config.previsualitza && !! config.compte && (
 					<EstatCompte
 						connectat={ connectat }
 						url={ config.compte.url || '' }
 					/>
 				) }
-			</>
+			</Selector>
 		);
 	}
 
@@ -320,7 +331,7 @@ export function App( { config } ) {
 			onSurt={ () => setActual( null ) }
 			onAcaba={ onAcaba }
 			api={ config.api }
-			seguent={ seguentMissio ? () => tria( seguentMissio.id ) : null }
+			seguent={ seguentId ? () => tria( seguentId ) : null }
 		/>
 	);
 }

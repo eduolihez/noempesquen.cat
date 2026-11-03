@@ -44,6 +44,109 @@ async function greusAxe( page ) {
 const inspecciona = ( page, text ) =>
 	page.getByRole( 'button', { name: `Inspecciona: ${ text }`, exact: true } );
 
+/** Misions incloses, en l'ordre d'`INCLOSES` (SIM/simulador/App.js). */
+const ID_INCLOSES = [
+	'tutorial-pc',
+	'tutorial-mobil',
+	'llissa-01-factura',
+	'llissa-02-banc',
+	'llissa-03-inversio',
+	'llissa-04-suport',
+	'llissa-05-actualitzacio',
+	'remei-01-paquet',
+	'remei-02-canviat',
+	'remei-03-sorteig',
+	'remei-04-codi',
+	'remei-05-comprador',
+];
+const INCLOSES = ID_INCLOSES.map( ( id ) =>
+	require( `../../plugins/noempesquen-core/missions/${ id }.json` )
+);
+const VAIXELL = { pc: 'el Pesquer', mobil: 'el Pirata' };
+const NOM_PROGRES = 'noempesquen-progres-v2';
+
+/** Cert si `titol` (text o RegExp) designa el títol d'una missió. */
+const coincideix = ( titol, m ) =>
+	titol instanceof RegExp
+		? titol.test( m.titol )
+		: m.titol.includes( titol );
+
+/** Ruta d'un dispositiu: tutorial primer i la resta en l'ordre d'INCLOSES (com `construeixRuta`). */
+const rutaDe = ( dispositiu ) => {
+	const llista = INCLOSES.filter( ( m ) => m.dispositiu === dispositiu );
+	return [
+		...llista.filter( ( m ) => m.tutorial === true ),
+		...llista.filter( ( m ) => m.tutorial !== true ),
+	];
+};
+
+/**
+ * Sembra el progrés (1 estrella) de totes les misions anteriors de la ruta
+ * de la missió demanada, perquè el mapa la deixi jugar. No sembra res si és
+ * el tutorial. Si el títol no és d'una missió inclosa (remota), se suposa
+ * del PC i se sembra tota la ruta. Cal cridar-la abans
+ * de `page.goto`. No trepitja el progrés que el spec ja hagi sembrat.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string|RegExp}                   titol Títol de la missió.
+ * @return {Object|null} La missió trobada (amb `dispositiu`) o null.
+ */
+function desbloqueja( page, titol ) {
+	let missio = INCLOSES.find( ( m ) => coincideix( titol, m ) ) ?? null;
+	let anteriors;
+	if ( missio ) {
+		const ruta = rutaDe( missio.dispositiu );
+		anteriors = ruta
+			.slice( 0, ruta.findIndex( ( m ) => m.id === missio.id ) )
+			.map( ( m ) => m.id );
+	} else {
+		// Missió remota (publicada pels specs): va al final de la ruta del PC
+		// (són còpies de la factura). Se sembren totes les incloses.
+		missio = { dispositiu: 'pc' };
+		anteriors = rutaDe( 'pc' ).map( ( m ) => m.id );
+	}
+	if ( anteriors.length ) {
+		page.addInitScript(
+			( [ clau, ids ] ) => {
+				let actual = {};
+				try {
+					actual = JSON.parse( window.localStorage.getItem( clau ) );
+				} catch {
+					actual = {};
+				}
+				if ( ! actual || typeof actual !== 'object' ) {
+					actual = {};
+				}
+				ids.forEach( ( id ) => {
+					actual[ id ] = Math.max( 1, actual[ id ] || 0 );
+				} );
+				window.localStorage.setItem( clau, JSON.stringify( actual ) );
+			},
+			[ NOM_PROGRES, anteriors ]
+		);
+	}
+	return missio;
+}
+
+/**
+ * Del port, obre el vaixell de la missió i clica el seu node del mapa.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string|RegExp}                   titol
+ * @param {Object|null}                     [missio] Retorn de `desbloqueja`.
+ */
+async function obreMissio( page, titol, missio = null ) {
+	const trobada = missio ?? INCLOSES.find( ( m ) => coincideix( titol, m ) );
+	if ( trobada ) {
+		await page
+			.getByRole( 'button', {
+				name: new RegExp( `^Obre ${ VAIXELL[ trobada.dispositiu ] }:` ),
+			} )
+			.click();
+	}
+	await page.getByRole( 'button', { name: titol } ).click();
+}
+
 /**
  * Obre el simulador, tria la missió i espera la pantalla de bloqueig.
  * Els fake clocks s'instal·len abans de carregar la pàgina.
@@ -54,8 +157,9 @@ const inspecciona = ( page, text ) =>
  */
 async function iniciaMissio( page, titol, bloqueig ) {
 	await page.clock.install();
+	const missio = desbloqueja( page, titol );
 	await page.goto( '/simulador/' );
-	await page.getByRole( 'button', { name: titol } ).click();
+	await obreMissio( page, titol, missio );
 	await expect(
 		page.getByRole( 'button', { name: bloqueig } )
 	).toBeVisible();
@@ -258,6 +362,10 @@ module.exports = {
 	greusAxe,
 	inspecciona,
 	iniciaMissio,
+	desbloqueja,
+	obreMissio,
+	rutaDe,
+	INCLOSES,
 	petits,
 	escoltaFuites,
 	sensePistes,

@@ -53,10 +53,16 @@ export function descriu( n, { mon, nomGuia, Avatar } ) {
  * @param {Object}   props.n      Notificació.
  * @param {Object}   props.d      Presentació (vegeu descriu).
  * @param {Function} props.onObre Obre l'app de la notificació.
+ * @param {string}   [props.tut]  Clau `data-tut` (només el banner).
  */
-export function CosNotificacio( { n, d, onObre } ) {
+export function CosNotificacio( { n, d, onObre, tut } ) {
 	return (
-		<button type="button" className="nep-so-m-notif" onClick={ onObre }>
+		<button
+			type="button"
+			className="nep-so-m-notif"
+			data-tut={ tut }
+			onClick={ onObre }
+		>
 			<span className="nep-so-m-notif__cap">
 				<d.AppIcona mida={ 14 } />
 				<span>{ d.app }</span>

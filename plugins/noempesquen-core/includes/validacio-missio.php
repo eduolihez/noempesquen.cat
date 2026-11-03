@@ -101,6 +101,49 @@ function nep_valida_guio( array $guio, string $dispositiu, string $personatge, a
 		$errors[] = sprintf( 'El personatge del guió («%s») no coincideix amb el de la missió («%s»).', $guio_personatge, $personatge );
 	}
 
+	if ( array_key_exists( 'passos', $guio ) ) {
+		$errors = array_merge( $errors, nep_valida_passos( $guio['passos'] ) );
+	}
+
+	return $errors;
+}
+
+/** Tope de passos d'un tutorial (el mateix que `MAX_PASSOS` de valida.js). */
+const NEP_MAX_PASSOS = 40;
+
+/**
+ * Passos del tutorial: subconjunt de les regles de valida.js (llista de
+ * 1 a 40 passos, camps permesos, títol ≤ 60 i text ≤ 280 caràcters). Les
+ * àncores, els esdeveniments i el dispositiu només els comprova el client.
+ *
+ * @param mixed $passos Valor de `passos`.
+ * @return string[] Errors en català.
+ */
+function nep_valida_passos( $passos ): array {
+	if ( ! is_array( $passos ) || ! array_is_list( $passos ) || ! $passos ) {
+		return array( 'Els passos han de ser una llista no buida.' );
+	}
+	if ( count( $passos ) > NEP_MAX_PASSOS ) {
+		return array( sprintf( 'Com a màxim hi pot haver %d passos.', NEP_MAX_PASSOS ) );
+	}
+	$errors   = array();
+	$permesos = array( 'id', 'ancora', 'titol', 'text', 'continua' );
+	foreach ( $passos as $i => $pas ) {
+		$num = $i + 1;
+		if ( ! is_array( $pas ) || array_is_list( $pas ) ) {
+			$errors[] = sprintf( 'El pas %d no és vàlid.', $num );
+			continue;
+		}
+		foreach ( array_diff( array_keys( $pas ), $permesos ) as $camp ) {
+			$errors[] = sprintf( 'El pas %d té un camp desconegut: %s.', $num, $camp );
+		}
+		foreach ( array( 'titol' => 60, 'text' => 280 ) as $camp => $max ) {
+			$v = $pas[ $camp ] ?? null;
+			if ( ! is_string( $v ) || '' === trim( $v ) || mb_strlen( $v ) > $max ) {
+				$errors[] = sprintf( 'El pas %d: %s invàlid (1-%d caràcters).', $num, $camp, $max );
+			}
+		}
+	}
 	return $errors;
 }
 

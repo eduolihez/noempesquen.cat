@@ -8,6 +8,7 @@ import {
 } from '@wordpress/element';
 import { useJoc } from '../../simulador/context';
 import { FASE } from '../../nucli/motor';
+import { pasSenseAvisos } from '../../nucli/ancores';
 import { recuperaFocus } from '../../simulador/aillament';
 import { APPS } from '../../apps/registre';
 import { SistemaContext } from './context';
@@ -44,21 +45,33 @@ export default function Pc() {
 	);
 	const refInici = useRef( null );
 	const refRellotge = useRef( null );
+	const refFinestres = useRef( null );
 	const faseAnterior = useRef( estat.fase );
 	const bloquejat = estat.fase === FASE.BLOQUEIG;
+
+	// Les accions de finestra porten l'àrea (mides lògiques) per a la disposició.
+	const envia = useCallback( ( accio ) => {
+		const zona = refFinestres.current;
+		dispatchF( {
+			...accio,
+			area: zona
+				? { amplada: zona.clientWidth, alcada: zona.clientHeight }
+				: undefined,
+		} );
+	}, [] );
 
 	// `app.obre` només quan l'obre el jugador (no el desbloqueig automàtic).
 	const obreApp = useCallback(
 		( app, dades, { automatica = false } = {} ) => {
 			if ( APPS[ app ] ) {
 				setPanell( null );
-				dispatchF( { tipus: 'OBRE', app, dades } );
+				envia( { tipus: 'OBRE', app, dades } );
 				if ( ! automatica ) {
 					emet( 'app.obre', { app } );
 				}
 			}
 		},
-		[ emet ]
+		[ emet, envia ]
 	);
 
 	const obreNotificacio = useCallback(
@@ -133,9 +146,9 @@ export default function Pc() {
 		if ( ! finestra ) {
 			obreApp( app );
 		} else if ( f.focus === finestra.id ) {
-			dispatchF( { tipus: 'MINIMITZA', id: finestra.id } );
+			envia( { tipus: 'MINIMITZA', id: finestra.id } );
 		} else {
-			dispatchF( { tipus: 'ENFOCA', id: finestra.id } );
+			envia( { tipus: 'ENFOCA', id: finestra.id } );
 		}
 	};
 
@@ -146,16 +159,19 @@ export default function Pc() {
 
 	return (
 		<SistemaContext.Provider value={ sistema }>
-			<div className={ `nep-so-pc${ estat.lupa ? ' is-lupa' : '' }` }>
+			<div
+				className={ `nep-so-pc${ estat.lupa ? ' is-lupa' : '' }` }
+				data-tut="pantalla"
+			>
 				<div
 					className="nep-so-pc__sessio"
 					inert={ bloquejat ? '' : undefined }
 				>
 					<Escriptori onObre={ obreApp } />
-					<div className="nep-so-pc__finestres">
+					<div ref={ refFinestres } className="nep-so-pc__finestres">
 						{ f.finestres.map( ( finestra, i ) => {
 							const accio = ( tipus ) => () =>
-								dispatchF( { tipus, id: finestra.id } );
+								envia( { tipus, id: finestra.id } );
 							return (
 								<Finestra
 									key={ finestra.id }
@@ -165,7 +181,22 @@ export default function Pc() {
 									onEnfoca={ accio( 'ENFOCA' ) }
 									onMinimitza={ accio( 'MINIMITZA' ) }
 									onMaximitza={ accio( 'MAXIMITZA' ) }
-									onTanca={ accio( 'TANCA' ) }
+									onTanca={ () => {
+										envia( {
+											tipus: 'TANCA',
+											id: finestra.id,
+										} );
+										emet( 'finestra.tanca', {
+											app: finestra.app,
+										} );
+									} }
+									onMou={ ( rect ) =>
+										dispatchF( {
+											tipus: 'MOU',
+											id: finestra.id,
+											rect,
+										} )
+									}
 								/>
 							);
 						} ) }
@@ -198,7 +229,10 @@ export default function Pc() {
 					<Toasts
 						onObre={ obreNotificacio }
 						parlaActiva={ parlaActiva }
-						amagats={ panell === 'notificacions' }
+						amagats={
+							panell === 'notificacions' ||
+							pasSenseAvisos( missio, estat )
+						}
 						silenci={ ambBloqueig }
 					/>
 					<BarraTasques

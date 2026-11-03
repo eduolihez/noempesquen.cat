@@ -17,6 +17,7 @@ export function Escriptori( { onObre } ) {
 		// Un clic al fons treu la selecció, com en un escriptori real.
 		<div
 			className="nep-so-escriptori"
+			data-tut="escriptori"
 			onPointerDown={ ( e ) => {
 				if ( ! e.target.closest( '.nep-so-escriptori__icona' ) ) {
 					setTriada( null );

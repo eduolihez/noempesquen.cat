@@ -32,10 +32,14 @@ export function Respostes( { respostes, onResposta } ) {
 		}
 	} );
 
+	// Només mentre la decisió és oberta, el grup és l'àncora «decisio».
+	const esDecisio = respostes.some( ( x ) => x.id.startsWith( 'decisio:' ) );
+
 	return (
 		<div
 			ref={ grup }
 			className="nep-parla-respostes"
+			data-tut={ esDecisio ? 'decisio' : 'parla-respostes' }
 			role="group"
 			aria-label={ __( 'Respostes ràpides', 'noempesquen' ) }
 			tabIndex={ -1 }

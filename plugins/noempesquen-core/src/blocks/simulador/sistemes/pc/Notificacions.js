@@ -11,6 +11,7 @@ import {
 	IconaTanca,
 } from '../../ui/icones';
 import { duradaAvis } from '../../nucli/avisos';
+import { ancoraDelPas } from '../../nucli/ancores';
 import { MAX_TOASTS } from '../../nucli/temps';
 import {
 	RegioAnuncis,
@@ -93,10 +94,16 @@ export function descriu( n, { mon, nomGuia, Avatar } ) {
  * @param {Object}   props.n      Notificació.
  * @param {Object}   props.d      Presentació (vegeu descriu).
  * @param {Function} props.onObre Obre l'app de la notificació.
+ * @param {string}   [props.tut]  Clau `data-tut` (només el toast).
  */
-export function CosNotificacio( { n, d, onObre } ) {
+export function CosNotificacio( { n, d, onObre, tut } ) {
 	return (
-		<button type="button" className="nep-so-notif__cos" onClick={ onObre }>
+		<button
+			type="button"
+			className="nep-so-notif__cos"
+			data-tut={ tut }
+			onClick={ onObre }
+		>
 			{ d.imatge && (
 				<span className="nep-so-notif__imatge">{ d.imatge }</span>
 			) }
@@ -123,7 +130,11 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 	// centre obert, i en reprendre continua amb el temps que quedava.
 	useTempsRestant(
 		duradaAvis( n.text ),
-		aturat || joc.estat.pausa || sortint,
+		aturat ||
+			joc.estat.pausa ||
+			sortint ||
+			// Un pas del tutorial hi apunta: no caduca fins que se'n surti.
+			ancoraDelPas( joc.missio, joc.estat ) === 'avis',
 		{
 			restes,
 			id: n.id,
@@ -155,7 +166,13 @@ function Toast( { n, sortint, restes, onObre, onDescarta } ) {
 					<IconaTanca />
 				</button>
 			</div>
-			<CosNotificacio n={ n } d={ d } onObre={ surt( onObre ) } />
+			{ /* L'àncora és el cos: la X queda sota el vel del tutorial. */ }
+			<CosNotificacio
+				n={ n }
+				d={ d }
+				tut="avis"
+				onObre={ surt( onObre ) }
+			/>
 		</li>
 	);
 }

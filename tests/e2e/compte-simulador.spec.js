@@ -1,7 +1,12 @@
 const { spawnSync } = require( 'node:child_process' );
 const MISSIO_JSON = require( '../../plugins/noempesquen-core/missions/llissa-05-actualitzacio.json' );
 const { test, expect, RESULTAT } = require( './ajudes' );
-const { greusAxe, senseFullscreen } = require( './ajudes' );
+const {
+	greusAxe,
+	senseFullscreen,
+	desbloqueja,
+	obreMissio,
+} = require( './ajudes' );
 
 /**
  * Compte dins del simulador: sense sessió tot és local (i hi ha l'enllaç per
@@ -44,6 +49,34 @@ function wp( ...args ) {
 		{ cwd: ARREL, encoding: 'utf8', timeout: 120000 }
 	);
 	return r.stdout || '';
+}
+
+/**
+ * El port mostra el progrés fusionat als vaixells (local al Pesquer, servidor
+ * al Pirata) i el mapa del Pesquer, les estrelles de la missió.
+ *
+ * @param {import('@playwright/test').Page} p
+ */
+async function comprovaProgres( p ) {
+	await expect(
+		p.getByRole( 'button', { name: /^Obre el Pesquer:.*3 de 15 estrelles/ } )
+	).toBeVisible();
+	await expect(
+		p.getByRole( 'button', { name: /^Obre el Pirata:.*2 de 15 estrelles/ } )
+	).toBeVisible();
+	await p.getByRole( 'button', { name: /^Obre el Pesquer:/ } ).click();
+	await expect(
+		p.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )
+	).toHaveCount( 1 );
+	await p.getByRole( 'button', { name: 'Torna al port' } ).click();
+	await p.getByRole( 'button', { name: /^Obre el Pirata:/ } ).click();
+	await expect(
+		p.getByRole( 'img', { name: 'Millor resultat: 2 de 3 estrelles' } )
+	).toHaveCount( 1 );
+	await p.getByRole( 'button', { name: 'Torna al port' } ).click();
+	await expect(
+		p.getByRole( 'button', { name: /^Obre el Pirata:/ } )
+	).toBeVisible();
 }
 
 const selector = ( p ) => p.getByRole( 'region', { name: 'Tria una missió' } );
@@ -180,12 +213,7 @@ test( 'amb compte: fusiona el local i el del servidor, i es conserva sense local
 	).toBeVisible();
 	await expect( enllacCompte( page ) ).toHaveCount( 0 );
 	expect( await greusAxe( page ) ).toEqual( [] );
-	await expect(
-		page.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )
-	).toHaveCount( 1 );
-	await expect(
-		page.getByRole( 'img', { name: 'Millor resultat: 2 de 3 estrelles' } )
-	).toHaveCount( 1 );
+	await comprovaProgres( page );
 
 	const servidor = await (
 		await page.request.get( '/wp-json/noempesquen/v1/compte/progres', {
@@ -203,12 +231,7 @@ test( 'amb compte: fusiona el local i el del servidor, i es conserva sense local
 	// Sense el progrés local (la marca es conserva), el progrés torna del servidor.
 	await page.evaluate( ( c ) => window.localStorage.removeItem( c ), CLAU );
 	await page.reload();
-	await expect(
-		page.getByRole( 'img', { name: 'Millor resultat: 3 de 3 estrelles' } )
-	).toHaveCount( 1 );
-	await expect(
-		page.getByRole( 'img', { name: 'Millor resultat: 2 de 3 estrelles' } )
-	).toHaveCount( 1 );
+	await comprovaProgres( page );
 	expect(
 		JSON.parse(
 			await page.evaluate(
@@ -250,10 +273,9 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	} );
 	await senseFullscreen( page );
 	await page.clock.install();
+	const trobada = desbloqueja( page, /Actualitza el navegador/ );
 	await page.goto( '/simulador/' );
-	await page
-		.getByRole( 'button', { name: /Actualitza el navegador/ } )
-		.click();
+	await obreMissio( page, /Actualitza el navegador/, trobada );
 	await page.getByRole( 'button', { name: /Clica o prem/ } ).click();
 	await parla( page )
 		.getByRole( 'button', { name: 'Salta la presentació' } )
@@ -266,8 +288,12 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 		.getByRole( 'button', { name: new RegExp( `^${ escapa( text ) }` ) } )
 		.click();
 
+	// Amb el progrés sembrat ja hi ha hagut un PUT en carregar: espera el de la missió.
 	const puja = page.waitForResponse(
-		( r ) => PROGRES.test( r.url() ) && r.request().method() === 'PUT'
+		( r ) =>
+			PROGRES.test( r.url() ) &&
+			r.request().method() === 'PUT' &&
+			!! r.request().postDataJSON()?.progres?.[ MISSIO_JSON.id ]
 	);
 	await page
 		.getByRole( 'dialog' )

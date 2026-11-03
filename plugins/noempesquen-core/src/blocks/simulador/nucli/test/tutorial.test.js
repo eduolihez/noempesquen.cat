@@ -2,14 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { validaMissio } from '../valida.js';
 import { agrupaMissions, tutorialFet } from '../selector.js';
-import {
-	puntuacio,
-	estatInicial,
-	reductor,
-	respostesRapides,
-	FASE,
-} from '../motor.js';
-import { avancaTemps } from '../disparadors.js';
+import { puntuacio, estatInicial } from '../motor.js';
 import { fusionaProgres } from '../sincro.js';
 import { llegeixProgres } from '../progres.js';
 import { registraResultat } from '../previsualitzacio.js';
@@ -210,15 +203,8 @@ describe( 'tutorials inclosos (tutorial-pc i tutorial-mobil)', () => {
 		pc: 'tutorial-pc.json',
 		mobil: 'tutorial-mobil.json',
 	};
-	const segueix = ( m, estat, accions ) =>
-		accions.reduce( ( e, a ) => {
-			if ( a.tipus === 'TICK' ) {
-				return avancaTemps( m, e, a.segons, 999 );
-			}
-			return reductor( m, e, a );
-		}, estat );
-	const ev = ( nom, dades = {} ) => ( { tipus: 'ESDEVENIMENT', nom, dades } );
 
+	// El recorregut pas a pas és a tutorial-passos.test.js.
 	for ( const [ dispositiu, fitxer ] of Object.entries( FITXERS ) ) {
 		describe( fitxer, () => {
 			const m = llegeix( fitxer );
@@ -230,68 +216,6 @@ describe( 'tutorials inclosos (tutorial-pc i tutorial-mobil)', () => {
 				expect( m.id ).toBe( `tutorial-${ dispositiu }` );
 				expect( m.decisio.opcions ).toHaveLength( 1 );
 				expect( m.decisio.opcions[ 0 ].valor ).toBe( 'correcta' );
-			} );
-
-			it( 'cada pas del guió és abastable en ordre', () => {
-				const objectiu = Object.values( m.apps )
-					.flatMap( ( a ) => Object.values( a ) )
-					.flat()
-					.find( ( x ) => x?.objectiu );
-				const guia = ( e ) => e.xat.filter( ( x ) => x.de !== 'jo' );
-				let e = segueix( m, estatInicial( m ), [
-					{ tipus: 'DESBLOQUEJA' },
-				] );
-				expect( e.fase ).toBe( FASE.JOC );
-				// La intro es llegeix amb respostes ràpides.
-				e = segueix(
-					m,
-					e,
-					m.intro.map( () => ( {
-						tipus: 'RESPOSTA',
-						id: 'intro:seguent',
-					} ) )
-				);
-				expect( e.introAcabada ).toBe( true );
-				// Parla abans de l'avís: encara no avança el pas 3.
-				e = segueix( m, e, [ ev( 'app.obre', { app: 'parla' } ) ] );
-				expect( e.executats ).not.toContain( 'parla-oberta' );
-				// 1. Obrir una app.
-				const abans = guia( e ).length;
-				e = segueix( m, e, [ ev( 'app.obre', { app: 'navegador' } ) ] );
-				expect( guia( e ).length ).toBe( abans + 1 );
-				// 2. Arriba l'avís de la guia (i el missatge de mentida queda a punt).
-				e = segueix( m, e, [ { tipus: 'TICK', segons: 6 } ] );
-				expect(
-					e.notificacions.some( ( n ) =>
-						n.text?.includes( 'notificació' )
-					)
-				).toBe( true );
-				expect( e.visibles[ objectiu.id ] ).toBe( true );
-				// 3. Obrir-lo porta a Parla: respostes ràpides.
-				e = segueix( m, e, [ ev( 'app.obre', { app: 'parla' } ) ] );
-				expect( e.executats ).toContain( 'parla-oberta' );
-				e = segueix( m, e, [ { tipus: 'TICK', segons: 5 } ] );
-				expect(
-					e.notificacions.some(
-						( n ) => n.titol === 'Premis Fantasia'
-					)
-				).toBe( true );
-				// 4. Lupa: activar-la i marcar els indicis.
-				e = segueix( m, e, [ { tipus: 'LUPA' } ] );
-				expect( e.executats ).toContain( 'lupa-activa' );
-				for ( const s of m.senyals ) {
-					e = segueix( m, e, [
-						{ tipus: 'INSPECCIONA', senyal: s.id },
-					] );
-				}
-				expect( e.trobats ).toHaveLength( m.senyals.length );
-				// 5. Decidir amb «Ja ho tinc clar».
-				const ids = respostesRapides( m, e ).map( ( r ) => r.id );
-				expect( ids ).toEqual( [ 'decidir' ] );
-				e = segueix( m, e, [ { tipus: 'RESPOSTA', id: 'decidir' } ] );
-				e = segueix( m, e, [ { tipus: 'RESPOSTA', id: 'decisio:a' } ] );
-				expect( e.opcio ).toBe( 'a' );
-				expect( e.fase ).toBe( FASE.CONSEQUENCIA );
 			} );
 		} );
 	}

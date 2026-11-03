@@ -24,7 +24,9 @@ $capa-local-dialeg: 10;
 $capa-local-descarrega: 20;
 
 /* Carcassa */
+$capa-guia: 800; /* overlay del tutorial: sobre els bloquejos, sota «girar» i la pausa */
 $capa-so-menu: 1000;
 $capa-girar: 900;
 $capa-consequencia: 910; /* per sobre de «girar» */
 $capa-so-fixa: 100000;
+$capa-selector: 100000; /* selector a pantalla completa (mai alhora que el joc) */

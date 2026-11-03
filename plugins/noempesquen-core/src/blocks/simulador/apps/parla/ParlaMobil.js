@@ -1,4 +1,5 @@
 import { useEffect, useRef } from '@wordpress/element';
+import { useJoc } from '../../simulador/context';
 import { useMobil } from '../../sistemes/mobil/context';
 import { LlistaXats } from './LlistaXats';
 import { Conversa } from './Conversa';
@@ -15,6 +16,7 @@ import { xatInicial } from './xats';
  */
 export default function ParlaMobil( { dades } ) {
 	const { registraEnrere, appActiva } = useMobil();
+	const { missio } = useJoc();
 	const parla = useParla( null );
 	const { actiu, obre, tanca, noLlegits, marcaLlegits } = parla;
 	const arrel = useRef( null );
@@ -25,7 +27,12 @@ export default function ParlaMobil( { dades } ) {
 	// L'app es munta en obrir-la; si hi ha missatges del guia sense llegir
 	// (o es demana un xat) s'entra directament a la conversa.
 	useEffect( () => {
-		const id = xatInicial( noLlegits, dades, ID_GUIA );
+		const id = xatInicial(
+			noLlegits,
+			dades,
+			ID_GUIA,
+			missio.tutorial === true
+		);
 		if ( id ) {
 			obre( id );
 		}

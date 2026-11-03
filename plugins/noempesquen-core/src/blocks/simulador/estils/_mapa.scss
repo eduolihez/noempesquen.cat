@@ -1,0 +1,1256 @@
+/*
+ * Mapa de ruta d'un vaixell (SIM/simulador/Mapa.js). Dos temes amb
+ * `data-tema`: «carta» (el Pesquer, carta nàutica de dia) i «tresor» (el
+ * Pirata, mapa del tresor de nit). Només CSS anima: transform, opacity i
+ * stroke-dashoffset. L'estat base és l'estat final visible, perquè amb
+ * prefers-reduced-motion o «Pausa animacions» tot surti de cop.
+ *
+ * Contrast: tot el text va sobre farcits sòlids (cartells, xips, cos de la
+ * boia); les ràtios són a cada color.
+ */
+
+.nep-mapa {
+	--mapa-linia: #0b1e3f;
+	--mapa-tinta: #14213d;
+	--mapa-suau: #3a4661; /* 6,9:1 sobre #d5dee3; 8:1 sobre #f6ecd2 */
+	--mapa-or: #ffd54a;
+	--mapa-or-tinta: #7a5b00; /* 5,6:1 sobre #e6f2f5 */
+	--mapa-mar-fosc: #0b5e7a;
+	--mapa-cap-fons: #f6ecd2;
+	--mapa-etiq-fons: #fffdf6;
+	--mapa-bloq-fons: #eef2f4;
+	--mapa-xifra-fons: #e6f2f5;
+	--mapa-xifra-vora: #0b5e7a;
+	--mapa-bandera: #0b1e3f;
+	--mapa-esquitx: #e6f7f7;
+	--mapa-lletra: inherit;
+	--mapa-node: 62px;
+	--mapa-node-disponible: 70px;
+
+	color: var(--mapa-tinta);
+	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	max-height: var(--mapa-alt-max, none);
+	min-height: 0;
+	position: relative;
+}
+
+.nep-mapa[data-tema="tresor"] {
+	--mapa-linia: #3b2410;
+	--mapa-tinta: #2a1a0a;
+	--mapa-suau: #4a4038; /* 8:1 sobre #f4e2b8; 7,9:1 sobre #e9e2d4 */
+	--mapa-or-tinta: #6e4f00; /* 6,2:1 sobre #fbf1d9 */
+	--mapa-mar-fosc: #3b2410;
+	--mapa-cap-fons: #f4e2b8;
+	--mapa-etiq-fons: #fbf1d9;
+	--mapa-bloq-fons: #e9e2d4;
+	--mapa-xifra-fons: #fbf1d9;
+	--mapa-xifra-vora: #8a5a2b;
+	--mapa-bandera: #b3261e; /* blanc: 6,5:1 */
+	--mapa-esquitx: #8a5a2b;
+	--mapa-lletra: georgia, "Times New Roman", serif;
+	--mapa-node: 64px;
+	--mapa-node-disponible: 72px;
+}
+
+/* Capçalera: rètol del vaixell, progrés i tornada al port. */
+.nep-mapa__cap {
+	align-items: center;
+	background: var(--mapa-cap-fons);
+	border: 3px solid var(--mapa-linia);
+	border-radius: 18px;
+	box-shadow: 0 4px 0 var(--mapa-linia);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	padding: 0.6rem 0.9rem;
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__cap {
+	border-radius: 6px;
+	box-shadow: inset 0 0 0 3px var(--mapa-cap-fons), inset 0 0 0 4px var(--mapa-linia), 0 4px 0 var(--mapa-linia);
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__cap {
+	border-radius: 10px 22px 12px 20px;
+}
+
+.nep-mapa__torna {
+	align-items: center;
+	background: var(--mapa-or);
+	border: 3px solid var(--mapa-linia);
+	border-radius: 999px;
+	color: var(--mapa-linia) !important;
+	cursor: pointer;
+	display: inline-flex;
+	font-weight: 700;
+	gap: 0.4rem;
+	min-height: 44px;
+	padding: 0.35rem 1rem 0.35rem 0.75rem;
+
+	svg {
+		stroke-width: 2.2;
+	}
+
+	&:hover {
+		background: #ffe27a;
+	}
+}
+
+/* Sobre la capçalera clara: tinta ≥ 12:1. */
+.wp-block-noempesquen-simulador .nep-mapa__torna:focus-visible,
+.nep-mapa__torna:focus-visible {
+	outline: 3px solid var(--mapa-linia);
+	outline-offset: 3px;
+}
+
+.nep-mapa__rotul {
+	align-items: center;
+	column-gap: 0.6rem;
+	display: grid;
+	flex: 1 1 14rem;
+	grid-template-columns: auto 1fr;
+	min-width: 0;
+
+	> :not(.nep-mapa__espina) {
+		grid-column: 2;
+	}
+}
+
+.wp-block-noempesquen-simulador .nep-mapa__titol-cap,
+.nep-mapa__titol-cap {
+	font-family: var(--mapa-lletra);
+	font-size: 1.2rem;
+	line-height: 1.2;
+	margin: 0;
+
+	&:focus-visible {
+		border-radius: 4px;
+		outline: 3px solid #12355b;
+		outline-offset: 3px;
+	}
+}
+
+.wp-block-noempesquen-simulador .nep-mapa[data-tema="carta"] .nep-mapa__titol-cap,
+.nep-mapa[data-tema="carta"] .nep-mapa__titol-cap {
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.nep-mapa__lema {
+	color: var(--mapa-suau);
+	font-family: var(--mapa-lletra);
+	font-size: 0.9rem;
+	margin: 0.1rem 0 0;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__lema {
+	font-style: italic;
+}
+
+.nep-mapa__progres {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin: 0;
+}
+
+.nep-mapa__xifra {
+	align-items: center;
+	background: var(--mapa-xifra-fons);
+	border: 2px solid var(--mapa-xifra-vora);
+	border-radius: 999px;
+	display: inline-flex;
+	font-weight: 700;
+	gap: 0.3rem;
+	padding: 0.2rem 0.7rem;
+
+	&--estrelles {
+		color: var(--mapa-or-tinta);
+
+		svg {
+			color: #b07d00;
+		}
+	}
+}
+
+/* Emblema del Pirata: peix-espina. */
+.nep-mapa__espina {
+	display: block;
+	overflow: visible;
+}
+
+.nep-mapa__espina-cap {
+	fill: var(--mapa-linia);
+}
+
+.nep-mapa__espina-ull {
+	fill: var(--mapa-cap-fons);
+}
+
+.nep-mapa__espina-os {
+	fill: none;
+	stroke: var(--mapa-linia);
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 2.4;
+}
+
+.nep-mapa__espina--cap {
+	grid-column: 1;
+	grid-row: 1 / span 2;
+	height: 24px;
+	width: 48px;
+}
+
+/*
+ * Mar: marc fix (paper de carta / mar de nit) amb la vista que fa scroll
+ * per dins (horitzontal en ample, vertical en estret).
+ */
+.nep-mapa__mar {
+	border: 3px solid var(--mapa-linia);
+	border-radius: 18px;
+	flex: 1 1 auto;
+	min-height: min(15rem, 40dvh);
+	overflow: hidden;
+	position: relative;
+}
+
+.nep-mapa__vista {
+	container: nep-vista / size;
+	display: flex;
+	inset: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	padding: var(--mapa-vora, 12px);
+	position: absolute;
+}
+
+/* Carta: paper arena amb la vora de quadres d'una carta nàutica. */
+.nep-mapa[data-tema="carta"] .nep-mapa__mar {
+	--mapa-vora: 14px;
+
+	background:
+		repeating-linear-gradient(90deg, var(--mapa-linia) 0 24px, transparent 24px 48px) 0 0 / 100% 5px no-repeat,
+		repeating-linear-gradient(90deg, var(--mapa-linia) 0 24px, transparent 24px 48px) 0 100% / 100% 5px no-repeat,
+		repeating-linear-gradient(180deg, var(--mapa-linia) 0 24px, transparent 24px 48px) 0 0 / 5px 100% no-repeat,
+		repeating-linear-gradient(180deg, var(--mapa-linia) 0 24px, transparent 24px 48px) 100% 0 / 5px 100% no-repeat,
+		#f3e6c4;
+	border-radius: 6px;
+}
+
+/* Tresor: mar fosc de nit (el pergamí hi sura a sobre). */
+.nep-mapa[data-tema="tresor"] .nep-mapa__mar {
+	--mapa-vora: 16px;
+
+	background:
+		radial-gradient(circle at 30% 40%, #fff6d8 0 1px, transparent 1.6px) 0 0 / 70px 60px,
+		radial-gradient(circle at 70% 20%, rgb(255 246 216 / 70%) 0 1px, transparent 1.6px) 0 0 / 110px 90px,
+		linear-gradient(180deg, #0e1733 0%, #1a2550 55%, #3d2a4f 100%);
+	border-color: #120c22;
+}
+
+.nep-mapa__escenari {
+	aspect-ratio: var(--ra-a);
+	flex: none;
+	margin: auto;
+	min-width: calc(var(--n) * 150px);
+	position: relative;
+
+	/* Cap sencer a la vista: el que mani, l'amplada o l'alçada. */
+	width: min(100%, 100cqh * var(--rn-a));
+}
+
+/* Carta: mar turquesa, quadrícula de latitud i longitud i corbes de nivell. */
+.nep-mapa[data-tema="carta"] .nep-mapa__escenari {
+	background:
+		repeating-linear-gradient(90deg, rgb(11 30 63 / 13%) 0 1px, transparent 1px 120px),
+		repeating-linear-gradient(180deg, rgb(11 30 63 / 13%) 0 1px, transparent 1px 120px),
+		repeating-radial-gradient(ellipse 70% 90% at 32% 112%, transparent 0 34px, rgb(255 255 255 / 32%) 34px 36px),
+		repeating-radial-gradient(ellipse 50% 70% at 88% -10%, transparent 0 30px, rgb(11 94 122 / 18%) 30px 32px),
+		linear-gradient(180deg, #8edbd6 0%, #4fbcc0 100%);
+	border: 2px solid var(--mapa-linia);
+	border-radius: 4px;
+}
+
+/* Tresor: pergamí cremat a les vores. */
+.nep-mapa[data-tema="tresor"] .nep-mapa__escenari {
+	background:
+		radial-gradient(ellipse at 50% 50%, transparent 52%, rgb(122 72 24 / 32%) 80%, rgb(64 30 8 / 72%) 100%),
+		radial-gradient(ellipse 140px 90px at 30% 40%, rgb(150 100 40 / 16%), transparent) 0 0 / 460px 320px,
+		radial-gradient(ellipse 90px 70px at 70% 80%, rgb(150 100 40 / 12%), transparent) 0 0 / 380px 260px,
+		#f2dcaa;
+	border-radius: 22px 46px 30px 40px / 40px 24px 46px 28px;
+	box-shadow: 0 0 0 2px #5a3412, 0 0 0 5px rgb(40 20 5 / 55%), 0 10px 28px rgb(0 0 0 / 50%);
+}
+
+/* Decoració: per sota dels nodes, sense punter. */
+.nep-mapa__decor {
+	border-radius: inherit;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+	position: absolute;
+}
+
+.nep-mapa__costa {
+	fill: #f3e6c4;
+	height: 8%;
+	left: 0;
+	position: absolute;
+	stroke: var(--mapa-linia);
+	stroke-width: 1.5;
+	top: 0;
+	vector-effect: non-scaling-stroke;
+	width: 100%;
+
+	path {
+		vector-effect: non-scaling-stroke;
+	}
+}
+
+.nep-mapa__rosa {
+	aspect-ratio: 1;
+	left: 1.5%;
+	position: absolute;
+	top: 11%;
+	width: clamp(56px, 9%, 104px);
+}
+
+.nep-mapa__rosa-anell {
+	fill: none;
+	stroke: var(--mapa-linia);
+	stroke-width: 1.2;
+}
+
+.nep-mapa__rosa-fosc {
+	fill: var(--mapa-linia);
+}
+
+.nep-mapa__rosa-clar {
+	fill: #f3e6c4;
+	stroke: var(--mapa-linia);
+	stroke-linejoin: round;
+	stroke-width: 1;
+}
+
+.nep-mapa__rosa-centre {
+	fill: var(--mapa-or);
+	stroke: var(--mapa-linia);
+	stroke-width: 1.2;
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__rosa {
+	opacity: 0.85;
+}
+
+.nep-mapa__rosa-marques {
+	stroke: #5a3412;
+	stroke-linecap: round;
+	stroke-width: 2;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__rosa-anell:first-child {
+	fill: rgb(243 220 170 / 70%);
+}
+
+.nep-mapa__agulla {
+	animation: nep-mapa-agulla 7s ease-in-out infinite;
+}
+
+.nep-mapa__agulla-nord {
+	fill: #b3261e;
+	stroke: var(--mapa-linia);
+	stroke-linejoin: round;
+	stroke-width: 1;
+}
+
+.nep-mapa__espina--segell {
+	bottom: 4%;
+	opacity: 0.8;
+	position: absolute;
+	right: 2.5%;
+	width: clamp(48px, 6%, 72px);
+}
+
+/* Bancs de peixos (carta) i bancs de boira (tresor). */
+.nep-mapa__lloc-banc,
+.nep-mapa__boira {
+	left: var(--xa);
+	position: absolute;
+	top: var(--ya);
+}
+
+.nep-mapa__lloc-banc {
+	height: 28px;
+	margin: -14px 0 0 -32px;
+	width: 64px;
+}
+
+.nep-mapa__banc {
+	animation: nep-mapa-neda 9s ease-in-out infinite alternate;
+	animation-delay: calc(var(--k) * -3s);
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.nep-mapa__peix {
+	fill: #0b5e7a;
+	opacity: 0.75;
+}
+
+.nep-mapa__boira {
+	animation: nep-mapa-deriva 16s ease-in-out infinite alternate;
+	animation-delay: calc(var(--k) * -5s);
+	background: radial-gradient(closest-side, rgb(250 246 236 / 62%), rgb(250 246 236 / 0%));
+	height: 80px;
+	margin: -40px 0 0 -120px;
+	width: 240px;
+}
+
+/* Cel estrellat (tresor), al marc fix del mar. */
+.nep-mapa__cel {
+	height: 100%;
+	inset: 0;
+	position: absolute;
+	width: 100%;
+}
+
+.nep-mapa__estel {
+	animation: nep-mapa-titilla 3.2s ease-in-out infinite alternate;
+	animation-delay: calc(var(--k) * -1.1s);
+	fill: none;
+	stroke: #fff6d8;
+	stroke-linecap: round;
+	stroke-width: 2.2;
+}
+
+/* Camí. */
+.nep-mapa__cami {
+	display: block;
+	height: 100%;
+	inset: 0;
+	overflow: visible;
+	position: absolute;
+	width: 100%;
+
+	&--baix,
+	&--estret {
+		display: none;
+	}
+
+	path {
+		fill: none;
+	}
+}
+
+.nep-mapa__milles {
+	stroke: var(--mapa-linia);
+	stroke-dasharray: 2 38;
+	stroke-width: 12;
+}
+
+.nep-mapa__estela {
+	stroke: var(--mapa-linia);
+	stroke-dasharray: 12 9;
+	stroke-width: 3;
+}
+
+.nep-mapa__fet-vora {
+	animation: nep-mapa-apareix 0.4s ease-out 0.15s both;
+	stroke: var(--mapa-linia);
+	stroke-linecap: round;
+	stroke-width: 12;
+}
+
+.nep-mapa__fet {
+	stroke: var(--mapa-or);
+	stroke-linecap: round;
+	stroke-width: 6;
+}
+
+.nep-mapa[data-tema="tresor"] {
+
+	.nep-mapa__milles {
+		display: none;
+	}
+
+	/* Petjades de punts cap al tresor. */
+	.nep-mapa__estela {
+		stroke: #5a3412;
+		stroke-dasharray: 0.1 15;
+		stroke-linecap: round;
+		stroke-width: 6;
+	}
+
+	.nep-mapa__fet-vora {
+		stroke: #fbf1d9;
+		stroke-width: 11;
+	}
+
+	.nep-mapa__fet {
+		stroke: #b3261e;
+		stroke-dasharray: 12 9;
+		stroke-width: 5;
+	}
+}
+
+/* Es dibuixa: la màscara (pathLength=1) recorre tot el camí. */
+.nep-mapa__traca {
+	animation: nep-mapa-dibuixa 1.4s ease-out 0.15s both;
+	stroke-dasharray: 1 1;
+	stroke-dashoffset: 0;
+}
+
+.nep-mapa__nodes {
+	inset: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+}
+
+.nep-mapa__lloc {
+	height: 0;
+	left: var(--xa);
+	position: absolute;
+	top: var(--ya);
+	width: 0;
+}
+
+/* Node: el botó és la boia o l'illa (≥ 44 px); l'etiqueta penja a sota. */
+.wp-block-noempesquen-simulador .nep-mapa__node,
+.nep-mapa__node {
+	animation: nep-mapa-salta 0.75s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+	animation-delay: calc(0.35s + var(--i) * 0.11s);
+	background: none;
+	border: 0;
+	border-radius: 50%;
+	color: var(--mapa-linia);
+	cursor: pointer;
+	height: var(--mapa-node);
+	left: calc(var(--mapa-node) / -2);
+	padding: 0;
+	position: absolute;
+
+	/* En rebre el focus, la vista fa scroll fins a veure-hi també el banderí
+	   i l'anell (a dalt), l'etiqueta (a baix) i l'amplada de l'etiqueta. */
+	scroll-margin: 3rem 3.25rem 5.5rem;
+	top: calc(var(--mapa-node) / -2);
+	width: var(--mapa-node);
+
+	/* Doble anell: or entre dos de tinta. La tinta fa ≥ 7:1 sobre el mar
+	   turquesa i el pergamí; l'or separa l'anell del dibuix. */
+	&:focus-visible {
+		box-shadow: 0 0 0 3px var(--mapa-linia), 0 0 0 10px var(--mapa-linia);
+		outline: 4px solid var(--mapa-or);
+		outline-offset: 3px;
+	}
+
+	&[aria-disabled="true"] {
+		cursor: not-allowed;
+	}
+}
+
+.nep-mapa__boia {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	position: relative;
+	transition: transform 0.15s ease;
+	width: 100%;
+
+	/* Esquitx en caure. */
+	&::after {
+		animation: nep-mapa-esquitx 0.7s ease-out both;
+		animation-delay: calc(0.6s + var(--i) * 0.11s);
+		border: 3px solid var(--mapa-esquitx);
+		border-radius: 50%;
+		content: "";
+		inset: -6px;
+		opacity: 0;
+		pointer-events: none;
+		position: absolute;
+	}
+}
+
+.nep-mapa__node:hover:not([aria-disabled="true"]) .nep-mapa__boia {
+	transform: translateY(-3px);
+}
+
+.nep-mapa__art {
+	height: 100%;
+	inset: 0;
+	overflow: visible;
+	position: absolute;
+	width: 100%;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__art {
+	height: auto;
+	inset: -14% -12% -6%;
+	width: auto;
+}
+
+.nep-mapa__num {
+	color: var(--mapa-linia);
+	font-size: 1.15rem;
+	font-weight: 800;
+	line-height: 1;
+	padding-top: 12%;
+	position: relative;
+}
+
+/* Boia (carta). Número de tinta sobre el cos: blanc 16,5:1, groc 11,7:1. */
+.nep-mapa[data-tema="carta"] .nep-mapa__node {
+	--boia-cos: #fff;
+	--boia-banda: #1d6b3a;
+	--boia-llum: var(--mapa-or);
+	--boia-tinta: var(--mapa-linia);
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__node--disponible {
+	--boia-cos: var(--mapa-or);
+	--boia-banda: #d9480f;
+	--boia-llum: #fff;
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__node--bloquejada {
+	--boia-cos: #d5dee3;
+	--boia-banda: #8a97a8;
+	--boia-llum: #d5dee3;
+	--boia-tinta: var(--mapa-suau);
+
+	.nep-mapa__num {
+		color: var(--mapa-suau);
+	}
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__art {
+	stroke: var(--boia-tinta);
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 3;
+}
+
+.nep-mapa__art-onada {
+	fill: none;
+	stroke: var(--mapa-esquitx) !important;
+	stroke-width: 2.5 !important;
+}
+
+.nep-mapa__art-cos {
+	fill: var(--boia-cos);
+}
+
+.nep-mapa__art-banda {
+	fill: var(--boia-banda);
+}
+
+.nep-mapa__art-llum {
+	fill: var(--boia-llum);
+	stroke-width: 2.5;
+}
+
+.nep-mapa__art-estrella {
+	fill: var(--mapa-or);
+	stroke-width: 2;
+}
+
+/* Illa (tresor). Número en un xip de tinta: #fff7e6 sobre #3b2410, 14:1. */
+.nep-mapa[data-tema="tresor"] {
+
+	.nep-mapa__node {
+		--illa: #e7c27d;
+		--illa-vora: #3b2410;
+		--illa-verd: #2f6b3a;
+		--illa-tronc: #5a3412;
+	}
+
+	.nep-mapa__node--bloquejada {
+		--illa: #c9c1b1;
+		--illa-vora: #4a4038;
+		--illa-verd: #7d867a;
+		--illa-tronc: #6b6158;
+	}
+
+	.nep-mapa__art-onada {
+		fill: rgb(70 140 150 / 30%);
+		stroke: #5a3412 !important;
+		stroke-dasharray: 3 4;
+		stroke-width: 1.5 !important;
+	}
+
+	.nep-mapa__num {
+		align-items: center;
+		background: var(--mapa-linia);
+		border: 2px solid #fbf1d9;
+		border-radius: 50%;
+		bottom: -6px;
+		color: #fff7e6;
+		display: flex;
+		font-size: 0.85rem;
+		height: 26px;
+		justify-content: center;
+		left: -6px;
+		padding: 0;
+		position: absolute;
+		width: 26px;
+	}
+
+	.nep-mapa__node--bloquejada .nep-mapa__num {
+		background: var(--mapa-suau);
+	}
+}
+
+.nep-mapa__art-illa {
+	fill: var(--illa);
+	stroke: var(--illa-vora);
+	stroke-linejoin: round;
+	stroke-width: 2.5;
+}
+
+.nep-mapa__art-tronc {
+	fill: none;
+	stroke: var(--illa-tronc);
+	stroke-linecap: round;
+	stroke-width: 3;
+}
+
+.nep-mapa__art-palmera {
+	fill: var(--illa-verd);
+	stroke: var(--illa-vora);
+	stroke-linejoin: round;
+	stroke-width: 1;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__art-pal {
+	stroke: var(--illa-vora);
+	stroke-linecap: round;
+	stroke-width: 2.5;
+}
+
+.nep-mapa__art-bandera {
+	fill: #b3261e;
+	stroke: var(--illa-vora);
+	stroke-linejoin: round;
+	stroke-width: 2;
+}
+
+.nep-mapa__art-x {
+	animation: nep-mapa-batec 1.6s ease-in-out 1.6s infinite;
+	fill: none;
+	stroke: #b3261e;
+	stroke-linecap: round;
+	stroke-width: 5;
+	transform-box: fill-box;
+	transform-origin: center;
+}
+
+.nep-mapa__art-boira {
+	animation: nep-mapa-boira 6s ease-in-out infinite alternate;
+	fill: rgb(244 240 232 / 85%);
+}
+
+.nep-mapa__insignia {
+	align-items: center;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	color: #fff;
+	display: flex;
+	height: 26px;
+	justify-content: center;
+	position: absolute;
+	right: -10px;
+	top: -10px;
+	width: 26px;
+
+	svg {
+		stroke-width: 2;
+	}
+
+	&--tutorial {
+		background: var(--mapa-mar-fosc);
+	}
+
+	&--cadenat {
+		background: var(--mapa-suau);
+	}
+}
+
+/* Amb el banderí «Toca ara» a dalt, la brúixola del tutorial passa al
+   costat dret (a dalt la tapava en la vista baixa). */
+.nep-mapa__node--disponible .nep-mapa__insignia--tutorial {
+	right: -18px;
+	top: calc(50% - 13px);
+}
+
+/* Disponible: més gran, amb un pols al voltant i banderí «Toca ara». */
+.nep-mapa__node--disponible {
+	--mapa-node: var(--mapa-node-disponible);
+
+	.nep-mapa__boia::before {
+		animation: nep-mapa-pols 2s ease-out 1.6s infinite;
+		border: 3px solid var(--mapa-pols, var(--mapa-or));
+		border-radius: 50%;
+		content: "";
+		inset: -8px;
+		opacity: 0;
+		pointer-events: none;
+		position: absolute;
+	}
+}
+
+/* La boia es gronxa; l'illa no (hi batega la X). */
+.nep-mapa[data-tema="carta"] .nep-mapa__node--disponible .nep-mapa__boia {
+	animation: nep-mapa-balanceja 2.4s ease-in-out 1.6s infinite;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__node--disponible {
+	--mapa-pols: #b3261e;
+}
+
+.nep-mapa__bandera {
+	background: var(--mapa-bandera);
+	border-radius: 8px;
+	bottom: calc(100% + 10px);
+	color: #fff;
+	font-size: 0.85rem;
+	font-weight: 800;
+	left: 50%;
+	padding: 0.2rem 0.6rem;
+	position: absolute;
+	transform: translateX(-50%);
+	white-space: nowrap;
+
+	&::after {
+		border: 7px solid transparent;
+		border-bottom: 0;
+		border-top-color: var(--mapa-bandera);
+		content: "";
+		left: calc(50% - 7px);
+		position: absolute;
+		top: 100%;
+	}
+}
+
+.nep-mapa__etiqueta {
+	align-items: center;
+	background: var(--mapa-etiq-fons);
+	border: 2px solid var(--mapa-linia);
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	font-family: var(--mapa-lletra);
+	gap: 0.15rem;
+	left: 50%;
+	padding: 0.3rem 0.55rem;
+	position: absolute;
+	text-align: center;
+	top: calc(100% + 8px);
+	transform: translateX(-50%);
+	width: 9.5rem;
+}
+
+.nep-mapa[data-tema="carta"] .nep-mapa__etiqueta {
+	border-radius: 4px;
+	box-shadow: 2px 2px 0 var(--mapa-linia);
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__etiqueta {
+	border-radius: 4px 12px 6px 12px;
+	box-shadow: 0 3px 0 rgb(59 36 16 / 45%);
+}
+
+.nep-mapa__titol {
+	font-size: 0.88rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.nep-mapa[data-tema="tresor"] .nep-mapa__titol {
+	font-size: 0.92rem;
+}
+
+.nep-mapa__node--bloquejada .nep-mapa__etiqueta {
+	background: var(--mapa-bloq-fons);
+	border-color: var(--mapa-suau);
+	box-shadow: none;
+	color: var(--mapa-suau);
+}
+
+.nep-mapa__estrelles {
+	color: #b07d00;
+	display: inline-flex;
+	gap: 2px;
+}
+
+.nep-mapa__node--bloquejada .nep-mapa__estrelles {
+	color: var(--mapa-suau);
+}
+
+.nep-mapa__fet-xip {
+	background: #e3f3e8;
+	border: 2px solid #1d6b3a;
+	border-radius: 999px;
+	color: #155c30;
+	font-family: system-ui, sans-serif;
+	font-size: 0.8rem;
+	font-weight: 800;
+	padding: 0 0.5rem;
+}
+
+/* Motiu del bloqueig: sempre al DOM (aria-describedby), visible en focus. */
+.nep-mapa__motiu {
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+.nep-mapa__node--bloquejada:hover .nep-mapa__motiu,
+.nep-mapa__node--bloquejada:focus-visible .nep-mapa__motiu,
+.nep-mapa__node--avisat .nep-mapa__motiu {
+	clip-path: none;
+	font-size: 0.8rem;
+	font-weight: 600;
+	height: auto;
+	position: static;
+	white-space: normal;
+	width: auto;
+}
+
+/* Vista baixa (mòbil en horitzontal): camí més pla. */
+@container nep-vista (min-width: 640px) and (max-height: 299px) {
+
+	.nep-mapa__escenari {
+		aspect-ratio: var(--ra-b);
+		width: min(100%, 100cqh * var(--rn-b));
+	}
+
+	.nep-mapa__cami--ample {
+		display: none;
+	}
+
+	.nep-mapa__cami--baix {
+		display: block;
+	}
+
+	.nep-mapa__lloc,
+	.nep-mapa__lloc-banc,
+	.nep-mapa__boira {
+		left: var(--xb);
+		top: var(--yb);
+	}
+
+	.nep-mapa__rosa {
+		top: 12%;
+		width: 52px;
+	}
+
+	/* Salt curt: el node no surt de la vista mentre cau (s'hi pot tocar). */
+	.nep-mapa__nodes {
+		--mapa-node: 52px;
+		--mapa-node-disponible: 58px;
+		--mapa-salt: -16px;
+	}
+
+	.nep-mapa__escenari {
+		min-width: calc(var(--n) * 140px);
+	}
+
+	.nep-mapa__bandera {
+		bottom: calc(100% + 6px);
+		font-size: 0.8rem;
+		padding: 0.1rem 0.5rem;
+	}
+
+	.nep-mapa__etiqueta {
+		padding: 0.15rem 0.4rem;
+		top: calc(100% + 4px);
+		width: 8.25rem;
+	}
+
+	.nep-mapa__titol,
+	.nep-mapa[data-tema="tresor"] .nep-mapa__titol {
+		font-size: 0.8rem;
+	}
+}
+
+/* Estreta: serpentina vertical; etiquetes a sota, més estretes. */
+@container nep-vista (max-width: 639px) {
+
+	.nep-mapa__escenari {
+		align-self: flex-start;
+		aspect-ratio: var(--ra-e);
+		max-width: 460px;
+		min-width: 0;
+		width: 100%;
+	}
+
+	.nep-mapa__cami--ample {
+		display: none;
+	}
+
+	.nep-mapa__cami--estret {
+		display: block;
+	}
+
+	.nep-mapa__lloc,
+	.nep-mapa__lloc-banc,
+	.nep-mapa__boira {
+		left: var(--xe);
+		top: var(--ye);
+	}
+
+	.nep-mapa__etiqueta {
+		width: min(9.5rem, 44cqi);
+	}
+
+	.nep-mapa__costa {
+		height: 3%;
+	}
+
+	.nep-mapa__rosa {
+		left: auto;
+		right: 4%;
+		top: 3%;
+		width: clamp(52px, 18%, 76px);
+	}
+
+	.nep-mapa__espina--segell {
+		bottom: 1.5%;
+		left: 4%;
+		right: auto;
+	}
+
+	.nep-mapa__boira {
+		margin-left: -80px;
+		width: 160px;
+	}
+}
+
+/* Mapa estret: capçalera compacta (el lema és només ambientació). */
+@container (max-width: 479px) {
+
+	.nep-mapa__cap {
+		gap: 0.4rem 0.6rem;
+		padding: 0.4rem 0.6rem;
+	}
+
+	.nep-mapa__lema {
+		display: none;
+	}
+
+	.nep-mapa__espina--cap {
+		grid-row: 1;
+		height: 20px;
+		width: 40px;
+	}
+}
+
+/* Pantalla baixa: capçalera compacta per deixar lloc al mapa. */
+@media (max-height: 520px) {
+
+	.nep-mapa {
+		gap: 0.4rem;
+	}
+
+	.nep-mapa__cap {
+		gap: 0.3rem 0.75rem;
+		padding: 0.25rem 0.6rem;
+	}
+
+	.nep-mapa__lema {
+		display: none;
+	}
+
+	.wp-block-noempesquen-simulador .nep-mapa__titol-cap,
+	.nep-mapa__titol-cap {
+		font-size: 1rem;
+	}
+
+	.nep-mapa__espina--cap {
+		grid-row: 1;
+		height: 20px;
+		width: 40px;
+	}
+
+	.nep-mapa__xifra {
+		font-size: 0.9rem;
+		padding: 0.1rem 0.55rem;
+	}
+
+	.nep-mapa[data-tema="carta"] .nep-mapa__mar,
+	.nep-mapa[data-tema="tresor"] .nep-mapa__mar {
+		--mapa-vora: 8px;
+	}
+}
+
+@keyframes nep-mapa-salta {
+
+	0% {
+		opacity: 0;
+		transform: translateY(var(--mapa-salt, -70px)) scale(0.4);
+	}
+
+	55% {
+		opacity: 1;
+		transform: translateY(6px) scale(1.08, 0.92);
+	}
+
+	75% {
+		transform: translateY(-6px) scale(0.97, 1.03);
+	}
+
+	100% {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes nep-mapa-esquitx {
+
+	0% {
+		opacity: 0.9;
+		transform: scale(0.6);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(1.7);
+	}
+}
+
+@keyframes nep-mapa-dibuixa {
+
+	from {
+		stroke-dashoffset: 1;
+	}
+
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes nep-mapa-apareix {
+
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes nep-mapa-balanceja {
+
+	0%,
+	100% {
+		transform: rotate(-5deg);
+	}
+
+	50% {
+		transform: rotate(5deg) translateY(-3px);
+	}
+}
+
+@keyframes nep-mapa-pols {
+
+	0% {
+		opacity: 0.9;
+		transform: scale(0.85);
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(1.35);
+	}
+}
+
+@keyframes nep-mapa-batec {
+
+	0%,
+	100% {
+		transform: none;
+	}
+
+	50% {
+		transform: scale(1.25);
+	}
+}
+
+@keyframes nep-mapa-neda {
+
+	from {
+		transform: translateX(-22px);
+	}
+
+	to {
+		transform: translateX(22px) translateY(-4px);
+	}
+}
+
+@keyframes nep-mapa-deriva {
+
+	from {
+		opacity: 1;
+		transform: translateX(-30px);
+	}
+
+	to {
+		opacity: 0.55;
+		transform: translateX(30px);
+	}
+}
+
+@keyframes nep-mapa-boira {
+
+	from {
+		transform: none;
+	}
+
+	to {
+		transform: translateX(3px);
+	}
+}
+
+@keyframes nep-mapa-titilla {
+
+	from {
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0.25;
+	}
+}
+
+@keyframes nep-mapa-agulla {
+
+	0%,
+	100% {
+		transform: rotate(-10deg);
+	}
+
+	50% {
+		transform: rotate(14deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nep-mapa *,
+	.nep-mapa *::before,
+	.nep-mapa *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}

@@ -33,3 +33,31 @@ remove_action( 'wp_head', 'rsd_link' );
 remove_action( 'wp_head', 'wlwmanifest_link' );
 remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 remove_action( 'wp_print_styles', 'print_emoji_styles' );
+
+/**
+ * Icona del web: si no n'hi ha cap configurada a l'Aparença, usa la del tema
+ * (el mateix peix del logotip). Això també cobreix /favicon.ico, el login i
+ * l'administració, que d'altra manera mostrarien el logotip de WordPress.
+ */
+add_filter(
+	'get_site_icon_url',
+	static function ( $url ) {
+		// Un valor propi (Aparença) es respecta; el logotip per defecte de WordPress no.
+		if ( ! empty( $url ) && false === strpos( $url, '/wp-includes/images/' ) ) {
+			return $url;
+		}
+		return get_template_directory_uri() . '/assets/img/favicon-512.png';
+	}
+);
+
+// Versió vectorial per als navegadors que la accepten (nítida a qualsevol mida).
+add_action(
+	'wp_head',
+	static function () {
+		printf(
+			'<link rel="icon" href="%s" type="image/svg+xml" sizes="any">' . "\n",
+			esc_url( get_template_directory_uri() . '/assets/img/favicon.svg' )
+		);
+	},
+	1
+);

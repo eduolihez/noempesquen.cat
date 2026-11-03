@@ -4,6 +4,7 @@ import { useJoc } from '../../simulador/context';
 import { IconaTanca } from '../../ui/icones';
 import { CosNotificacio, descriu } from './notificacio';
 import { duradaAvis } from '../../nucli/avisos';
+import { ancoraDelPas } from '../../nucli/ancores';
 import { MAX_BANNERS } from '../../nucli/temps';
 import {
 	RegioAnuncis,
@@ -31,7 +32,11 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
 	// centre obert, i en reprendre continua amb el temps que quedava.
 	useTempsRestant(
 		duradaAvis( n.text ),
-		aturat || joc.estat.pausa || sortint,
+		aturat ||
+			joc.estat.pausa ||
+			sortint ||
+			// Un pas del tutorial hi apunta: no caduca fins que se'n surti.
+			ancoraDelPas( joc.missio, joc.estat ) === 'banner',
 		{
 			restes,
 			id: n.id,
@@ -61,6 +66,7 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
 			<CosNotificacio
 				n={ n }
 				d={ descriu( n, joc ) }
+				tut="banner"
 				onObre={ surt( onObre ) }
 			/>
 			<button
@@ -86,7 +92,8 @@ function Banner( { n, sortint, restes, onObre, onDescarta } ) {
  * @param {Object}   props
  * @param {Function} props.onObre  Obre l'app d'una notificació.
  * @param {?string}  props.activa  App en primer pla (no en mostra banners).
- * @param {boolean}  props.amagats El centre de control és obert.
+ * @param {boolean}  props.amagats Centre de control obert o pas del tutorial
+ *                                 sense avisos.
  * @param {boolean}  props.silenci Encara es veu el bloqueig: sense banners.
  */
 export function Banners( { onObre, activa, amagats, silenci } ) {

@@ -23,7 +23,7 @@ const SPEC_PANELL = /(panel-missions|estadistiques)\.spec\.js$/;
 const SPEC_COMPTE = /compte(-recuperacio)?\.spec\.js$/;
 const SPEC_COMPTE_SIMULADOR = /compte-simulador\.spec\.js$/;
 const SPECS_HORITZONTAL =
-	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;
+	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil|finestres|guia-tutorial|ancores|tutorial)\.spec\.js$/;
 
 module.exports = defineConfig( {
 	testDir: './tests/e2e',
@@ -58,8 +58,16 @@ module.exports = defineConfig( {
 		{
 			name: 'panell-estadistiques',
 			use: { ...devices[ 'Desktop Chrome' ] },
-			testMatch: /estadistiques\.spec\.js$/,
+			testMatch: /(?<!resum-)estadistiques\.spec\.js$/,
 			dependencies: [ 'panell' ],
+		},
+		// Després de les estadístiques: les seves dades demo toquen totes les
+		// missions jugables, també la de prova que publica aquest spec.
+		{
+			name: 'panell-resum',
+			use: { ...devices[ 'Desktop Chrome' ] },
+			testMatch: /resum-estadistiques\.spec\.js$/,
+			dependencies: [ 'panell-estadistiques' ],
 		},
 		{
 			name: 'compte',
