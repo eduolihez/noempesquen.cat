@@ -228,3 +228,32 @@ Constants a `nucli/temps.js`. Un «avís» és un disparador amb algun efecte `n
 - **Ritme per nivell.** Entre avisos consecutius d'un mateix origen (mateix `quan`), ordenats per `retard_ms`, hi ha d'haver com a mínim `MS_MIN_AVISOS_NIVELL_1` (4000 ms) al nivell 1, que respira més, i `MS_MIN_AVISOS_NIVELL_2_3` (2500 ms) als nivells 2 i 3. Avisos d'orígens diferents no es comparen (depenen del que faci el jugador).
 - **Avisos d'una mateixa escena.** Quan n'entren diversos alhora a la vista, la cua de toasts i banners els escalona `MS_ENTRE_AVISOS` (700 ms).
 - **So.** `notifica` admet `so: "alerta"` per als avisos de risc (els que porten la trampa); sense `so` sona «missatge». El to sona quan l'avís entra de debò a la vista (toast o banner), no quan arriba a l'estat; si l'app de l'avís ja és oberta no hi ha toast ni so.
+
+## Missions per idioma
+
+Cada missió inclosa existeix en dos idiomes, amb el mateix nom de fitxer, el mateix `id` i la mateixa lògica:
+
+- `plugins/noempesquen-core/missions/ca/` i `missions/es/`: les 12 missions i `mon.json` de cada idioma.
+- `missions/plantilla-missio.json` i `missions/test-fixtures/` es queden a l'arrel (no són missions jugables).
+- `missions/es/PENDENT.md` llista els fitxers `es` que encara són còpia provisional del català.
+
+El bloc tria el conjunt pel `config.lang` del simulador (`nucli/conjunt-missions.js`, `triaConjunt`). Si l'idioma no existeix, fa servir `es`. La llista remota es demana a `/noempesquen/v1/missions?lang=<idioma>`.
+
+### Validador de la parella (`npm run missions:valida`)
+
+`scripts/valida-parella-missions.mjs` (amb la lògica a `nucli/parella.js`) compara cada fitxer de `ca/` amb el de `es/`. Falla si:
+
+- falta un fitxer en una de les dues carpetes;
+- canvia el tipus d'un valor, la llargada d'una llista o les claus d'un objecte;
+- canvia qualsevol valor que no sigui text lliure: `id`, ids de nodes i disparadors, `tipus`, `retard`, `correcta`, efectes...
+
+Els textos lliures (`CLAUS_LLIURES`: `titol`, `text`, `pistes`, `explicacio`, `nom`, `assumpte`... i els dominis `url`, `inici`, `adreca`, `origen`, `correu`) poden ser diferents. Dins de `webs` només es compara que hi hagi el mateix nombre d'entrades i la mateixa estructura, en ordre, perquè les claus són dominis que es poden traduir.
+
+### Missions del panell (`nep_missio`)
+
+- Meta `nep_idioma`: `es` o `ca`. Si falta, la missió és `ca` (les que ja existien). La rutina versionada `nep_migra_missions()` (opció `nep_versio_missions`) afegeix `ca` a les que no en tenen. Es pot executar més d'una vegada sense efectes.
+- L'`id` ha de ser únic per parell `(id, idioma)`: hi pot haver una missió `ca` i una `es` amb el mateix `id`, però no dues del mateix idioma.
+- `GET /noempesquen/v1/missions?lang=es|ca` retorna només les d'aquell idioma (les que no tenen meta compten com a `ca`). Un `lang` desconegut o absent fa servir l'idioma de la petició (per defecte `es`).
+- L'editor té un selector d'idioma i avisa (sense bloquejar) quan la missió no té parella en l'altre idioma. `nep_url_simulador()` hi afegeix `?lang=`.
+- `wp noempesquen importa-missions [--idioma=<es|ca>]` importa des de `missions/<idioma>/`. Sense `--idioma`, importa tots dos. L'slug de les `es` acaba en `-es`.
+- Les estadístiques només compten les missions `ca` (el hash de versió no canvia).
