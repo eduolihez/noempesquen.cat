@@ -314,7 +314,7 @@ test( 'amb compte: l’HTML no porta nonce, l’estadística va sense galetes i 
 	// Control: el PUT del compte sí porta la galeta de sessió.
 	expect( await pujada.request().allHeaders() ).toHaveProperty( 'cookie' );
 	expect( await page.evaluate( () => window.__nepResultat ) ).toEqual( [
-		{ credentials: 'omit', capcaleres: [ 'content-type' ] },
+		{ credentials: 'omit', capcaleres: [ 'content-type', 'x-nep-lang' ] },
 	] );
 	const capcaleres = await resultats[ 0 ].allHeaders();
 	expect( capcaleres ).not.toHaveProperty( 'cookie' );
