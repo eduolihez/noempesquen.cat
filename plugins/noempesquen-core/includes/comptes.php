@@ -229,6 +229,19 @@ add_action(
 	}
 );
 
+// Al hosting de producció el servidor sobreescriu la capçalera (strict-origin-when-cross-origin):
+// la metaetiqueta garanteix la mateixa política perquè no depèn del servidor.
+add_action(
+	'wp_head',
+	static function () {
+		if ( is_singular() && has_block( 'noempesquen/compte', get_queried_object() ) ) {
+			echo '<meta name="referrer" content="no-referrer">' . "
+";
+		}
+	},
+	1
+);
+
 /**
  * Permís de les rutes privades: sessió iniciada i rol `nep_jugador`.
  *

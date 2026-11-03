@@ -211,6 +211,10 @@ test( 'l’enllaç del correu verifica el compte; el token surt de la URL i no e
 test( 'la pàgina de compte porta Referrer-Policy: no-referrer', async () => {
 	const r = await page.request.get( '/compte/' );
 	expect( r.headers()[ 'referrer-policy' ] ).toBe( 'no-referrer' );
+	// A producció el servidor pot sobreescriure la capçalera: la metaetiqueta ho cobreix.
+	expect( await r.text() ).toContain(
+		'<meta name="referrer" content="no-referrer">'
+	);
 } );
 
 test( 'recuperació completa: correu, contrasenya nova, sessions tancades i enllaç d’un sol ús', async () => {
