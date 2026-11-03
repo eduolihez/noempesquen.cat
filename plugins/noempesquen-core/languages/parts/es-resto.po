@@ -1,0 +1,586 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: No em pesquen – Nucli\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: noempesquen\n"
+
+#: src/blocks/simulador/nucli/lupa.js:46
+msgid "Pista trobada"
+msgstr "Pista encontrada"
+
+#: src/blocks/simulador/nucli/lupa.js:48
+msgid "Sembla normal"
+msgstr "Parece normal"
+
+#: src/blocks/simulador/nucli/lupa.js:50
+msgid "Ja la tenies"
+msgstr "Ya la tenías"
+
+#: src/blocks/simulador/nucli/lupa.js:52
+msgid "Ja els tens tots"
+msgstr "Ya los tienes todos"
+
+#: src/blocks/simulador/nucli/motor.js:34
+msgid "Som-hi!"
+msgstr "¡Vamos!"
+
+#: src/blocks/simulador/nucli/motor.js:35
+msgid "Salta la presentació"
+msgstr "Saltar la presentación"
+
+#: src/blocks/simulador/nucli/motor.js:36
+msgid "Ja ho tinc clar"
+msgstr "Lo tengo claro"
+
+#: src/blocks/simulador/nucli/motor.js:37
+msgid "Encara vull mirar"
+msgstr "Quiero seguir mirando"
+
+#. translators: %s: títol de la missió
+#: src/blocks/simulador/nucli/previsualitzacio.js:43
+#, js-format
+msgid "%s · esborrany"
+msgstr "%s · borrador"
+
+#: src/blocks/simulador/simulador/App.js:287
+msgid "No s'ha pogut carregar el guió de prova"
+msgstr "No se ha podido cargar el guion de prueba"
+
+#: src/blocks/simulador/simulador/Consequencia.js:10
+msgid "Molt bé!"
+msgstr "¡Muy bien!"
+
+#: src/blocks/simulador/simulador/Consequencia.js:13
+msgid "Gairebé!"
+msgstr "¡Casi!"
+
+#: src/blocks/simulador/simulador/Consequencia.js:15
+msgid "T'han pescat!"
+msgstr "¡Te han pescado!"
+
+#: src/blocks/simulador/simulador/Consequencia.js:106 src/blocks/simulador/simulador/Pausa.js:122
+msgid "Continua"
+msgstr "Continuar"
+
+#: src/blocks/simulador/simulador/Consequencia.js:107
+msgid "Veure el resultat"
+msgstr "Ver el resultado"
+
+#: src/blocks/simulador/simulador/EstatCompte.js:19
+msgid "Progrés desat al teu compte"
+msgstr "Progreso guardado en tu cuenta"
+
+#: src/blocks/simulador/simulador/EstatCompte.js:29
+msgid "Crea un compte per guardar el teu progrés en qualsevol dispositiu"
+msgstr "Crea una cuenta para guardar tu progreso en cualquier dispositivo"
+
+#. translators: 1: pas actual, 2: nombre de passos
+#: src/blocks/simulador/simulador/GuiaTutorial.js:140
+#, js-format
+msgid "Pas %1$d de %2$d"
+msgstr "Paso %1$d de %2$d"
+
+#: src/blocks/simulador/simulador/GuiaTutorial.js:432
+msgid "Guia del tutorial"
+msgstr "Guía del tutorial"
+
+#: src/blocks/simulador/simulador/GuiaTutorial.js:463
+msgid "Entès"
+msgstr "Entendido"
+
+#: src/blocks/simulador/simulador/GuiaTutorial.js:471 src/blocks/simulador/simulador/Pausa.js:138
+msgid "Salta el tutorial"
+msgstr "Saltar el tutorial"
+
+#: src/blocks/simulador/simulador/Mapa.js:57
+msgid "el Pesquer — Llissa"
+msgstr "el Pesquer — Llissa"
+
+#: src/blocks/simulador/simulador/Mapa.js:58
+msgid "Segueix l'estela i no mosseguis cap esquer."
+msgstr "Sigue la estela y no muerdas ningún cebo."
+
+#: src/blocks/simulador/simulador/Mapa.js:64
+msgid "el Pirata — Remei"
+msgstr "el Pirata — Remei"
+
+#: src/blocks/simulador/simulador/Mapa.js:65
+msgid "Rumb al tresor, i que ningú et prengui el botí."
+msgstr "Rumbo al tesoro, y que nadie te quite el botín."
+
+#. translators: %d: estrelles
+#: src/blocks/simulador/simulador/Mapa.js:76
+#, js-format
+msgid "Millor resultat: %d de 3 estrelles"
+msgstr "Mejor resultado: %d de 3 estrellas"
+
+#: src/blocks/simulador/simulador/Mapa.js:79
+msgid "Encara no l'has jugada"
+msgstr "Aún no la has jugado"
+
+#: src/blocks/simulador/simulador/Mapa.js:91
+msgid "Fet."
+msgstr "Hecha."
+
+#. translators: %s: «Millor resultat: N de 3 estrelles»
+#: src/blocks/simulador/simulador/Mapa.js:94
+#, js-format
+msgid "%s. Fet."
+msgstr "%s. Hecha."
+
+#. translators: %s: «Encara no l'has jugada»
+#: src/blocks/simulador/simulador/Mapa.js:102
+#, js-format
+msgid "%s. Disponible."
+msgstr "%s. Disponible."
+
+#. translators: %s: títol de la missió que falta
+#: src/blocks/simulador/simulador/Mapa.js:171
+#, js-format
+msgid "Bloquejada: acaba “%s” primer"
+msgstr "Bloqueada: termina antes “%s”"
+
+#: src/blocks/simulador/simulador/Mapa.js:227
+msgid "Toca ara"
+msgstr "Te toca ahora"
+
+#: src/blocks/simulador/simulador/Mapa.js:316
+msgid "Torna al port"
+msgstr "Volver al puerto"
+
+#. translators: 1: missions fetes, 2: total
+#: src/blocks/simulador/simulador/Mapa.js:336
+#, js-format
+msgid "%1$d de %2$d missions"
+msgstr "%1$d de %2$d misiones"
+
+#. translators: 1: estrelles guanyades, 2: màxim
+#: src/blocks/simulador/simulador/Mapa.js:349
+#, js-format
+msgid "%1$d de %2$d estrelles"
+msgstr "%1$d de %2$d estrellas"
+
+#: src/blocks/simulador/simulador/Pausa.js:94
+msgid "El temps s'ha aturat. Quan vulguis, continuem."
+msgstr "El tiempo se ha detenido. Cuando quieras, seguimos."
+
+#: src/blocks/simulador/simulador/Pausa.js:107
+msgid "So de les notificacions"
+msgstr "Sonido de las notificaciones"
+
+#: src/blocks/simulador/simulador/Pausa.js:111
+msgid "Sí"
+msgstr "Sí"
+
+#: src/blocks/simulador/simulador/Pausa.js:112
+msgid "No"
+msgstr "No"
+
+#: src/blocks/simulador/simulador/Pausa.js:129
+msgid "Reinicia la missió"
+msgstr "Reiniciar la misión"
+
+#: src/blocks/simulador/simulador/Pausa.js:139 src/blocks/simulador/simulador/Selector.js:392 src/blocks/simulador/webs/llum-clara/AreaClient.js:31
+msgid "Surt"
+msgstr "Salir"
+
+#: src/blocks/simulador/simulador/PeticioGirar.js:112
+msgid "Gira el mòbil"
+msgstr "Gira el móvil"
+
+#: src/blocks/simulador/simulador/PeticioGirar.js:113
+msgid "Amplia la finestra"
+msgstr "Amplía la ventana"
+
+#: src/blocks/simulador/simulador/PeticioGirar.js:117
+msgid "Aquesta missió passa en un ordinador i necessita la pantalla en horitzontal. La partida queda en pausa i continuarà on l’has deixada."
+msgstr "Esta misión ocurre en un ordenador y necesita la pantalla en horizontal. La partida queda en pausa y continuará donde la dejaste."
+
+#: src/blocks/simulador/simulador/PeticioGirar.js:121
+msgid "Aquesta missió passa en un ordinador i necessita una finestra més ampla. La partida queda en pausa i continuarà on l’has deixada."
+msgstr "Esta misión ocurre en un ordenador y necesita una ventana más ancha. La partida queda en pausa y continuará donde la dejaste."
+
+#: src/blocks/simulador/simulador/PeticioGirar.js:132
+msgid "Torna al selector"
+msgstr "Volver al selector"
+
+#: src/blocks/simulador/simulador/Resultat.js:13
+msgid "Aquesta vegada t'han pescat. Mira què se t'ha escapat i torna-hi."
+msgstr "Esta vez te han pescado. Mira qué se te ha escapado e inténtalo de nuevo."
+
+#: src/blocks/simulador/simulador/Resultat.js:19
+msgid "No has picat, que és el més important. Encara pots afinar més."
+msgstr "No has picado, que es lo más importante. Aún puedes afinar más."
+
+#: src/blocks/simulador/simulador/Resultat.js:25
+msgid "Ni un ham se t'ha escapat. Així es fa."
+msgstr "No se te ha escapado ni un anzuelo. Así se hace."
+
+#: src/blocks/simulador/simulador/Resultat.js:26
+msgid "Bona decisió. Però hi havia més indicis per veure."
+msgstr "Buena decisión. Pero había más indicios por ver."
+
+#. translators: 1: percentatge mínim, 2: percentatge màxim
+#: src/blocks/simulador/simulador/Resultat.js:45
+#, js-format
+msgid "Entre el %1$d %% i el %2$d %% de les persones van triar la mateixa opció que tu."
+msgstr "Entre el %1$d %% y el %2$d %% de las personas eligieron la misma opción que tú."
+
+#. translators: 1: percentatge mínim, 2: percentatge màxim
+#: src/blocks/simulador/simulador/Resultat.js:55
+#, js-format
+msgid "Entre el %1$d %% i el %2$d %% de les persones van triar una altra opció."
+msgstr "Entre el %1$d %% y el %2$d %% de las personas eligieron otra opción."
+
+#. translators: %d: nombre d'estrelles guanyades
+#: src/blocks/simulador/simulador/Resultat.js:71
+#, js-format
+msgid "%d de 3 estrelles"
+msgstr "%d de 3 estrellas"
+
+#: src/blocks/simulador/simulador/Resultat.js:94
+msgid "Els indicis"
+msgstr "Los indicios"
+
+#. translators: 1: indicis trobats, 2: indicis totals
+#: src/blocks/simulador/simulador/Resultat.js:99
+#, js-format
+msgid "N'has trobat %1$d de %2$d."
+msgstr "Has encontrado %1$d de %2$d."
+
+#: src/blocks/simulador/simulador/Resultat.js:123
+msgid "(trobat)"
+msgstr "(encontrado)"
+
+#: src/blocks/simulador/simulador/Resultat.js:124
+msgid "(no trobat)"
+msgstr "(no encontrado)"
+
+#: src/blocks/simulador/simulador/Resultat.js:187
+msgid "Ara ja saps on mirar."
+msgstr "Ahora ya sabes dónde mirar."
+
+#: src/blocks/simulador/simulador/Resultat.js:208
+msgid "Juga una missió"
+msgstr "Juega una misión"
+
+#. translators: 1: punts, 2: punts màxims
+#: src/blocks/simulador/simulador/Resultat.js:241
+#, js-format
+msgid "%1$d de %2$d punts"
+msgstr "%1$d de %2$d puntos"
+
+#. translators: 1: nombre de pistes, 2: punts descomptats
+#: src/blocks/simulador/simulador/Resultat.js:250
+#, js-format
+msgid "%1$d pista usada (−%2$d punts)"
+msgid_plural "%1$d pistes usades (−%2$d punts)"
+msgstr[0] "%1$d pista usada (−%2$d puntos)"
+msgstr[1] "%1$d pistas usadas (−%2$d puntos)"
+
+#: src/blocks/simulador/simulador/Resultat.js:300
+msgid "Recorda"
+msgstr "Recuerda"
+
+#: src/blocks/simulador/simulador/Resultat.js:324
+msgid "Torna-ho a provar"
+msgstr "Vuelve a intentarlo"
+
+#: src/blocks/simulador/simulador/Resultat.js:332
+msgid "Següent missió"
+msgstr "Siguiente misión"
+
+#: src/blocks/simulador/simulador/Resultat.js:340
+msgid "Totes les missions"
+msgstr "Todas las misiones"
+
+#: src/blocks/simulador/simulador/Selector.js:124
+msgid "el Pesquer"
+msgstr "el Pesquer"
+
+#: src/blocks/simulador/simulador/Selector.js:125
+msgid "ordinador amb la Llissa"
+msgstr "ordenador con Llissa"
+
+#: src/blocks/simulador/simulador/Selector.js:128
+msgid "el Pirata"
+msgstr "el Pirata"
+
+#: src/blocks/simulador/simulador/Selector.js:129
+msgid "mòbil amb la Remei"
+msgstr "móvil con Remei"
+
+#. translators: 1: nom del vaixell, 2: dispositiu i guia, 3: missions fetes, 4: total, 5: estrelles, 6: màxim
+#: src/blocks/simulador/simulador/Selector.js:145
+#, js-format
+msgid "Obre %1$s: %2$s, %3$d de %4$d missions, %5$d de %6$d estrelles"
+msgstr "Abrir %1$s: %2$s, %3$d de %4$d misiones, %5$d de %6$d estrellas"
+
+#. translators: 1: missions fetes, 2: total
+#: src/blocks/simulador/simulador/Selector.js:171
+#, js-format
+msgid "%1$d de %2$d"
+msgstr "%1$d de %2$d"
+
+#: src/blocks/simulador/simulador/Selector.js:185
+msgid "Aquí"
+msgstr "Aquí"
+
+#: src/blocks/simulador/simulador/Selector.js:191
+msgid "Millor en horitzontal"
+msgstr "Mejor en horizontal"
+
+#. translators: 1: missions fetes, 2: total
+#: src/blocks/simulador/simulador/Selector.js:292
+#, js-format
+msgid "%1$d de %2$d missions fetes"
+msgstr "%1$d de %2$d misiones hechas"
+
+#: src/blocks/simulador/simulador/Selector.js:307
+msgid "Has tornat al port"
+msgstr "Has vuelto al puerto"
+
+#: src/blocks/simulador/simulador/Selector.js:397
+msgid "Tria una missió"
+msgstr "Elige una misión"
+
+#. translators: 1: missions fetes, 2: total de missions, 3: estrelles guanyades, 4: estrelles possibles
+#: src/blocks/simulador/simulador/Selector.js:403
+#, js-format
+msgid "%1$d de %2$d missions fetes · %3$d de %4$d estrelles"
+msgstr "%1$d de %2$d misiones hechas · %3$d de %4$d estrellas"
+
+#: src/blocks/simulador/simulador/Selector.js:428
+msgid "Pausa animacions"
+msgstr "Pausar animaciones"
+
+#: src/blocks/simulador/simulador/Selector.js:444
+msgid "Surt de pantalla completa"
+msgstr "Salir de pantalla completa"
+
+#: src/blocks/simulador/simulador/Selector.js:448
+msgid "Pantalla completa"
+msgstr "Pantalla completa"
+
+#: src/blocks/simulador/simulador/Simulador.js:42
+msgid "Carregant el sistema"
+msgstr "Cargando el sistema"
+
+#: src/blocks/simulador/sistemes/mobil/Banners.js:75 src/blocks/simulador/sistemes/mobil/Banners.js:76 src/blocks/simulador/sistemes/pc/Notificacions.js:160
+msgid "Descarta la notificació"
+msgstr "Descartar la notificación"
+
+#: src/blocks/simulador/sistemes/mobil/Banners.js:122 src/blocks/simulador/sistemes/pc/Notificacions.js:214
+msgid "Notificacions noves"
+msgstr "Notificaciones nuevas"
+
+#: src/blocks/simulador/sistemes/mobil/BarraEstat.js:64
+msgid "Obre el centre de control"
+msgstr "Abrir el centro de control"
+
+#: src/blocks/simulador/sistemes/mobil/BarraNavegacio.js:19
+msgid "Navegació del sistema"
+msgstr "Navegación del sistema"
+
+#: src/blocks/simulador/sistemes/mobil/Bloqueig.js:123
+msgid "ara"
+msgstr "ahora"
+
+#: src/blocks/simulador/sistemes/mobil/Bloqueig.js:154
+msgid "Llisca cap amunt, toca o prem una tecla per entrar"
+msgstr "Desliza hacia arriba, toca o pulsa una tecla para entrar"
+
+#: src/blocks/simulador/sistemes/mobil/CentreControl.js:59
+msgid "Centre de control"
+msgstr "Centro de control"
+
+#: src/blocks/simulador/sistemes/mobil/CentreControl.js:93 src/blocks/simulador/ui/BotoLupa.js:17 src/blocks/simulador/ui/BotoLupa.js:63
+msgid "Lupa"
+msgstr "Lupa"
+
+#: src/blocks/simulador/sistemes/mobil/CentreControl.js:113 src/blocks/simulador/sistemes/pc/CentreNotificacions.js:98
+msgid "Notificacions"
+msgstr "Notificaciones"
+
+#: src/blocks/simulador/sistemes/mobil/CentreControl.js:129
+msgid "No hi ha notificacions"
+msgstr "No hay notificaciones"
+
+#: src/blocks/simulador/sistemes/mobil/CentreControl.js:142
+msgid "Tanca el centre de control"
+msgstr "Cerrar el centro de control"
+
+#: src/blocks/simulador/sistemes/mobil/Inici.js:53
+msgid "Apps"
+msgstr "Apps"
+
+#: src/blocks/simulador/sistemes/mobil/Inici.js:62
+msgid "Apps preferides"
+msgstr "Apps favoritas"
+
+#. translators: %s: nom de l'app
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:28
+#, js-format
+msgid "%s, minimitzada"
+msgstr "%s, minimizada"
+
+#. translators: %s: nom de l'app
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:32
+#, js-format
+msgid "%s, en primer pla"
+msgstr "%s, en primer plano"
+
+#. translators: %s: nom de l'app
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:34
+#, js-format
+msgid "%s, oberta"
+msgstr "%s, abierta"
+
+#. translators: 1: hora, 2: data, 3: nombre de notificacions
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:70
+#, js-format
+msgid "%1$s, %2$s. %3$d notificació sense llegir"
+msgid_plural "%1$s, %2$s. %3$d notificacions sense llegir"
+msgstr[0] "%1$s, %2$s. %3$d notificación sin leer"
+msgstr[1] "%1$s, %2$s. %3$d notificaciones sin leer"
+
+#. translators: 1: hora, 2: data
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:82
+#, js-format
+msgid "%1$s, %2$s. Cap notificació nova"
+msgstr "%1$s, %2$s. Ninguna notificación nueva"
+
+#: src/blocks/simulador/sistemes/pc/BarraTasques.js:93
+msgid "Barra de tasques"
+msgstr "Barra de tareas"
+
+#: src/blocks/simulador/sistemes/pc/Bloqueig.js:93
+msgid "Clica o prem una tecla per entrar"
+msgstr "Haz clic o pulsa una tecla para entrar"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:7
+msgid "dimarts, 3 de novembre"
+msgstr "martes, 3 de noviembre"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:8
+msgid "3/11/2026"
+msgstr "3/11/2026"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:9
+msgid "novembre de 2026"
+msgstr "noviembre de 2026"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:11
+msgid "dl"
+msgstr "L"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:12
+msgid "dt"
+msgstr "M"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:13
+msgid "dc"
+msgstr "X"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:14
+msgid "dj"
+msgstr "J"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:15
+msgid "dv"
+msgstr "V"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:16
+msgid "ds"
+msgstr "S"
+
+#: src/blocks/simulador/sistemes/pc/calendari.js:17
+msgid "dg"
+msgstr "D"
+
+#: src/blocks/simulador/sistemes/pc/CentreNotificacions.js:89
+msgid "Notificacions i calendari"
+msgstr "Notificaciones y calendario"
+
+#: src/blocks/simulador/sistemes/pc/CentreNotificacions.js:137
+msgid "No hi ha notificacions noves"
+msgstr "No hay notificaciones nuevas"
+
+#: src/blocks/simulador/sistemes/pc/Escriptori.js:30
+msgid "Icones de l'escriptori"
+msgstr "Iconos del escritorio"
+
+#: src/blocks/simulador/sistemes/pc/Escriptori.js:56 src/blocks/simulador/webs/posta/Posta.js:72
+msgid "Paperera"
+msgstr "Papelera"
+
+#: src/blocks/simulador/sistemes/pc/Finestra.js:261 src/blocks/simulador/sistemes/pc/Finestra.js:262
+msgid "Minimitza"
+msgstr "Minimizar"
+
+#: src/blocks/simulador/sistemes/pc/Finestra.js:272 src/blocks/simulador/sistemes/pc/Finestra.js:277
+msgid "Restaura"
+msgstr "Restaurar"
+
+#: src/blocks/simulador/sistemes/pc/Finestra.js:273 src/blocks/simulador/sistemes/pc/Finestra.js:278
+msgid "Maximitza"
+msgstr "Maximizar"
+
+#: src/blocks/simulador/sistemes/pc/MenuInici.js:54 src/blocks/simulador/sistemes/pc/MenuInici.js:55
+msgid "Cerca aplicacions"
+msgstr "Buscar aplicaciones"
+
+#: src/blocks/simulador/sistemes/pc/MenuInici.js:62
+msgid "Fixades"
+msgstr "Fijadas"
+
+#: src/blocks/simulador/sistemes/pc/MenuInici.js:84
+msgid "No hi ha cap aplicació amb aquest nom."
+msgstr "No hay ninguna aplicación con ese nombre."
+
+#: src/blocks/simulador/sistemes/pc/MenuInici.js:101 src/blocks/simulador/sistemes/pc/MenuInici.js:102
+msgid "Apaga"
+msgstr "Apagar"
+
+#: src/blocks/simulador/ui/avatars.js:253
+msgid "la Llissa"
+msgstr "Llissa"
+
+#: src/blocks/simulador/ui/avatars.js:254
+msgid "la Pirata Remei"
+msgstr "la Pirata Remei"
+
+#: src/blocks/simulador/ui/BotoLupa.js:20
+msgid "Lupa, has trobat tots els indicis"
+msgstr "Lupa, has encontrado todos los indicios"
+
+#. translators: 1: indicis trobats, 2: indicis totals
+#: src/blocks/simulador/ui/BotoLupa.js:24
+#, js-format
+msgid "Lupa, %1$d de %2$d indicis"
+msgstr "Lupa, %1$d de %2$d indicios"
+
+#: src/blocks/simulador/ui/BotoLupa.js:73
+msgid "Lupa (Alt+Maj+L)"
+msgstr "Lupa (Alt+Mayús+L)"
+
+#: src/blocks/simulador/ui/BotoLupa.js:109
+msgid "Has trobat tots els indicis"
+msgstr "Has encontrado todos los indicios"
+
+#. translators: 1: indicis trobats, 2: indicis totals
+#: src/blocks/simulador/ui/BotoLupa.js:115
+#, js-format
+msgid "%1$d de %2$d indicis"
+msgstr "%1$d de %2$d indicios"
+
+#. translators: %s: text de l'enllaç
+#. translators: %s: text inspeccionable
+#: src/blocks/simulador/ui/Cos.js:33 src/blocks/simulador/ui/Inspeccionable.js:73
+#, js-format
+msgid "Inspecciona: %s"
+msgstr "Inspeccionar: %s"
