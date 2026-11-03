@@ -15,7 +15,9 @@
     "lint:js": "wp-scripts lint-js plugins/noempesquen-core/src",
     "lint:css": "wp-scripts lint-style \"plugins/noempesquen-core/src/**/*.scss\"",
     "format": "wp-scripts format plugins/noempesquen-core/src",
-    "empaqueta": "node scripts/empaqueta.mjs",
+    "i18n:pot": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run cli --env-cwd=wp-content/plugins/noempesquen-core wp i18n make-pot . languages/noempesquen.pot --domain=noempesquen --exclude=build,tests,missions,assets",
+    "i18n:json": "node scripts/i18n-json.mjs",
+    "empaqueta":"node scripts/empaqueta.mjs",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
     "test:php": "node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli --env-cwd=wp-content/plugins/noempesquen-core phpunit && node -r ./scripts/dns-fix.cjs ./node_modules/@wordpress/env/bin/wp-env run tests-cli wp eval-file wp-content/plugins/noempesquen-core/tests/php/integracio.php"

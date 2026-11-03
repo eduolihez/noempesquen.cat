@@ -25,11 +25,27 @@ const SPEC_COMPTE_SIMULADOR = /compte-simulador\.spec\.js$/;
 const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil|finestres|guia-tutorial|ancores|tutorial)\.spec\.js$/;
 
+/*
+ * Idioma (preparat, no actiu per defecte): sense NEP_LANG, tot igual que abans
+ * (arrel i locale ca-ES). NEP_LANG=es → locale es-ES a l'arrel; NEP_LANG=ca →
+ * locale ca-ES i baseURL acabada en `/ca/`. Ull: Playwright resol les rutes amb
+ * `new URL()`, així que el prefix només s'aplica a rutes relatives
+ * (`simulador/`), no a les absolutes (`/simulador/`); adaptar-les és feina
+ * d'una tasca posterior.
+ */
+const NEP_LANG = [ 'es', 'ca' ].includes( process.env.NEP_LANG )
+	? process.env.NEP_LANG
+	: null;
+const BASE = ( process.env.WP_BASE_URL || 'http://localhost:8888' ).replace(
+	/\/+$/,
+	''
+);
+
 module.exports = defineConfig( {
 	testDir: './tests/e2e',
 	use: {
-		baseURL: process.env.WP_BASE_URL || 'http://localhost:8888',
-		locale: 'ca-ES',
+		baseURL: NEP_LANG === 'ca' ? `${ BASE }/ca/` : BASE,
+		locale: NEP_LANG === 'es' ? 'es-ES' : 'ca-ES',
 	},
 	projects: [
 		{

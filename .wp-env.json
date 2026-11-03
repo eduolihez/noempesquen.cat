@@ -14,9 +14,9 @@
     "WP_DEBUG": true,
     "WP_DEBUG_LOG": true,
     "SCRIPT_DEBUG": true,
-    "WPLANG": "ca"
+    "WPLANG": "es_ES"
   },
   "lifecycleScripts": {
-    "afterStart": "wp-env run cli wp language core install ca --activate && wp-env run cli wp theme activate noempesquen && wp-env run cli wp rewrite structure /%postname%/"
+    "afterStart": "wp-env run cli wp language core install ca && wp-env run cli wp language core install es_ES --activate &&wp-env run cli wp theme activate noempesquen && wp-env run cli wp rewrite structure /%postname%/"
   }
 }

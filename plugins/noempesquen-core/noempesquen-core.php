@@ -18,6 +18,7 @@ define( 'NEP_DB_VERSION', '4' );
 define( 'NEP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NEP_URL', plugin_dir_url( __FILE__ ) );
 
+require_once NEP_PATH . 'includes/idioma.php';
 require_once NEP_PATH . 'includes/acces-admin.php';
 require_once NEP_PATH . 'includes/capacitats.php';
 require_once NEP_PATH . 'includes/validacio-missio.php';
@@ -43,8 +44,14 @@ add_action(
 	static function () {
 		foreach ( array( 'simulador', 'compte', 'contacte' ) as $bloc ) {
 			$block_dir = NEP_PATH . 'build/blocks/' . $bloc;
-			if ( file_exists( $block_dir . '/block.json' ) ) {
-				register_block_type( $block_dir );
+			if ( ! file_exists( $block_dir . '/block.json' ) ) {
+				continue;
+			}
+			$tipus = register_block_type( $block_dir );
+			// Traduccions JS del simulador: un sol handle (view script), JSON a languages/
+			// generat per `npm run i18n:json` (noempesquen-<locale>-<handle>.json).
+			if ( 'simulador' === $bloc && $tipus && ! empty( $tipus->view_script_handles ) ) {
+				wp_set_script_translations( $tipus->view_script_handles[0], 'noempesquen', NEP_PATH . 'languages' );
 			}
 		}
 	}

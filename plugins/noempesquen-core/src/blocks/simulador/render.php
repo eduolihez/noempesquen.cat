@@ -11,6 +11,7 @@ $config = array(
 	'dispositiu' => $attributes['dispositiu'] ?? 'auto',
 	'api'        => esc_url_raw( rest_url( 'noempesquen/v1/' ) ),
 	'inici'      => esc_url_raw( home_url( '/' ) ),
+	'lang'       => nep_idioma_actual(),
 );
 
 // Previsualització d'una missió (també esborrany) des del panell: mai per a anònims.
