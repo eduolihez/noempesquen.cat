@@ -71,9 +71,10 @@ function useCompte( config, { progresRef, setProgres } ) {
 						api: api || '/wp-json/noempesquen/v1/',
 						ajaxUrl: compte.ajaxUrl || '/wp-admin/admin-ajax.php',
 						fetchFn: ( ...args ) => window.fetch( ...args ),
+						lang: config.lang,
 					} )
 				: null,
-		[ actiu, api, compte?.ajaxUrl ]
+		[ actiu, api, compte?.ajaxUrl, config.lang ]
 	);
 	const [ connectat, setConnectat ] = useState( actiu ? null : false );
 	const connectatRef = useRef( false );

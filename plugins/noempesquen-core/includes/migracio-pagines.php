@@ -189,29 +189,57 @@ function nep_actualitza_pagines(): void {
 	if ( (int) get_option( 'nep_versio_pagines', 0 ) >= NEP_VERSIO_PAGINES ) {
 		return;
 	}
+	// Reintents amb marge: després d'un error no es repeteix a cada petició anònima.
+	$espera = 'nep_migracio_pagines_espera';
+	$estat  = get_option( $espera );
+	$estat  = is_array( $estat ) ? $estat : array();
+	if ( ! empty( $estat['intents'] ) && (int) $estat['intents'] >= 3 ) {
+		return;
+	}
+	if ( ! empty( $estat['quan'] ) && time() - (int) $estat['quan'] < 600 ) {
+		return;
+	}
 	$candau = 'nep_migracio_pagines_bloqueig';
 	if ( ! nep_pren_candau( $candau, 300 ) ) {
 		return;
 	}
+	global $wpdb;
+	$meu_valor = (string) $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $candau ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	// Sense kses: si migra una petició anònima, reparentar no ha de filtrar el contingut existent.
+	$kses_actiu = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
 	kses_remove_filters();
 	try {
 		$registre = nep_migra_pagines();
 		$errors   = array_filter( $registre, static fn( $r ) => str_starts_with( $r, 'error:' ) );
 		if ( ! $errors ) {
 			update_option( 'nep_versio_pagines', NEP_VERSIO_PAGINES );
-		}
-		flush_rewrite_rules( false );
-		$tema = wp_get_theme();
-		if ( method_exists( $tema, 'delete_pattern_cache' ) ) {
-			$tema->delete_pattern_cache();
+			delete_option( $espera );
+			flush_rewrite_rules( false );
+			$tema = wp_get_theme();
+			if ( method_exists( $tema, 'delete_pattern_cache' ) ) {
+				$tema->delete_pattern_cache();
+			}
+		} else {
+			update_option(
+				$espera,
+				array(
+					'quan'    => time(),
+					'intents' => ( (int) ( $estat['intents'] ?? 0 ) ) + 1,
+				),
+				false
+			);
 		}
 		if ( $registre ) {
 			error_log( '[noempesquen] migració de pàgines: ' . implode( ', ', $registre ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Només slugs.
 		}
 	} finally {
-		kses_init();
-		delete_option( $candau );
+		if ( $kses_actiu ) {
+			kses_init();
+		}
+		// Només allibera el candau si encara és el nostre.
+		$wpdb->delete( $wpdb->options, array( 'option_name' => $candau, 'option_value' => $meu_valor ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		wp_cache_delete( $candau, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
 	}
 }
 

@@ -3,6 +3,7 @@
  * (sense JSX). El cos només porta tres camps: res del que escriu el jugador.
  */
 import { opcioTriada } from '../nucli/motor.js';
+import { idiomaActual } from '../nucli/idioma.js';
 
 /**
  * Cos de l'enviament, o null si no s'ha d'enviar (previsualització).
@@ -43,7 +44,10 @@ export function enviaResultat( api, payload ) {
 				method: 'POST',
 				keepalive: true,
 				credentials: 'omit',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Nep-Lang': idiomaActual(),
+				},
 				// Només els tres camps, encara que el cos en porti més.
 				body: JSON.stringify( {
 					missio: payload.missio,
@@ -77,7 +81,11 @@ export function demanaResum( api, missio ) {
 				`${ api }resultat/resum${ sep }missio=${ encodeURIComponent(
 					missio
 				) }`,
-				{ method: 'GET', credentials: 'omit' }
+				{
+					method: 'GET',
+					credentials: 'omit',
+					headers: { 'X-Nep-Lang': idiomaActual() },
+				}
 			)
 		)
 			.then( ( r ) => ( r && r.ok ? r.json() : null ) )
