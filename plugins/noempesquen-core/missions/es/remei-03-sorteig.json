@@ -57,7 +57,7 @@
 							{
 								"enllac": {
 									"text": "Reclama tu premio",
-									"url": "https://sorteig-calroig.top/premi"
+									"url": "https://sorteo-calroig.top/premio"
 								}
 							}
 						]
@@ -74,7 +74,7 @@
 		}
 	},
 	"webs": {
-		"sorteig-calroig.top": {
+		"sorteo-calroig.top": {
 			"plantilla": "sorteig",
 			"variant": "falsa",
 			"https": true,
@@ -117,7 +117,7 @@
 			"id": "web-falsa",
 			"quan": {
 				"esdeveniment": "web.carrega",
-				"url": "sorteig-calroig.top"
+				"url": "sorteo-calroig.top"
 			},
 			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
 		},
@@ -125,7 +125,7 @@
 			"id": "pagat",
 			"quan": {
 				"esdeveniment": "pagament.fes",
-				"url": "sorteig-calroig.top"
+				"url": "sorteo-calroig.top"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
 		},
@@ -167,7 +167,7 @@
 			"id": "domini",
 			"requereix": "web-falsa",
 			"titol": "Una dirección rara",
-			"explicacio": "La web es sorteig-calroig.top. Un dominio acabado en .top y con guiones no es el de una tienda de barrio. El candado solo significa que la conexión está cifrada, también con los estafadores.",
+			"explicacio": "La web es sorteo-calroig.top. Un dominio acabado en .top y con guiones no es el de una tienda de barrio. El candado solo significa que la conexión está cifrada, también con los estafadores.",
 			"reaccio": "Mira la dirección: «.top». La tienda de verdad no se llama así."
 		},
 		{

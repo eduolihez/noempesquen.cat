@@ -31,7 +31,7 @@
 							"de": "ells",
 							"ocult": true,
 							"hora": "20:23",
-							"text": "Hola, he cambiado de móvil. Este es mi número nuevo. ¿Me puedes ayudar con una cosa urgente?",
+							"text": "Hola, he cambiado de movil. Este es mi numero nuevo. Me puedes ayudar con una cosa urgente?",
 							"senyal": "canvi_mobil"
 						},
 						{
@@ -39,7 +39,7 @@
 							"de": "ells",
 							"ocult": true,
 							"hora": "20:24",
-							"text": "Soy Pau no me tienes guardado? Se me ha bloqueado la tarjeta y tengo que pagarlo hoy mismo",
+							"text": "Soy Pau, no me tienes guardado? Se me ha bloqueado la tarjeta y tengo que pagarlo hoy mismo",
 							"senyal": "estil"
 						},
 						{
@@ -109,7 +109,7 @@
 					"tipus": "notifica",
 					"app": "parla",
 					"titol": "+44 7700 900461",
-					"text": "Hola, he cambiado de móvil. Este es mi número nuevo.",
+					"text": "Hola, he cambiado de movil. Este es mi numero nuevo.",
 					"xat": "nou",
 					"font": "mobil"
 				}

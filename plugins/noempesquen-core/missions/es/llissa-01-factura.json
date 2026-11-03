@@ -31,7 +31,7 @@
 					"data": "09:12",
 					"remitent": {
 						"nom": "Llum Clara",
-						"adreca": "avisos@llumclara-pagaments.com",
+						"adreca": "avisos@llumclara-pagos.com",
 						"senyal": "remitent"
 					},
 					"assumpte": "URGENTE: tu suministro se cortará hoy",
@@ -52,7 +52,7 @@
 							{
 								"enllac": {
 									"text": "Paga ahora en llumclara.es",
-									"url": "http://llumclara-pagaments.com/pagament?ref=88213"
+									"url": "http://llumclara-pagos.com/pago?ref=88213"
 								},
 								"senyal": "enllac"
 							},
@@ -82,7 +82,7 @@
 			"titol": "Llum Clara · Área de cliente",
 			"missatge": "No tienes ninguna factura pendiente"
 		},
-		"llumclara-pagaments.com": {
+		"llumclara-pagos.com": {
 			"plantilla": "llum-clara",
 			"variant": "falsa",
 			"https": true,
@@ -143,7 +143,7 @@
 			"id": "web-falsa",
 			"quan": {
 				"esdeveniment": "web.carrega",
-				"url": "llumclara-pagaments.com"
+				"url": "llumclara-pagos.com"
 			},
 			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
 		},
@@ -151,7 +151,7 @@
 			"id": "pagat",
 			"quan": {
 				"esdeveniment": "formulari.envia",
-				"url": "llumclara-pagaments.com"
+				"url": "llumclara-pagos.com"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
 		},
@@ -187,7 +187,7 @@
 		{
 			"id": "remitent",
 			"titol": "La dirección no es de la empresa",
-			"explicacio": "El nombre dice Llum Clara, pero el correo viene de llumclara-pagaments.com. El dominio oficial sería llumclara.es. Los estafadores registran dominios que se le parecen para que no te fijes.",
+			"explicacio": "El nombre dice Llum Clara, pero el correo viene de llumclara-pagos.com. El dominio oficial sería llumclara.es. Los estafadores registran dominios que se le parecen para que no te fijes.",
 			"reaccio": "Mira lo que hay después de la arroba. Ese «-pagaments» no debería estar ahí."
 		},
 		{
@@ -211,7 +211,7 @@
 		{
 			"id": "enllac",
 			"titol": "El enlace esconde adónde lleva",
-			"explicacio": "El texto dice llumclara.es, pero si pasas el ratón por encima, la barra de abajo muestra llumclara-pagaments.com. Mira siempre adónde lleva un enlace antes de hacer clic.",
+			"explicacio": "El texto dice llumclara.es, pero si pasas el ratón por encima, la barra de abajo muestra llumclara-pagos.com. Mira siempre adónde lleva un enlace antes de hacer clic.",
 			"reaccio": "¿Has visto la barra de abajo? El texto dice una cosa y el enlace te lleva a otra."
 		},
 		{
@@ -223,7 +223,7 @@
 		{
 			"id": "domini",
 			"titol": "La dirección de la web no es la oficial",
-			"explicacio": "La barra de direcciones dice llumclara-pagaments.com, no llumclara.es. Que tenga candado no significa que sea fiable: solo significa que la conexión está cifrada, también con los estafadores.",
+			"explicacio": "La barra de direcciones dice llumclara-pagos.com, no llumclara.es. Que tenga candado no significa que sea fiable: solo significa que la conexión está cifrada, también con los estafadores.",
 			"reaccio": "Mira la barra de arriba. Tiene candado, sí, pero la dirección no es la de Llum Clara. El candado no te asegura nada."
 		}
 	],

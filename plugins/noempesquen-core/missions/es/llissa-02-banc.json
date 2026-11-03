@@ -27,10 +27,10 @@
 					"objectiu": false,
 					"carpeta": "entrada",
 					"llegit": true,
-					"data": "ahir",
+					"data": "ayer",
 					"remitent": {
 						"nom": "Banc Sòlid",
-						"adreca": "extractes@bancsolid.es"
+						"adreca": "extractos@bancsolid.es"
 					},
 					"assumpte": "Tu extracto de este mes",
 					"cos": [
@@ -40,7 +40,7 @@
 							{
 								"enllac": {
 									"text": "bancsolid.es",
-									"url": "https://bancsolid.es/area-clients"
+									"url": "https://bancsolid.es/area-clientes"
 								}
 							}
 						],
@@ -56,7 +56,7 @@
 					"data": "10:05",
 					"remitent": {
 						"nom": "Banc Sòlid",
-						"adreca": "seguretat@bancsolid-acces.top",
+						"adreca": "seguridad@bancsolid-acceso.top",
 						"senyal": "remitent"
 					},
 					"assumpte": "Cuenta bloqueada: verifica tu identidad",
@@ -74,7 +74,7 @@
 							{
 								"enllac": {
 									"text": "Accede a tu banco",
-									"url": "https://bancsolid-acces.top/entrada"
+									"url": "https://bancsolid-acceso.top/entrada"
 								},
 								"senyal": "enllac"
 							},
@@ -101,7 +101,7 @@
 			"titol": "Banc Sòlid · Área de clientes",
 			"missatge": "No tienes ningún aviso pendiente"
 		},
-		"bancsolid-acces.top": {
+		"bancsolid-acceso.top": {
 			"plantilla": "banc-solid",
 			"variant": "falsa",
 			"https": true,
@@ -182,7 +182,7 @@
 			"id": "web-falsa",
 			"quan": {
 				"esdeveniment": "web.carrega",
-				"url": "bancsolid-acces.top"
+				"url": "bancsolid-acceso.top"
 			},
 			"efectes": [ { "tipus": "guia-diu", "frase": "web_falsa" } ]
 		},
@@ -190,7 +190,7 @@
 			"id": "dades-donades",
 			"quan": {
 				"esdeveniment": "formulari.envia",
-				"url": "bancsolid-acces.top",
+				"url": "bancsolid-acceso.top",
 				"formulari": "acces"
 			},
 			"efectes": [ { "tipus": "guia-diu", "frase": "dades_donades" } ]
@@ -199,7 +199,7 @@
 			"id": "arriba-codi",
 			"quan": {
 				"esdeveniment": "formulari.envia",
-				"url": "bancsolid-acces.top",
+				"url": "bancsolid-acceso.top",
 				"formulari": "acces"
 			},
 			"retard_ms": 3000,
@@ -217,7 +217,7 @@
 			"id": "codi-enviat",
 			"quan": {
 				"esdeveniment": "codi.envia",
-				"url": "bancsolid-acces.top"
+				"url": "bancsolid-acceso.top"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
 		},
@@ -262,8 +262,8 @@
 		{
 			"id": "remitent",
 			"titol": "La dirección no es la del banco",
-			"explicacio": "El nombre dice Banc Sòlid, pero el correo viene de bancsolid-acces.top. El dominio oficial es bancsolid.es. Los estafadores registran dominios que se le parecen y con terminaciones raras como .top.",
-			"reaccio": "Mira lo que hay después de la arroba. Ese «-acces.top» no es de tu banco."
+			"explicacio": "El nombre dice Banc Sòlid, pero el correo viene de bancsolid-acceso.top. El dominio oficial es bancsolid.es. Los estafadores registran dominios que se le parecen y con terminaciones raras como .top.",
+			"reaccio": "Mira lo que hay después de la arroba. Ese «-acceso.top» no es de tu banco."
 		},
 		{
 			"id": "salutacio",
@@ -287,14 +287,14 @@
 		{
 			"id": "enllac",
 			"titol": "El enlace lleva a otro sitio",
-			"explicacio": "El texto dice «Accede a tu banco», pero si pasas el ratón por encima, la barra de abajo muestra bancsolid-acces.top, no bancsolid.es.",
+			"explicacio": "El texto dice «Accede a tu banco», pero si pasas el ratón por encima, la barra de abajo muestra bancsolid-acceso.top, no bancsolid.es.",
 			"reaccio": "¿Has visto la barra de abajo? Ese enlace no te lleva a casa."
 		},
 		{
 			"id": "domini",
 			"requereix": "web-falsa",
 			"titol": "La dirección de la web no es la oficial",
-			"explicacio": "La barra de direcciones dice bancsolid-acces.top. Que tenga candado no significa que sea fiable: solo significa que la conexión está cifrada, también con los estafadores.",
+			"explicacio": "La barra de direcciones dice bancsolid-acceso.top. Que tenga candado no significa que sea fiable: solo significa que la conexión está cifrada, también con los estafadores.",
 			"reaccio": "Tiene candado, sí, pero la dirección no es la del banco. El candado no te asegura nada."
 		},
 		{

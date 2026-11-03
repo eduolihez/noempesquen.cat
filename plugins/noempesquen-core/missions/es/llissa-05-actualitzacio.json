@@ -83,8 +83,8 @@
 					}
 				],
 				"boto": "Descargar la actualización",
-				"fitxer": "actualitzacio-navegador.exe",
-				"origen": "descarrega-navegador.top",
+				"fitxer": "actualizacion-navegador.exe",
+				"origen": "descarga-navegador.top",
 				"senyal_fitxer": "exe_top",
 				"senyal_origen": "exe_top"
 			}
@@ -96,7 +96,7 @@
 			"quan": {
 				"esdeveniment": "descarrega.fes",
 				"url": "tempsavui.es",
-				"fitxer": "actualitzacio-navegador.exe"
+				"fitxer": "actualizacion-navegador.exe"
 			},
 			"efectes": [ { "tipus": "pescat" } ]
 		}
@@ -124,7 +124,7 @@
 			"id": "exe_top",
 			"requereix": "descarregat",
 			"titol": "Un .exe de un dominio .top",
-			"explicacio": "El archivo es actualitzacio-navegador.exe y viene de descarrega-navegador.top, una dirección sin ninguna empresa detrás. Un programa así puede ser un virus. Las actualizaciones de verdad no se descargan nunca de una web cualquiera.",
+			"explicacio": "El archivo es actualizacion-navegador.exe y viene de descarga-navegador.top, una dirección sin ninguna empresa detrás. Un programa así puede ser un virus. Las actualizaciones de verdad no se descargan nunca de una web cualquiera.",
 			"reaccio": "¿Un .exe desde un «.top»? Eso no es ninguna actualización."
 		}
 	],

@@ -23,22 +23,22 @@
 				"id": "botiga",
 				"nom": "Tienda Verde",
 				"missatges": [
-					{ "de": "ella", "text": "Tienda Verde: tu pedido 20418 ya está en camino y llegará en 2 o 3 días laborables. Puedes seguirlo en nuestra web oficial, enviat.es. Nunca te pediremos dinero por SMS.", "hora": "dl. 10:20" }
+					{ "de": "ella", "text": "Tienda Verde: tu pedido 20418 ya está en camino y llegará en 2 o 3 días laborables. Puedes seguirlo en nuestra web oficial, enviat.es. Nunca te pediremos dinero por SMS.", "hora": "lun. 10:20" }
 				]
 			},
 			{
 				"id": "marta",
 				"nom": "Marta",
 				"missatges": [
-					{ "de": "ella", "text": "Álex, ¿me pasas la dirección del restaurante del sábado?", "hora": "ahir 21:10" },
-					{ "de": "jo", "text": "Calle del Mar, 12. Te espero allí a las 14 h.", "hora": "ahir 21:15" }
+					{ "de": "ella", "text": "Álex, ¿me pasas la dirección del restaurante del sábado?", "hora": "ayer 21:10" },
+					{ "de": "jo", "text": "Calle del Mar, 12. Te espero allí a las 14 h.", "hora": "ayer 21:15" }
 				]
 			},
 			{
 				"id": "biblioteca",
 				"nom": "Biblioteca del Barrio",
 				"missatges": [
-					{ "de": "ella", "text": "Biblioteca del Barrio: el libro «Mar adentro» hay que devolverlo el día 7. ¡Gracias!", "hora": "dl. 09:00" }
+					{ "de": "ella", "text": "Biblioteca del Barrio: el libro «Mar adentro» hay que devolverlo el día 7. ¡Gracias!", "hora": "lun. 09:00" }
 				]
 			},
 			{
@@ -75,7 +75,7 @@
 					{
 						"de": "ella",
 						"text": "Banc Sòlid: has hecho una compra de 24,90 € con la tarjeta terminada en 9010. Si no la reconoces, llama al número que figura en el reverso de la tarjeta.",
-						"hora": "dl. 11:20"
+						"hora": "lun. 11:20"
 					}
 				]
 			},
@@ -86,12 +86,12 @@
 					{
 						"de": "ella",
 						"text": "Álex, no te olvides del pan para el domingo.",
-						"hora": "dl. 21:05"
+						"hora": "lun. 21:05"
 					},
 					{
 						"de": "jo",
 						"text": "Tranquila, lo recojo yo.",
-						"hora": "dl. 21:12"
+						"hora": "lun. 21:12"
 					}
 				]
 			}
@@ -106,17 +106,17 @@
 					{
 						"de": "ella",
 						"text": "¡Eh, Álex! ¿Te va bien el jueves a las 11 para la reunión?",
-						"hora": "ahir 18:40"
+						"hora": "ayer 18:40"
 					},
 					{
 						"de": "jo",
 						"text": "Sí, perfecto. Los papeles los llevo yo.",
-						"hora": "ahir 18:52"
+						"hora": "ayer 18:52"
 					},
 					{
 						"de": "ella",
 						"text": "¡Genial, gracias!",
-						"hora": "ahir 18:53"
+						"hora": "ayer 18:53"
 					}
 				]
 			},
@@ -127,17 +127,17 @@
 					{
 						"de": "ella",
 						"text": "El domingo comemos todos en casa, que haremos arroz.",
-						"hora": "dl. 20:15"
+						"hora": "lun. 20:15"
 					},
 					{
 						"de": "jo",
 						"text": "Allí estaremos. Llevamos el postre.",
-						"hora": "dl. 20:31"
+						"hora": "lun. 20:31"
 					},
 					{
 						"de": "ella",
 						"text": "¡Eso, que sea de chocolate!",
-						"hora": "dl. 20:33"
+						"hora": "lun. 20:33"
 					}
 				]
 			},
@@ -169,7 +169,7 @@
 				"data": "08:32",
 				"remitent": {
 					"nom": "Biblioteca del Barrio",
-					"adreca": "avisos@bibliotequesdelbarri.es"
+					"adreca": "avisos@bibliotecasdelbarrio.es"
 				},
 				"assumpte": "Recordatorio: devolución del libro",
 				"cos": [
@@ -188,10 +188,10 @@
 				"objectiu": false,
 				"carpeta": "entrada",
 				"llegit": true,
-				"data": "ahir",
+				"data": "ayer",
 				"remitent": {
 					"nom": "Banc Sòlid",
-					"adreca": "novetats@bancsolid.es"
+					"adreca": "novedades@bancsolid.es"
 				},
 				"assumpte": "El boletín de este mes",
 				"cos": [
@@ -208,7 +208,7 @@
 						{
 							"enllac": {
 								"text": "bancsolid.es",
-								"url": "https://bancsolid.es/area-clients"
+								"url": "https://bancsolid.es/area-clientes"
 							}
 						}
 					],
@@ -220,7 +220,7 @@
 				"objectiu": false,
 				"carpeta": "entrada",
 				"llegit": true,
-				"data": "ahir",
+				"data": "ayer",
 				"remitent": {
 					"nom": "Marta Puig",
 					"adreca": "marta.puig@ejemplo-trabajo.es"
@@ -242,10 +242,10 @@
 				"objectiu": false,
 				"carpeta": "entrada",
 				"llegit": true,
-				"data": "dl.",
+				"data": "lun.",
 				"remitent": {
 					"nom": "Tienda Verde",
-					"adreca": "comandes@botigaverda.es"
+					"adreca": "pedidos@tiendaverde.es"
 				},
 				"assumpte": "Tu pedido 20418 ya está en camino",
 				"cos": [
@@ -264,10 +264,10 @@
 				"objectiu": false,
 				"carpeta": "entrada",
 				"llegit": true,
-				"data": "dl.",
+				"data": "lun.",
 				"remitent": {
 					"nom": "Ayuntamiento del Barrio",
-					"adreca": "informacio@ajuntamentdelbarri.es"
+					"adreca": "informacion@ayuntamientodelbarrio.es"
 				},
 				"assumpte": "Cambio de horario de la recogida de vidrio",
 				"cos": [
@@ -285,10 +285,10 @@
 				"objectiu": false,
 				"carpeta": "entrada",
 				"llegit": true,
-				"data": "dg.",
+				"data": "dom.",
 				"remitent": {
 					"nom": "El Diari del Barri",
-					"adreca": "butlleti@diaridelbarri.es"
+					"adreca": "boletin@diaridelbarri.es"
 				},
 				"assumpte": "El resumen de la semana",
 				"cos": [
