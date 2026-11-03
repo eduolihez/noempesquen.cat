@@ -53,3 +53,12 @@
 - `/compte/` es crea a mà (README), no automàticament.
 - Desinstal·lar treu el rol i les metes `nep_*`, però els usuaris queden sense rol. L'esborrador de dades personals de WordPress tampoc esborra la fila de l'usuari; per esborrar el compte sencer hi ha `DELETE /compte` o wp-admin.
 - En tancar la sessió o esborrar el compte, el progrés local s'esborra (ordinadors compartits).
+
+## Fase 3C · verificació i recuperació (2026-11-03)
+
+- La verificació de correu **no bloqueja res**: el compte funciona sense verificar i només es mostra un avís amb «Reenvia el correu». Serveix per confirmar que el correu és real i per poder recuperar la contrasenya.
+- Tokens `id.secret` (64 hex): a la BD només el hash (HMAC-SHA256 amb `wp_salt('auth')`) i la caducitat. Verificació 48 h, recuperació 1 h, d'un sol ús.
+- `POST /compte/recupera` respon sempre 200 `{enviat:true}`, existeixi o no el correu, i el token viatja al cos del POST, mai a la URL. Els enllaços porten el token a la query només en arribar; `view.js` el treu amb `history.replaceState` abans de renderitzar i la pàgina envia `Referrer-Policy: no-referrer`.
+- Restablir la contrasenya tanca totes les sessions i **no** inicia sessió: cal entrar amb la nova.
+- D7: la versió del consentiment **no s'incrementa**. El correu ja es tractava per al compte; ara a més s'hi envien missatges (verificació i recuperació). El text de «Quines dades guardem» ho indica.
+- Remitent `no-reply@<domini>` (filtre `nep_correu_remitent`). Perquè no caigui a brossa cal SPF/DKIM/DMARC; es recomana DMARC `p=none` per començar. Prova d'enviament real a producció: la fa Edu.

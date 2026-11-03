@@ -40,6 +40,8 @@ La pantalla de compte (alta, entrada, descàrrega i esborrat de dades) va a `/co
 npm run env:cli -- wp post create --post_type=page --post_name=compte --post_title="El meu compte" --post_status=publish --post_content='<!-- wp:noempesquen/compte /-->'
 ```
 
+La pantalla de compte envia correus (verificació i recuperació de contrasenya) des de `no-reply@<domini>`; es pot canviar amb el filtre `nep_correu_remitent`. Perquè no acabin a la carpeta de brossa, el domini ha de tenir SPF, DKIM i DMARC (per començar, DMARC amb `p=none`).
+
 Aturar: `npm run env:stop` · Esborrar l'entorn: `npm run env:clean`
 
 ## Producció
