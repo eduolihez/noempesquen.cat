@@ -1,0 +1,38 @@
+# noempesquen.cat · plantilla de 301 para el despliegue i18n
+#
+# Qué hace: las URLs catalanas que hoy viven en la raíz pasan a /ca/<slug-catalán>/.
+# Dónde va: en el .htaccess de la raíz de WordPress, ANTES del bloque
+# «# BEGIN WordPress» (WordPress reescribe ese bloque; lo de fuera no se toca).
+# Cuándo: SOLO después de que la migración de páginas haya creado /ca/… y
+# hecho flush de rewrites (ver docs/despliegue-i18n.md). Si se inserta antes,
+# las URLs catalanas darían 404.
+# Rollback: borrar este bloque entero (de «BEGIN nep-i18n» a «END nep-i18n»).
+#
+# Qué NO toca, por construcción: cada regla casa con un slug catalán exacto
+# en la raíz, así que /, /simulador/, /wp-json, /wp-admin, /admin, /wp-login.php,
+# /wp-content, /wp-includes, assets y todo lo que cuelga de /ca/ pasan de largo.
+# La query string se conserva (p. ej. /compte/?verifica=… → /ca/compte/?verifica=…).
+#
+# Mapa catalán actual → catalán nuevo (301) · español nuevo (sin redirección)
+#   /com-funciona/       → /ca/com-funciona/       · /como-funciona/
+#   /missions/           → /ca/missions/           · /misiones/
+#   /compte/             → /ca/compte/             · /cuenta/
+#   /contacte/           → /ca/contacte/           · /contacto/
+#   /sobre-el-projecte/  → /ca/sobre-el-projecte/  · /sobre-el-proyecto/
+#   /  y  /simulador/    → se quedan (ahora en español); no se redirigen.
+
+# BEGIN nep-i18n
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Salvaguarda: nada que ya sea /ca/, ni rutas técnicas, entra en las reglas.
+RewriteRule ^(ca|simulador|wp-json|wp-admin|admin|wp-content|wp-includes)(/|$) - [S=5]
+
+# Con y sin barra final. Se usa R=301 (permanente), L para cortar.
+RewriteRule ^com-funciona/?$      /ca/com-funciona/      [R=301,L]
+RewriteRule ^missions/?$          /ca/missions/          [R=301,L]
+RewriteRule ^compte/?$            /ca/compte/            [R=301,L]
+RewriteRule ^contacte/?$          /ca/contacte/          [R=301,L]
+RewriteRule ^sobre-el-projecte/?$ /ca/sobre-el-projecte/ [R=301,L]
+</IfModule>
+# END nep-i18n
