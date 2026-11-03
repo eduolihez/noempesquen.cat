@@ -11,7 +11,7 @@ import { esborraProgres } from '../simulador/nucli/progres';
 import { T } from './textos';
 import { Acces } from './Acces';
 import { Panell } from './Panell';
-import { FormRestableix } from './Recupera';
+import { FormRecupera, FormRestableix } from './Recupera';
 
 /**
  * Pantalla de compte: accés (alta / entrada) o panell del compte.
@@ -85,7 +85,7 @@ export function Compte( { config } ) {
 			focusPendent.current.current?.focus();
 			focusPendent.current = null;
 		}
-	}, [ connectat, tokenRestableix ] );
+	}, [ connectat, tokenRestableix, obreRecupera ] );
 
 	const haEntrat = useCallback( ( dades, missatge ) => {
 		posaMarcaSessio();
@@ -137,26 +137,44 @@ export function Compte( { config } ) {
 					refTitol={ titolAcces }
 				/>
 			) }
-			{ ! carregant && ! tokenRestableix && ! connectat && (
-				<Acces
+			{ ! carregant && ! tokenRestableix && obreRecupera && (
+				<FormRecupera
 					client={ client }
-					onEntra={ haEntrat }
 					refTitol={ titolAcces }
-					pestanyaInicial={ pestanyaEntra ? 'entra' : 'crea' }
-					recuperaInicial={ obreRecupera }
+					onTorna={ () => {
+						focusPendent.current = connectat
+							? titolPanell
+							: titolAcces;
+						setPestanyaEntra( true );
+						setObreRecupera( false );
+					} }
 				/>
 			) }
-			{ ! carregant && ! tokenRestableix && connectat && (
-				<Panell
-					client={ client }
-					progres={ progres }
-					verificat={ verificat }
-					urlSimulador={ config.urlSimulador }
-					onSurt={ haSortit }
-					onAvis={ setAvis }
-					refTitol={ titolPanell }
-				/>
-			) }
+			{ ! carregant &&
+				! tokenRestableix &&
+				! obreRecupera &&
+				! connectat && (
+					<Acces
+						client={ client }
+						onEntra={ haEntrat }
+						refTitol={ titolAcces }
+						pestanyaInicial={ pestanyaEntra ? 'entra' : 'crea' }
+					/>
+				) }
+			{ ! carregant &&
+				! tokenRestableix &&
+				! obreRecupera &&
+				connectat && (
+					<Panell
+						client={ client }
+						progres={ progres }
+						verificat={ verificat }
+						urlSimulador={ config.urlSimulador }
+						onSurt={ haSortit }
+						onAvis={ setAvis }
+						refTitol={ titolPanell }
+					/>
+				) }
 		</div>
 	);
 }

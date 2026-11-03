@@ -20,7 +20,7 @@ const { defineConfig, devices } = require( '@playwright/test' );
  *   escriptori, en sèrie i amb un sol usuari de prova.
  */
 const SPEC_PANELL = /(panel-missions|estadistiques)\.spec\.js$/;
-const SPEC_COMPTE = /compte\.spec\.js$/;
+const SPEC_COMPTE = /compte(-recuperacio)?\.spec\.js$/;
 const SPEC_COMPTE_SIMULADOR = /compte-simulador\.spec\.js$/;
 const SPECS_HORITZONTAL =
 	/(paquet|canviat|farcit|so|selector|factura|banc|pc-mobil)\.spec\.js$/;

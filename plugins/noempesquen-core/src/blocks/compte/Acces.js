@@ -22,17 +22,15 @@ const llargada = ( text ) => Array.from( text ).length;
  * @param {() => void} props.onEntra         Crida amb `(dades, missatge)` en entrar.
  * @param {Object}     props.refTitol        Ref del títol.
  * @param {string=}    props.pestanyaInicial Pestanya oberta (`crea` o `entra`).
- * @param {boolean=}   props.recuperaInicial Obre «He oblidat la contrasenya».
  */
 export function Acces( {
 	client,
 	onEntra,
 	refTitol,
 	pestanyaInicial = 'crea',
-	recuperaInicial = false,
 } ) {
 	const [ activa, setActiva ] = useState( pestanyaInicial );
-	const [ recupera, setRecupera ] = useState( recuperaInicial );
+	const [ recupera, setRecupera ] = useState( false );
 	const refs = { crea: useRef( null ), entra: useRef( null ) };
 	const refBotoOblidat = useRef( null );
 	const tornat = useRef( false );

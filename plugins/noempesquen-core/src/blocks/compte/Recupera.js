@@ -1,4 +1,4 @@
-import { useRef, useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import { T } from './textos';
 import { Camp } from './Camp';
 
@@ -28,6 +28,11 @@ export function FormRecupera( { client, onTorna, refTitol } ) {
 	const [ enviat, setEnviat ] = useState( false );
 	const [ enviant, setEnviant ] = useState( false );
 	const camp = useRef( null );
+
+	// En obrir la vista, el focus va al títol (lectors de pantalla i teclat).
+	useEffect( () => {
+		refTitol?.current?.focus();
+	}, [ refTitol ] );
 
 	const envia = async ( event ) => {
 		event.preventDefault();
@@ -128,6 +133,11 @@ export function FormRestableix( { client, token, onFet, onDemana, refTitol } ) {
 	const [ errorServidor, setErrorServidor ] = useState( '' );
 	const [ enviant, setEnviant ] = useState( false );
 	const camp = useRef( null );
+
+	// En obrir la vista, el focus va al títol (lectors de pantalla i teclat).
+	useEffect( () => {
+		refTitol?.current?.focus();
+	}, [ refTitol ] );
 
 	const envia = async ( event ) => {
 		event.preventDefault();
