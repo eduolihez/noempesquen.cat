@@ -24,7 +24,11 @@ import { fileURLToPath } from 'node:url';
 const ARREL = join( dirname( fileURLToPath( import.meta.url ) ), '..' );
 const IDIOMES = join( ARREL, 'plugins/noempesquen-core/languages' );
 const DOMINI = 'noempesquen';
-const HANDLE = 'noempesquen-simulador-view-script';
+const HANDLES = [
+	'noempesquen-simulador-view-script',
+	'noempesquen-compte-view-script',
+	'noempesquen-contacte-view-script',
+];
 const LOCALES = [ 'es_ES' ];
 
 /**
@@ -161,11 +165,16 @@ for ( const locale of LOCALES ) {
 		domain: 'messages',
 		locale_data: { messages: missatges },
 	};
-	const desti = join( IDIOMES, `${ DOMINI }-${ locale }-${ HANDLE }.json` );
-	writeFileSync( desti, JSON.stringify( json ) + '\n', 'utf8' );
-	console.log(
-		`${ desti }: ${ Object.keys( missatges ).length - 1 } cadenes.`
-	);
+	for ( const handle of HANDLES ) {
+		const desti = join(
+			IDIOMES,
+			`${ DOMINI }-${ locale }-${ handle }.json`
+		);
+		writeFileSync( desti, JSON.stringify( json ) + '\n', 'utf8' );
+		console.log(
+			`${ desti }: ${ Object.keys( missatges ).length - 1 } cadenes.`
+		);
+	}
 	generats++;
 }
 if ( ! generats ) {

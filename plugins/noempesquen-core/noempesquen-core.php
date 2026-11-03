@@ -48,9 +48,9 @@ add_action(
 				continue;
 			}
 			$tipus = register_block_type( $block_dir );
-			// Traduccions JS del simulador: un sol handle (view script), JSON a languages/
+			// Traduccions JS dels tres blocs: un handle (view script) per bloc, mateix contingut, JSON a languages/
 			// generat per `npm run i18n:json` (noempesquen-<locale>-<handle>.json).
-			if ( 'simulador' === $bloc && $tipus && ! empty( $tipus->view_script_handles ) ) {
+			if ( $tipus && ! empty( $tipus->view_script_handles ) ) {
 				wp_set_script_translations( $tipus->view_script_handles[0], 'noempesquen', NEP_PATH . 'languages' );
 			}
 		}

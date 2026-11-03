@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-03T14:22:31+00:00\n"
+"POT-Creation-Date: 2026-11-03T14:45:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: noempesquen\n"
@@ -186,40 +186,40 @@ msgstr ""
 msgid "Jugador"
 msgstr ""
 
-#: includes/comptes-correu.php:57
-#: includes/comptes-correu.php:79
+#: includes/comptes-correu.php:71
+#: includes/comptes-correu.php:108
 msgid "Hola!"
 msgstr ""
 
-#: includes/comptes-correu.php:58
+#: includes/comptes-correu.php:74
 msgid "Confirma el teu correu per acabar de crear el compte a No em pesquen:"
 msgstr ""
 
-#: includes/comptes-correu.php:60
+#: includes/comptes-correu.php:80
 msgid "L'enllaç caduca d'aquí a 48 hores i només es pot fer servir un cop."
 msgstr ""
 
-#: includes/comptes-correu.php:61
+#: includes/comptes-correu.php:83
 msgid "Si no has creat tu el compte, ignora aquest missatge: no passarà res."
 msgstr ""
 
-#: includes/comptes-correu.php:62
+#: includes/comptes-correu.php:85
 msgid "Confirma el teu correu a No em pesquen"
 msgstr ""
 
-#: includes/comptes-correu.php:80
+#: includes/comptes-correu.php:111
 msgid "Has demanat restablir la contrasenya del teu compte a No em pesquen. Tria'n una de nova amb aquest enllaç:"
 msgstr ""
 
-#: includes/comptes-correu.php:82
+#: includes/comptes-correu.php:117
 msgid "L'enllaç caduca d'aquí a 1 hora i només es pot fer servir un cop."
 msgstr ""
 
-#: includes/comptes-correu.php:83
+#: includes/comptes-correu.php:120
 msgid "Si no ho has demanat tu, ignora aquest missatge: no passarà res."
 msgstr ""
 
-#: includes/comptes-correu.php:84
+#: includes/comptes-correu.php:122
 msgid "Restableix la contrasenya a No em pesquen"
 msgstr ""
 
@@ -230,6 +230,8 @@ msgid "Compte del simulador"
 msgstr ""
 
 #: includes/comptes-privacitat.php:75
+#: src/blocks/compte/textos.js:12
+#: src/blocks/contacte/textos.js:11
 #: src/blocks/simulador/webs/llum-clara/AreaClient.js:162
 msgid "Correu electrònic"
 msgstr ""
@@ -263,8 +265,8 @@ msgid "Format de petició no admès."
 msgstr ""
 
 #: includes/comptes.php:409
-#: includes/comptes.php:592
-#: includes/comptes.php:994
+#: includes/comptes.php:594
+#: includes/comptes.php:996
 msgid "Correu o contrasenya incorrectes."
 msgstr ""
 
@@ -272,33 +274,88 @@ msgstr ""
 msgid "No s'ha pogut crear el compte. Revisa les dades."
 msgstr ""
 
-#: includes/comptes.php:644
-#: includes/comptes.php:787
+#: includes/comptes.php:646
+#: includes/comptes.php:789
 msgid "L'enllaç no és vàlid o ha caducat."
 msgstr ""
 
-#: includes/comptes.php:804
+#: includes/comptes.php:806
+#: src/blocks/compte/textos.js:59
 msgid "La contrasenya ha de tenir entre 10 i 128 caràcters."
 msgstr ""
 
-#: includes/comptes.php:865
+#: includes/comptes.php:867
 msgid "Les dades són massa grans."
 msgstr ""
 
-#: includes/comptes.php:903
+#: includes/comptes.php:905
 msgid "No s'ha pogut esborrar el compte. Revisa la contrasenya."
 msgstr ""
 
-#: includes/comptes.php:935
+#: includes/comptes.php:937
 msgid "No s'ha pogut esborrar el compte. Torna-ho a provar més tard."
 msgstr ""
 
-#: includes/comptes.php:957
+#: includes/comptes.php:959
 msgid "No tens permís per fer això."
 msgstr ""
 
-#: includes/comptes.php:1027
+#: includes/comptes.php:1029
 msgid "No es pot recuperar la contrasenya d'aquest compte des d'aquí."
+msgstr ""
+
+#: includes/contacte-nucli.php:103
+#: src/blocks/contacte/textos.js:50
+msgid "Escriu el teu nom."
+msgstr ""
+
+#: includes/contacte-nucli.php:105
+#: src/blocks/contacte/textos.js:51
+msgid "El nom no pot passar de 80 caràcters."
+msgstr ""
+
+#: includes/contacte-nucli.php:109
+#: src/blocks/contacte/textos.js:52
+msgid "Escriu el teu correu electrònic."
+msgstr ""
+
+#: includes/contacte-nucli.php:111
+#: includes/contacte.php:134
+#: src/blocks/contacte/textos.js:53
+msgid "Escriu un correu vàlid, per exemple nom@exemple.cat."
+msgstr ""
+
+#: includes/contacte-nucli.php:115
+#: src/blocks/contacte/textos.js:57
+msgid "Tria un assumpte de la llista."
+msgstr ""
+
+#: includes/contacte-nucli.php:120
+#: src/blocks/contacte/textos.js:58
+msgid "Escriu el teu missatge."
+msgstr ""
+
+#: includes/contacte-nucli.php:122
+#: src/blocks/contacte/textos.js:59
+msgid "El missatge ha de tenir almenys 10 caràcters."
+msgstr ""
+
+#: includes/contacte-nucli.php:124
+#: src/blocks/contacte/textos.js:63
+msgid "El missatge no pot passar de 2000 caràcters."
+msgstr ""
+
+#: includes/contacte.php:104
+msgid "El missatge és massa llarg."
+msgstr ""
+
+#: includes/contacte.php:159
+#: src/blocks/contacte/textos.js:30
+msgid "Has enviat massa missatges. Torna-ho a provar una mica més tard."
+msgstr ""
+
+#: includes/contacte.php:187
+msgid "No s'ha pogut enviar el missatge. Torna-ho a provar d'aquí una estona."
 msgstr ""
 
 #: includes/cpt-missio.php:16
@@ -480,11 +537,11 @@ msgstr ""
 msgid "No s'ha trobat la missió."
 msgstr ""
 
-#: src/blocks/compte/render.php:22
+#: src/blocks/compte/render.php:23
 msgid "Cal JavaScript per crear un compte o entrar-hi."
 msgstr ""
 
-#: src/blocks/contacte/render.php:21
+#: src/blocks/contacte/render.php:22
 msgid "Cal JavaScript per enviar el formulari de contacte."
 msgstr ""
 
@@ -496,8 +553,342 @@ msgstr ""
 msgid "Pantalla de compte No em pesquen (es mostra a la pàgina publicada)."
 msgstr ""
 
+#: src/blocks/compte/textos.js:8
+msgid "Carregant el teu compte…"
+msgstr ""
+
+#: src/blocks/compte/textos.js:9
+msgid "Accés al compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:10
+msgid "Crea un compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:11
+#: src/blocks/compte/textos.js:56
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:180
+msgid "Entra"
+msgstr ""
+
+#: src/blocks/compte/textos.js:13
+#: src/blocks/simulador/webs/llum-clara/AreaClient.js:171
+msgid "Contrasenya"
+msgstr ""
+
+#: src/blocks/compte/textos.js:14
+msgid "Entre 10 i 128 caràcters."
+msgstr ""
+
+#: src/blocks/compte/textos.js:15
+msgid "Si perds la contrasenya, només la podràs recuperar si has verificat el correu. T'enviarem un missatge per fer-ho."
+msgstr ""
+
+#: src/blocks/compte/textos.js:19
+msgid "Tinc 14 anys o més"
+msgstr ""
+
+#: src/blocks/compte/textos.js:20
+msgid "Accepto que es desin el meu correu i el meu progrés per poder recuperar-lo en un altre dispositiu"
+msgstr ""
+
+#: src/blocks/compte/textos.js:24
+msgid "Quines dades es guarden"
+msgstr ""
+
+#: src/blocks/compte/textos.js:26
+msgid "Només el teu correu electrònic. L'usem per entrar i per enviar-te els missatges de verificació i de recuperació de la contrasenya, res més."
+msgstr ""
+
+#: src/blocks/compte/textos.js:30
+msgid "La contrasenya, guardada xifrada (amb hash): ningú no la pot llegir."
+msgstr ""
+
+#: src/blocks/compte/textos.js:34
+msgid "El progrés de les missions (les estrelles de cada missió)."
+msgstr ""
+
+#: src/blocks/compte/textos.js:38
+msgid "La data i la versió del consentiment que acceptes ara."
+msgstr ""
+
+#: src/blocks/compte/textos.js:42
+msgid "Res del que escriguis als formularis falsos del simulador: no surt mai del teu navegador."
+msgstr ""
+
+#: src/blocks/compte/textos.js:46
+msgid "Pots descarregar-ho i esborrar-ho tot des d'aquesta pàgina."
+msgstr ""
+
+#: src/blocks/compte/textos.js:50
+msgid "Les estadístiques anònimes de les partides són a part i no porten cap dada teva."
+msgstr ""
+
+#: src/blocks/compte/textos.js:55
+msgid "Crea el compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:57
+msgid "Enviant…"
+msgstr ""
+
+#: src/blocks/compte/textos.js:58
+msgid "Escriu un correu electrònic vàlid."
+msgstr ""
+
+#: src/blocks/compte/textos.js:63
+msgid "Escriu la contrasenya."
+msgstr ""
+
+#: src/blocks/compte/textos.js:64
+msgid "Cal que tinguis 14 anys o més per crear un compte."
+msgstr ""
+
+#: src/blocks/compte/textos.js:68
+msgid "Cal que acceptis que es desin les dades per crear un compte."
+msgstr ""
+
+#: src/blocks/compte/textos.js:72
+msgid "Revisa els camps marcats."
+msgstr ""
+
+#: src/blocks/compte/textos.js:73
+msgid "Compte creat. Ja tens la sessió iniciada."
+msgstr ""
+
+#: src/blocks/compte/textos.js:74
+msgid "Has entrat al teu compte."
+msgstr ""
+
+#: src/blocks/compte/textos.js:75
+msgid "El teu compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:76
+msgid "Progrés de les missions"
+msgstr ""
+
+#: src/blocks/compte/textos.js:77
+msgid "Encara no hi ha cap missió desada. Juga al simulador amb la sessió iniciada."
+msgstr ""
+
+#. translators: %d: nombre d'estrelles (de 3).
+#: src/blocks/compte/textos.js:84
+#, js-format
+msgid "%d estrella de 3"
+msgid_plural "%d estrelles de 3"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/blocks/compte/textos.js:87
+msgid "Ves al simulador"
+msgstr ""
+
+#: src/blocks/compte/textos.js:88
+msgid "Descarrega les meves dades"
+msgstr ""
+
+#: src/blocks/compte/textos.js:89
+msgid "Dades descarregades."
+msgstr ""
+
+#: src/blocks/compte/textos.js:90
+msgid "Tanca la sessió"
+msgstr ""
+
+#: src/blocks/compte/textos.js:91
+msgid "Has tancat la sessió."
+msgstr ""
+
+#: src/blocks/compte/textos.js:92
+msgid "Esborra el compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:93
+msgid "Esborrar el compte"
+msgstr ""
+
+#: src/blocks/compte/textos.js:94
+msgid "S'esborraran el teu correu, la contrasenya i el progrés. No es pot desfer."
+msgstr ""
+
+#: src/blocks/compte/textos.js:98
+msgid "Esborra el compte definitivament"
+msgstr ""
+
+#: src/blocks/compte/textos.js:99
+#: src/blocks/simulador/apps/missatges/Missatges.js:93
+#: src/blocks/simulador/webs/comu/DescarregaFicticia.js:106
+#: src/blocks/simulador/webs/posta/Denuncia.js:76
+msgid "Cancel·la"
+msgstr ""
+
+#: src/blocks/compte/textos.js:100
+msgid "El compte s'ha esborrat."
+msgstr ""
+
+#: src/blocks/compte/textos.js:101
+msgid "He oblidat la contrasenya"
+msgstr ""
+
+#: src/blocks/compte/textos.js:102
+msgid "Recupera la contrasenya"
+msgstr ""
+
+#: src/blocks/compte/textos.js:103
+msgid "Escriu el correu del teu compte. Si és d'un compte amb el correu verificat, t'hi enviarem un enllaç per triar una contrasenya nova."
+msgstr ""
+
+#: src/blocks/compte/textos.js:107
+msgid "Envia'm l'enllaç"
+msgstr ""
+
+#: src/blocks/compte/textos.js:108
+msgid "Si hi ha un compte amb aquest correu verificat, t'hem enviat un enllaç. Mira també la carpeta de correu brossa. L'enllaç caduca d'aquí a 1 hora."
+msgstr ""
+
+#: src/blocks/compte/textos.js:112
+msgid "Torna a l'entrada"
+msgstr ""
+
+#: src/blocks/compte/textos.js:113
+msgid "Tria una contrasenya nova"
+msgstr ""
+
+#: src/blocks/compte/textos.js:114
+msgid "Contrasenya nova"
+msgstr ""
+
+#: src/blocks/compte/textos.js:115
+msgid "Desa la contrasenya nova"
+msgstr ""
+
+#: src/blocks/compte/textos.js:116
+msgid "Contrasenya canviada. Ja pots entrar amb la nova."
+msgstr ""
+
+#: src/blocks/compte/textos.js:120
+msgid "L'enllaç no és vàlid o ha caducat. Demana'n un de nou."
+msgstr ""
+
+#: src/blocks/compte/textos.js:124
+msgid "Correu verificat. Gràcies!"
+msgstr ""
+
+#: src/blocks/compte/textos.js:125
+msgid "Verifica el correu"
+msgstr ""
+
+#: src/blocks/compte/textos.js:126
+msgid "T'hem enviat un enllaç per confirmar el correu. Sense verificar, no podràs recuperar la contrasenya si la perds. El compte funciona igualment."
+msgstr ""
+
+#: src/blocks/compte/textos.js:130
+msgid "Reenvia el correu"
+msgstr ""
+
+#: src/blocks/compte/textos.js:131
+msgid "T'hem tornat a enviar el correu. Mira també la carpeta de correu brossa."
+msgstr ""
+
+#: src/blocks/compte/textos.js:135
+msgid "No s'ha pogut enviar el correu. Torna-ho a provar més tard."
+msgstr ""
+
 #: src/blocks/contacte/index.js:12
 msgid "Formulari de contacte (es mostra a la pàgina publicada)."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:8
+msgid "Escriu-nos"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:9
+msgid "Tots els camps són obligatoris."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:10
+msgid "Nom"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:12
+msgid "Només el farem servir per respondre’t."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:13
+msgid "Assumpte"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:14
+msgid "Tria un assumpte"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:15
+#: src/blocks/simulador/apps/parla/Conversa.js:331
+#: src/blocks/simulador/apps/revenda/Revenda.js:326
+msgid "Missatge"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:16
+msgid "Entre 10 i 2000 caràcters."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:17
+msgid "He llegit l’"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:18
+msgid "avís de privacitat"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:19
+msgid "i accepto que s’usin aquestes dades per respondre’m"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:23
+msgid "Envia el missatge"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:24
+msgid "S’està enviant…"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:25
+msgid "Revisa el formulari"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:26
+msgid "No s’ha pogut enviar el missatge. Torna-ho a provar d’aquí una estona."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:34
+#: src/blocks/simulador/apps/revenda/Revenda.js:290
+#: src/blocks/simulador/apps/revenda/Revenda.js:482
+msgid "Missatge enviat"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:35
+msgid "Gràcies! Hem rebut el teu missatge i et respondrem tan aviat com puguem."
+msgstr ""
+
+#: src/blocks/contacte/textos.js:41
+msgid "Dubte"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:42
+msgid "Suggeriment"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:45
+msgid "He trobat un error"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:47
+msgid "Altres"
+msgstr ""
+
+#: src/blocks/contacte/textos.js:67
+msgid "Cal que acceptis l’avís de privacitat per poder enviar el missatge."
 msgstr ""
 
 #: src/blocks/simulador/apps/ajustos/Ajustos.js:22
@@ -996,12 +1387,6 @@ msgstr ""
 msgid "Esborra"
 msgstr ""
 
-#: src/blocks/simulador/apps/missatges/Missatges.js:93
-#: src/blocks/simulador/webs/comu/DescarregaFicticia.js:106
-#: src/blocks/simulador/webs/posta/Denuncia.js:76
-msgid "Cancel·la"
-msgstr ""
-
 #. translators: %s: nom o número del contacte
 #: src/blocks/simulador/apps/missatges/Missatges.js:290
 #, js-format
@@ -1293,11 +1678,6 @@ msgstr ""
 msgid "Missatges nous"
 msgstr ""
 
-#: src/blocks/simulador/apps/parla/Conversa.js:331
-#: src/blocks/simulador/apps/revenda/Revenda.js:326
-msgid "Missatge"
-msgstr ""
-
 #: src/blocks/simulador/apps/parla/LlistaXats.js:56
 #: src/blocks/simulador/apps/parla/useParla.js:265
 msgid "escrivint…"
@@ -1456,11 +1836,6 @@ msgstr ""
 
 #: src/blocks/simulador/apps/revenda/Revenda.js:218
 msgid "Aquest usuari no és als teus contactes de Revenda. Vigila amb les dades que comparteixes."
-msgstr ""
-
-#: src/blocks/simulador/apps/revenda/Revenda.js:290
-#: src/blocks/simulador/apps/revenda/Revenda.js:482
-msgid "Missatge enviat"
 msgstr ""
 
 #: src/blocks/simulador/apps/revenda/Revenda.js:307
@@ -2572,14 +2947,6 @@ msgstr ""
 
 #: src/blocks/simulador/webs/llum-clara/AreaClient.js:155
 msgid "Consulta les factures, els consums i el teu contracte."
-msgstr ""
-
-#: src/blocks/simulador/webs/llum-clara/AreaClient.js:171
-msgid "Contrasenya"
-msgstr ""
-
-#: src/blocks/simulador/webs/llum-clara/AreaClient.js:180
-msgid "Entra"
 msgstr ""
 
 #: src/blocks/simulador/webs/llum-clara/Falsa.js:31
