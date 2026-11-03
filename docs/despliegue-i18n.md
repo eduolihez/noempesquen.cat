@@ -6,7 +6,7 @@ Ficheros de apoyo: `docs/i18n-redireccions.htaccess` (301) y `scripts/comprova-i
 
 ## Mapa de URLs
 
-Slugs catalanes actuales deducidos de las plantillas `themes/noempesquen/templates/page-*.html` y de los enlaces del tema. `/simulador/` y `/compte/` se crean a mano (README).
+Slugs catalanes actuales deducidos de las plantillas `themes/noempesquen/templates/page-*.html` y de los enlaces del tema. `/simulador/`, `/compte/` y las páginas `/ca/…` las crea la migración de páginas (ver abajo); no hay que crearlas a mano ni con WP-CLI.
 
 | Catalán actual (raíz) | Catalán nuevo (301) | Español nuevo |
 |---|---|---|
@@ -94,6 +94,9 @@ Tabla de URLs esperadas (el script la usa tal cual):
 - Insertar los 301 antes de que existan las páginas `/ca/…` deja 404 en URLs indexadas: respeta el orden.
 - `/compte/?verifica=…` y `?restableix=…` llevan token en la query: el 301 la conserva, y `view.js` la limpia al llegar a `/ca/compte/` (ver `docs/decisions.md`). Los correos ya enviados siguen funcionando por el 301.
 - Un `.htaccess` roto da 500 en todo el sitio: tener a mano el acceso por FTP/panel para restaurar la copia.
+- Las reglas usan `[S=5]` para saltar el bloque de salvaguarda: si se añade una regla antes de ese bloque, recalcular el número.
+- Slug CA de `/simulador/`: `/ca/simulador/` es la página nueva. TODO: confirmar con Edu antes de desplegar.
+- TODO: confirmar que `/ca/compte/` existe antes de insertar los 301 (la migración la crea; comprobar en wp-admin > Páginas).
 
 ## SEO (T10)
 

@@ -28,21 +28,30 @@ npm run env:start      # http://localhost:8888  (admin / password)
 npm run start          # recompila en desar
 ```
 
-Les proves e2e necessiten una pàgina `/simulador/` amb el bloc. Crea-la un cop, amb l'entorn en marxa:
+Las páginas `/simulador/`, `/compte/` y las de `/ca/` las crea sola la migración de páginas al activar el plugin o en la primera carga tras subir el zip. No hace falta crearlas a mano. Si `/simulador/` da 404, ve a Ajustes > Enlaces permanentes y guarda sin cambiar nada. Detalle en `docs/despliegue-i18n.md`.
 
-```bash
-npm run env:cli -- wp post create --post_type=page --post_title=Simulador --post_name=simulador --post_status=publish --post_content='<!-- wp:noempesquen/simulador {"align":"wide"} /-->'
-```
-
-La pantalla de compte (alta, entrada, descàrrega i esborrat de dades) va a `/compte/`; el jugador hi arriba també si intenta obrir `/wp-admin/`. Crea-la igual:
-
-```bash
-npm run env:cli -- wp post create --post_type=page --post_name=compte --post_title="El meu compte" --post_status=publish --post_content='<!-- wp:noempesquen/compte /-->'
-```
+La pantalla de compte (alta, entrada, descàrrega i esborrat de dades) va a `/compte/` (`/ca/compte/` en catalán); el jugador hi arriba també si intenta obrir `/wp-admin/`.
 
 La pantalla de compte envia correus (verificació i recuperació de contrasenya) des de `no-reply@<domini>`; es pot canviar amb el filtre `nep_correu_remitent`. Perquè no acabin a la carpeta de brossa, el domini ha de tenir SPF, DKIM i DMARC (per començar, DMARC amb `p=none`).
 
 Aturar: `npm run env:stop` · Esborrar l'entorn: `npm run env:clean`
+
+## Idiomas (ES en raíz, CA en `/ca/`)
+
+El idioma sale de la URL. Español en `/`, catalán en `/ca/`. Guía completa: `docs/i18n-tema.md` (tema) y `docs/despliegue-i18n.md` (despliegue, SEO, rollback). Formato de las misiones por idioma: `docs/format-missions.md`.
+
+| Comando | Qué hace |
+|---|---|
+| `npm run i18n:pot` | Regenera `languages/noempesquen.pot` desde PHP y JS (requiere `env:start`) |
+| `npm run i18n:parts -- <area>` | Crea el esqueleto `languages/parts/es-<area>.po` (áreas: `apps`, `webs`, `resto`, `altres`) |
+| `npm run i18n:merge` | Une los `parts/*.po` en `languages/noempesquen-es_ES.po` |
+| `npm run i18n:json` | Genera los JSON de traducción de los scripts (`wp.i18n`) |
+| `npm run i18n:mo` | Compila `languages/noempesquen-es_ES.mo` (sin `msgfmt`) |
+| `npm run missions:valida` | Comprueba que cada misión `ca/` tiene pareja `es/` con la misma lógica |
+| `npm run test:e2e:es` | Playwright con `NEP_LANG=es` |
+| `npm run test:e2e:ca` | Playwright con `NEP_LANG=ca` |
+
+Orden tras cambiar textos en español: `i18n:pot` → `i18n:merge` → `i18n:json` → `i18n:mo`. Commitea los `.po`, `.json` y `.mo`.
 
 ## Producció
 

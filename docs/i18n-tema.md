@@ -33,4 +33,8 @@ Descartado: el filtro `page_template_hierarchy` (menos visible en el editor de s
 - El texto visible está en el idioma de destino («Català» / «Castellano»), con `lang` y `hreflang`.
 - El `aria-label` va en el `nav` y no en el enlace, para cumplir WCAG 2.5.3 (la etiqueta tiene que coincidir con el texto visible).
 - Objetivo de 44 px, foco visible con el `:focus-visible` global y sin JS.
-- Los `<link hreflang>` del `<head>` son T10.
+- Los `<link hreflang>` del `<head>` los pone el plugin (ver `docs/despliegue-i18n.md`, sección SEO).
+
+## Caché de patterns
+- Los patterns se cachean. La migración llama a `delete_pattern_cache()` y el tema sube a `Version: 0.2.0`.
+- Si cambias un pattern sin subir la versión del tema, borra la caché (`delete_pattern_cache()` o subir versión) o el cambio no se verá.

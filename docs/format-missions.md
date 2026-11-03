@@ -235,7 +235,7 @@ Cada missió inclosa existeix en dos idiomes, amb el mateix nom de fitxer, el ma
 
 - `plugins/noempesquen-core/missions/ca/` i `missions/es/`: les 12 missions i `mon.json` de cada idioma.
 - `missions/plantilla-missio.json` i `missions/test-fixtures/` es queden a l'arrel (no són missions jugables).
-- `missions/es/PENDENT.md` llista els fitxers `es` que encara són còpia provisional del català.
+- TODO: `missions/es/PENDENT.md` (lista de ficheros `es` provisionales) no existe en el repo. Hasta que exista o se decida otra cosa, no se valida por código.
 
 El bloc tria el conjunt pel `config.lang` del simulador (`nucli/conjunt-missions.js`, `triaConjunt`). Si l'idioma no existeix, fa servir `es`. La llista remota es demana a `/noempesquen/v1/missions?lang=<idioma>`.
 

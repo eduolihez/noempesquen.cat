@@ -32,9 +32,32 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 
 ## Cómo retomar
 
-1. `npm install`, `npm run build`, `npm run env:start`. Si `/simulador/` da 404, crea la página (comando en el README).
+1. `npm install`, `npm run build`, `npm run env:start`. Si `/simulador/` da 404, la migración de páginas debería haberla creado (ver `docs/despliegue-i18n.md`); si no, guarda los enlaces permanentes en wp-admin.
 2. Para un corte nuevo, el flujo que se ha seguido es: plan en `docs/superpowers/plans/AAAA-MM-DD-<corte>.md` (skill `superpowers:writing-plans`) → aprobación del usuario → rama `feat/...` → ejecución con subagentes y revisión por tarea (skill `superpowers:subagent-driven-development`) → revisión final de rama → merge a `master` cuando el usuario lo confirme.
 3. El usuario quiere: máximo realismo, marcas inventadas, pantalla completa, sensación de libertad (apps y contenido de relleno que funcionan), público general. Las decisiones de la misión pueden tomarse dentro del mundo (denunciar, borrar, bloquear...) o en el chat con la guía.
+
+## Internacionalización ES (raíz) y CA (`/ca/`) · rama `feat/i18n`
+
+Estado a 2026-11-03. Sin mergear a `master`.
+
+**Hecho**
+
+- Idioma por URL, `html lang`, hreflang/canonical/`og:locale:alternate` y sitemaps por idioma (T10).
+- Catálogo ES: 873 cadenas (`noempesquen-es_ES.po`, `.mo` y JSON por script). Partes por área en `languages/parts/`.
+- Misiones en `missions/es/` y `missions/ca/` (12 cada una + `mon.json`), validador `npm run missions:valida`.
+- Tema: 8 patterns con textos ES/CA, plantillas por slug, selector de idioma (`docs/i18n-tema.md`).
+- Migración de páginas idempotente al activar o en `init` (`docs/despliegue-i18n.md`).
+- Tests: unit y PHP en verde en su momento; Playwright ES de páginas y recorrido de escritorio en verde; suite CA lanzada en T11.
+
+**Queda**
+
+- Revisión humana de las traducciones (Edu). Pendientes concretos: estilo del estafador en `remei-02` (sin ¿ ni tildes), botón de `llissa-04` que pasa de 24 a 34 caracteres, «Brúixola» sin traducir, correo de contacto al admin en catalán (interno), `/admin/` sin selector de idioma.
+- Recorrido móvil en ES: `tests/e2e/es/recorregut.spec.js:195` está en `test.fixme`. Posible bug real: en ES no aparece el botón «Parla» en el dock. Investigar.
+- Decisión de Edu: enviar `/wp-sitemap.xml` a Search Console (el `/sitemap.xml` de TSF desaparece).
+- Decisión de Edu: nombre del selector («Castellano» o «Español»).
+- 301 sin verificar en wp-env (no hay `.htaccess` en local). Comprobar en producción con el orden de `docs/despliegue-i18n.md`.
+- Despliegue: zip → migración → smoke sin 301 → 301 → purga Varnish → smoke completo.
+- Pendiente de código: `PENDENT.md` de `missions/es/` no existe en el repo (TODO); bundle +~100 KB (valorar `import()` por idioma); aviso de idioma del simulador siempre en catalán; `Vary: X-Nep-Lang` ya está en las respuestas REST.
 
 ## Pendientes conocidos
 
