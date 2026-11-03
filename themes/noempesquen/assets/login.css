@@ -1,0 +1,202 @@
+/* Pantalla d'entrada a l'administració: estil «llotja» del tema. */
+@font-face {
+	font-family: 'Big Shoulders Display';
+	font-weight: 900;
+	font-style: normal;
+	font-display: swap;
+	src: url('fonts/big-shoulders-display-latin-900-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+	src: url('fonts/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	src: url('fonts/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2');
+}
+
+body.login {
+	--nep-tinta: #0b1e3f;
+	--nep-mar: #0d3fa6;
+	--nep-port: #07245e;
+	--nep-escuma: #dce8f7;
+	--nep-lot: #ffd23f;
+	--nep-avis: #c8201e;
+	background: var(--nep-mar);
+	background-image: repeating-linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.05) 0 2px,
+		transparent 2px 14px
+	);
+	color: var(--nep-tinta);
+	font-family: 'Atkinson Hyperlegible', system-ui, sans-serif;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: 100vh;
+}
+
+.login #login {
+	width: min(100% - 2.5rem, 22rem);
+	padding: 2rem 0;
+}
+
+/* Logotip: el peix del tema + rètol. */
+.login h1 a {
+	background-image: url('img/favicon.svg');
+	background-size: 4.5rem;
+	width: 4.5rem;
+	height: 4.5rem;
+	margin: 0 auto 0.5rem;
+}
+
+.login h1::after {
+	content: 'No em pesquen';
+	display: block;
+	text-align: center;
+	font-family: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+	font-weight: 900;
+	font-size: 2.25rem;
+	line-height: 1;
+	text-transform: uppercase;
+	color: #fff;
+	margin-bottom: 1.25rem;
+}
+
+.login form {
+	background: #fff;
+	border: 0;
+	border-radius: 12px;
+	border-top: 8px solid var(--nep-lot);
+	box-shadow: 0 8px 0 var(--nep-port);
+	padding: 1.5rem;
+}
+
+.login label {
+	font-weight: 700;
+	color: var(--nep-tinta);
+	font-size: 1rem;
+}
+
+.login form .input,
+.login input[type='text'],
+.login input[type='password'] {
+	border: 2px solid var(--nep-tinta);
+	border-radius: 8px;
+	min-height: 2.75rem;
+	font-size: 1.0625rem;
+	box-shadow: none;
+}
+
+.login form .input:focus,
+.login input[type='text']:focus,
+.login input[type='password']:focus {
+	border-color: var(--nep-mar);
+	outline: 3px solid var(--nep-lot);
+	outline-offset: 1px;
+	box-shadow: none;
+}
+
+.login .button.wp-hide-pw {
+	color: var(--nep-tinta);
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+}
+
+.login .button-primary,
+.wp-core-ui .login .button-primary {
+	background: var(--nep-lot);
+	border: 2px solid var(--nep-tinta);
+	border-radius: 8px;
+	color: var(--nep-tinta);
+	font-weight: 700;
+	min-height: 2.75rem;
+	padding: 0 1.25rem;
+	text-shadow: none;
+	box-shadow: 0 3px 0 var(--nep-tinta);
+	transition: none;
+}
+
+.login .button-primary:hover,
+.login .button-primary:focus {
+	background: #ffe27a;
+	border-color: var(--nep-tinta);
+	color: var(--nep-tinta);
+}
+
+.login .button-primary:focus-visible,
+.login a:focus-visible,
+.login input:focus-visible {
+	outline: 3px solid var(--nep-tinta);
+	outline-offset: 2px;
+	box-shadow: none;
+}
+
+.login #nav a,
+.login #backtoblog a,
+.login .privacy-policy-page-link a {
+	color: #fff;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.login #nav a:hover,
+.login #backtoblog a:hover {
+	color: var(--nep-lot);
+}
+
+.login #login_error,
+.login .message,
+.login .success {
+	border: 0;
+	border-left: 6px solid var(--nep-avis);
+	border-radius: 8px;
+	background: #fff;
+	color: var(--nep-tinta);
+	box-shadow: none;
+}
+
+.login .message,
+.login .success {
+	border-left-color: var(--nep-mar);
+}
+
+.login .language-switcher {
+	color: #fff;
+}
+
+.login .language-switcher label,
+.login .language-switcher .dashicons {
+	color: #fff;
+}
+
+.login .language-switcher .button,
+.wp-core-ui .login .language-switcher .button {
+	background: #fff;
+	border: 2px solid var(--nep-tinta);
+	border-radius: 8px;
+	color: var(--nep-tinta);
+	font-weight: 700;
+	min-height: 2.75rem;
+}
+
+.login .language-switcher select {
+	min-height: 2.75rem;
+	border: 2px solid var(--nep-tinta);
+	border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.login * {
+		transition: none !important;
+		animation: none !important;
+	}
+}

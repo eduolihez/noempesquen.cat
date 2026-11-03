@@ -27,6 +27,32 @@ add_action(
 	}
 );
 
+// Pantalla d'entrada a l'administració (/admin) amb l'estil del tema.
+add_action(
+	'login_enqueue_scripts',
+	static function () {
+		$ruta = get_template_directory() . '/assets/login.css';
+		wp_enqueue_style(
+			'noempesquen-login',
+			get_template_directory_uri() . '/assets/login.css',
+			array(),
+			file_exists( $ruta ) ? (string) filemtime( $ruta ) : null
+		);
+	}
+);
+add_filter(
+	'login_headerurl',
+	static function () {
+		return home_url( '/' );
+	}
+);
+add_filter(
+	'login_headertext',
+	static function () {
+		return get_bloginfo( 'name' );
+	}
+);
+
 // Elimina soroll del <head>.
 remove_action( 'wp_head', 'wp_generator' );
 remove_action( 'wp_head', 'rsd_link' );
