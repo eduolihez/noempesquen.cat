@@ -29,7 +29,22 @@ $nep_menu  = array(
 <!-- wp:html -->
 <a class="nep-marca" href="<?php echo esc_url( nep_tema_url( 'inici' ) ); ?>"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="24" fill="#fff"/><path d="M8 25c5-8 13-11 21-7l6-5v8l5 4-5 4v8l-6-5c-8 4-16 1-21-7z" fill="#0D3FA6"/><circle cx="16" cy="22" r="2.4" fill="#fff"/><path d="M38 9c0 4 0 7-2 9" fill="none" stroke="#C8201E" stroke-width="3" stroke-linecap="round"/></svg><span>No em pesquen</span></a>
 <!-- /wp:html -->
-<!-- wp:navigation {"overlayMenu":"mobile","overlayBackgroundColor":"port","overlayTextColor":"blanc","className":"nep-menu","layout":{"type":"flex","setCascadingProperties":true,"justifyContent":"right"}} -->
+<!-- wp:navigation <?php
+echo wp_json_encode(
+	array(
+		'overlayMenu'            => 'mobile',
+		'overlayBackgroundColor' => 'port',
+		'overlayTextColor'       => 'blanc',
+		'className'              => 'nep-menu',
+		'ariaLabel'              => _x( 'Navegació principal', 'tema', 'noempesquen' ),
+		'layout'                 => array(
+			'type'                  => 'flex',
+			'setCascadingProperties' => true,
+			'justifyContent'        => 'right',
+		),
+	)
+); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON de bloque.
+?> -->
 <?php foreach ( $nep_menu as $nep_item ) : ?>
 <!-- wp:navigation-link <?php echo wp_json_encode( array( 'label' => esc_html( $nep_item[1] ), 'url' => esc_url_raw( nep_tema_url( $nep_item[0] ) ), 'kind' => 'custom' ) ); ?> /-->
 <?php endforeach; ?>

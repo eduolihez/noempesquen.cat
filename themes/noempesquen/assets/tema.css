@@ -980,6 +980,14 @@ html {
 	outline-offset: 3px;
 }
 
+/* Navegadores sin :has(): el foco de la tarjeta sale con :focus-within. */
+@supports not selector(:has(*)) {
+	.nep-targeta-video:focus-within {
+		outline: 4px solid var(--nep-focus);
+		outline-offset: 3px;
+	}
+}
+
 .nep-targeta-video__meta {
 	margin: 0;
 	padding: 0 1.25rem 1.25rem;
@@ -998,6 +1006,8 @@ html {
 	margin: 0;
 	font-size: 1.3rem;
 }
+
+.nep-galeria-videos__buit-enllac { margin: 1.25rem 0 0; }
 
 .nep-video {
 	max-width: 64rem;
@@ -1072,27 +1082,48 @@ html {
 	text-decoration-thickness: 2px;
 }
 
-.nep-video__transcripcio {
-	margin-top: 2rem;
-	border-top: 4px solid var(--nep-tinta);
-	border-bottom: 2px dashed var(--nep-tinta);
+.nep-video__titol-transcripcio {
+	margin: 2rem 0 0.5rem;
+	font-family: var(--nep-rotul);
+	font-weight: 800;
+	font-size: 1.6rem;
+	text-transform: uppercase;
 }
 
-.nep-video__titol-transcripcio {
-	margin: 0;
-	font: inherit;
-	text-transform: inherit;
+.nep-video__transcripcio {
+	border-top: 4px solid var(--nep-tinta);
+	border-bottom: 2px dashed var(--nep-tinta);
 }
 
 .nep-video__transcripcio summary {
 	display: flex;
 	align-items: center;
+	gap: 0.6rem;
 	min-height: 3rem;
-	font-family: var(--nep-rotul);
-	font-weight: 800;
-	font-size: 1.6rem;
-	text-transform: uppercase;
+	font-weight: 700;
+	font-size: 1.1rem;
 	cursor: pointer;
+	list-style: none;
+}
+
+.nep-video__transcripcio summary::-webkit-details-marker { display: none; }
+
+/* Marcador propio (SVG como máscara, hereda el color del texto); gira al abrir. */
+.nep-video__transcripcio summary::before {
+	content: "";
+	flex: none;
+	width: 1.1rem;
+	height: 1.1rem;
+	background: currentcolor;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 3h10v14l-5-4-5 4z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 3h10v14l-5-4-5 4z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.nep-video__transcripcio[open] summary::before { transform: rotate(180deg); }
+
+.nep-video__transcripcio summary:focus-visible {
+	outline: 4px solid var(--nep-focus);
+	outline-offset: 2px;
 }
 
 .nep-video__text { padding-bottom: 1rem; max-width: 46rem; }

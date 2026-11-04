@@ -180,6 +180,30 @@ function nep_tema_clau_actual(): string {
 }
 
 /**
+ * `aria-current` a l'enllaç del menú de la pàgina actual: `page` si és ella mateixa, `true`
+ * si és una filla de la secció (una pàgina de vídeo dins de «Vídeos»).
+ */
+add_filter(
+	'render_block_core/navigation-link',
+	static function ( $html, $bloc ) {
+		$url = is_array( $bloc ) ? (string) ( $bloc['attrs']['url'] ?? '' ) : '';
+		if ( '' === $url || ! is_string( $html ) || str_contains( $html, 'aria-current' ) || is_front_page() ) {
+			return $html;
+		}
+		$clau = nep_tema_clau_actual();
+		if ( 'inici' === $clau || untrailingslashit( $url ) !== untrailingslashit( nep_tema_url( $clau ) ) ) {
+			return $html;
+		}
+		$objecte = get_queried_object();
+		$valor   = $objecte instanceof WP_Post && $objecte->post_parent && 'videos' === $clau
+			&& untrailingslashit( (string) get_permalink( $objecte ) ) !== untrailingslashit( $url ) ? 'true' : 'page';
+		return (string) preg_replace( '/<a /', '<a aria-current="' . $valor . '" ', $html, 1 );
+	},
+	10,
+	2
+);
+
+/**
  * URL de la pàgina actual en un altre idioma (selector d'idioma). Una filla de `videos`
  * va a la seva parella (mateix slug) o, si no n'hi ha, a la pàgina `videos` de l'idioma.
  *
