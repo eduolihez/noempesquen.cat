@@ -184,3 +184,12 @@ Pendiente tras 3B:
 Dirección lonja: azul de caja de pescado, rojo aviso, amarillo de lote; rótulos Big Shoulders y texto Atkinson Hyperlegible (OFL, locales en `themes/noempesquen/assets/fonts/`). CSS en `assets/tema.css`; plantillas en `templates/`. `PRODUCT.md` recoge el contexto.
 
 Pulido posterior (desplegado el 2026-10-31, tema subido por wp-admin y comprobado en producción: `/compte/` con rótulo y `h1`, `tema.css` con las reglas nuevas): cabecera sin «Entra a jugar» duplicado, menú en tablet alineado a la izquierda, el hilo del anzuelo ya no cuelga del botón en móvil, cebo de la portada más grande, plantilla `page-compte.html` con rótulo y `h1`, sin sombra dura en `.nep-nota`.
+## Cabecera rediseñada (2026-11-04, tema 0.3.1 desplegado)
+
+Logo a la izquierda, páginas centradas (grid de 3 zonas ≥72,01 rem), a la derecha icono de cuenta y selector de idioma como desplegable (`<details>`, JS solo para Esc y clic fuera). «Entra a jugar» ya no está en la cabecera (sí en el menú hamburguesa y 3 veces en la portada). Spec e2e en `tests/e2e/capcalera-comu.js`; detalles en `docs/i18n-tema.md`.
+
+Comprobado en producción con navegador real (1440, 900, 600, 360 px): sin scroll horizontal, orden de Tab coincide con el visual salvo el caso aceptado, desplegable abre y Esc devuelve el foco al botón, overlay del hamburguesa con foco dentro y cierre con Esc.
+
+Desviación aceptada: entre 40 y 72 rem el menú baja a una segunda fila pero en el DOM va antes que cuenta e idioma; el orden de Tab (logo, menú, cuenta, idioma) difiere del visual (logo, cuenta, idioma, menú). Cambiar el DOM rompería el orden en escritorio.
+
+Pendiente de Edu: purgar Varnish en Dinahosting, probar con NVDA/VoiceOver.
