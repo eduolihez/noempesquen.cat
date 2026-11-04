@@ -16,7 +16,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Versió de la migració de pàgines (opció `nep_versio_pagines`). */
-const NEP_VERSIO_PAGINES = 1;
+const NEP_VERSIO_PAGINES = 2;
 
 /**
  * Títol i contingut de cada pàgina per idioma. El contingut només cal on la plantilla
@@ -52,6 +52,13 @@ function nep_pagines_dades(): array {
 			'titol'     => array(
 				'es' => 'Misiones',
 				'ca' => 'Missions',
+			),
+			'contingut' => '',
+		),
+		'videos'       => array(
+			'titol'     => array(
+				'es' => 'Vídeos',
+				'ca' => 'Vídeos',
 			),
 			'contingut' => '',
 		),

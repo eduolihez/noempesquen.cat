@@ -103,7 +103,7 @@ final class IdiomaNucliTest extends TestCase {
 
 	public function test_pagines_font_unica(): void {
 		$pagines = nep_pagines();
-		$this->assertSame( array( 'inici', 'simulador', 'com-funciona', 'missions', 'compte', 'contacte', 'projecte' ), array_keys( $pagines ) );
+		$this->assertSame( array( 'inici', 'simulador', 'com-funciona', 'missions', 'videos', 'compte', 'contacte', 'projecte' ), array_keys( $pagines ) );
 		foreach ( $pagines as $slugs ) {
 			$this->assertSame( array( 'es', 'ca' ), array_keys( $slugs ) );
 		}

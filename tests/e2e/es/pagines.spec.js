@@ -11,8 +11,8 @@ test.use( { locale: 'es-ES' } );
 const CLAUS = Object.keys( PAGINES );
 
 test.describe( 'Páginas en castellano', () => {
-	test( 'el mapa tiene las 7 páginas', () => {
-		expect( CLAUS ).toHaveLength( 7 );
+	test( 'el mapa tiene las 8 páginas', () => {
+		expect( CLAUS ).toHaveLength( 8 );
 	} );
 
 	for ( const clau of CLAUS ) {

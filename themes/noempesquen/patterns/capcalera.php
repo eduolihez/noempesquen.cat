@@ -13,6 +13,7 @@ $nep_altre = 'ca' === nep_tema_idioma() ? 'es' : 'ca';
 $nep_menu  = array(
 	array( 'com-funciona', _x( 'Com funciona', 'tema', 'noempesquen' ) ),
 	array( 'missions', _x( 'Missions', 'tema', 'noempesquen' ) ),
+	array( 'videos', _x( 'Vídeos', 'tema', 'noempesquen' ) ),
 	array( 'projecte', _x( 'Sobre el projecte', 'tema', 'noempesquen' ) ),
 	array( 'contacte', _x( 'Contacte', 'tema', 'noempesquen' ) ),
 	array( 'compte', _x( 'El meu compte', 'tema', 'noempesquen' ) ),

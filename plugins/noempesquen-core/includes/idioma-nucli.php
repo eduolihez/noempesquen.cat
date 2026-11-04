@@ -178,6 +178,10 @@ function nep_pagines(): array {
 			'es' => 'misiones',
 			'ca' => 'missions',
 		),
+		'videos'       => array(
+			'es' => 'videos',
+			'ca' => 'videos',
+		),
 		'compte'       => array(
 			'es' => 'cuenta',
 			'ca' => 'compte',

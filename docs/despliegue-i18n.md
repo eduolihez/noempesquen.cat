@@ -100,6 +100,7 @@ Tabla de URLs esperadas (el script la usa tal cual):
 | `/como-funciona/` | 200 | `es-ES` | `/como-funciona/` | es → ella, ca → `/ca/com-funciona/`, x-default → ES |
 | `/ca/com-funciona/` | 200 | `ca` | `/ca/com-funciona/` | idem |
 | `/misiones/` · `/ca/missions/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
+| `/videos/` · `/ca/videos/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
 | `/cuenta/` · `/ca/compte/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
 | `/contacto/` · `/ca/contacte/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
 | `/sobre-el-proyecto/` · `/ca/sobre-el-projecte/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |

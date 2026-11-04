@@ -13,6 +13,7 @@ $nep_enllacos = array(
 	array( nep_tema_url( 'simulador' ), _x( 'Simulador', 'tema', 'noempesquen' ) ),
 	array( nep_tema_url( 'com-funciona' ), _x( 'Com funciona', 'tema', 'noempesquen' ) ),
 	array( nep_tema_url( 'missions' ), _x( 'Missions', 'tema', 'noempesquen' ) ),
+	array( nep_tema_url( 'videos' ), _x( 'Vídeos', 'tema', 'noempesquen' ) ),
 	array( nep_tema_url( 'projecte' ), _x( 'Sobre el projecte', 'tema', 'noempesquen' ) ),
 	array( nep_tema_url( 'projecte', null, 'privacitat' ), _x( 'Privacitat', 'tema', 'noempesquen' ) ),
 	array( nep_tema_url( 'contacte' ), _x( 'Contacte', 'tema', 'noempesquen' ) ),
