@@ -107,6 +107,8 @@ function nep_video_render( array $atributs, string $contingut ): string {
 	return nep_video_html(
 		array(
 			'atributs'     => get_block_wrapper_attributes( array( 'class' => 'nep-video' ) ),
+			'titol'        => wp_strip_all_tags( get_the_title() ),
+			'avis'         => current_user_can( 'edit_posts' ) ? __( 'Aquest bloc no té cap vídeo.', 'noempesquen' ) : '',
 			'video'        => nep_video_url_adjunt( $atributs['video'] ?? 0, 'video/mp4' ),
 			'poster'       => nep_video_url_adjunt( $atributs['poster'] ?? 0, 'image/' ),
 			'pistes'       => nep_video_pistes(
