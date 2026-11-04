@@ -18,4 +18,6 @@ defined( 'ABSPATH' ) || exit;
 </section>
 <div class="nep-corda" aria-hidden="true"></div>
 <!-- /wp:html -->
-<!-- Aquí anirà el bloc de galeria de vídeos (tasca 03). -->
+<!-- wp:group {"tagName":"section","className":"nep-seccio nep-videos"} -->
+<section class="wp-block-group nep-seccio nep-videos"><!-- wp:noempesquen/galeria-videos {"className":"nep-dins"} /--></section>
+<!-- /wp:group -->

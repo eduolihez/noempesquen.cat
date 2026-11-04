@@ -914,3 +914,161 @@ html {
 @media (max-width: 52rem) {
 	.nep-peu__dins { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---------- Vídeos ---------- */
+.nep-galeria-videos__llista {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+	gap: 2rem 1.75rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nep-targeta-video {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	background: var(--nep-blanc);
+	border: 3px solid var(--nep-tinta);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.nep-targeta-video__poster {
+	aspect-ratio: 16 / 9;
+	background: var(--nep-mar);
+	border-bottom: 3px solid var(--nep-tinta);
+}
+
+.nep-targeta-video__poster img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.nep-seccio .nep-targeta-video__titol {
+	margin: 0;
+	padding: 1rem 1.25rem 0.25rem;
+	font-family: var(--nep-rotul);
+	font-weight: 800;
+	font-size: 1.6rem;
+	line-height: 1.05;
+	text-transform: uppercase;
+}
+
+.nep-targeta-video__titol a {
+	display: inline-block;
+	min-height: 1.5rem;
+	color: var(--nep-tinta);
+	text-decoration: none;
+}
+
+/* Tota la targeta és l'objectiu de l'enllaç. */
+.nep-targeta-video__titol a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+.nep-targeta-video__titol a:focus-visible { outline: none; }
+
+.nep-targeta-video:focus-within {
+	outline: 4px solid var(--nep-focus);
+	outline-offset: 3px;
+}
+
+.nep-targeta-video__meta {
+	margin: 0;
+	padding: 0 1.25rem 1.25rem;
+	font-size: 1rem;
+}
+
+.nep-targeta-video:hover { background: var(--nep-escuma); }
+
+.nep-targeta-video:hover .nep-targeta-video__titol a {
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 0.2em;
+}
+
+.nep-galeria-videos__buit {
+	margin: 0;
+	font-size: 1.3rem;
+}
+
+.nep-video {
+	max-width: 64rem;
+	margin-inline: auto;
+}
+
+.nep-video__figura { margin: 0; }
+
+.nep-video__marc {
+	aspect-ratio: 16 / 9;
+	max-width: 100%;
+	background: var(--nep-tinta);
+	border: 3px solid var(--nep-tinta);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.nep-video__marc video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.nep-video__marc video p { color: var(--nep-blanc); }
+
+.nep-video__info { padding-top: 1rem; }
+
+.nep-video__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.5rem;
+	margin: 0 0 0.75rem;
+	font-weight: 700;
+}
+
+.nep-video__baixades {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nep-video__baixades a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.75rem;
+	color: var(--nep-tinta);
+	text-underline-offset: 0.25em;
+	text-decoration-thickness: 2px;
+}
+
+.nep-video__transcripcio {
+	margin-top: 2rem;
+	border-top: 4px solid var(--nep-tinta);
+	border-bottom: 2px dashed var(--nep-tinta);
+}
+
+.nep-video__transcripcio summary {
+	display: flex;
+	align-items: center;
+	min-height: 3rem;
+	font-family: var(--nep-rotul);
+	font-weight: 800;
+	font-size: 1.6rem;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.nep-video__text { padding-bottom: 1rem; max-width: 46rem; }
+
+.nep-video__missio { margin: 2rem 0 0; }
