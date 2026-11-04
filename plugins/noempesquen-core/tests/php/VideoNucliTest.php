@@ -142,8 +142,9 @@ final class VideoNucliTest extends TestCase {
 		$this->assertStringNotContainsString( 'autoplay', $html );
 		$this->assertStringContainsString( '<time datetime="PT3M5S">3 min 5 s</time>', $html );
 		$this->assertStringContainsString( 'Pesca per correu', $html );
-		$this->assertStringContainsString( 'href="https://exemple.cat/ca.vtt" download', $html );
-		$this->assertStringContainsString( '<details class="nep-video__transcripcio"><summary><h2 class="nep-video__titol-transcripcio">Transcripció</h2></summary>', $html );
+		$this->assertStringNotContainsString( 'href="https://exemple.cat/ca.vtt"', $html );
+		$this->assertStringContainsString( 'href="https://exemple.cat/v.mp4" download', $html );
+		$this->assertStringContainsString( '<h2 class="nep-video__titol-transcripcio">Transcripció</h2><details class="nep-video__transcripcio" open><summary>Transcripció</summary>', $html );
 		$this->assertStringContainsString( '<p>Hola</p>', $html );
 		$this->assertStringContainsString( 'href="https://exemple.cat/ca/simulador/"', $html );
 		$this->assertStringContainsString( 'La factura de la llum', $html );
@@ -203,7 +204,7 @@ final class VideoNucliTest extends TestCase {
 
 	public function test_galeria() {
 		$buida = nep_video_html_galeria( array() );
-		$this->assertStringContainsString( 'Encara no hi ha cap vídeo.', $buida );
+		$this->assertStringContainsString( 'Encara no hi ha cap vídeo', $buida );
 		$this->assertStringNotContainsString( '<ul', $buida );
 
 		$html = nep_video_html_galeria(
@@ -246,7 +247,8 @@ final class VideoNucliTest extends TestCase {
 		$this->assertStringContainsString( '<h1 class="nep-video__titol">Pesca &lt;b&gt;per&lt;/b&gt; correu</h1>', $html );
 		$this->assertLessThan( strpos( $html, '<video' ), strpos( $html, '<h1' ) );
 		$this->assertStringContainsString( 'aria-label="Pesca &lt;b&gt;per&lt;/b&gt; correu"', $html );
-		$this->assertStringContainsString( '<summary><h2 class="nep-video__titol-transcripcio">', $html );
+		$this->assertStringContainsString( '<summary>Transcripció</summary>', $html );
+		$this->assertStringNotContainsString( '<summary><h2', $html );
 	}
 
 	public function test_sense_titol_no_hi_ha_h1_ni_aria_label() {
@@ -268,5 +270,84 @@ final class VideoNucliTest extends TestCase {
 		$this->assertStringContainsString( '<p class="nep-video__avis">Aquest bloc no té cap vídeo.</p>', $html );
 		$this->assertStringNotContainsString( '<h1', $html );
 		$this->assertStringNotContainsString( '<video', $html );
+	}
+
+	public function test_galeria_buida_amb_enllac_al_simulador() {
+		$h = nep_video_html_galeria( array(), 'class="x"', 'https://exemple.cat/simulador/' );
+		$this->assertStringContainsString( 'href="https://exemple.cat/simulador/"', $h );
+		$this->assertStringNotContainsString( 'href=', nep_video_html_galeria( array() ) );
+	}
+
+	public function test_galeria_mides_del_poster() {
+		$h = nep_video_html_galeria( array( array( 'url' => 'https://e.cat/v/', 'titol' => 'V', 'poster' => 'https://e.cat/p.jpg', 'ample' => 768, 'alt' => 432 ) ) );
+		$this->assertStringContainsString( 'width="768" height="432"', $h );
+	}
+
+	public function test_durada_prioritza_metadades() {
+		$this->assertSame( 12, nep_video_durada_resol( 12, 99 ) );
+		$this->assertSame( 99, nep_video_durada_resol( 0, '99' ) );
+		$this->assertSame( 0, nep_video_durada_resol( null, 'x' ) );
+	}
+
+	public function test_filtre_vtt_acotat() {
+		$d = array( 'ext' => false, 'type' => false );
+		$this->assertSame( 'text/vtt', nep_video_vtt_dades( $d, 'a.VTT', true )['type'] );
+		$this->assertSame( $d, nep_video_vtt_dades( $d, 'a.VTT', false ) );
+		$this->assertSame( $d, nep_video_vtt_dades( $d, 'a.php', true ) );
+		$this->assertSame( $d, nep_video_vtt_dades( $d, 'a.vtt.php', true ) );
+		$ja = array( 'ext' => 'png', 'type' => 'image/png' );
+		$this->assertSame( $ja, nep_video_vtt_dades( $ja, 'a.vtt', true ) );
+	}
+
+	public function test_jsonld_video() {
+		$this->assertNull( nep_video_jsonld( array( 'titol' => 'T' ) ) );
+		$o = nep_video_jsonld(
+			array(
+				'url' => 'https://e.cat/v/', 'titol' => 'T', 'descripcio' => '', 'video' => 'https://e.cat/v.mp4', 'poster' => 'https://e.cat/p.jpg',
+				'data' => '2026-01-01T00:00:00+00:00', 'durada' => 65, 'idioma' => 'ca', 'transcripcio' => str_repeat( 'ab ', 800 ),
+			)
+		);
+		$this->assertSame( 'VideoObject', $o['@type'] );
+		$this->assertSame( 'PT1M5S', $o['duration'] );
+		$this->assertSame( 'T', $o['description'] );
+		$this->assertLessThanOrEqual( 1500, mb_strlen( $o['transcript'] ) );
+		$this->assertSame( array( '@id' => 'https://e.cat/v/' ), $o['isPartOf'] );
+		$this->assertJson( json_encode( $o, JSON_UNESCAPED_UNICODE ) );
+		$m = nep_video_jsonld_molla( array( array( 'nom' => 'A', 'url' => 'u' ), array( 'nom' => 'B' ) ) );
+		$this->assertSame( 2, $m['itemListElement'][1]['position'] );
+		$this->assertArrayNotHasKey( 'item', $m['itemListElement'][1] );
+	}
+
+	public function test_og_video() {
+		$this->assertSame( array(), nep_video_og( array() ) );
+		$e = nep_video_og( array( 'video' => 'https://e.cat/v.mp4', 'durada' => 6, 'ample' => 1280, 'alt' => 720 ) );
+		$this->assertSame( array( 'og:type', 'video.other' ), $e[0] );
+		$this->assertContains( array( 'og:video:duration', '6' ), $e );
+		$this->assertContains( array( 'og:video:secure_url', 'https://e.cat/v.mp4' ), $e );
+		$this->assertContains( array( 'og:video:width', '1280' ), $e );
+	}
+
+	public function test_transcripcio_text() {
+		$blocs = array( array( 'blockName' => 'noempesquen/video', 'attrs' => array(), 'innerBlocks' => array(
+			array( 'innerHTML' => '<h3>Títol</h3>' ), array( 'innerHTML' => "<p>Un &amp; dos</p>
+" ) ) ) );
+		$this->assertSame( "Títol
+Un & dos", nep_video_transcripcio_text( $blocs ) );
+		$this->assertSame( '', nep_video_transcripcio_text( array() ) );
+	}
+
+	public function test_vtt_fixtures_de_qualitat() {
+		$cues = array();
+		foreach ( array( 'ca', 'es' ) as $i ) {
+			$t = (string) file_get_contents( dirname( __DIR__ ) . '/fixtures/videos/subtitols-' . $i . '.vtt' );
+			$this->assertStringStartsWith( 'WEBVTT', $t );
+			$n = preg_match_all( '/^(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})$/m', $t, $m, PREG_SET_ORDER );
+			$this->assertGreaterThan( 0, $n );
+			foreach ( $m as $c ) {
+				$this->assertLessThan( $c[2], $c[1] );
+			}
+			$cues[ $i ] = $n;
+		}
+		$this->assertSame( $cues['ca'], $cues['es'] );
 	}
 }
