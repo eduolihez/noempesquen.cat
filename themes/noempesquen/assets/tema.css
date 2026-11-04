@@ -315,6 +315,9 @@ html {
 }
 
 .nep-idioma__enllac:hover { background: rgb(13 63 166 / 0.12); }
+/* El anillo de foco queda dentro del panel blanco (fuera sería azul sobre azul). */
+.nep-idioma__enllac:focus-visible { outline-offset: -4px; }
+.nep-idioma__enllac[aria-current="true"]:focus-visible { outline-color: var(--nep-blanc); }
 .nep-idioma__enllac[aria-current="true"] { background: var(--nep-mar); color: var(--nep-blanc); }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -363,7 +366,9 @@ html {
 	.nep-capcalera__dins { flex-wrap: nowrap; column-gap: 0.5rem; }
 	.nep-marca { min-width: 0; }
 	.nep-capcalera__compte { display: none; }
-	.nep-menu { order: 2; flex: none; flex-basis: auto; }
+	.nep-menu { order: 1; flex: none; flex-basis: auto; }
+	.nep-capcalera__dreta { order: 2; margin-left: 0; }
+	.nep-marca { margin-right: auto; }
 }
 
 @media (max-width: 52rem) {
