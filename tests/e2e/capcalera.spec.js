@@ -1,0 +1,1 @@
+require( './capcalera-comu' )( 'ca' );

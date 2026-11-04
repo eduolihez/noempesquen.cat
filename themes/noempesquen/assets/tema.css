@@ -215,28 +215,60 @@ html {
 	font-size: 2rem;
 }
 
-.nep-capcalera__joc { margin-left: auto; }
-
 .nep-menu .nep-menu__joc { display: none; }
 .nep-menu .is-menu-open .nep-menu__joc { display: flex; }
 
 .nep-menu .wp-block-navigation__responsive-container-open svg,
 .nep-menu .wp-block-navigation__responsive-container-close svg { width: 2rem; height: 2rem; }
 
-.nep-menu { order: 2; }
-.nep-capcalera__joc { order: 1; }
+/* Distribució: logo a l'esquerra, pàgines al centre, compte + idioma a la dreta. */
 .nep-marca { order: 0; }
+.nep-capcalera__dreta {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	order: 1;
+	margin-left: auto;
+}
 
-/* Selector d'idioma: enllaç estàtic a la pàgina equivalent (sense JS). */
-.nep-idioma { order: 1; }
-
-.nep-idioma__enllac {
+.nep-capcalera__compte {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	gap: 0.5rem;
 	min-width: 2.75rem;
 	min-height: 2.75rem;
-	padding: 0 0.7rem;
+	border-radius: 8px;
+	color: var(--nep-blanc);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.nep-capcalera__compte svg { width: 1.6rem; height: 1.6rem; flex: none; }
+.nep-capcalera__compte:hover { background: rgb(255 255 255 / 0.16); }
+
+/* El nom només el llegeixen els lectors de pantalla (és una icona). */
+.nep-capcalera__compte-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* Selector d'idioma: desplegable (details). Sense JS s'obre i es tanca igualment. */
+.nep-idioma { position: relative; }
+.nep-idioma__desplegable { position: relative; }
+
+.nep-idioma__boto {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+	padding: 0 0.8rem;
 	border: 2px solid var(--nep-blanc);
 	border-radius: 8px;
 	color: var(--nep-blanc);
@@ -244,14 +276,56 @@ html {
 	font-weight: 700;
 	line-height: 1;
 	white-space: nowrap;
+	cursor: pointer;
+	list-style: none;
+}
+
+.nep-idioma__boto::-webkit-details-marker { display: none; }
+.nep-idioma__boto:hover,
+.nep-idioma__desplegable[open] > .nep-idioma__boto { background: rgb(255 255 255 / 0.16); }
+
+.nep-idioma__fletxa { width: 0.75rem; height: 0.5rem; flex: none; }
+.nep-idioma__desplegable[open] .nep-idioma__fletxa { transform: rotate(180deg); }
+
+.nep-idioma__llista {
+	position: absolute;
+	top: calc(100% + 0.35rem);
+	right: 0;
+	z-index: 20;
+	min-width: 100%;
+	margin: 0;
+	padding: 0.25rem;
+	list-style: none;
+	background: var(--nep-blanc);
+	border-radius: 8px;
+	box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+	--nep-focus: var(--nep-mar);
+}
+
+.nep-idioma__enllac {
+	display: flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0 0.9rem;
+	border-radius: 6px;
+	color: var(--nep-mar);
+	font-weight: 700;
+	white-space: nowrap;
 	text-decoration: none;
 }
 
-/* Escritori: nom complet. Mòbil: sigla visible; el nom complet queda per a lectors de pantalla. */
+.nep-idioma__enllac:hover { background: rgb(13 63 166 / 0.12); }
+.nep-idioma__enllac[aria-current="true"] { background: var(--nep-mar); color: var(--nep-blanc); }
+
+@media (prefers-reduced-motion: no-preference) {
+	.nep-idioma__fletxa { transition: transform 0.15s; }
+}
+
+/* Escriptori: nom complet. Mòbil: sigla visible; el nom complet queda per a lectors de pantalla. */
 .nep-idioma__curt { display: none; }
 @media (max-width: 40rem) {
 	.nep-idioma__curt { display: inline; letter-spacing: 0.04em; }
-	.nep-idioma__llarg {
+	.nep-idioma__boto .nep-idioma__llarg {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -259,48 +333,42 @@ html {
 		clip-path: inset(50%);
 		white-space: nowrap;
 	}
-	.nep-idioma__enllac { min-width: 2.75rem; padding: 0 0.55rem; }
+	.nep-idioma__boto { padding: 0 0.55rem; }
 }
 
-.nep-idioma__enllac:hover { background: rgb(255 255 255 / 0.16); }
+/* Mitjà: logo + compte + idioma dalt; pàgines centrades a la fila de sota. */
+.nep-menu { order: 3; flex-basis: 100%; justify-content: center; }
+.wp-block-navigation.nep-menu .wp-block-navigation__container { justify-content: center; }
 
-@media (min-width: 40.01rem) and (max-width: 84rem) {
-	.nep-marca { margin-right: auto; }
-	.nep-capcalera__joc { margin-left: 0; }
-	.nep-menu { flex-basis: 100%; order: 3; }
-	.wp-block-navigation.nep-menu.is-content-justification-right .wp-block-navigation__container {
-		justify-content: flex-start;
-		margin-left: -0.85rem;
+/* Ample: una sola fila amb tres zones; el menú queda centrat de debò. */
+@media (min-width: 72.01rem) {
+	.nep-capcalera .nep-capcalera__dins.is-layout-flex {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		column-gap: 1rem;
 	}
-}
-
-@media (min-width: 84.01rem) {
-	.nep-menu { order: 1; }
-	.nep-capcalera__joc { order: 2; margin-left: 0; }
-	.nep-idioma { order: 3; }
-	.nep-capcalera__dins { column-gap: 1rem; flex-wrap: nowrap; }
-	.nep-marca { flex: none; }
-	.nep-idioma { flex: none; }
+	.nep-marca { justify-self: start; }
+	.nep-menu { order: 1; flex-basis: auto; }
+	.nep-capcalera__dreta { order: 2; justify-self: end; margin-left: 0; }
 	.nep-menu .wp-block-navigation-item__content { font-size: 1.1rem; padding: 0 0.65rem; }
 }
 
 @media (max-width: 40rem) {
-	.nep-capcalera__joc { display: none; }
 	.nep-marca { font-size: 1.45rem; }
 	.nep-marca svg { width: 2.5rem; height: 2.5rem; }
 }
 
-/* Menú en hamburguesa (WP, ≤600px): marca + idioma + menú en una sola fila. */
+/* Menú en hamburguesa (WP, ≤600px): logo + idioma + menú en una sola fila; el compte va dins del menú. */
 @media (max-width: 37.4rem) {
 	.nep-capcalera__dins { flex-wrap: nowrap; column-gap: 0.5rem; }
-	.nep-marca { margin-right: auto; min-width: 0; }
-	.nep-menu { flex: none; }
+	.nep-marca { min-width: 0; }
+	.nep-capcalera__compte { display: none; }
+	.nep-menu { order: 2; flex: none; flex-basis: auto; }
 }
 
 @media (max-width: 52rem) {
 	.nep-menu { gap: 0.15rem; }
 	.nep-menu .wp-block-navigation-item__content { padding: 0 0.6rem; font-size: 1.1rem; }
-	.nep-menu .nep-btn { margin-left: 0; }
 }
 
 .nep-corda {
