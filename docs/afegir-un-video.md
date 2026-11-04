@@ -24,7 +24,7 @@ Cada vídeo es una página hija de «Vídeos», una en castellano y otra en cata
 2. **Páginas > Añadir nueva** (castellano): título del vídeo; en «Página superior» elige **Vídeos**; el slug (por ejemplo `phishing-banco`) lo decides tú.
 3. Inserta el bloque **Vídeo** (`noempesquen/video`) y rellena en el panel lateral:
    - *Fitxers*: vídeo, imagen de portada y los subtítulos de cada idioma.
-   - *Dades*: duración en segundos (opcional: si lo dejas en 0, se lee del archivo), tema y el id de la misión del simulador a la que enlaza (por ejemplo `llissa-01-factura`; opcional).
+   - *Dades*: duración en segundos (solo como respaldo: la duración se toma de los metadatos del MP4 y este campo solo se usa si WordPress no puede leerla), tema y el id de la misión del simulador a la que enlaza (por ejemplo `llissa-01-factura`; opcional).
 4. Escribe la **transcripción** dentro del bloque (aparece desplegable bajo el vídeo). Pon un título de sección para cada bloque de texto, por ejemplo con encabezados `h3`.
 5. Publica.
 6. **Repite en catalán:** crea la página con el **mismo slug**, pero con la página superior **Vídeos** que cuelga de `ca` (`/ca/videos/`), título y transcripción en catalán, y el mismo vídeo con el póster. El slug idéntico es lo que enlaza las dos páginas (selector de idioma, hreflang, sitemap).
@@ -35,6 +35,12 @@ Cada vídeo es una página hija de «Vídeos», una en castellano y otra en cata
    - la transcripción se abre con el teclado.
 
 Si una de las dos páginas no está publicada, la otra sigue funcionando pero sin hreflang ni enlace de pareja.
+
+## Verificar cómo se sirven los archivos
+
+`scripts/verifica-videos.sh <url-mp4> [url-vtt]` comprueba con curl el HEAD del MP4, `Accept-Ranges: bytes`, que un `Range` devuelva 206 (sin él, no se puede saltar en el vídeo) y que el `.vtt` salga como `text/vtt`. Pásalo contra producción tras subir el vídeo.
+
+La página ya no ofrece la descarga de los `.vtt`: la única descarga es el MP4 (dentro del `<video>`, para navegadores sin soporte).
 
 ## Cómo encaja al desplegar
 
