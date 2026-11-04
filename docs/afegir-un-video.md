@@ -5,7 +5,7 @@ Cada vídeo es una página hija de «Vídeos», una en castellano y otra en cata
 ## Antes de subir nada (una sola vez en producción)
 
 1. Límite de subida. Dinahosting suele limitar `upload_max_filesize` y `post_max_size`. En Medios > Añadir nuevo, el «Tamaño máximo de subida» debe ser mayor que el MP4. Si no lo es, súbelo por FTP a `wp-content/uploads/` y regístralo con un plugin de importación, o pide a Dinahosting que suba el límite.
-2. CSP y `media-src`. Hoy el sitio no envía ninguna cabecera `Content-Security-Policy`. Si Dinahosting o el `.htaccess` añaden una, comprueba que `media-src 'self'` (o `default-src 'self'`) permite el MP4 y los `.vtt`, y que `img-src 'self'` permite el póster. Con la CSP puesta, abre una página de vídeo con la consola del navegador: no debe salir ningún «Refused to load media».
+2. CSP y `media-src`. Producción envía `Content-Security-Policy-Report-Only` con `default-src 'self'`, sin `media-src` propio: el MP4 y los `.vtt` cargan por la regla `default-src`. Si algún día la CSP pasa a modo bloqueo o se añade `media-src`, comprueba que incluye `'self'`, y que `img-src 'self'` cubre el póster. Con la CSP puesta, abre una página de vídeo con la consola del navegador: no debe salir ningún «Refused to load media».
 3. Tipos de archivo. WordPress ya acepta `.mp4` y `.vtt`. El plugin reconoce además los `.vtt` que el servidor detecta como `text/plain`.
 4. Sin terceros. Los vídeos se sirven desde nuestro dominio, sin YouTube ni embeds. Si lo cambias, falla el test e2e «sin terceros ni cookies».
 
