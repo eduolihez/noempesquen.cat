@@ -145,3 +145,50 @@ $nep_comprova( false === get_option( 'nep_versio_pagines' ), 'pàgines: amb el c
 delete_option( 'nep_migracio_pagines_bloqueig' );
 nep_actualitza_pagines();
 $nep_comprova( NEP_VERSIO_PAGINES === (int) get_option( 'nep_versio_pagines' ), 'pàgines: sense candau, migra i desa la versió' );
+
+// Filles de `videos` amb el mateix slug als dos idiomes: hreflang, selector i sitemap.
+$nep_videos_es = nep_seo_post( 'videos', 'es' );
+$nep_videos_ca = nep_seo_post( 'videos', 'ca' );
+$nep_comprova( $nep_videos_es && $nep_videos_ca, 'vídeos: existeixen /videos/ i /ca/videos/' );
+$nep_fill_es = nep_crea_pagina( 'prova-video-nep', 'Prova ES', '', (int) $nep_videos_es->ID );
+$nep_fill_ca = nep_crea_pagina( 'prova-video-nep', 'Prova CA', '', (int) $nep_videos_ca->ID );
+$nep_url_es  = (string) get_permalink( $nep_fill_es );
+$nep_url_ca  = (string) get_permalink( $nep_fill_ca );
+$nep_comprova( str_ends_with( $nep_url_es, '/videos/prova-video-nep/' ) && ! str_contains( $nep_url_es, '/ca/' ), 'vídeos: URL de la filla ES' );
+$nep_comprova( str_ends_with( $nep_url_ca, '/ca/videos/prova-video-nep/' ), 'vídeos: URL de la filla CA' );
+$nep_comprova( array( 'clau' => 'videos', 'fill' => 'prova-video-nep', 'idioma' => 'ca' ) === nep_seo_fill_post( get_post( $nep_fill_ca ) ), 'vídeos: la filla CA es reconeix' );
+$nep_comprova( null === nep_seo_fill_post( $nep_videos_ca ) && null === nep_seo_fill_post( get_page_by_path( 'ca/simulador' ) ), 'vídeos: /ca/videos/ i /ca/simulador/ no són filles' );
+
+$nep_esperat = array(
+	array( 'hreflang' => 'es', 'href' => $nep_url_es ),
+	array( 'hreflang' => 'ca', 'href' => $nep_url_ca ),
+	array( 'hreflang' => 'x-default', 'href' => $nep_url_es ),
+);
+$nep_comprova( $nep_esperat === nep_seo_alternates_post_fill( get_post( $nep_fill_es ) ), 'vídeos: hreflang de la filla ES (parella CA)' );
+$nep_comprova( $nep_esperat === nep_seo_alternates_post_fill( get_post( $nep_fill_ca ) ), 'vídeos: hreflang de la filla CA (parella ES)' );
+$nep_comprova( wp_get_canonical_url( $nep_fill_ca ) === $nep_url_ca && wp_get_canonical_url( $nep_fill_es ) === $nep_url_es, 'vídeos: el canonical de cada filla és la seva URL (la del hreflang)' );
+$nep_comprova( 3 === count( nep_seo_alternates( nep_seo_urls( 'simulador' ) ) ), 'vídeos: les altres pàgines del mapa conserven el hreflang' );
+
+// Selector d'idioma: a la parella.
+query_posts( array( 'page_id' => $nep_fill_es ) );
+$nep_comprova( nep_seo_url_fill_actual( 'ca' ) === $nep_url_ca, 'vídeos: el selector de la filla ES va a la parella CA' );
+wp_reset_query();
+
+require_once dirname( __DIR__, 2 ) . '/includes/class-nep-sitemap-idioma.php';
+$nep_sitemap_es = wp_list_pluck( ( new Nep_Sitemap_Idioma( 'es' ) )->get_url_list( 1 ), 'loc' );
+$nep_sitemap_ca = wp_list_pluck( ( new Nep_Sitemap_Idioma( 'ca' ) )->get_url_list( 1 ), 'loc' );
+$nep_comprova( in_array( $nep_url_es, $nep_sitemap_es, true ) && ! in_array( $nep_url_ca, $nep_sitemap_es, true ), 'vídeos: la filla ES és al sitemap ES (i la CA no)' );
+$nep_comprova( in_array( $nep_url_ca, $nep_sitemap_ca, true ) && ! in_array( $nep_url_es, $nep_sitemap_ca, true ), 'vídeos: la filla CA és al sitemap CA (i la ES no)' );
+$nep_comprova( array() === array_diff( array( $nep_fill_es, $nep_fill_ca ), nep_seo_ids_mapa() ), 'vídeos: les filles surten del sitemap de pàgines del nucli' );
+
+// Sense parella publicada: només el seu propi hreflang, fora del sitemap i el selector va a /videos/.
+wp_update_post( array( 'ID' => $nep_fill_es, 'post_status' => 'draft' ) );
+$nep_comprova( array( array( 'hreflang' => 'ca', 'href' => $nep_url_ca ) ) === nep_seo_alternates_post_fill( get_post( $nep_fill_ca ) ), 'vídeos: sense parella, només el hreflang propi' );
+$nep_comprova( ! in_array( $nep_url_es, wp_list_pluck( ( new Nep_Sitemap_Idioma( 'es' ) )->get_url_list( 1 ), 'loc' ), true ), 'vídeos: l\'esborrany no és al sitemap' );
+query_posts( array( 'page_id' => $nep_fill_ca ) );
+$nep_comprova( nep_seo_url_fill_actual( 'es' ) === nep_url_pagina( 'videos', 'es' ), 'vídeos: sense parella, el selector va a /videos/ (no a la portada)' );
+wp_reset_query();
+
+// Neteja (abans que les pàgines pare: esborrar un pare puja les filles un nivell).
+wp_delete_post( $nep_fill_es, true );
+wp_delete_post( $nep_fill_ca, true );

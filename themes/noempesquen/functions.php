@@ -161,12 +161,40 @@ function nep_tema_clau_actual(): string {
 	if ( ! $objecte instanceof WP_Post || 'page' !== $objecte->post_type ) {
 		return 'inici';
 	}
+	// Filla de `videos` (`/videos/<slug>/`, `/ca/videos/<slug>/`): és de `videos`, encara
+	// que el seu slug coincideixi amb el d'una altra pàgina del mapa.
+	if ( $objecte->post_parent ) {
+		$pare  = get_post( $objecte->post_parent );
+		$avi   = $pare instanceof WP_Post && $pare->post_parent ? get_post( $pare->post_parent ) : null;
+		$arrel = $pare instanceof WP_Post && ( ! $pare->post_parent || ( $avi instanceof WP_Post && 'ca' === $avi->post_name && ! $avi->post_parent ) );
+		if ( $arrel && in_array( $pare->post_name, nep_tema_pagines()['videos'], true ) ) {
+			return 'videos';
+		}
+	}
 	foreach ( nep_tema_pagines() as $clau => $slugs ) {
 		if ( in_array( $objecte->post_name, $slugs, true ) ) {
 			return $clau;
 		}
 	}
 	return 'inici';
+}
+
+/**
+ * URL de la pàgina actual en un altre idioma (selector d'idioma). Una filla de `videos`
+ * va a la seva parella (mateix slug) o, si no n'hi ha, a la pàgina `videos` de l'idioma.
+ *
+ * @param string $idioma `es`|`ca`.
+ * @return string
+ */
+function nep_tema_url_idioma( string $idioma ): string {
+	$clau = nep_tema_clau_actual();
+	if ( 'videos' === $clau && function_exists( 'nep_seo_url_fill_actual' ) ) {
+		$url = nep_seo_url_fill_actual( $idioma );
+		if ( $url ) {
+			return $url;
+		}
+	}
+	return nep_tema_url( $clau, $idioma );
 }
 
 /*

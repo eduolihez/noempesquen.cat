@@ -52,6 +52,13 @@ class Nep_Sitemap_Idioma extends WP_Sitemaps_Provider {
 				'lastmod' => wp_date( DATE_W3C, strtotime( $post->post_modified_gmt . ' UTC' ) ),
 			);
 		}
+		// Filles de `videos` (un vídeo per pàgina).
+		foreach ( nep_seo_posts_fills( $this->idioma ) as $post ) {
+			$llista[] = array(
+				'loc'     => (string) get_permalink( $post ),
+				'lastmod' => wp_date( DATE_W3C, strtotime( $post->post_modified_gmt . ' UTC' ) ),
+			);
+		}
 		return $llista;
 	}
 

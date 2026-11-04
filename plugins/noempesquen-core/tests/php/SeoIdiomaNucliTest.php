@@ -85,6 +85,45 @@ final class SeoIdiomaNucliTest extends TestCase {
 		$this->assertSame( 'https://noempesquen.cat/ca/', $this->url( 'inici', 'ca' ) );
 	}
 
+	public function test_filla_de_videos_es_i_ca(): void {
+		$this->assertSame( array( 'clau' => 'videos', 'fill' => 'pesca-sms' ), nep_seo_fill( 'videos/pesca-sms' ) );
+		$this->assertSame( array( 'clau' => 'videos', 'fill' => 'pesca-sms' ), nep_seo_fill( 'ca/videos/pesca-sms' ) );
+		$this->assertSame( array( 'clau' => 'videos', 'fill' => 'pesca-sms' ), nep_seo_fill( '/ca/videos/pesca-sms/' ) );
+	}
+
+	public function test_parella_de_filla_es_ca_i_ca_es(): void {
+		$this->assertSame( '/ca/videos/pesca-sms/', nep_seo_ruta_parella_fill( 'videos/pesca-sms' ) );
+		$this->assertSame( '/videos/pesca-sms/', nep_seo_ruta_parella_fill( 'ca/videos/pesca-sms' ) );
+		$this->assertSame( '/videos/x/', nep_seo_ruta_fill( 'x', 'es' ) );
+		$this->assertSame( '/ca/videos/x/', nep_seo_ruta_fill( 'x', 'ca' ) );
+	}
+
+	public function test_slug_amb_caracters_rars(): void {
+		// WordPress desa els slugs no ASCII codificats: es conserven tal qual, sense recodificar.
+		$this->assertSame( array( 'clau' => 'videos', 'fill' => 'v%c3%adleo-n%c3%ba-2' ), nep_seo_fill( 'ca/videos/v%c3%adleo-n%c3%ba-2' ) );
+		$this->assertSame( '/videos/v%c3%adleo-n%c3%ba-2/', nep_seo_ruta_parella_fill( 'ca/videos/v%c3%adleo-n%c3%ba-2' ) );
+		$this->assertSame( '/ca/videos/a-b_c-1/', nep_seo_ruta_parella_fill( 'videos/a-b_c-1' ) );
+		$this->assertNull( nep_seo_fill( 'videos/..' ) );
+		$this->assertNull( nep_seo_fill( 'videos//' ) );
+	}
+
+	public function test_no_es_filla_de_videos(): void {
+		foreach ( array( '', 'ca', 'videos', 'ca/videos', 'ca/simulador', 'simulador', 'videos/a/b', 'ca/videos/a/b', 'altre/videos/x', 'ca/ca/videos/x', 'misiones/x', 'ca/missions/x', 'VIDEOS/x' ) as $ruta ) {
+			$this->assertNull( nep_seo_fill( $ruta ), $ruta );
+			$this->assertNull( nep_seo_ruta_parella_fill( $ruta ), $ruta );
+		}
+	}
+
+	public function test_hreflang_de_filla_amb_i_sense_parella(): void {
+		$es = 'https://noempesquen.cat/videos/x/';
+		$ca = 'https://noempesquen.cat/ca/videos/x/';
+		$this->assertSame( nep_seo_alternates( array( 'es' => $es, 'ca' => $ca ) ), nep_seo_alternates_fill( array( 'es' => $es, 'ca' => $ca ), 'ca' ) );
+		// Sense parella: només el seu propi hreflang, sense x-default.
+		$this->assertSame( array( array( 'hreflang' => 'ca', 'href' => $ca ) ), nep_seo_alternates_fill( array( 'ca' => $ca ), 'ca' ) );
+		$this->assertSame( array( array( 'hreflang' => 'es', 'href' => $es ) ), nep_seo_alternates_fill( array( 'es' => $es ), 'es' ) );
+		$this->assertSame( array(), nep_seo_alternates_fill( array(), 'es' ) );
+	}
+
 	public function test_og_locale(): void {
 		$this->assertSame( 'es_ES', nep_seo_og_locale( 'es' ) );
 		$this->assertSame( 'ca_ES', nep_seo_og_locale( 'ca' ) );

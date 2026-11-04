@@ -55,6 +55,80 @@ function nep_seo_urls( string $clau ): array {
 }
 
 /**
+ * Filla publicada de la pàgina `videos` d'un idioma (`/videos/<fill>/` o `/ca/videos/<fill>/`).
+ *
+ * @param string $fill   Slug de la filla.
+ * @param string $idioma `es`|`ca`.
+ * @return WP_Post|null
+ */
+function nep_seo_post_fill( string $fill, string $idioma ): ?WP_Post {
+	$pare = nep_seo_post( 'videos', $idioma );
+	if ( ! $pare || '' === $fill ) {
+		return null;
+	}
+	$post = get_page_by_path( ltrim( nep_seo_ruta_fill( $fill, $idioma ), '/' ) );
+	return $post instanceof WP_Post && 'page' === $post->post_type && 'publish' === $post->post_status
+		&& (int) $post->post_parent === (int) $pare->ID ? $post : null;
+}
+
+/**
+ * Filla de `videos` que és una pàgina (`fill` i `idioma`), o null.
+ *
+ * @param WP_Post $post Pàgina.
+ * @return array{clau: string, fill: string, idioma: string}|null
+ */
+function nep_seo_fill_post( WP_Post $post ): ?array {
+	if ( 'page' !== $post->post_type || ! $post->post_parent ) {
+		return null;
+	}
+	$ruta = get_page_uri( $post );
+	$fill = is_string( $ruta ) ? nep_seo_fill( $ruta ) : null;
+	if ( ! $fill ) {
+		return null;
+	}
+	$fill['idioma'] = nep_idioma_de_ruta( '/' . $ruta );
+	return $fill;
+}
+
+/**
+ * Hreflang d'una filla de `videos`: URLs de la filla i de la parella (si està publicada).
+ *
+ * @param WP_Post $post Pàgina filla.
+ * @return array<int, array{hreflang: string, href: string}>
+ */
+function nep_seo_alternates_post_fill( WP_Post $post ): array {
+	$fill = nep_seo_fill_post( $post );
+	if ( ! $fill ) {
+		return array();
+	}
+	$urls = array();
+	foreach ( nep_idiomes() as $idioma ) {
+		$germana = nep_seo_post_fill( $fill['fill'], $idioma );
+		if ( $germana ) {
+			$urls[ $idioma ] = (string) get_permalink( $germana );
+		}
+	}
+	return nep_seo_alternates_fill( $urls, $fill['idioma'] );
+}
+
+/**
+ * URL de la pàgina actual en un altre idioma quan és una filla de `videos`: la parella si
+ * està publicada; si no, la pàgina `videos` d'aquell idioma. Null si no és una filla.
+ *
+ * @param string $idioma `es`|`ca`.
+ * @return string|null
+ */
+function nep_seo_url_fill_actual( string $idioma ): ?string {
+	$post = is_page() ? get_queried_object() : null;
+	$fill = $post instanceof WP_Post ? nep_seo_fill_post( $post ) : null;
+	if ( ! $fill ) {
+		return null;
+	}
+	$parella = nep_seo_post_fill( $fill['fill'], $idioma );
+	return $parella ? (string) get_permalink( $parella ) : nep_url_pagina( 'videos', $idioma );
+}
+
+/**
  * Clau i idioma de la petició actual, o null si no és una pàgina del mapa.
  *
  * @return array{clau: string, idioma: string}|null
@@ -81,18 +155,28 @@ function nep_seo_pagina_actual(): ?array {
 add_action(
 	'wp_head',
 	static function () {
-		$pagina = nep_seo_pagina_actual();
-		if ( ! $pagina ) {
-			return;
+		$objecte = is_page() ? get_queried_object() : null;
+		$fill    = $objecte instanceof WP_Post ? nep_seo_fill_post( $objecte ) : null;
+		if ( $fill ) {
+			// Filla de `videos`: sense parella, només el seu hreflang (i cap og:locale:alternate).
+			$pagina     = $fill;
+			$alternates = nep_seo_alternates_post_fill( $objecte );
+			$parella    = count( $alternates ) > 1;
+		} else {
+			$pagina = nep_seo_pagina_actual();
+			if ( ! $pagina ) {
+				return;
+			}
+			$alternates = nep_seo_alternates( nep_seo_urls( $pagina['clau'] ) );
+			$parella    = (bool) $alternates;
 		}
-		$alternates = nep_seo_alternates( nep_seo_urls( $pagina['clau'] ) );
 		foreach ( $alternates as $enllac ) {
 			printf( '<link rel="alternate" hreflang="%s" href="%s">' . "\n", esc_attr( $enllac['hreflang'] ), esc_url( $enllac['href'] ) );
 		}
 		if ( ! defined( 'THE_SEO_FRAMEWORK_VERSION' ) ) {
 			printf( '<meta property="og:locale" content="%s">' . "\n", esc_attr( nep_seo_og_locale( $pagina['idioma'] ) ) );
 		}
-		if ( $alternates ) {
+		if ( $parella ) {
 			foreach ( nep_idiomes() as $idioma ) {
 				if ( $idioma !== $pagina['idioma'] ) {
 					printf( '<meta property="og:locale:alternate" content="%s">' . "\n", esc_attr( nep_seo_og_locale( $idioma ) ) );
@@ -141,7 +225,35 @@ function nep_seo_ids_mapa(): array {
 			$ids[] = (int) $antiga->ID;
 		}
 	}
+	foreach ( nep_idiomes() as $idioma ) {
+		foreach ( nep_seo_posts_fills( $idioma ) as $post ) {
+			$ids[] = (int) $post->ID;
+		}
+	}
 	return array_values( array_unique( $ids ) );
+}
+
+/**
+ * Filles publicades de la pàgina `videos` d'un idioma (per al sitemap d'aquell idioma).
+ *
+ * @param string $idioma `es`|`ca`.
+ * @return WP_Post[]
+ */
+function nep_seo_posts_fills( string $idioma ): array {
+	$pare = nep_seo_post( 'videos', $idioma );
+	if ( ! $pare ) {
+		return array();
+	}
+	return get_posts(
+		array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'post_parent'    => (int) $pare->ID,
+			'posts_per_page' => -1,
+			'orderby'        => 'menu_order title',
+			'order'          => 'ASC',
+		)
+	);
 }
 
 add_filter(
