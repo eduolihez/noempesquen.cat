@@ -143,7 +143,7 @@ final class VideoNucliTest extends TestCase {
 		$this->assertStringContainsString( '<time datetime="PT3M5S">3 min 5 s</time>', $html );
 		$this->assertStringContainsString( 'Pesca per correu', $html );
 		$this->assertStringContainsString( 'href="https://exemple.cat/ca.vtt" download', $html );
-		$this->assertStringContainsString( '<details class="nep-video__transcripcio"><summary>Transcripció</summary>', $html );
+		$this->assertStringContainsString( '<details class="nep-video__transcripcio"><summary><h2 class="nep-video__titol-transcripcio">Transcripció</h2></summary>', $html );
 		$this->assertStringContainsString( '<p>Hola</p>', $html );
 		$this->assertStringContainsString( 'href="https://exemple.cat/ca/simulador/"', $html );
 		$this->assertStringContainsString( 'La factura de la llum', $html );
@@ -232,5 +232,41 @@ final class VideoNucliTest extends TestCase {
 		$this->assertStringContainsString( '<time datetime="PT1M5S">1 min 5 s</time>', $html );
 		$this->assertStringNotContainsString( 'Sense enllaç', $html );
 		$this->assertLessThan( strpos( $html, 'Segon' ), strpos( $html, 'Primer' ) );
+	}
+
+	public function test_titol_h1_i_aria_label() {
+		$html = nep_video_html(
+			array(
+				'video'        => 'https://exemple.cat/v.mp4',
+				'titol'        => 'Pesca <b>per</b> correu',
+				'transcripcio' => '<p>Hola</p>',
+			)
+		);
+		$this->assertSame( 1, substr_count( $html, '<h1' ) );
+		$this->assertStringContainsString( '<h1 class="nep-video__titol">Pesca &lt;b&gt;per&lt;/b&gt; correu</h1>', $html );
+		$this->assertLessThan( strpos( $html, '<video' ), strpos( $html, '<h1' ) );
+		$this->assertStringContainsString( 'aria-label="Pesca &lt;b&gt;per&lt;/b&gt; correu"', $html );
+		$this->assertStringContainsString( '<summary><h2 class="nep-video__titol-transcripcio">', $html );
+	}
+
+	public function test_sense_titol_no_hi_ha_h1_ni_aria_label() {
+		$html = nep_video_html( array( 'video' => 'https://exemple.cat/v.mp4' ) );
+		$this->assertStringNotContainsString( '<h1', $html );
+		$this->assertStringNotContainsString( 'aria-label', $html );
+	}
+
+	public function test_sense_video_nomes_pinta_avis_si_n_hi_ha() {
+		$this->assertSame( '', nep_video_html( array( 'video' => '' ) ) );
+		$html = nep_video_html(
+			array(
+				'video'  => '',
+				'titol'  => 'T',
+				'avis'   => 'Aquest bloc no té cap vídeo.',
+				'atributs' => 'class="nep-video"',
+			)
+		);
+		$this->assertStringContainsString( '<p class="nep-video__avis">Aquest bloc no té cap vídeo.</p>', $html );
+		$this->assertStringNotContainsString( '<h1', $html );
+		$this->assertStringNotContainsString( '<video', $html );
 	}
 }

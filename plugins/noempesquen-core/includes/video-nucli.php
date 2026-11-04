@@ -159,6 +159,8 @@ function nep_video_html_durada( $segons ): string {
  *
  * @param array $d {
  *     @type string      $atributs     Atributs del contenidor, ja escapats (get_block_wrapper_attributes).
+ *     @type string      $titol        Títol de la pàgina: es pinta com a h1 i és l'`aria-label` del vídeo.
+ *     @type string      $avis         Avís per a qui edita quan no hi ha vídeo (buit = no es pinta res).
  *     @type string      $video        URL del MP4 (obligatori; si és buit no es pinta res).
  *     @type string      $poster       URL de la imatge de portada.
  *     @type array       $pistes       Sortida de nep_video_pistes().
@@ -172,14 +174,20 @@ function nep_video_html_durada( $segons ): string {
 function nep_video_html( array $d ): string {
 	$video = esc_url( (string) ( $d['video'] ?? '' ) );
 	if ( '' === $video ) {
-		return '';
+		$avis = trim( (string) ( $d['avis'] ?? '' ) );
+		if ( '' === $avis ) {
+			return '';
+		}
+		return '<div ' . (string) ( $d['atributs'] ?? 'class="nep-video"' ) . '><p class="nep-video__avis">' . esc_html( $avis ) . '</p></div>';
 	}
+	$titol  = trim( (string) ( $d['titol'] ?? '' ) );
 	$poster = esc_url( (string) ( $d['poster'] ?? '' ) );
 	$pistes = is_array( $d['pistes'] ?? null ) ? $d['pistes'] : array();
 
 	$h  = '<div ' . (string) ( $d['atributs'] ?? 'class="nep-video"' ) . '>';
+	$h .= '' !== $titol ? '<h1 class="nep-video__titol">' . esc_html( $titol ) . '</h1>' : '';
 	$h .= '<figure class="nep-video__figura"><div class="nep-video__marc">';
-	$h .= '<video controls playsinline preload="metadata"' . ( '' !== $poster ? ' poster="' . $poster . '"' : '' ) . '>';
+	$h .= '<video controls playsinline preload="metadata"' . ( '' !== $titol ? ' aria-label="' . esc_attr( $titol ) . '"' : '' ) . ( '' !== $poster ? ' poster="' . $poster . '"' : '' ) . '>';
 	$h .= '<source src="' . $video . '" type="video/mp4">';
 	foreach ( $pistes as $p ) {
 		$src = esc_url( (string) ( $p['src'] ?? '' ) );
@@ -220,7 +228,7 @@ function nep_video_html( array $d ): string {
 
 	$transcripcio = wp_kses_post( (string) ( $d['transcripcio'] ?? '' ) );
 	if ( '' !== trim( strip_tags( $transcripcio ) ) ) {
-		$h .= '<details class="nep-video__transcripcio"><summary>' . esc_html( __( 'Transcripció', 'noempesquen' ) ) . '</summary>';
+		$h .= '<details class="nep-video__transcripcio"><summary><h2 class="nep-video__titol-transcripcio">' . esc_html( __( 'Transcripció', 'noempesquen' ) ) . '</h2></summary>';
 		$h .= '<div class="nep-video__text">' . $transcripcio . '</div></details>';
 	}
 

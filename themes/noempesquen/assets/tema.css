@@ -975,7 +975,7 @@ html {
 
 .nep-targeta-video__titol a:focus-visible { outline: none; }
 
-.nep-targeta-video:focus-within {
+.nep-targeta-video:has(a:focus-visible) {
 	outline: 4px solid var(--nep-focus);
 	outline-offset: 3px;
 }
@@ -1002,6 +1002,21 @@ html {
 .nep-video {
 	max-width: 64rem;
 	margin-inline: auto;
+}
+
+.nep-video__titol {
+	margin: 0 0 1.25rem;
+	font-family: var(--nep-rotul);
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.nep-video__avis {
+	margin: 0;
+	padding: 0.75rem 1rem;
+	border: 2px dashed var(--nep-tinta);
+	border-radius: 10px;
+	font-size: 1rem;
 }
 
 .nep-video__figura { margin: 0; }
@@ -1056,6 +1071,12 @@ html {
 	margin-top: 2rem;
 	border-top: 4px solid var(--nep-tinta);
 	border-bottom: 2px dashed var(--nep-tinta);
+}
+
+.nep-video__titol-transcripcio {
+	margin: 0;
+	font: inherit;
+	text-transform: inherit;
 }
 
 .nep-video__transcripcio summary {

@@ -11,18 +11,8 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/video-nucli.php';
 
 /*
- * VTT a la biblioteca, només per a qui ja pot pujar fitxers. No s'hi afegeix cap altre tipus.
+ * WP core ja accepta `.vtt` a upload_mimes (comprovat a wp-env, WP 7.1); només cal el reconeixement per contingut.
  */
-add_filter(
-	'upload_mimes',
-	static function ( $mimes ) {
-		if ( is_array( $mimes ) && current_user_can( 'upload_files' ) ) {
-			$mimes['vtt'] = 'text/vtt';
-		}
-		return $mimes;
-	}
-);
-
 // finfo veu un .vtt com a text/plain: si WP no l'ha reconegut, s'accepta com a text/vtt.
 add_filter(
 	'wp_check_filetype_and_ext',
