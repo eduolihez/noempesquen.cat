@@ -1004,6 +1004,11 @@ html {
 	margin-inline: auto;
 }
 
+/* En pantallas estrechas el contenido de página no tiene margen lateral. */
+@media (max-width: 47.9375rem) {
+	.nep-video { padding-inline: 1.25rem; }
+}
+
 .nep-video__titol {
 	margin: 0 0 1.25rem;
 	font-family: var(--nep-rotul);
