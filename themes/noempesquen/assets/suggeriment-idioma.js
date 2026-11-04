@@ -25,7 +25,7 @@
 		}
 		avis.hidden = true;
 		// El focus no es perd: va al selector d'idioma de la capçalera.
-		var selector = document.querySelector( '.nep-idioma__enllac' );
+		var selector = document.querySelector( '.nep-idioma__boto' );
 		if ( selector ) {
 			selector.focus();
 		}

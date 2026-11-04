@@ -30,12 +30,13 @@ Descartado: el filtro `page_template_hierarchy` (menos visible en el editor de s
 - No queda ningún slug fijo en plantillas ni patterns.
 
 ## Selector de idioma (header)
-- Es un `<nav aria-label="Idioma">` (traducido) con un enlace estático a la página equivalente del otro idioma, que se busca con `nep_tema_clau_actual()`. Si la página no tiene equivalente, el enlace va a la portada del otro idioma.
-- El texto visible está en el idioma de destino («Català» / «Castellano»), con `lang` y `hreflang`.
-- El `aria-label` va en el `nav` y no en el enlace, para cumplir WCAG 2.5.3 (la etiqueta tiene que coincidir con el texto visible).
-- Objetivo de 44 px, foco visible con el `:focus-visible` global y sin JS.
+- Cabecera en tres zonas (desde 72 rem): logo a la izquierda, páginas centradas y, a la derecha del todo, icono de cuenta y selector de idioma. Por debajo, el menú pasa a una segunda fila centrada; en móvil (≤ 37,4 rem) quedan logo, idioma y hamburguesa, y «El meu compte» y «Entra a jugar» van dentro de la hamburguesa. «Entra a jugar» ya no es un botón de la cabecera.
+- Es un `<nav aria-label="Idioma">` con un `<details>` desplegable. El botón (`summary`) enseña el idioma actual («Castellano» / «Català»; «ES» / «CA» en móvil) y la lista ofrece los dos idiomas como enlaces estáticos a la página equivalente (`nep_tema_clau_actual()`), con `lang`, `hreflang` y `aria-current="true"` en el actual. Si la página no tiene equivalente, el enlace va a la portada del otro idioma.
+- `assets/idioma-desplegable.js` cierra con Esc (devolviendo el foco al botón), con clic fuera y al salir el foco. Sin JS el `<details>` se abre y se cierra igualmente.
+- El `aria-label` va en el `nav`, no en el botón. Objetivos de 44 px, foco visible con el `:focus-visible` global y flecha sin animación si `prefers-reduced-motion`.
+- Clase del icono de cuenta: `nep-capcalera__compte` (no `nep-compte`, que es del bloque de cuenta).
 - Los `<link hreflang>` del `<head>` los pone el plugin (ver `docs/despliegue-i18n.md`, sección SEO).
 
 ## Caché de patterns
-- Los patterns se cachean. La migración llama a `delete_pattern_cache()` y el tema sube a `Version: 0.2.0`.
+- Los patterns se cachean. La migración llama a `delete_pattern_cache()` y el tema sube de `Version`.
 - Si cambias un pattern sin subir la versión del tema, borra la caché (`delete_pattern_cache()` o subir versión) o el cambio no se verá.
