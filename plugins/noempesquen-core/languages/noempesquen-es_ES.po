@@ -39,6 +39,9 @@ msgstr "Todos los vídeos"
 msgid "Simulador gratuït d’estafes digitals per aprendre a detectar-les, amb vídeos curts subtitulats."
 msgstr "Simulador gratuito de estafas digitales para aprender a detectarlas, con vídeos cortos subtitulados."
 
+msgid "Vídeos"
+msgstr "Vídeos"
+
 #: includes/acces-admin.php:37
 msgid "La pàgina que busques no existeix."
 msgstr "La página que buscas no existe."
