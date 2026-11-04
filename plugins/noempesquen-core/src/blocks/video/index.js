@@ -74,7 +74,7 @@ function Fitxer( { etiqueta, id, tipus, onCanvia } ) {
 	);
 }
 
-function Edit( { attributes, setAttributes } ) {
+function Edit( { attributes, setAttributes, clientId } ) {
 	const { video, poster, subtitolsCa, subtitolsEs, durada, missio, tema } =
 		attributes;
 	const { mediaVideo, mediaPoster } = useSelect(
@@ -83,6 +83,20 @@ function Edit( { attributes, setAttributes } ) {
 			mediaPoster: poster ? select( coreStore ).getMedia( poster ) : null,
 		} ),
 		[ video, poster ]
+	);
+	const transcripcioBuida = useSelect(
+		( select ) =>
+			! select( 'core/block-editor' )
+				.getBlocks( clientId )
+				.some( ( b ) => {
+					const t = b.attributes?.content;
+					return (
+						'core/list' === b.name ||
+						( typeof t === 'string' ? t : t?.text || '' ).trim() !==
+							''
+					);
+				} ),
+		[ clientId ]
 	);
 	const blockProps = useBlockProps( { className: 'nep-video' } );
 	const innerBlocksProps = useInnerBlocksProps(
@@ -104,6 +118,14 @@ function Edit( { attributes, setAttributes } ) {
 	}
 	if ( ! subtitolsCa && ! subtitolsEs ) {
 		avisos.push( __( 'Falten els subtítols (VTT).', 'noempesquen' ) );
+	}
+	if ( transcripcioBuida ) {
+		avisos.push(
+			__(
+				'Falta la transcripció: sense ella, la pàgina no cobreix l’alternativa en text del vídeo.',
+				'noempesquen'
+			)
+		);
 	}
 
 	return (
@@ -153,7 +175,7 @@ function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						label={ __( 'Durada (segons)', 'noempesquen' ) }
 						help={ __(
-							'Si la deixes a 0, es fa servir la que WordPress llegeix del fitxer.',
+							'Opcional: només es fa servir si WordPress no pot llegir la durada del fitxer MP4.',
 							'noempesquen'
 						) }
 						value={ durada || '' }

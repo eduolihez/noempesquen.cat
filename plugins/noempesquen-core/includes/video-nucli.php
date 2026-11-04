@@ -472,3 +472,22 @@ function nep_video_og( array $d ): array {
 	}
 	return $etiq;
 }
+
+/**
+ * Text de `llms.txt` (Markdown): web, vídeos publicats i simulador.
+ *
+ * @param array $d `{nom, resum, videos: [{titol, url}], url_videos, url_simulador}`.
+ * @return string
+ */
+function nep_llms_text( array $d ): string {
+	$t = '# ' . trim( (string) ( $d['nom'] ?? '' ) ) . "\n\n";
+	if ( '' !== trim( (string) ( $d['resum'] ?? '' ) ) ) {
+		$t .= '> ' . trim( (string) $d['resum'] ) . "\n\n";
+	}
+	$t .= "## Simulador\n\n- [" . __( 'Simulador d’estafes digitals', 'noempesquen' ) . '](' . (string) ( $d['url_simulador'] ?? '' ) . ")\n\n";
+	$t .= "## Vídeos\n\n- [" . __( 'Tots els vídeos', 'noempesquen' ) . '](' . (string) ( $d['url_videos'] ?? '' ) . ")\n";
+	foreach ( (array) ( $d['videos'] ?? array() ) as $v ) {
+		$t .= '- [' . str_replace( array( '[', ']' ), '', (string) $v['titol'] ) . '](' . (string) $v['url'] . ")\n";
+	}
+	return $t;
+}

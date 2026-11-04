@@ -350,4 +350,13 @@ Un & dos", nep_video_transcripcio_text( $blocs ) );
 		}
 		$this->assertSame( $cues['ca'], $cues['es'] );
 	}
+
+	public function test_llms_text() {
+		$t = nep_llms_text( array( 'nom' => 'Web', 'resum' => 'R', 'videos' => array( array( 'titol' => 'A [x]', 'url' => 'https://e.cat/v/a/' ) ), 'url_videos' => 'https://e.cat/v/', 'url_simulador' => 'https://e.cat/s/' ) );
+		$this->assertStringStartsWith( "# Web
+
+> R", $t );
+		$this->assertStringContainsString( '- [A x](https://e.cat/v/a/)', $t );
+		$this->assertStringContainsString( '(https://e.cat/s/)', $t );
+	}
 }
