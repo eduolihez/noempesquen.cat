@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "noempesquen/galeria-videos",
+	"title": "Galeria de vídeos No em pesquen",
+	"category": "media",
+	"icon": "playlist-video",
+	"description": "Llista de les pàgines de vídeo (filles de Vídeos) de l'idioma actual.",
+	"textdomain": "noempesquen",
+	"supports": { "html": false, "multiple": false },
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

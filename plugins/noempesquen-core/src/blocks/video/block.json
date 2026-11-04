@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "noempesquen/video",
+	"title": "Vídeo No em pesquen",
+	"category": "media",
+	"icon": "video-alt3",
+	"description": "Vídeo propi amb subtítols en català i castellà, transcripció i enllaç a la missió del simulador.",
+	"textdomain": "noempesquen",
+	"attributes": {
+		"video": { "type": "integer", "default": 0 },
+		"poster": { "type": "integer", "default": 0 },
+		"subtitolsCa": { "type": "integer", "default": 0 },
+		"subtitolsEs": { "type": "integer", "default": 0 },
+		"durada": { "type": "integer", "default": 0 },
+		"missio": { "type": "string", "default": "" },
+		"tema": { "type": "string", "default": "" }
+	},
+	"supports": { "html": false, "multiple": false },
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
