@@ -37,11 +37,6 @@ msgstr "Duración:"
 msgid "Tema:"
 msgstr "Tema:"
 
-#: includes/video-nucli.php:218
-#, js-format
-msgid "Descarrega els subtítols: %s (VTT)"
-msgstr "Descarga los subtítulos: %s (VTT)"
-
 #: includes/video-nucli.php:231
 msgid "Transcripció"
 msgstr "Transcripción"
@@ -50,10 +45,6 @@ msgstr "Transcripción"
 #, js-format
 msgid "Juga la missió «%s» al simulador"
 msgstr "Juega la misión «%s» en el simulador"
-
-#: includes/video-nucli.php:279
-msgid "Encara no hi ha cap vídeo."
-msgstr "Todavía no hay ningún vídeo."
 
 #: includes/videos.php:111
 msgid "Aquest bloc no té cap vídeo."
@@ -120,10 +111,6 @@ msgid "Durada (segons)"
 msgstr "Duración (segundos)"
 
 #: src/blocks/video/index.js
-msgid "Si la deixes a 0, es fa servir la que WordPress llegeix del fitxer."
-msgstr "Si la dejas en 0, se usa la que WordPress lee del archivo."
-
-#: src/blocks/video/index.js
 msgid "Tema"
 msgstr "Tema"
 
@@ -158,3 +145,30 @@ msgstr "Vídeo No em pesquen"
 msgctxt "block description"
 msgid "Vídeo propi amb subtítols en català i castellà, transcripció i enllaç a la missió del simulador."
 msgstr "Vídeo propio con subtítulos en catalán y castellano, transcripción y enlace a la misión del simulador."
+
+msgid "Encara no hi ha cap vídeo. Aquí hi trobaràs vídeos curts amb subtítols i transcripció que expliquen com detectar estafes digitals."
+msgstr "Todavía no hay ningún vídeo. Aquí encontrarás vídeos cortos con subtítulos y transcripción que explican cómo detectar estafas digitales."
+
+msgid "Mentrestant, prova el simulador"
+msgstr "Mientras tanto, prueba el simulador"
+
+msgid "Vídeos sobre estafes digitals amb subtítols"
+msgstr "Vídeos sobre estafas digitales con subtítulos"
+
+msgid "Vídeos curts amb subtítols i transcripció per aprendre a detectar estafes digitals abans que et pesquin. Després, practica al simulador."
+msgstr "Vídeos cortos con subtítulos y transcripción para aprender a detectar estafas digitales antes de que te pesquen. Después, practica en el simulador."
+
+msgid "Falta la transcripció: sense ella, la pàgina no cobreix l’alternativa en text del vídeo."
+msgstr "Falta la transcripción: sin ella, la página no ofrece la alternativa en texto del vídeo."
+
+msgid "Opcional: només es fa servir si WordPress no pot llegir la durada del fitxer MP4."
+msgstr "Opcional: solo se usa si WordPress no puede leer la duración del archivo MP4."
+
+msgid "Simulador d’estafes digitals"
+msgstr "Simulador de estafas digitales"
+
+msgid "Tots els vídeos"
+msgstr "Todos los vídeos"
+
+msgid "Simulador gratuït d’estafes digitals per aprendre a detectar-les, amb vídeos curts subtitulats."
+msgstr "Simulador gratuito de estafas digitales para aprender a detectarlas, con vídeos cortos subtitulados."

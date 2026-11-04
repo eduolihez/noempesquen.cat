@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-04T11:51:00+00:00\n"
+"POT-Creation-Date: 2026-11-04T14:03:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: noempesquen\n"
@@ -533,8 +533,24 @@ msgstr ""
 msgid "No s'ha pogut llegir el resum."
 msgstr ""
 
+#: includes/llms.php:37
+msgid "Simulador gratuït d’estafes digitals per aprendre a detectar-les, amb vídeos curts subtitulats."
+msgstr ""
+
 #: includes/rest.php:58
 msgid "No s'ha trobat la missió."
+msgstr ""
+
+#: includes/seo-videos.php:104
+msgid "Vídeos sobre estafes digitals amb subtítols"
+msgstr ""
+
+#: includes/seo-videos.php:117
+msgid "Vídeos curts amb subtítols i transcripció per aprendre a detectar estafes digitals abans que et pesquin. Després, practica al simulador."
+msgstr ""
+
+#: includes/seo-videos.php:249
+msgid "Vídeos"
 msgstr ""
 
 #. translators: %d: hores.
@@ -557,40 +573,47 @@ msgstr ""
 msgid "%d s"
 msgstr ""
 
-#: includes/video-nucli.php:199
+#: includes/video-nucli.php:253
 msgid "Descarrega el vídeo (MP4)"
 msgstr ""
 
-#: includes/video-nucli.php:205
+#: includes/video-nucli.php:259
 msgid "Durada:"
 msgstr ""
 
-#: includes/video-nucli.php:209
+#: includes/video-nucli.php:263
 msgid "Tema:"
 msgstr ""
 
-#. translators: %s: nom de l'idioma dels subtítols (Català, Castellano).
-#: includes/video-nucli.php:218
-#, php-format
-msgid "Descarrega els subtítols: %s (VTT)"
-msgstr ""
-
-#: includes/video-nucli.php:231
-#: src/blocks/video/index.js:226
+#: includes/video-nucli.php:273
+#: includes/video-nucli.php:274
+#: src/blocks/video/index.js:248
 msgid "Transcripció"
 msgstr ""
 
 #. translators: %s: títol de la missió del simulador.
-#: includes/video-nucli.php:240
+#: includes/video-nucli.php:283
 #, php-format
 msgid "Juga la missió «%s» al simulador"
 msgstr ""
 
-#: includes/video-nucli.php:279
-msgid "Encara no hi ha cap vídeo."
+#: includes/video-nucli.php:326
+msgid "Encara no hi ha cap vídeo. Aquí hi trobaràs vídeos curts amb subtítols i transcripció que expliquen com detectar estafes digitals."
 msgstr ""
 
-#: includes/videos.php:111
+#: includes/video-nucli.php:329
+msgid "Mentrestant, prova el simulador"
+msgstr ""
+
+#: includes/video-nucli.php:487
+msgid "Simulador d’estafes digitals"
+msgstr ""
+
+#: includes/video-nucli.php:488
+msgid "Tots els vídeos"
+msgstr ""
+
+#: includes/videos.php:104
 msgid "Aquest bloc no té cap vídeo."
 msgstr ""
 
@@ -1302,7 +1325,7 @@ msgid "Foto"
 msgstr ""
 
 #: src/blocks/simulador/apps/camera/Camera.js:60
-#: src/blocks/video/index.js:212
+#: src/blocks/video/index.js:234
 msgid "Vídeo"
 msgstr ""
 
@@ -3425,59 +3448,63 @@ msgstr ""
 msgid "Treu"
 msgstr ""
 
-#: src/blocks/video/index.js:99
+#: src/blocks/video/index.js:113
 msgid "Falta el vídeo MP4: sense vídeo, la pàgina pública no mostra res."
 msgstr ""
 
-#: src/blocks/video/index.js:106
+#: src/blocks/video/index.js:120
 msgid "Falten els subtítols (VTT)."
 msgstr ""
 
-#: src/blocks/video/index.js:112
+#: src/blocks/video/index.js:124
+msgid "Falta la transcripció: sense ella, la pàgina no cobreix l’alternativa en text del vídeo."
+msgstr ""
+
+#: src/blocks/video/index.js:134
 msgid "Fitxers"
 msgstr ""
 
-#: src/blocks/video/index.js:114
+#: src/blocks/video/index.js:136
 msgid "Vídeo (MP4)"
 msgstr ""
 
-#: src/blocks/video/index.js:120
+#: src/blocks/video/index.js:142
 msgid "Imatge de portada"
 msgstr ""
 
-#: src/blocks/video/index.js:126
+#: src/blocks/video/index.js:148
 msgid "Subtítols en català (VTT)"
 msgstr ""
 
-#: src/blocks/video/index.js:137
+#: src/blocks/video/index.js:159
 msgid "Subtítols en castellà (VTT)"
 msgstr ""
 
-#: src/blocks/video/index.js:148
+#: src/blocks/video/index.js:170
 msgid "Dades"
 msgstr ""
 
-#: src/blocks/video/index.js:154
+#: src/blocks/video/index.js:176
 msgid "Durada (segons)"
 msgstr ""
 
-#: src/blocks/video/index.js:155
-msgid "Si la deixes a 0, es fa servir la que WordPress llegeix del fitxer."
+#: src/blocks/video/index.js:177
+msgid "Opcional: només es fa servir si WordPress no pot llegir la durada del fitxer MP4."
 msgstr ""
 
-#: src/blocks/video/index.js:169
+#: src/blocks/video/index.js:191
 msgid "Tema"
 msgstr ""
 
-#: src/blocks/video/index.js:176
+#: src/blocks/video/index.js:198
 msgid "Id de la missió"
 msgstr ""
 
-#: src/blocks/video/index.js:177
+#: src/blocks/video/index.js:199
 msgid "Per exemple, llissa-01-factura. Si no existeix, no es mostra l’enllaç al simulador."
 msgstr ""
 
-#: src/blocks/video/index.js:213
+#: src/blocks/video/index.js:235
 msgid "Puja un MP4 o tria’l de la biblioteca."
 msgstr ""
 

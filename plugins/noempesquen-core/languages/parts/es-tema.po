@@ -590,3 +590,7 @@ msgstr "Vídeos"
 msgctxt "tema"
 msgid "Vídeos curts per aprendre a detectar estafes digitals abans que et pesquin."
 msgstr "Vídeos cortos para aprender a detectar estafas digitales antes de que te pesquen."
+
+msgctxt "tema"
+msgid "Navegació principal"
+msgstr "Navegación principal"
