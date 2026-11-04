@@ -454,6 +454,50 @@ msgstr "No se ha podido leer el resumen."
 msgid "No s'ha trobat la missió."
 msgstr "No se ha encontrado la misión."
 
+#: includes/video-nucli.php:67
+#, js-format
+msgid "%d h"
+msgstr "%d h"
+
+#: includes/video-nucli.php:75
+#, js-format
+msgid "%d s"
+msgstr "%d s"
+
+#: includes/video-nucli.php:199
+msgid "Descarrega el vídeo (MP4)"
+msgstr "Descarga el vídeo (MP4)"
+
+#: includes/video-nucli.php:205
+msgid "Durada:"
+msgstr "Duración:"
+
+#: includes/video-nucli.php:209
+msgid "Tema:"
+msgstr "Tema:"
+
+#: includes/video-nucli.php:218
+#, js-format
+msgid "Descarrega els subtítols: %s (VTT)"
+msgstr "Descarga los subtítulos: %s (VTT)"
+
+#: includes/video-nucli.php:231
+msgid "Transcripció"
+msgstr "Transcripción"
+
+#: includes/video-nucli.php:240
+#, js-format
+msgid "Juga la missió «%s» al simulador"
+msgstr "Juega la misión «%s» en el simulador"
+
+#: includes/video-nucli.php:279
+msgid "Encara no hi ha cap vídeo."
+msgstr "Todavía no hay ningún vídeo."
+
+#: includes/videos.php:111
+msgid "Aquest bloc no té cap vídeo."
+msgstr "Este bloque no tiene ningún vídeo."
+
 #. Plugin Name of the plugin
 #: noempesquen-core.php
 msgid "No em pesquen – Nucli"
@@ -864,6 +908,20 @@ msgstr "El mensaje no puede pasar de 2000 caracteres."
 #: src/blocks/contacte/textos.js
 msgid "Cal que acceptis l’avís de privacitat per poder enviar el missatge."
 msgstr "Tienes que aceptar el aviso de privacidad para poder enviar el mensaje."
+
+#: src/blocks/galeria-videos/block.json
+msgctxt "block title"
+msgid "Galeria de vídeos No em pesquen"
+msgstr "Galería de vídeos No em pesquen"
+
+#: src/blocks/galeria-videos/block.json
+msgctxt "block description"
+msgid "Llista de les pàgines de vídeo (filles de Vídeos) de l'idioma actual."
+msgstr "Lista de las páginas de vídeo (hijas de Vídeos) del idioma actual."
+
+#: src/blocks/galeria-videos/index.js
+msgid "Galeria de vídeos (llista les pàgines filles de Vídeos a la pàgina publicada)."
+msgstr "Galería de vídeos (lista las páginas hijas de Vídeos en la página publicada)."
 
 #: src/blocks/simulador/apps/ajustos/Ajustos.js:22 src/blocks/simulador/apps/ajustos/Subpantalla.js:67
 msgid "Wi-Fi"
@@ -3178,6 +3236,92 @@ msgstr "Paga solo los gastos de envío para recibir tu premio:"
 msgid "Sorteig del Barri · Sorteigs"
 msgstr "Sorteo del Barrio · Sorteos"
 
+#: src/blocks/video/block.json
+msgctxt "block title"
+msgid "Vídeo No em pesquen"
+msgstr "Vídeo No em pesquen"
+
+#: src/blocks/video/block.json
+msgctxt "block description"
+msgid "Vídeo propi amb subtítols en català i castellà, transcripció i enllaç a la missió del simulador."
+msgstr "Vídeo propio con subtítulos en catalán y castellano, transcripción y enlace a la misión del simulador."
+
+#: src/blocks/video/index.js
+msgid "Cap fitxer"
+msgstr "Ningún archivo"
+
+#: src/blocks/video/index.js
+msgid "Fitxer no trobat"
+msgstr "Archivo no encontrado"
+
+#: src/blocks/video/index.js
+msgid "Canvia"
+msgstr "Cambiar"
+
+#: src/blocks/video/index.js
+msgid "Tria"
+msgstr "Elegir"
+
+#: src/blocks/video/index.js
+msgid "Treu"
+msgstr "Quitar"
+
+#: src/blocks/video/index.js
+msgid "Falta el vídeo MP4: sense vídeo, la pàgina pública no mostra res."
+msgstr "Falta el vídeo MP4: sin vídeo, la página pública no muestra nada."
+
+#: src/blocks/video/index.js
+msgid "Falten els subtítols (VTT)."
+msgstr "Faltan los subtítulos (VTT)."
+
+#: src/blocks/video/index.js
+msgid "Fitxers"
+msgstr "Archivos"
+
+#: src/blocks/video/index.js
+msgid "Vídeo (MP4)"
+msgstr "Vídeo (MP4)"
+
+#: src/blocks/video/index.js
+msgid "Imatge de portada"
+msgstr "Imagen de portada"
+
+#: src/blocks/video/index.js
+msgid "Subtítols en català (VTT)"
+msgstr "Subtítulos en catalán (VTT)"
+
+#: src/blocks/video/index.js
+msgid "Subtítols en castellà (VTT)"
+msgstr "Subtítulos en castellano (VTT)"
+
+#: src/blocks/video/index.js
+msgid "Dades"
+msgstr "Datos"
+
+#: src/blocks/video/index.js
+msgid "Durada (segons)"
+msgstr "Duración (segundos)"
+
+#: src/blocks/video/index.js
+msgid "Si la deixes a 0, es fa servir la que WordPress llegeix del fitxer."
+msgstr "Si la dejas en 0, se usa la que WordPress lee del archivo."
+
+#: src/blocks/video/index.js
+msgid "Tema"
+msgstr "Tema"
+
+#: src/blocks/video/index.js
+msgid "Id de la missió"
+msgstr "Id de la misión"
+
+#: src/blocks/video/index.js
+msgid "Per exemple, llissa-01-factura. Si no existeix, no es mostra l’enllaç al simulador."
+msgstr "Por ejemplo, llissa-01-factura. Si no existe, no se muestra el enlace al simulador."
+
+#: src/blocks/video/index.js
+msgid "Puja un MP4 o tria’l de la biblioteca."
+msgstr "Sube un MP4 o elígelo de la biblioteca."
+
 #: src/editor-missio/index.js:70
 msgid "Cap error"
 msgstr "Ningún error"
@@ -3218,6 +3362,11 @@ msgstr "Misiones"
 msgctxt "tema"
 msgid "Sobre el projecte"
 msgstr "Sobre el proyecto"
+
+#: themes/noempesquen/patterns/capcalera.php:16 themes/noempesquen/patterns/peu.php:16 themes/noempesquen/patterns/videos.php:15
+msgctxt "tema"
+msgid "Vídeos"
+msgstr "Vídeos"
 
 #: themes/noempesquen/patterns/capcalera.php:17 themes/noempesquen/patterns/contacte.php:15 themes/noempesquen/patterns/peu.php:18 themes/noempesquen/patterns/sobre-el-projecte.php:41
 msgctxt "tema"
@@ -3768,3 +3917,8 @@ msgstr "<strong>Si nos escribes por el formulario de contacto</strong>, el mensa
 msgctxt "tema"
 msgid "Si tens un dubte, un suggeriment o has trobat un error, escriu-nos des de la pàgina de <a href=\"%s\">Contacte</a>."
 msgstr "Si tienes una duda, una sugerencia o has encontrado un error, escríbenos desde la página de <a href=\"%s\">Contacto</a>."
+
+#: themes/noempesquen/patterns/videos.php:16
+msgctxt "tema"
+msgid "Vídeos curts per aprendre a detectar estafes digitals abans que et pesquin."
+msgstr "Vídeos cortos para aprender a detectar estafas digitales antes de que te pesquen."

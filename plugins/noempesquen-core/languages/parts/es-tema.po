@@ -580,3 +580,13 @@ msgstr "El mensaje es demasiado largo."
 #: includes/contacte.php:187
 msgid "No s'ha pogut enviar el missatge. Torna-ho a provar d'aquí una estona."
 msgstr "No se ha podido enviar el mensaje. Vuelve a intentarlo dentro de un rato."
+
+#: themes/noempesquen/patterns/capcalera.php:16 themes/noempesquen/patterns/peu.php:16 themes/noempesquen/patterns/videos.php:15
+msgctxt "tema"
+msgid "Vídeos"
+msgstr "Vídeos"
+
+#: themes/noempesquen/patterns/videos.php:16
+msgctxt "tema"
+msgid "Vídeos curts per aprendre a detectar estafes digitals abans que et pesquin."
+msgstr "Vídeos cortos para aprender a detectar estafas digitales antes de que te pesquen."
