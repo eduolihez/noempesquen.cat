@@ -4,10 +4,10 @@ Cada vídeo es una página hija de «Vídeos», una en castellano y otra en cata
 
 ## Antes de subir nada (una sola vez en producción)
 
-1. **Límite de subida.** Dinahosting suele limitar `upload_max_filesize` y `post_max_size`. Mira Medios > Añadir nuevo: el texto «Tamaño máximo de subida» debe ser mayor que el MP4. Si no lo es, súbelo por FTP a `wp-content/uploads/` y regístralo con un plugin de importación, o pide a Dinahosting que suba el límite.
-2. **CSP y `media-src`.** Hoy el sitio no envía ninguna cabecera `Content-Security-Policy`. Si Dinahosting o el `.htaccess` añaden una, comprueba que `media-src 'self'` (o `default-src 'self'`) permite el MP4 y los `.vtt`, y que `img-src 'self'` permite el póster. Con la CSP puesta, abre una página de vídeo con la consola del navegador: no debe haber ningún aviso de «Refused to load media».
-3. **Tipos de archivo.** WordPress ya acepta `.mp4` y `.vtt`. El plugin reconoce además los `.vtt` que el servidor detecta como `text/plain`.
-4. **Sin terceros.** Los vídeos se sirven desde nuestro propio dominio, sin YouTube ni embeds. No cambies eso: el test e2e de «sin terceros ni cookies» fallaría.
+1. Límite de subida. Dinahosting suele limitar `upload_max_filesize` y `post_max_size`. En Medios > Añadir nuevo, el «Tamaño máximo de subida» debe ser mayor que el MP4. Si no lo es, súbelo por FTP a `wp-content/uploads/` y regístralo con un plugin de importación, o pide a Dinahosting que suba el límite.
+2. CSP y `media-src`. Hoy el sitio no envía ninguna cabecera `Content-Security-Policy`. Si Dinahosting o el `.htaccess` añaden una, comprueba que `media-src 'self'` (o `default-src 'self'`) permite el MP4 y los `.vtt`, y que `img-src 'self'` permite el póster. Con la CSP puesta, abre una página de vídeo con la consola del navegador: no debe salir ningún «Refused to load media».
+3. Tipos de archivo. WordPress ya acepta `.mp4` y `.vtt`. El plugin reconoce además los `.vtt` que el servidor detecta como `text/plain`.
+4. Sin terceros. Los vídeos se sirven desde nuestro dominio, sin YouTube ni embeds. Si lo cambias, falla el test e2e «sin terceros ni cookies».
 
 ## Preparar los archivos
 
@@ -20,19 +20,19 @@ Cada vídeo es una página hija de «Vídeos», una en castellano y otra en cata
 
 ## Pasos en wp-admin
 
-1. **Medios > Añadir nuevo:** sube el MP4, el póster y los dos `.vtt`.
-2. **Páginas > Añadir nueva** (castellano): título del vídeo; en «Página superior» elige **Vídeos**; el slug (por ejemplo `phishing-banco`) lo decides tú.
-3. Inserta el bloque **Vídeo** (`noempesquen/video`) y rellena en el panel lateral:
+1. En Medios > Añadir nuevo, sube el MP4, el póster y los dos `.vtt`.
+2. En Páginas > Añadir nueva (castellano), pon el título del vídeo, elige «Vídeos» en «Página superior» y decide el slug (por ejemplo `phishing-banco`).
+3. Inserta el bloque Vídeo (`noempesquen/video`) y rellena el panel lateral:
    - *Fitxers*: vídeo, imagen de portada y los subtítulos de cada idioma.
    - *Dades*: duración en segundos (solo como respaldo: la duración se toma de los metadatos del MP4 y este campo solo se usa si WordPress no puede leerla), tema y el id de la misión del simulador a la que enlaza (por ejemplo `llissa-01-factura`; opcional).
-4. Escribe la **transcripción** dentro del bloque (aparece desplegable bajo el vídeo). Pon un título de sección para cada bloque de texto, por ejemplo con encabezados `h3`.
+4. Escribe la transcripción dentro del bloque. Sale abierta bajo el vídeo y se puede plegar. Si es larga, divídela con encabezados `h3`.
 5. Publica.
-6. **Repite en catalán:** crea la página con el **mismo slug**, pero con la página superior **Vídeos** que cuelga de `ca` (`/ca/videos/`), título y transcripción en catalán, y el mismo vídeo con el póster. El slug idéntico es lo que enlaza las dos páginas (selector de idioma, hreflang, sitemap).
+6. Repite en catalán: crea la página con el mismo slug, con «Vídeos» como página superior (el que cuelga de `ca`, `/ca/videos/`), título y transcripción en catalán, y el mismo vídeo con el póster. El slug idéntico es lo que enlaza las dos páginas (selector de idioma, hreflang, sitemap).
 7. Comprueba en las dos URL (`/videos/<slug>/` y `/ca/videos/<slug>/`) que:
    - se ve el vídeo y su tarjeta en `/videos/` y `/ca/videos/`;
    - el selector de idioma lleva a la pareja;
    - los subtítulos del idioma de la página salen activados por defecto;
-   - la transcripción se abre con el teclado.
+   - la transcripción se pliega y se despliega con el teclado.
 
 Si una de las dos páginas no está publicada, la otra sigue funcionando pero sin hreflang ni enlace de pareja.
 
