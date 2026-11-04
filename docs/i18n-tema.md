@@ -4,6 +4,7 @@
 WordPress elige `page-{post_name}.html` por el slug propio de la página, no por su ruta. Por eso:
 - Las páginas CA (hijas de `/ca/`) siguen usando las plantillas catalanas: `page-com-funciona`, `page-missions`, `page-compte`, `page-contacte`, `page-sobre-el-projecte`.
 - Las ES tienen una plantilla mínima por slug: `page-como-funciona`, `page-misiones`, `page-cuenta`, `page-contacto`, `page-sobre-el-proyecto`.
+- `videos` usa `page-videos.html` en los dos idiomas (mismo slug, así que una sola plantilla) y el pattern `noempesquen/videos` con la galería. Los vídeos individuales (hijas de `videos`) no tienen plantilla propia: usan `page.html` y llevan el bloque `noempesquen/video` en el contenido, con el `<h1>` dentro del bloque.
 - `/ca/` (página `ca`) usa `page-ca.html`, igual que `front-page.html`.
 - Todas las plantillas son iguales: header, `<main id="contingut">`, `<!-- wp:pattern {"slug":"noempesquen/…"} /-->` y footer. Un par ES/CA apunta al mismo pattern.
 

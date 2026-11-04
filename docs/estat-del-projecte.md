@@ -28,6 +28,7 @@ Se está rehaciendo el simulador para que parezca un ordenador y un móvil reale
 | Pulido · corte D | Toast del PC compacto (ya no tapa respuestas de Parla), cabecera de Parla móvil apaisada más baja, chip de lupa dentro de la barra móvil, tarjeta del bloqueo móvil dentro de pantalla. Comprobaciones finales (2026-11-02): barra de título táctil a 44 px reales, botón de entrada del bloqueo PC a 14 px reales, PC vertical 768x1024 escalado sin desbordamiento, banner móvil con fondo opaco (antes transparentaba la cabecera de la app abierta), reloj del bloqueo con pila de fuentes genérica. Sin pendientes | **Hecho en `master` (d87b923, 2026-11-02), desplegado en producción (2026-11-03)** (lint 0 errores, unit 837, build ok; Playwright 305 pasan + 1 falla ajena `resum-estadistiques`) |
 | Pulido · corte F | Ilustración vectorial propia (trazo único azul mar, color plano, simétrica): Llissa y Remei con 4 estados (`ui/avatars.js`), pez de la home, hilo y anzuelo nuevos. Las 16 escenas de `ilustracions.js` se dejan como están (hacen de foto en las webs simuladas). Remei pierde el parche (chocaba con las gafas) | **Hecho en `master` (63bf70a) y desplegado en producción (2026-11-02)** (lint 0 errores, unit 837, build ok; Playwright 306 pasan) |
 | Post-despliegue F | Log de la causa del rechazo del alta (`nep_compte_log_alta`, sin datos personales; el alta fallaba por usar el correo del admin, anti-enumeración), fuente genérica del reloj, banner móvil opaco | **Hecho en `master` (`09ced1a`, `990a9f0` y el commit del banner), desplegado en producción (2026-11-03)** |
+| Vídeos de concienciación | Página `/videos/` · `/ca/videos/` con galería de tarjetas y una página hija por vídeo (mismo slug en ES y CA, sin CPT): bloques dinámicos `noempesquen/video` (`<video controls>` nativo, subtítulos ES/CA con `<track>`, transcripción desplegable, enlace a una misión) y `noempesquen/galeria-videos`; `.vtt` aceptado en la biblioteca; hreflang, selector de idioma y sitemap para las hijas; migración de páginas v2; `wp nep demo-videos` crea las páginas demo; tests e2e ES/CA (`tests/e2e/videos.spec.js`, `tests/e2e/es/videos.spec.js`) con axe, teclado, sin terceros ni cookies, 4 anchos y `prefers-reduced-motion`. Guía en `docs/afegir-un-video.md` | **Hecho en la rama `feat/videos` (sin mergear a `master`)** (ver el resultado de tests en el commit de cierre) |
 | Fase 3 · IA | IA, voz o llamadas | Fuera de alcance por ahora |
 
 ## Cómo retomar
@@ -60,6 +61,12 @@ Estado a 2026-11-03. Sin mergear a `master`.
 - Pendiente de código: `PENDENT.md` de `missions/es/` no existe en el repo (TODO); bundle +~100 KB (valorar `import()` por idioma); aviso de idioma del simulador siempre en catalán; `Vary: X-Nep-Lang` ya está en las respuestas REST.
 
 ## Pendientes conocidos
+
+### Pendiente tras la página de vídeos (rama `feat/videos`)
+
+- Sustituir el vídeo de muestra (póster plano, 6 s) por vídeos reales y revisar sus transcripciones (textos pendientes de revisión de Edu).
+- Antes de subir vídeos reales a Dinahosting: comprobar el límite de subida y que ninguna CSP bloquee `media-src` (ver `docs/afegir-un-video.md`).
+- Al mergear y desplegar: la migración v2 crea `videos` y `ca/videos` al cargar wp-admin; no ejecutar `wp nep demo-videos` en producción. Tras desplegar, enviar `/wp-sitemap.xml` de nuevo en Search Console.
 
 ### Entrega 3B · cuentas opcionales (desplegada)
 
