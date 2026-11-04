@@ -33,6 +33,7 @@ require_once NEP_PATH . 'includes/comptes.php';
 require_once NEP_PATH . 'includes/comptes-privacitat.php';
 require_once NEP_PATH . 'includes/contacte.php';
 require_once NEP_PATH . 'includes/videos.php';
+require_once NEP_PATH . 'includes/seo-videos.php';
 require_once NEP_PATH . 'includes/admin-estadistiques.php';
 require_once NEP_PATH . 'includes/migracio-pagines.php';
 require_once NEP_PATH . 'includes/cli.php';

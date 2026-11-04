@@ -103,27 +103,81 @@ function nep_video_pistes( array $fitxers, string $idioma ): array {
 }
 
 /**
+ * Primer bloc `noempesquen/video` (també dins de grups) d'una sortida de `parse_blocks`.
+ *
+ * @param array $blocs Blocs analitzats.
+ * @return array|null El bloc o null si no n'hi ha cap.
+ */
+function nep_video_bloc( array $blocs ): ?array {
+	foreach ( $blocs as $bloc ) {
+		if ( ! is_array( $bloc ) ) {
+			continue;
+		}
+		if ( ( $bloc['blockName'] ?? null ) === 'noempesquen/video' ) {
+			return $bloc;
+		}
+		if ( ! empty( $bloc['innerBlocks'] ) && is_array( $bloc['innerBlocks'] ) ) {
+			$trobat = nep_video_bloc( $bloc['innerBlocks'] );
+			if ( null !== $trobat ) {
+				return $trobat;
+			}
+		}
+	}
+	return null;
+}
+
+/**
  * Atributs del primer bloc `noempesquen/video` (també dins de grups) d'una sortida de `parse_blocks`.
  *
  * @param array $blocs Blocs analitzats.
  * @return array|null Atributs (pot ser un array buit) o null si no hi ha cap bloc de vídeo.
  */
 function nep_video_atributs_blocs( array $blocs ): ?array {
-	foreach ( $blocs as $bloc ) {
-		if ( ! is_array( $bloc ) ) {
-			continue;
-		}
-		if ( ( $bloc['blockName'] ?? null ) === 'noempesquen/video' ) {
-			return is_array( $bloc['attrs'] ?? null ) ? $bloc['attrs'] : array();
-		}
-		if ( ! empty( $bloc['innerBlocks'] ) && is_array( $bloc['innerBlocks'] ) ) {
-			$trobats = nep_video_atributs_blocs( $bloc['innerBlocks'] );
-			if ( null !== $trobats ) {
-				return $trobats;
-			}
+	$bloc = nep_video_bloc( $blocs );
+	if ( null === $bloc ) {
+		return null;
+	}
+	return is_array( $bloc['attrs'] ?? null ) ? $bloc['attrs'] : array();
+}
+
+/**
+ * Text pla de la transcripció (blocs interiors del bloc de vídeo), amb un paràgraf per línia.
+ *
+ * @param array $blocs Blocs analitzats de la pàgina.
+ * @return string
+ */
+function nep_video_transcripcio_text( array $blocs ): string {
+	$bloc = nep_video_bloc( $blocs );
+	if ( null === $bloc || empty( $bloc['innerBlocks'] ) || ! is_array( $bloc['innerBlocks'] ) ) {
+		return '';
+	}
+	$linies = array();
+	foreach ( $bloc['innerBlocks'] as $intern ) {
+		$text = is_array( $intern ) ? trim( preg_replace( '/\s+/u', ' ', html_entity_decode( strip_tags( (string) ( $intern['innerHTML'] ?? '' ) ), ENT_QUOTES, 'UTF-8' ) ) ) : '';
+		if ( '' !== $text ) {
+			$linies[] = $text;
 		}
 	}
-	return null;
+	return implode( "\n", $linies );
+}
+
+/**
+ * Retalla un text pla a `$max` caràcters, sense partir paraules i amb punts suspensius.
+ *
+ * @param string $text Text.
+ * @param int    $max  Longitud màxima (inclosos els punts suspensius).
+ * @return string
+ */
+function nep_video_retalla( string $text, int $max ): string {
+	if ( mb_strlen( $text ) <= $max ) {
+		return $text;
+	}
+	$tall = mb_substr( $text, 0, $max - 1 );
+	$pos  = mb_strrpos( $tall, ' ' );
+	if ( false !== $pos && $pos > $max / 2 ) {
+		$tall = mb_substr( $tall, 0, $pos );
+	}
+	return rtrim( $tall, " ,;:.\n" ) . '…';
 }
 
 /**
@@ -208,27 +262,16 @@ function nep_video_html( array $d ): string {
 	if ( '' !== $tema ) {
 		$meta[] = '<span>' . esc_html( __( 'Tema:', 'noempesquen' ) ) . ' ' . esc_html( $tema ) . '</span>';
 	}
-	$baixades = '';
-	foreach ( $pistes as $p ) {
-		$src = esc_url( (string) ( $p['src'] ?? '' ) );
-		if ( '' === $src ) {
-			continue;
-		}
-		/* translators: %s: nom de l'idioma dels subtítols (Català, Castellano). */
-		$text      = sprintf( __( 'Descarrega els subtítols: %s (VTT)', 'noempesquen' ), (string) $p['label'] );
-		$baixades .= '<li><a href="' . $src . '" download hreflang="' . esc_attr( (string) $p['srclang'] ) . '">' . esc_html( $text ) . '</a></li>';
-	}
-	if ( $meta || '' !== $baixades ) {
-		$h .= '<figcaption class="nep-video__info">';
-		$h .= $meta ? '<p class="nep-video__meta">' . implode( ' ', $meta ) . '</p>' : '';
-		$h .= '' !== $baixades ? '<ul class="nep-video__baixades">' . $baixades . '</ul>' : '';
-		$h .= '</figcaption>';
+	if ( $meta ) {
+		$h .= '<figcaption class="nep-video__info"><p class="nep-video__meta">' . implode( ' ', $meta ) . '</p></figcaption>';
 	}
 	$h .= '</figure>';
 
+	// La transcripció va oberta per defecte; el h2 és fora del <summary> (que només porta text pla).
 	$transcripcio = wp_kses_post( (string) ( $d['transcripcio'] ?? '' ) );
 	if ( '' !== trim( strip_tags( $transcripcio ) ) ) {
-		$h .= '<details class="nep-video__transcripcio"><summary><h2 class="nep-video__titol-transcripcio">' . esc_html( __( 'Transcripció', 'noempesquen' ) ) . '</h2></summary>';
+		$h .= '<h2 class="nep-video__titol-transcripcio">' . esc_html( __( 'Transcripció', 'noempesquen' ) ) . '</h2>';
+		$h .= '<details class="nep-video__transcripcio" open><summary>' . esc_html( __( 'Transcripció', 'noempesquen' ) ) . '</summary>';
 		$h .= '<div class="nep-video__text">' . $transcripcio . '</div></details>';
 	}
 
@@ -246,11 +289,12 @@ function nep_video_html( array $d ): string {
 /**
  * HTML de la galeria de vídeos.
  *
- * @param array  $targetes Llista de `{url, titol, poster, durada, tema}`.
+ * @param array  $targetes Llista de `{url, titol, poster, ample, alt, durada, tema}` (`ample`/`alt`: mides del pòster).
  * @param string $atributs Atributs del contenidor, ja escapats.
+ * @param string $url_simulador URL del simulador per a l'estat buit (buit = sense enllaç).
  * @return string
  */
-function nep_video_html_galeria( array $targetes, string $atributs = 'class="nep-galeria-videos"' ): string {
+function nep_video_html_galeria( array $targetes, string $atributs = 'class="nep-galeria-videos"', string $url_simulador = '' ): string {
 	$items = '';
 	foreach ( $targetes as $t ) {
 		$url   = esc_url( (string) ( $t['url'] ?? '' ) );
@@ -260,7 +304,10 @@ function nep_video_html_galeria( array $targetes, string $atributs = 'class="nep
 		}
 		$poster = esc_url( (string) ( $t['poster'] ?? '' ) );
 		$items .= '<li class="nep-targeta-video">';
-		$items .= '<div class="nep-targeta-video__poster">' . ( '' !== $poster ? '<img src="' . $poster . '" alt="" loading="lazy" decoding="async">' : '' ) . '</div>';
+		$ample  = nep_video_segons( $t['ample'] ?? 0 );
+		$alt    = nep_video_segons( $t['alt'] ?? 0 );
+		$mides  = $ample && $alt ? ' width="' . $ample . '" height="' . $alt . '"' : '';
+		$items .= '<div class="nep-targeta-video__poster">' . ( '' !== $poster ? '<img src="' . $poster . '" alt=""' . $mides . ' loading="lazy" decoding="async">' : '' ) . '</div>';
 		$items .= '<h2 class="nep-targeta-video__titol"><a href="' . $url . '">' . esc_html( $titol ) . '</a></h2>';
 		$meta   = array();
 		$durada = nep_video_html_durada( $t['durada'] ?? 0 );
@@ -276,7 +323,152 @@ function nep_video_html_galeria( array $targetes, string $atributs = 'class="nep
 	}
 	$h = '<div ' . $atributs . '>';
 	if ( '' === $items ) {
-		return $h . '<p class="nep-galeria-videos__buit">' . esc_html( __( 'Encara no hi ha cap vídeo.', 'noempesquen' ) ) . '</p></div>';
+		$h .= '<p class="nep-galeria-videos__buit">' . esc_html( __( 'Encara no hi ha cap vídeo. Aquí hi trobaràs vídeos curts amb subtítols i transcripció que expliquen com detectar estafes digitals.', 'noempesquen' ) ) . '</p>';
+		$url = esc_url( $url_simulador );
+		if ( '' !== $url ) {
+			$h .= '<p class="nep-galeria-videos__buit-enllac"><a class="nep-btn nep-btn--mar" href="' . $url . '">' . esc_html( __( 'Mentrestant, prova el simulador', 'noempesquen' ) ) . '</a></p>';
+		}
+		return $h . '</div>';
 	}
 	return $h . '<ul class="nep-galeria-videos__llista">' . $items . '</ul></div>';
+}
+
+/**
+ * Durada efectiva: la de les metadades de l'adjunt si n'hi ha; el camp manual `durada` només és de reserva.
+ *
+ * @param mixed $meta   Durada llegida de les metadades de l'adjunt (`length`).
+ * @param mixed $manual Durada escrita a mà al bloc.
+ * @return int Segons (0 si no se sap).
+ */
+function nep_video_durada_resol( $meta, $manual ): int {
+	$segons = nep_video_segons( $meta );
+	return $segons > 0 ? $segons : nep_video_segons( $manual );
+}
+
+/**
+ * Dades del filtre `wp_check_filetype_and_ext` per a un `.vtt`: només si qui puja pot pujar fitxers,
+ * si el nom acaba en `.vtt` i WordPress no n'ha reconegut ja l'extensió. Res més canvia.
+ *
+ * @param mixed  $dades   `{ext, type, proper_filename}` rebut del filtre.
+ * @param mixed  $nom     Nom del fitxer.
+ * @param bool   $pot_pujar Si l'usuari té `upload_files`.
+ * @return mixed
+ */
+function nep_video_vtt_dades( $dades, $nom, bool $pot_pujar ) {
+	if ( ! is_array( $dades ) || ! empty( $dades['ext'] ) || ! is_string( $nom ) || ! $pot_pujar ) {
+		return $dades;
+	}
+	if ( 'vtt' === strtolower( pathinfo( $nom, PATHINFO_EXTENSION ) ) ) {
+		$dades['ext']  = 'vtt';
+		$dades['type'] = 'text/vtt';
+	}
+	return $dades;
+}
+
+/**
+ * Objecte schema.org `VideoObject` d'una pàgina de vídeo, o null si no hi ha MP4.
+ *
+ * @param array $d {
+ *     @type string $url         URL de la pàgina.
+ *     @type string $titol       Títol.
+ *     @type string $descripcio  Descripció (extracte o primer paràgraf).
+ *     @type string $video       URL del MP4 (obligatori).
+ *     @type string $poster      URL del pòster.
+ *     @type string $data        Data de publicació ISO 8601.
+ *     @type int    $durada      Segons.
+ *     @type string $idioma      `es`|`ca`.
+ *     @type string $transcripcio Text pla de la transcripció.
+ * }
+ * @return array<string, mixed>|null
+ */
+function nep_video_jsonld( array $d ): ?array {
+	$video = trim( (string) ( $d['video'] ?? '' ) );
+	$titol = trim( (string) ( $d['titol'] ?? '' ) );
+	if ( '' === $video || '' === $titol ) {
+		return null;
+	}
+	$descripcio = trim( (string) ( $d['descripcio'] ?? '' ) );
+	$obj        = array(
+		'@type'       => 'VideoObject',
+		'name'        => $titol,
+		'description' => '' !== $descripcio ? $descripcio : $titol,
+	);
+	if ( '' !== trim( (string) ( $d['poster'] ?? '' ) ) ) {
+		$obj['thumbnailUrl'] = (string) $d['poster'];
+	}
+	if ( '' !== trim( (string) ( $d['data'] ?? '' ) ) ) {
+		$obj['uploadDate'] = (string) $d['data'];
+	}
+	$iso = nep_video_durada_iso( $d['durada'] ?? 0 );
+	if ( '' !== $iso ) {
+		$obj['duration'] = $iso;
+	}
+	$obj['contentUrl'] = $video;
+	if ( '' !== trim( (string) ( $d['idioma'] ?? '' ) ) ) {
+		$obj['inLanguage'] = (string) $d['idioma'];
+	}
+	$text = trim( (string) ( $d['transcripcio'] ?? '' ) );
+	if ( '' !== $text ) {
+		$obj['transcript'] = nep_video_retalla( str_replace( "\n", ' ', $text ), 1500 );
+	}
+	if ( '' !== trim( (string) ( $d['url'] ?? '' ) ) ) {
+		$obj['isPartOf'] = array( '@id' => (string) $d['url'] );
+	}
+	return $obj;
+}
+
+/**
+ * `BreadcrumbList` Inici > Vídeos > pàgina (per a quan The SEO Framework no n'emet).
+ *
+ * @param array $passos Llista de `{nom, url}`; l'últim pot no tenir URL.
+ * @return array<string, mixed>
+ */
+function nep_video_jsonld_molla( array $passos ): array {
+	$items = array();
+	foreach ( array_values( $passos ) as $i => $p ) {
+		$item = array(
+			'@type'    => 'ListItem',
+			'position' => $i + 1,
+			'name'     => (string) ( $p['nom'] ?? '' ),
+		);
+		if ( '' !== (string) ( $p['url'] ?? '' ) ) {
+			$item['item'] = (string) $p['url'];
+		}
+		$items[] = $item;
+	}
+	return array(
+		'@type'           => 'BreadcrumbList',
+		'itemListElement' => $items,
+	);
+}
+
+/**
+ * Etiquetes Open Graph d'una pàgina de vídeo, en ordre: `og:type` = `video.other` i `og:video*`.
+ *
+ * @param array $d `{video, durada, ample, alt}` (segons i píxels; el que falti s'omet).
+ * @return array<int, array{0: string, 1: string}> Parelles propietat → contingut.
+ */
+function nep_video_og( array $d ): array {
+	$video = trim( (string) ( $d['video'] ?? '' ) );
+	if ( '' === $video ) {
+		return array();
+	}
+	$etiq = array(
+		array( 'og:type', 'video.other' ),
+		array( 'og:video', $video ),
+	);
+	if ( str_starts_with( $video, 'https://' ) ) {
+		$etiq[] = array( 'og:video:secure_url', $video );
+	}
+	$etiq[] = array( 'og:video:type', 'video/mp4' );
+	foreach ( array(
+		'og:video:width'    => $d['ample'] ?? 0,
+		'og:video:height'   => $d['alt'] ?? 0,
+		'og:video:duration' => $d['durada'] ?? 0,
+	) as $clau => $valor ) {
+		if ( nep_video_segons( $valor ) > 0 ) {
+			$etiq[] = array( $clau, (string) nep_video_segons( $valor ) );
+		}
+	}
+	return $etiq;
 }

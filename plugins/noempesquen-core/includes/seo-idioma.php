@@ -249,6 +249,7 @@ function nep_seo_posts_fills( string $idioma ): array {
 			'post_type'      => 'page',
 			'post_status'    => 'publish',
 			'post_parent'    => (int) $pare->ID,
+			'has_password'   => false,
 			'posts_per_page' => -1,
 			'orderby'        => 'menu_order title',
 			'order'          => 'ASC',

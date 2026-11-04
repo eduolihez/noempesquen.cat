@@ -286,13 +286,13 @@ WP_CLI::add_command(
 		$textos = array(
 			'ca' => array(
 				'titol' => 'Vídeo de mostra',
-				'tema'  => 'Vídeo de mostra',
+				'tema'  => 'Estafes per correu',
 				'h'     => 'Això és un vídeo de mostra',
 				'p'     => 'Aquest vídeo és només una prova per veure com es mostra la pàgina. No té cap contingut real.',
 			),
 			'es' => array(
 				'titol' => 'Vídeo de muestra',
-				'tema'  => 'Vídeo de muestra',
+				'tema'  => 'Estafas por correo',
 				'h'     => 'Este es un vídeo de muestra',
 				'p'     => 'Este vídeo es solo una prueba para ver cómo se muestra la página. No tiene ningún contenido real.',
 			),

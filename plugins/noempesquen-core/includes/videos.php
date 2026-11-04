@@ -11,21 +11,14 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/video-nucli.php';
 
 /*
- * WP core ja accepta `.vtt` a upload_mimes (comprovat a wp-env, WP 7.1); només cal el reconeixement per contingut.
+ * WP core ja accepta `.vtt` a upload_mimes (comprovat a wp-env, WP 7.1); només cal el reconeixement per contingut:
+ * finfo veu un .vtt com a text/plain i WP el rebutja. Es corregeix només per a `.vtt` i qui pot pujar fitxers.
  */
-// finfo veu un .vtt com a text/plain: si WP no l'ha reconegut, s'accepta com a text/vtt.
 add_filter(
 	'wp_check_filetype_and_ext',
 	static function ( $dades, $fitxer, $nom ) {
 		unset( $fitxer );
-		if ( ! is_array( $dades ) || ! empty( $dades['ext'] ) || ! is_string( $nom ) || ! current_user_can( 'upload_files' ) ) {
-			return $dades;
-		}
-		if ( 'vtt' === strtolower( pathinfo( $nom, PATHINFO_EXTENSION ) ) ) {
-			$dades['ext']  = 'vtt';
-			$dades['type'] = 'text/vtt';
-		}
-		return $dades;
+		return nep_video_vtt_dades( $dades, $nom, current_user_can( 'upload_files' ) );
 	},
 	10,
 	3
@@ -51,18 +44,18 @@ function nep_video_url_adjunt( $id, string $prefix ): string {
 }
 
 /**
- * Durada del bloc: l'atribut o, si no n'hi ha, la que WP llegeix del MP4.
+ * Durada del bloc: la que WP llegeix del MP4 (metadades de l'adjunt) i, si no n'hi ha,
+ * el camp manual `durada` com a reserva.
  *
  * @param array $atributs Atributs del bloc.
  * @return int Segons (0 si no se sap).
  */
 function nep_video_durada( array $atributs ): int {
-	$segons = nep_video_segons( $atributs['durada'] ?? 0 );
-	if ( $segons > 0 || empty( $atributs['video'] ) || ! is_numeric( $atributs['video'] ) ) {
-		return $segons;
+	$meta = null;
+	if ( ! empty( $atributs['video'] ) && is_numeric( $atributs['video'] ) ) {
+		$meta = wp_get_attachment_metadata( (int) $atributs['video'] );
 	}
-	$meta = wp_get_attachment_metadata( (int) $atributs['video'] );
-	return is_array( $meta ) ? nep_video_segons( $meta['length'] ?? 0 ) : 0;
+	return nep_video_durada_resol( is_array( $meta ) ? ( $meta['length'] ?? 0 ) : 0, $atributs['durada'] ?? 0 );
 }
 
 /**
@@ -140,6 +133,7 @@ function nep_video_render_galeria(): string {
 			'post_type'      => 'page',
 			'post_status'    => 'publish',
 			'post_parent'    => (int) $pare->ID,
+			'has_password'   => false,
 			'posts_per_page' => 100,
 			'orderby'        => array(
 				'menu_order' => 'ASC',
@@ -150,15 +144,17 @@ function nep_video_render_galeria(): string {
 	foreach ( $fills as $post ) {
 		$atributs   = nep_video_atributs_blocs( parse_blocks( $post->post_content ) ) ?? array();
 		$poster     = nep_video_segons( $atributs['poster'] ?? 0 );
-		$poster_url = $poster && str_starts_with( (string) get_post_mime_type( $poster ), 'image/' )
-			? wp_get_attachment_image_url( $poster, 'medium_large' ) : '';
+		$imatge     = $poster && str_starts_with( (string) get_post_mime_type( $poster ), 'image/' )
+			? wp_get_attachment_image_src( $poster, 'medium_large' ) : false;
 		$targetes[] = array(
 			'url'    => get_permalink( $post ),
 			'titol'  => get_the_title( $post ),
-			'poster' => is_string( $poster_url ) ? $poster_url : '',
+			'poster' => is_array( $imatge ) ? (string) $imatge[0] : '',
+			'ample'  => is_array( $imatge ) ? (int) $imatge[1] : 0,
+			'alt'    => is_array( $imatge ) ? (int) $imatge[2] : 0,
 			'durada' => nep_video_durada( $atributs ),
 			'tema'   => is_string( $atributs['tema'] ?? null ) ? $atributs['tema'] : '',
 		);
 	}
-	return nep_video_html_galeria( $targetes, get_block_wrapper_attributes( array( 'class' => 'nep-galeria-videos' ) ) );
+	return nep_video_html_galeria( $targetes, get_block_wrapper_attributes( array( 'class' => 'nep-galeria-videos' ) ), nep_url_pagina( 'simulador' ) );
 }
