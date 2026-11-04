@@ -211,13 +211,17 @@ function bateriaVideos( lang ) {
 
 			const det = page.locator( 'details.nep-video__transcripcio' );
 			await expect( det ).toBeVisible();
-			await expect( det ).toHaveJSProperty( 'open', false );
-			await det.locator( 'summary' ).focus();
-			await page.keyboard.press( 'Enter' );
 			await expect( det ).toHaveJSProperty( 'open', true );
 			await expect( det.locator( '.nep-video__text' ) ).toBeVisible();
+			await expect(
+				page.locator( 'h2.nep-video__titol-transcripcio' )
+			).toHaveCount( 1 );
+			await expect( det.locator( 'summary h2' ) ).toHaveCount( 0 );
+			await det.locator( 'summary' ).focus();
 			await page.keyboard.press( 'Enter' );
 			await expect( det ).toHaveJSProperty( 'open', false );
+			await page.keyboard.press( 'Enter' );
+			await expect( det ).toHaveJSProperty( 'open', true );
 
 			await expect(
 				page.locator(
