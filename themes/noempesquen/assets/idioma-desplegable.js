@@ -19,6 +19,21 @@
 		}
 	}
 
+	// El català és l'idioma per defecte (el servidor redirigeix el castellà a /ca/):
+	// triar castellà al selector desa la preferència; triar català l'esborra.
+	detalls.addEventListener( 'click', function ( e ) {
+		var enllac = e.target.closest ? e.target.closest( 'a[hreflang]' ) : null;
+		if ( ! enllac ) {
+			return;
+		}
+		var es = 'es' === enllac.getAttribute( 'hreflang' );
+		document.cookie =
+			'nep_idioma=' +
+			( es ? 'es' : '' ) +
+			'; path=/; SameSite=Lax; max-age=' +
+			( es ? 31536000 : 0 );
+	} );
+
 	detalls.addEventListener( 'keydown', function ( e ) {
 		if ( 'Escape' === e.key && detalls.open ) {
 			e.preventDefault();

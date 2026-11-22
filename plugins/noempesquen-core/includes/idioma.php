@@ -98,6 +98,32 @@ add_filter(
 );
 
 /**
+ * El català és l'idioma per defecte: qui arriba a una pàgina en castellà sense
+ * haver-lo triat al selector (galeta `nep_idioma=es`) va a la versió catalana,
+ * sigui quin sigui l'idioma del navegador. Veure nep_desti_redireccio_ca().
+ */
+add_action(
+	'template_redirect',
+	static function () {
+		if ( is_admin() || wp_doing_ajax() || nep_es_peticio_api() || ( defined( 'WP_CLI' ) && WP_CLI ) || is_feed() || is_robots() ) {
+			return;
+		}
+		$uri     = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		$metode  = isset( $_SERVER['REQUEST_METHOD'] ) ? (string) wp_unslash( $_SERVER['REQUEST_METHOD'] ) : 'GET'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		$agent   = isset( $_SERVER['HTTP_USER_AGENT'] ) ? (string) wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		$galeta  = isset( $_COOKIE['nep_idioma'] ) ? (string) wp_unslash( $_COOKIE['nep_idioma'] ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
+		$desti   = nep_desti_redireccio_ca( $uri, (string) wp_parse_url( home_url(), PHP_URL_PATH ), $metode, $galeta, $agent );
+		if ( null === $desti ) {
+			return;
+		}
+		header( 'Vary: Cookie, User-Agent', false );
+		wp_safe_redirect( home_url( $desti ), 302 );
+		exit;
+	},
+	1
+);
+
+/**
  * Enllaç a una pàgina del lloc (`compte`, `contacte`, `projecte`, `simulador`)
  * en un idioma: `/cuenta/` o `/ca/compte/`.
  *

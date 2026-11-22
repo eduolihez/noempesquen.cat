@@ -57,6 +57,25 @@ module.exports = defineConfig( {
 	use: {
 		baseURL: NEP_LANG === 'ca' ? `${ BASE }/ca/` : BASE,
 		locale: ES ? 'es-ES' : 'ca-ES',
+		// El català és l'idioma per defecte (la raíz redirigeix a /ca/): els tests
+		// en castellà trien l'idioma com ho fa el selector, amb la galeta `nep_idioma`.
+		...( ES && {
+			storageState: {
+				cookies: [
+					{
+						name: 'nep_idioma',
+						value: 'es',
+						domain: new URL( BASE ).hostname,
+						path: '/',
+						expires: -1,
+						httpOnly: false,
+						secure: false,
+						sameSite: 'Lax',
+					},
+				],
+				origins: [],
+			},
+		} ),
 	},
 	projects: [
 		{

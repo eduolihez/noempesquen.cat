@@ -32,6 +32,32 @@ final class IdiomaNucliTest extends TestCase {
 		$this->assertSame( 'es', nep_idioma_de_ruta( '/wpx/ca/', '/wp' ) );
 	}
 
+	public function test_ruta_ca_equivalent(): void {
+		$this->assertSame( '/ca/', nep_ruta_ca_equivalent( '/', '/' ) );
+		$this->assertSame( '/ca/compte/', nep_ruta_ca_equivalent( '/cuenta/', '/' ) );
+		$this->assertSame( '/ca/compte/', nep_ruta_ca_equivalent( '/cuenta', '/' ) );
+		$this->assertSame( '/ca/com-funciona/', nep_ruta_ca_equivalent( '/como-funciona/?x=1', '/' ) );
+		$this->assertSame( '/ca/simulador/', nep_ruta_ca_equivalent( '/wp/simulador/', '/wp' ) );
+		foreach ( array( '/ca/', '/ca/compte/', '/sitemap.xml', '/videos/algo/', '/robots.txt' ) as $uri ) {
+			$this->assertNull( nep_ruta_ca_equivalent( $uri, '/' ), $uri );
+		}
+	}
+
+	public function test_redireccio_a_catala(): void {
+		$nav = 'Mozilla/5.0 (Windows NT 10.0) Chrome/120';
+		$this->assertSame( '/ca/', nep_desti_redireccio_ca( '/', '/', 'GET', null, $nav ) );
+		$this->assertSame( '/ca/simulador/?utm=1', nep_desti_redireccio_ca( '/simulador/?utm=1', '/', 'GET', null, $nav ) );
+		$this->assertSame( '/ca/', nep_desti_redireccio_ca( '/', '/', 'HEAD', null, $nav ) );
+		// Triat castellà, ja és català, POST, robots, sense agent i enllaços lligats a un idioma.
+		$this->assertNull( nep_desti_redireccio_ca( '/', '/', 'GET', 'es', $nav ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/ca/', '/', 'GET', null, $nav ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/', '/', 'POST', null, $nav ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/', '/', 'GET', null, 'Googlebot/2.1' ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/', '/', 'GET', null, '' ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/cuenta/?verifica=1.abc', '/', 'GET', null, $nav ) );
+		$this->assertNull( nep_desti_redireccio_ca( '/simulador/?lang=es', '/', 'GET', null, $nav ) );
+	}
+
 	public function test_pagines_ignoren_lang_i_capcalera(): void {
 		$this->assertSame( 'es', nep_idioma_de_peticio( '/simulador/?lang=ca', '/', false, 'ca', 'ca' ) );
 		$this->assertSame( 'ca', nep_idioma_de_peticio( '/ca/simulador/', '/', false, 'es', 'es' ) );

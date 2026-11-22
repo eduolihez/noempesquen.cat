@@ -214,6 +214,76 @@ function nep_ruta_pagina( string $clau, string $idioma ): string {
 }
 
 /**
+ * Ruta catalana equivalent a una ruta castellana de les pàgines del web.
+ *
+ * Només les pàgines de `nep_pagines()` (llista blanca): `/cuenta/` → `/ca/compte/`,
+ * `/` → `/ca/`. Qualsevol altra ruta (fills de `videos`, sitemaps, robots...) dóna null.
+ *
+ * @param string $uri  REQUEST_URI.
+ * @param string $base Ruta de home_url().
+ * @return string|null Ruta amb barres inicial i final, o null si no n'hi ha.
+ */
+function nep_ruta_ca_equivalent( string $uri, string $base = '/' ): ?string {
+	if ( 'es' !== nep_idioma_de_ruta( $uri, $base ) ) {
+		return null;
+	}
+	$ruta = trim( nep_ruta_relativa( $uri, $base ), '/' );
+	$ruta = '' === $ruta ? '/' : '/' . $ruta . '/';
+	foreach ( array_keys( nep_pagines() ) as $clau ) {
+		if ( nep_ruta_pagina( $clau, 'es' ) === $ruta ) {
+			return nep_ruta_idioma( nep_ruta_pagina( $clau, 'ca' ), 'ca' );
+		}
+	}
+	return null;
+}
+
+/**
+ * Indica si l'agent d'usuari és un robot (o no n'hi ha): no es redirigeix mai,
+ * perquè les pàgines en castellà han de seguir indexables.
+ *
+ * @param string $agent Capçalera User-Agent.
+ * @return bool
+ */
+function nep_es_robot( string $agent ): bool {
+	return '' === trim( $agent ) || 1 === preg_match( '/bot|crawl|spider|slurp|lighthouse|facebookexternalhit|embedly|preview|headless|python-requests|curl|wget/i', $agent );
+}
+
+/**
+ * Destí (ruta + consulta, relatiu al lloc) si cal portar el visitant a la versió
+ * catalana, o null si no. El català és l'idioma per defecte: es redirigeix la
+ * pàgina castellana (GET/HEAD) llevat que el visitant hagi triat el castellà
+ * al selector (galeta `nep_idioma=es`), sigui un robot o l'enllaç porti un
+ * paràmetre que el lliga a un idioma (verificació de compte, previsualització...).
+ *
+ * @param string      $uri    REQUEST_URI.
+ * @param string      $base   Ruta de home_url().
+ * @param string      $metode Mètode HTTP.
+ * @param string|null $galeta Valor de la galeta `nep_idioma`.
+ * @param string      $agent  Capçalera User-Agent.
+ * @return string|null
+ */
+function nep_desti_redireccio_ca( string $uri, string $base, string $metode, ?string $galeta, string $agent ): ?string {
+	if ( ! in_array( strtoupper( $metode ), array( 'GET', 'HEAD' ), true ) || 'es' === $galeta || nep_es_robot( $agent ) ) {
+		return null;
+	}
+	$desti = nep_ruta_ca_equivalent( $uri, $base );
+	if ( null === $desti ) {
+		return null;
+	}
+	$consulta = parse_url( $uri, PHP_URL_QUERY ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Funció pura, sense WordPress.
+	if ( is_string( $consulta ) && '' !== $consulta ) {
+		parse_str( $consulta, $params );
+		foreach ( array( 'verifica', 'restableix', 'previsualitza', 'preview', 'lang', '_locale' ) as $clau ) {
+			if ( isset( $params[ $clau ] ) ) {
+				return null;
+			}
+		}
+		$desti .= '?' . $consulta;
+	}
+	return $desti;
+}
+
+/**
  * Idioma d'un compte a partir de la seva meta `nep_idioma`: sense meta o amb un
  * valor no vàlid, `ca` (els comptes anteriors al canvi d'idiomes eren catalans).
  *
