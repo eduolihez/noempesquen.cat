@@ -274,7 +274,12 @@ function bateriaVideos( lang ) {
 				await page.goto( url, { waitUntil: 'networkidle' } );
 			}
 			expect( externes ).toEqual( [] );
-			expect( await context.cookies() ).toEqual( [] );
+			// `nep_idioma` és la preferència d'idioma que posa el test (com el selector).
+			expect(
+				( await context.cookies() ).filter(
+					( c ) => 'nep_idioma' !== c.name
+				)
+			).toEqual( [] );
 		} );
 	} );
 
