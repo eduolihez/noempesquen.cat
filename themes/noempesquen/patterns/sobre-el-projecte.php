@@ -38,6 +38,7 @@ echo wp_kses_post(
 ?>
 </p>
 <p><?php echo wp_kses_post( _x( '<strong>Si ens escrius pel formulari de contacte</strong>, el missatge arriba per correu a qui gestiona el web i només s\'usa per respondre\'t. No es desa al web.', 'tema', 'noempesquen' ) ); ?></p>
+<p><?php echo wp_kses_post( _x( '<strong>Galetes</strong>: només fem servir una galeta pròpia, «nep_idioma», quan tries el castellà al selector d\'idioma. Només desa aquesta preferència, durant un any, i no serveix per identificar-te ni per fer-te seguiment.', 'tema', 'noempesquen' ) ); ?></p>
 <h2><?php echo esc_html_x( 'Contacte', 'tema', 'noempesquen' ); ?></h2>
 <p>
 <?php

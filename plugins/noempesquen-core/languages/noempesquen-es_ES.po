@@ -3934,6 +3934,11 @@ msgctxt "tema"
 msgid "<strong>Si ens escrius pel formulari de contacte</strong>, el missatge arriba per correu a qui gestiona el web i només s'usa per respondre't. No es desa al web."
 msgstr "<strong>Si nos escribes por el formulario de contacto</strong>, el mensaje llega por correo a quien gestiona la web y solo se usa para responderte. No se guarda en la web."
 
+#: themes/noempesquen/patterns/sobre-el-projecte.php:41
+msgctxt "tema"
+msgid "<strong>Galetes</strong>: només fem servir una galeta pròpia, «nep_idioma», quan tries el castellà al selector d'idioma. Només desa aquesta preferència, durant un any, i no serveix per identificar-te ni per fer-te seguiment."
+msgstr "<strong>Cookies</strong>: solo usamos una cookie propia, «nep_idioma», cuando eliges el castellano en el selector de idioma. Solo guarda esa preferencia, durante un año, y no sirve para identificarte ni para hacerte seguimiento."
+
 #: themes/noempesquen/patterns/sobre-el-projecte.php:47
 msgctxt "tema"
 msgid "Si tens un dubte, un suggeriment o has trobat un error, escriu-nos des de la pàgina de <a href=\"%s\">Contacte</a>."

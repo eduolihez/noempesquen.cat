@@ -96,9 +96,9 @@ Tabla de URLs esperadas (el script la usa tal cual):
 
 | URL | status | `html lang` | canonical | hreflang |
 |---|---|---|---|---|
-| `/` | 200 | `es-ES` | `/` | es → `/`, ca → `/ca/`, x-default → `/` |
+| `/` | 200 | `es-ES` | `/` | es → `/`, ca → `/ca/`, x-default → `/ca/` |
 | `/ca/` | 200 | `ca` | `/ca/` | idem |
-| `/como-funciona/` | 200 | `es-ES` | `/como-funciona/` | es → ella, ca → `/ca/com-funciona/`, x-default → ES |
+| `/como-funciona/` | 200 | `es-ES` | `/como-funciona/` | es → ella, ca → `/ca/com-funciona/`, x-default → CA |
 | `/ca/com-funciona/` | 200 | `ca` | `/ca/com-funciona/` | idem |
 | `/misiones/` · `/ca/missions/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
 | `/videos/` · `/ca/videos/` | 200 | `es-ES` · `ca` | autorreferenciado | recíproco |
@@ -124,8 +124,8 @@ Tabla de URLs esperadas (el script la usa tal cual):
 Código: `plugins/noempesquen-core/includes/seo-idioma.php` (hooks), `seo-idioma-nucli.php` (puro, `SeoIdiomaNucliTest`) y `class-nep-sitemap-idioma.php`.
 
 - **The SEO Framework (TSF) ya pone** canonical autorreferenciado, `<title>`, `og:locale` (`es_ES`/`ca_ES`) y JSON-LD con `inLanguage` según el locale de la petición. No se duplican. Sin TSF, el canonical lo pone `rel_canonical` del core y `og:locale` lo pone el plugin.
-- **hreflang:** `es`, `ca` y `x-default` (→ ES), URLs absolutas, solo en las páginas de `nep_pagines()` cuya pareja existe y está publicada. La página se reconoce por slug **y** padre (ES en raíz, CA hija de `ca`), así que una página fuera del mapa, un 404 o una raíz antigua con slug catalán no llevan hreflang. También `og:locale:alternate`.
-- **Vídeos (páginas hijas de `videos`):** cada vídeo es una página hija de `videos` (ES, `/videos/<slug>/`) y de `ca/videos` (CA, `/ca/videos/<slug>/`) con **el mismo slug** en los dos idiomas. No están en `nep_pagines()`: `nep_seo_fill()` (`seo-idioma-nucli.php`) reconoce solo las hijas directas de `videos` por ruta completa, así que ni la propia `videos`, ni una nieta, ni una hija de otra página las confunden. Llevan hreflang (`es`, `ca`, `x-default` → ES) y `og:locale:alternate` solo si la pareja con el mismo slug existe y está publicada; sin pareja, solo canonical y `og:locale`. El selector de idioma del header lleva a esa pareja (si no hay, a la galería del otro idioma).
+- **hreflang:** `es`, `ca` y `x-default` (→ CA, idioma por defecto), URLs absolutas, solo en las páginas de `nep_pagines()` cuya pareja existe y está publicada. La página se reconoce por slug **y** padre (ES en raíz, CA hija de `ca`), así que una página fuera del mapa, un 404 o una raíz antigua con slug catalán no llevan hreflang. También `og:locale:alternate`.
+- **Vídeos (páginas hijas de `videos`):** cada vídeo es una página hija de `videos` (ES, `/videos/<slug>/`) y de `ca/videos` (CA, `/ca/videos/<slug>/`) con **el mismo slug** en los dos idiomas. No están en `nep_pagines()`: `nep_seo_fill()` (`seo-idioma-nucli.php`) reconoce solo las hijas directas de `videos` por ruta completa, así que ni la propia `videos`, ni una nieta, ni una hija de otra página las confunden. Llevan hreflang (`es`, `ca`, `x-default` → CA) y `og:locale:alternate` solo si la pareja con el mismo slug existe y está publicada; sin pareja, solo canonical y `og:locale`. El selector de idioma del header lleva a esa pareja (si no hay, a la galería del otro idioma).
 - **Sitemaps:** los del core, uno por idioma: `/wp-sitemap-es-1.xml` y `/wp-sitemap-ca-1.xml`, listados en `/wp-sitemap.xml`. Las páginas del mapa (y las raíces antiguas con slug catalán) se quitan de `wp-sitemap-posts-page-1.xml`; las demás páginas siguen ahí. Las hijas de `videos` entran en el sitemap de su idioma (`class-nep-sitemap-idioma.php`), así que publicar un vídeo nuevo lo añade sin tocar código. `robots.txt` apunta a `/wp-sitemap.xml` solo si no hay `robots.txt` físico (lo escribe el core o TSF en el virtual).
 - **Decisión:** el plugin fuerza `sitemaps_output = 0` de TSF (filtro `the_seo_framework_get_options`) para usar los sitemaps del core. Por eso `/sitemap.xml` (el de TSF) deja de existir (el bloque htaccess lo redirige a `/wp-sitemap.xml`, 302 -> 301 con la misma política): en Search Console hay que enviar `/wp-sitemap.xml`.
 - **Título y description:** no hay textos fijos. El título sale del `post_title` de cada idioma y TSF no genera description en estas páginas. No hacen falta cadenas nuevas.

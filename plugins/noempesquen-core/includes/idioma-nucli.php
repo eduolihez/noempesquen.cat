@@ -284,6 +284,45 @@ function nep_desti_redireccio_ca( string $uri, string $base, string $metode, ?st
 }
 
 /**
+ * Tria d'idioma del selector sense JavaScript: un enllaç amb `?nep_idioma=es|ca`
+ * desa la preferència (galeta) i continua a la mateixa URL sense aquest paràmetre.
+ *
+ * @param string $uri    REQUEST_URI.
+ * @param string $base   Ruta de home_url().
+ * @param string $metode Mètode HTTP.
+ * @return array{idioma: string, desti: string}|null `desti` és relatiu a home_url().
+ */
+function nep_tria_idioma( string $uri, string $base, string $metode ): ?array {
+	if ( ! in_array( strtoupper( $metode ), array( 'GET', 'HEAD' ), true ) ) {
+		return null;
+	}
+	$consulta = parse_url( $uri, PHP_URL_QUERY ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Funció pura, sense WordPress.
+	if ( ! is_string( $consulta ) || '' === $consulta ) {
+		return null;
+	}
+	$idioma = null;
+	$resta  = array();
+	foreach ( explode( '&', $consulta ) as $parell ) {
+		if ( 'nep_idioma=es' === $parell || 'nep_idioma=ca' === $parell ) {
+			$idioma = substr( $parell, -2 );
+		} elseif ( '' !== $parell && 0 !== strpos( $parell, 'nep_idioma=' ) ) {
+			$resta[] = $parell;
+		}
+	}
+	if ( null === $idioma ) {
+		return null;
+	}
+	$desti = nep_ruta_relativa( $uri, $base );
+	if ( $resta ) {
+		$desti .= '?' . implode( '&', $resta );
+	}
+	return array(
+		'idioma' => $idioma,
+		'desti'  => $desti,
+	);
+}
+
+/**
  * Idioma d'un compte a partir de la seva meta `nep_idioma`: sense meta o amb un
  * valor no vàlid, `ca` (els comptes anteriors al canvi d'idiomes eren catalans).
  *

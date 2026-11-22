@@ -175,7 +175,7 @@ function bateriaVideos( lang ) {
 			expect( h ).toEqual( {
 				es: ruta( 'videos', 'es' ),
 				ca: ruta( 'videos', 'ca' ),
-				'x-default': ruta( 'videos', 'es' ),
+				'x-default': ruta( 'videos', 'ca' ),
 			} );
 			// Recíproc: la parella declara el mateix conjunt.
 			await page.goto( ruta( 'videos', altre ) );
@@ -236,7 +236,7 @@ function bateriaVideos( lang ) {
 			expect( await hreflangs( page ) ).toEqual( {
 				es: filla( 'es' ),
 				ca: filla( 'ca' ),
-				'x-default': filla( 'es' ),
+				'x-default': filla( 'ca' ),
 			} );
 
 			const sel = page.locator(

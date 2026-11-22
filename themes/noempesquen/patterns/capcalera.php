@@ -63,7 +63,7 @@ echo wp_json_encode(
 <summary class="nep-idioma__boto"><span class="nep-idioma__curt" aria-hidden="true"><?php echo esc_html( $nep_noms[ $nep_actual ][0] ); ?></span><span class="nep-idioma__llarg"><?php echo esc_html( $nep_noms[ $nep_actual ][1] ); ?></span><svg class="nep-idioma__fletxa" viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
 <ul class="nep-idioma__llista">
 <?php foreach ( array( 'ca', 'es' ) as $nep_l ) : ?>
-<li><a class="nep-idioma__enllac" href="<?php echo esc_url( nep_tema_url_idioma( $nep_l ) ); ?>" hreflang="<?php echo esc_attr( $nep_l ); ?>" lang="<?php echo esc_attr( $nep_l ); ?>"<?php echo $nep_l === $nep_actual ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $nep_noms[ $nep_l ][1] ); ?></a></li>
+<li><a class="nep-idioma__enllac" href="<?php echo esc_url( add_query_arg( 'nep_idioma', $nep_l, nep_tema_url_idioma( $nep_l ) ) ); ?>" hreflang="<?php echo esc_attr( $nep_l ); ?>" lang="<?php echo esc_attr( $nep_l ); ?>"<?php echo $nep_l === $nep_actual ? ' aria-current="true"' : ''; ?>><?php echo esc_html( $nep_noms[ $nep_l ][1] ); ?></a></li>
 <?php endforeach; ?>
 </ul>
 </details>

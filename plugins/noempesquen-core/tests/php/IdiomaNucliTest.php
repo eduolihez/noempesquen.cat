@@ -58,6 +58,15 @@ final class IdiomaNucliTest extends TestCase {
 		$this->assertNull( nep_desti_redireccio_ca( '/simulador/?lang=es', '/', 'GET', null, $nav ) );
 	}
 
+	public function test_tria_idioma_del_selector(): void {
+		$this->assertSame( array( 'idioma' => 'es', 'desti' => '/misiones/' ), nep_tria_idioma( '/misiones/?nep_idioma=es', '/', 'GET' ) );
+		$this->assertSame( array( 'idioma' => 'ca', 'desti' => '/ca/' ), nep_tria_idioma( '/ca/?nep_idioma=ca', '/', 'HEAD' ) );
+		$this->assertSame( array( 'idioma' => 'es', 'desti' => '/simulador/?utm=1' ), nep_tria_idioma( '/wp/simulador/?utm=1&nep_idioma=es', '/wp', 'GET' ) );
+		$this->assertNull( nep_tria_idioma( '/misiones/?nep_idioma=fr', '/', 'GET' ) );
+		$this->assertNull( nep_tria_idioma( '/misiones/', '/', 'GET' ) );
+		$this->assertNull( nep_tria_idioma( '/misiones/?nep_idioma=es', '/', 'POST' ) );
+	}
+
 	public function test_pagines_ignoren_lang_i_capcalera(): void {
 		$this->assertSame( 'es', nep_idioma_de_peticio( '/simulador/?lang=ca', '/', false, 'ca', 'ca' ) );
 		$this->assertSame( 'ca', nep_idioma_de_peticio( '/ca/simulador/', '/', false, 'es', 'es' ) );

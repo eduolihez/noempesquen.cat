@@ -58,7 +58,7 @@ final class SeoIdiomaNucliTest extends TestCase {
 				array(
 					array( 'hreflang' => 'es', 'href' => $urls['es'] ),
 					array( 'hreflang' => 'ca', 'href' => $urls['ca'] ),
-					array( 'hreflang' => 'x-default', 'href' => $urls['es'] ),
+					array( 'hreflang' => 'x-default', 'href' => $urls['ca'] ),
 				),
 				$alternates,
 				$clau

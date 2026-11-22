@@ -134,7 +134,7 @@ function nep_seo_alternates_fill( array $urls, string $idioma ): array {
 
 /**
  * Enllaços `<link rel="alternate" hreflang>` d'una pàgina: un per idioma (inclosa ella
- * mateixa) i `x-default` cap al castellà. Si falta algun idioma, cap (sense hreflang fals).
+ * mateixa) i `x-default` cap al català (idioma per defecte del web). Si falta algun idioma, cap (sense hreflang fals).
  *
  * @param array<string, string> $urls URL absoluta de la pàgina en cada idioma (`es`, `ca`).
  * @return array<int, array{hreflang: string, href: string}>
@@ -152,7 +152,7 @@ function nep_seo_alternates( array $urls ): array {
 	}
 	$enllacos[] = array(
 		'hreflang' => 'x-default',
-		'href'     => $urls[ nep_idiomes()[0] ],
+		'href'     => $urls['ca'],
 	);
 	return $enllacos;
 }

@@ -162,7 +162,7 @@ $nep_comprova( null === nep_seo_fill_post( $nep_videos_ca ) && null === nep_seo_
 $nep_esperat = array(
 	array( 'hreflang' => 'es', 'href' => $nep_url_es ),
 	array( 'hreflang' => 'ca', 'href' => $nep_url_ca ),
-	array( 'hreflang' => 'x-default', 'href' => $nep_url_es ),
+	array( 'hreflang' => 'x-default', 'href' => $nep_url_ca ),
 );
 $nep_comprova( $nep_esperat === nep_seo_alternates_post_fill( get_post( $nep_fill_es ) ), 'vídeos: hreflang de la filla ES (parella CA)' );
 $nep_comprova( $nep_esperat === nep_seo_alternates_post_fill( get_post( $nep_fill_ca ) ), 'vídeos: hreflang de la filla CA (parella ES)' );

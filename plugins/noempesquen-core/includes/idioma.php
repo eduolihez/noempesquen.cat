@@ -112,7 +112,25 @@ add_action(
 		$metode  = isset( $_SERVER['REQUEST_METHOD'] ) ? (string) wp_unslash( $_SERVER['REQUEST_METHOD'] ) : 'GET'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
 		$agent   = isset( $_SERVER['HTTP_USER_AGENT'] ) ? (string) wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
 		$galeta  = isset( $_COOKIE['nep_idioma'] ) ? (string) wp_unslash( $_COOKIE['nep_idioma'] ) : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Només es compara.
-		$desti   = nep_desti_redireccio_ca( $uri, (string) wp_parse_url( home_url(), PHP_URL_PATH ), $metode, $galeta, $agent );
+		$base    = (string) wp_parse_url( home_url(), PHP_URL_PATH );
+		$tria    = nep_tria_idioma( $uri, $base, $metode );
+		if ( null !== $tria ) {
+			// Selector sense JS: desa la preferència i continua a la URL neta.
+			setcookie(
+				'nep_idioma',
+				'es' === $tria['idioma'] ? 'es' : '',
+				array(
+					'expires'  => 'es' === $tria['idioma'] ? time() + YEAR_IN_SECONDS : time() - HOUR_IN_SECONDS,
+					'path'     => '/',
+					'secure'   => is_ssl(),
+					'samesite' => 'Lax',
+				)
+			);
+			nocache_headers();
+			wp_safe_redirect( home_url( $tria['desti'] ), 302 );
+			exit;
+		}
+		$desti   = nep_desti_redireccio_ca( $uri, $base, $metode, $galeta, $agent );
 		if ( null === $desti ) {
 			return;
 		}
