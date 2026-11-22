@@ -50,6 +50,8 @@ async function novaMissio( page, titol ) {
 	await page.goto( '/wp-admin/post-new.php?post_type=nep_missio' );
 	await page.locator( '#title' ).fill( titol );
 	await expect( page.locator( '#nep-guio-missio .CodeMirror' ) ).toBeVisible();
+	// Una missió nova neix en castellà; el simulador d'aquesta suite és el català.
+	await page.locator( '#nep-idioma' ).selectOption( 'ca' );
 }
 
 /** Desa (o publica) i apunta l'id per esborrar-la després. */
@@ -253,7 +255,7 @@ test( '«Duplica» a la llista no reutilitza l’id d’una missió inclosa', as
 const cursor = ( page ) =>
 	page.evaluate( () => document.querySelector( '#nep-guio-missio .CodeMirror' ).CodeMirror.getCursor() );
 
-test( '«Exporta» descarrega el guió de l’editor com a <id>.json', async ( { page } ) => {
+test( '«Exporta» descarrega el guió de l’editor com a <id>.<idioma>.json', async ( { page } ) => {
 	const id = `e2e-exporta-${ Date.now() }`;
 	await novaMissio( page, 'Prova e2e exporta' );
 	const text = JSON.stringify( { ...factura, id }, null, '	' );
@@ -262,7 +264,7 @@ test( '«Exporta» descarrega el guió de l’editor com a <id>.json', async ( {
 		page.waitForEvent( 'download' ),
 		page.getByRole( 'button', { name: 'Exporta' } ).click(),
 	] );
-	expect( baixada.suggestedFilename() ).toBe( `${ id }.json` );
+	expect( baixada.suggestedFilename() ).toBe( `${ id }.ca.json` );
 	const fs = require( 'fs' );
 	expect( fs.readFileSync( await baixada.path(), 'utf8' ) ).toBe( `${ text }\n` );
 } );
